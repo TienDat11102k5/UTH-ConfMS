@@ -1,4 +1,4 @@
-package edu.uth.backend.entity;
+package edu.uth.confms.entity.submission;
 
 public enum PaperStatus {
     SUBMITTED,

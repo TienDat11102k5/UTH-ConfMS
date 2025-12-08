@@ -1,4 +1,4 @@
-package edu.uth.backend.auth;
+package edu.uth.confms.controller.auth;
 
 import org.springframework.web.bind.annotation.*;
 

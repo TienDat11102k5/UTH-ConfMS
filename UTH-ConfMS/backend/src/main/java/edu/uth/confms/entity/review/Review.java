@@ -1,4 +1,4 @@
-package edu.uth.backend.entity;
+package edu.uth.confms.entity.review;
 
 import jakarta.persistence.*;
 import lombok.*;

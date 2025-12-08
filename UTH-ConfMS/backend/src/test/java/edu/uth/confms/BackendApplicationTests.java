@@ -1,4 +1,4 @@
-package edu.uth.backend;
+package edu.uth.confms;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
