@@ -6,9 +6,9 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>4.0.0</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/> 
 	</parent>
-	<groupId>com.uth</groupId>
+	<groupId>edu.uth</groupId>
 	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>backend</name>
@@ -58,6 +58,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 	</dependencies>
 
