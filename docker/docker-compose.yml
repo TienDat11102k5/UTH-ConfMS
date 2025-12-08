@@ -36,4 +36,4 @@ services:
     build: ../ai-service
     container_name: uth_ai
     ports:
-      - "8000:8000"
+      - "8001:8000"
