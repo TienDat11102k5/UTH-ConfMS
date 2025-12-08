@@ -1,4 +1,4 @@
-package edu.uth.confms.entity.user;
+package edu.uth.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

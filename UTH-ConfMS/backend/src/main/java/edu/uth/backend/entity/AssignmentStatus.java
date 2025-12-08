@@ -1,4 +1,4 @@
-package edu.uth.confms.entity.review;
+package edu.uth.backend.entity;
 
 public enum AssignmentStatus {
     PENDING,    // Chờ Reviewer đồng ý

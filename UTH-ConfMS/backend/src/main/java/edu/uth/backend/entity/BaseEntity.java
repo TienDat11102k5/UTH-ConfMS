@@ -1,4 +1,4 @@
-package edu.uth.confms.entity;
+package edu.uth.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
