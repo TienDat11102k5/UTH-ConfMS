@@ -19,5 +19,7 @@ public interface PaperRepository extends JpaRepository<Paper, Long> {
     long countByStatus(PaperStatus status);
     // 4. Tìm bài báo có chứa từ khóa (không phân biệt hoa thường)
     List<Paper> findByTitleContainingIgnoreCase(String keyword);
+    // Hàm này kiểm tra: Có bài nào của Ông Tác Giả A, nộp vào Track B, mà Tiêu đề là C chưa?
+    boolean existsByMainAuthorIdAndTrackIdAndTitle(Long authorId, Long trackId, String title);
 
 }

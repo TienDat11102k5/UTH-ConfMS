@@ -19,6 +19,11 @@ public class SubmissionService {
         // 1. Validate file
         if (file.isEmpty()) throw new RuntimeException("File nộp không được để trống!");
         
+        // --- CHẶN TRÙNG BÀI ---
+        boolean isDuplicate = paperRepo.existsByMainAuthorIdAndTrackIdAndTitle(authorId, trackId, title);
+        if (isDuplicate) {
+            throw new RuntimeException("Lỗi: Bạn đã nộp bài báo có tiêu đề này vào Track này rồi!");
+        }
         // 2. Lấy dữ liệu liên quan
         User author = userRepo.findById(authorId)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
