@@ -27,8 +27,14 @@ public class User extends BaseEntity {
     private String phoneNumber;
 
     @Column(name = "is_active")
-    private boolean isActive = true;
-
+    private Boolean isActive = true;
+    // Getter và Setter cho isActive
+    public Boolean isActive() {
+    return this.isActive;
+    }
+    public void setActive(Boolean active) {
+    this.isActive = active;
+    }
     // Quan hệ Many-to-Many với Role
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

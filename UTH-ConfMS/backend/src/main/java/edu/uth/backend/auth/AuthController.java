@@ -1,7 +1,8 @@
 package edu.uth.backend.auth;
 
 import edu.uth.backend.entity.User;
-import lombok.Data; 
+import edu.uth.backend.auth.dto.LoginRequestDTO;
+import edu.uth.backend.auth.dto.RegisterRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,21 +43,5 @@ public class AuthController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-    }
-
-    // --- DTO Classes ---
-    @Data 
-    public static class LoginRequestDTO {
-        private String email;
-        private String password;
-    }
-    
-    @Data 
-    public static class RegisterRequestDTO {
-        private String email;
-        private String password;
-        private String fullName;
-        private String affiliation;
-        private String phone;
     }
 }

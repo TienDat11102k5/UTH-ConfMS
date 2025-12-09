@@ -1,6 +1,7 @@
 package edu.uth.backend.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 @Entity
@@ -13,6 +14,7 @@ public class Track extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "conference_id", nullable = false)
+    @JsonIgnore
     private Conference conference;
 
     @Column(nullable = false)

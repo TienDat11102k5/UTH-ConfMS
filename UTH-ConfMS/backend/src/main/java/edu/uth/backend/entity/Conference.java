@@ -41,7 +41,13 @@ public class Conference extends BaseEntity {
     private LocalDateTime cameraReadyDeadline;
 
     @Column(name = "is_blind_review")
-    private boolean isBlindReview = false;
+    private Boolean isBlindReview = false;
+    public Boolean isBlindReview() {
+        return this.isBlindReview == null ? false : this.isBlindReview;
+    }   
+    public void setBlindReview(Boolean blindReview) {
+        this.isBlindReview = blindReview;
+    }
 
     // Một hội nghị có nhiều Tracks
     @OneToMany(mappedBy = "conference", cascade = CascadeType.ALL)
