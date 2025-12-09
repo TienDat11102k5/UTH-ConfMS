@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
 
+import edu.uth.backend.entity.conference.Track;
+import edu.uth.backend.entity.user.User;
+
 @Entity
 @Table(name = "papers")
 @Getter
