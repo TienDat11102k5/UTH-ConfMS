@@ -16,7 +16,7 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "assignment_id", unique = true, nullable = false)
     private ReviewAssignment assignment;
 
-    private Integer score; // Ví dụ: -3 đến +3
+    private Integer score; 
     
     @Column(name = "confidence_level")
     private Integer confidenceLevel; // 1 đến 5

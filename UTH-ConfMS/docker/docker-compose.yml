@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: confms_db
     ports:
-      - "5432:5432"
+      - "5435:5432"
 
   # 2. Redis (Yêu cầu đề bài)
   redis:
