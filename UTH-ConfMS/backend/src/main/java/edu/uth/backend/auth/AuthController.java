@@ -18,14 +18,14 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO req) {
         try {
-            // 1. Map dữ liệu từ DTO sang Entity
+            // Chuyển DTO sang Entity
             User userReq = new User();
             userReq.setEmail(req.getEmail());
             userReq.setFullName(req.getFullName());
             userReq.setAffiliation(req.getAffiliation());
             userReq.setPhoneNumber(req.getPhone());
             
-            // 2. Gọi Service
+            // Gọi Service
             User newUser = authService.register(userReq, req.getPassword());
             return ResponseEntity.ok(newUser);
         } catch (RuntimeException e) {
@@ -44,15 +44,14 @@ public class AuthController {
         }
     }
 
-    // --- DTO Classes 
-    
-    @Data // Tự sinh Getter/Setter
+    // --- DTO Classes ---
+    @Data 
     public static class LoginRequestDTO {
         private String email;
         private String password;
     }
     
-    @Data // <Tự sinh Getter/Setter
+    @Data 
     public static class RegisterRequestDTO {
         private String email;
         private String password;
