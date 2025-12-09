@@ -19,17 +19,17 @@ services:
       - "6379:6379"
 
   # 3. Backend Java
-  backend:
-    build: ../backend
-    container_name: uth_backend
-    ports:
-      - "9090:8080"
-    depends_on:
-      - postgres
-      - redis
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/confms_db
-      SPRING_DATA_REDIS_HOST: redis
+  #backend:
+  #build: ../backend
+  #container_name: uth_backend
+  #ports:
+  # - "9090:8080"
+  #depends_on:
+  # - postgres
+  #- redis
+  #environment:
+  #SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/confms_db
+  #SPRING_DATA_REDIS_HOST: redis
 
   # 4. AI Service
   ai-service:

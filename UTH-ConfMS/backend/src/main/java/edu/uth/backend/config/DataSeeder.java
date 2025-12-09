@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDateTime;
+//import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,40 +53,40 @@ public class DataSeeder {
             }
 
             // 3. TẠO DỮ LIỆU TEST REPOSITORY (Conference & Paper)
-            if (confRepo.count() == 0) {
+            //if (confRepo.count() == 0) {
                 // Tạo Hội nghị
-                Conference conf = new Conference();
-                conf.setName("UTH Science 2025");
-                conf.setDescription("Hội nghị khoa học công nghệ thường niên");
-                conf.setStartDate(LocalDateTime.now().plusMonths(1));
-                conf.setSubmissionDeadline(LocalDateTime.now().plusWeeks(2));
-                conf.setOrganizer(userRepo.findByEmail("admin@uth.edu.vn").get()); // Admin làm Chair luôn
+                //Conference conf = new Conference();
+                //conf.setName("UTH Science 2025");
+                //conf.setDescription("Hội nghị khoa học công nghệ thường niên");
+                //conf.setStartDate(LocalDateTime.now().plusMonths(1));
+                //conf.setSubmissionDeadline(LocalDateTime.now().plusWeeks(2));
+                //conf.setOrganizer(userRepo.findByEmail("admin@uth.edu.vn").get()); // Admin làm Chair luôn
                 
-                confRepo.save(conf);
+                // confRepo.save(conf);
 
                 // Tạo Track (Chủ đề)
-                Track trackCNTT = new Track();
-                trackCNTT.setName("Công nghệ thông tin");
-                trackCNTT.setConference(conf);
-                trackRepo.save(trackCNTT);
+                //Track trackCNTT = new Track();
+                //trackCNTT.setName("Công nghệ thông tin");
+                //trackCNTT.setConference(conf);
+                //trackRepo.save(trackCNTT);
 
-                Track trackKinhTe = new Track();
-                trackKinhTe.setName("Kinh tế vận tải");
-                trackKinhTe.setConference(conf);
-                trackRepo.save(trackKinhTe);
+                //Track trackKinhTe = new Track();
+                //trackKinhTe.setName("Kinh tế vận tải");
+                //trackKinhTe.setConference(conf);
+                //trackRepo.save(trackKinhTe);
 
                 // Tạo Bài báo (Nộp thử)
-                Paper paper = new Paper();
-                paper.setTitle("Nghiên cứu AI trong quản lý giao thông");
-                paper.setAbstractText("Tóm tắt bài báo abc xyz...");
-                paper.setStatus(PaperStatus.SUBMITTED);
-                paper.setMainAuthor(userRepo.findByEmail("admin@uth.edu.vn").get()); // Admin nộp bài
-                paper.setTrack(trackCNTT); // Nộp vào track CNTT
+                //Paper paper = new Paper();
+                //paper.setTitle("Nghiên cứu AI trong quản lý giao thông");
+                //paper.setAbstractText("Tóm tắt bài báo abc xyz...");
+                //paper.setStatus(PaperStatus.SUBMITTED);
+                //paper.setMainAuthor(userRepo.findByEmail("admin@uth.edu.vn").get()); // Admin nộp bài
+                //paper.setTrack(trackCNTT); // Nộp vào track CNTT
 
-                paperRepo.save(paper);
+                //paperRepo.save(paper);
                 
-                System.out.println("✅ Đã tạo dữ liệu mẫu: 1 Hội nghị, 2 Tracks, 1 Bài báo.");
-            }
+                //System.out.println("Đã tạo dữ liệu mẫu: 1 Hội nghị, 2 Tracks, 1 Bài báo.");
+            //};
         };
     }
 }
