@@ -1,14 +1,7 @@
 package edu.uth.backend.config;
 
 import edu.uth.backend.entity.*;
-import edu.uth.backend.entity.user.Role;
-import edu.uth.backend.entity.user.User;
 import edu.uth.backend.repository.*;
-import edu.uth.backend.repository.conference.ConferenceRepository;
-import edu.uth.backend.repository.conference.TrackRepository;
-import edu.uth.backend.repository.user.RoleRepository;
-import edu.uth.backend.repository.user.UserRepository;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
