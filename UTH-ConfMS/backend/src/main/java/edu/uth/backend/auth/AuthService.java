@@ -6,7 +6,7 @@ import edu.uth.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.HashSet; // <--- Import HashSet
+import java.util.HashSet; 
 import java.util.Set;
 
 @Service
@@ -16,7 +16,7 @@ public class AuthService {
     @Autowired private PasswordEncoder passwordEncoder;
 
     // Đăng ký tài khoản
-    public User register(User user, String rawPassword) { // Nhận thẳng User đã map từ Controller
+    public User register(User user, String rawPassword) { 
         // 1. Validate
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             throw new RuntimeException("Email không được để trống!");
@@ -27,11 +27,11 @@ public class AuthService {
 
         // 2. Mã hóa mật khẩu & Thiết lập cơ bản
         user.setPasswordHash(passwordEncoder.encode(rawPassword));
-        user.setActive(true); // Nếu bên User dùng Boolean, chỗ này vẫn hiểu là true
+        user.setActive(true); 
 
         // 3. Gán quyền mặc định (QUAN TRỌNG: Dùng HashSet để sau này còn thêm quyền được)
         Set<Role> roles = new HashSet<>();
-        Role authorRole = roleRepo.findByName(RoleConstants.AUTHOR) // Dùng Constant
+        Role authorRole = roleRepo.findByName(RoleConstants.AUTHOR)
                 .orElseThrow(() -> new RuntimeException("Lỗi hệ thống: Không tìm thấy Role AUTHOR."));
         roles.add(authorRole);
         
