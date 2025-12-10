@@ -18,7 +18,7 @@ public class Track extends BaseEntity {
     private Conference conference;
 
     @Column(nullable = false)
-    private String name; // Ví dụ: Công nghệ phần mềm
+    private String name; 
     
     @Column(columnDefinition = "TEXT")
     private String description;
