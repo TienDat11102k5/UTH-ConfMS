@@ -1,55 +1,60 @@
 // src/pages/chair/ChairDashboard.jsx
 import React from "react";
-import { Link } from "react-router-dom";
+import DashboardLayout from "../../components/Layout/DashboardLayout.jsx";
 
 const ChairDashboard = () => {
   return (
-    <div className="dash-page">
-      <header className="dash-header">
-        <div className="dash-header-left">
-          <span className="dash-logo-mark">UTH</span>
-          <span className="dash-logo-text">Chair Dashboard</span>
-        </div>
-        <nav className="dash-header-right">
-          <Link to="/" className="nav-link">
-            Cổng thông tin
-          </Link>
-          <Link to="/login" className="nav-link">
-            Đăng xuất
-          </Link>
-        </nav>
-      </header>
-
-      <main className="dash-main">
-        <section className="dash-section">
-          <h1 className="dash-title">Bảng điều khiển Program / Track Chair</h1>
-          <p className="dash-subtitle">
-            Quản lý conference, tracks, deadlines, phân công bài, theo dõi tiến độ và đưa
-            ra quyết định cuối cùng.
+    <DashboardLayout
+      roleLabel="Program / Track Chair"
+      title="Bảng điều khiển Program / Track Chair"
+      subtitle="Cấu hình conference &amp; CFP, phân công bài, theo dõi tiến độ review và đưa ra quyết định cuối cùng."
+    >
+      <div className="dash-grid">
+        <div className="dash-card">
+          <h3>Conference &amp; CFP setup</h3>
+          <p>
+            Quản lý thông tin hội nghị, tạo Call for Papers, cấu hình tracks /
+            topics, deadlines và các mẫu email (invitation, reminder, decision).
           </p>
+          <button className="btn-primary">
+            Cấu hình CFP &amp; tracks
+          </button>
+        </div>
 
-          <div className="dash-grid">
-            <div className="dash-card">
-              <h3>Conference &amp; CFP</h3>
-              <p>Cấu hình thông tin conference, CFP, deadline và templates.</p>
-              <button className="btn-primary">Quản lý CFP</button>
-            </div>
+        <div className="dash-card">
+          <h3>Assignment &amp; tiến độ review</h3>
+          <p>
+            Thực hiện assign Reviewer/PC cho từng bài (thủ công hoặc dựa trên
+            gợi ý), theo dõi tiến độ review, SLA và các bài bị trễ hạn.
+          </p>
+          <button className="btn-secondary">
+            Quản lý assignment
+          </button>
+        </div>
 
-            <div className="dash-card">
-              <h3>Phân công &amp; tiến độ</h3>
-              <p>Quản lý assignment reviewer, theo dõi tiến độ review và SLA.</p>
-              <button className="btn-secondary">Xem tiến độ</button>
-            </div>
+        <div className="dash-card">
+          <h3>Decision &amp; thông báo</h3>
+          <p>
+            Tổng hợp điểm và nhận xét, ghi quyết định Accept / Reject, xử lý
+            borderline, gửi email thông báo hàng loạt với phần feedback ẩn danh.
+          </p>
+          <button className="btn-secondary">
+            Màn hình quyết định
+          </button>
+        </div>
 
-            <div className="dash-card">
-              <h3>Quyết định &amp; thông báo</h3>
-              <p>Aggregate reviews, quyết định Accept/Reject và gửi email hàng loạt.</p>
-              <button className="btn-secondary">Màn hình quyết định</button>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
+        <div className="dash-card">
+          <h3>Camera-ready &amp; chương trình</h3>
+          <p>
+            Mở vòng camera-ready, nhận bản cuối, sắp xếp phiên trình bày, export
+            dữ liệu cho chương trình &amp; kỷ yếu (program / proceedings).
+          </p>
+          <button className="btn-secondary">
+            Lập chương trình hội nghị
+          </button>
+        </div>
+      </div>
+    </DashboardLayout>
   );
 };
 
