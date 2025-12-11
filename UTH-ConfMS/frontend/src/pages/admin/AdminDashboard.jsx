@@ -1,36 +1,56 @@
-// frontend/src/pages/admin/AdminDashboard.jsx
-export default function AdminDashboard() {
-  return (
-    <div style={{ padding: 20, border: "5px solid red", borderRadius: 10 }}>
-      <h1 style={{ color: "red" }}>🛑 KHU VỰC QUẢN TRỊ VIÊN (ADMIN)</h1>
-      <p>Chỉ Admin mới nhìn thấy bảng này.</p>
+// src/pages/admin/AdminDashboard.jsx
+import React from "react";
+import { Link } from "react-router-dom";
 
-      {/* Giả lập chức năng Admin */}
-      <table border="1" style={{ width: "100%", marginTop: 20 }}>
-        <thead>
-          <tr style={{ background: "#ddd" }}>
-            <th>User ID</th>
-            <th>Tên</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>001</td>
-            <td>Nguyễn Văn A</td>
-            <td>
-              <button>Xóa User</button>
-            </td>
-          </tr>
-          <tr>
-            <td>002</td>
-            <td>Trần Thị B</td>
-            <td>
-              <button>Xóa User</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+const AdminDashboard = () => {
+  return (
+    <div className="dash-page">
+      <header className="dash-header">
+        <div className="dash-header-left">
+          <span className="dash-logo-mark">UTH</span>
+          <span className="dash-logo-text">Site Administrator</span>
+        </div>
+        <nav className="dash-header-right">
+          <Link to="/" className="nav-link">
+            Cổng thông tin
+          </Link>
+          <Link to="/login" className="nav-link">
+            Đăng xuất
+          </Link>
+        </nav>
+      </header>
+
+      <main className="dash-main">
+        <section className="dash-section">
+          <h1 className="dash-title">Bảng điều khiển Site Administrator</h1>
+          <p className="dash-subtitle">
+            Quản trị nền tảng đa hội nghị: tenancy, RBAC, SMTP/quota, backup/restore và AI
+            governance.
+          </p>
+
+          <div className="dash-grid">
+            <div className="dash-card">
+              <h3>Tenancy &amp; RBAC</h3>
+              <p>Quản lý hội nghị, người dùng và phân quyền hệ thống.</p>
+              <button className="btn-primary">Quản lý người dùng</button>
+            </div>
+
+            <div className="dash-card">
+              <h3>SMTP &amp; Mail quota</h3>
+              <p>Cấu hình SMTP, giới hạn gửi email và giám sát lỗi gửi.</p>
+              <button className="btn-secondary">Cấu hình email</button>
+            </div>
+
+            <div className="dash-card">
+              <h3>AI governance &amp; audit</h3>
+              <p>Xem log AI, bật/tắt từng tính năng và xuất báo cáo.</p>
+              <button className="btn-secondary">Mở bảng AI governance</button>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
-}
+};
+
+export default AdminDashboard;
