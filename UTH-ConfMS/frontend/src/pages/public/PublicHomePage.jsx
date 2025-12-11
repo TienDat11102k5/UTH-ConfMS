@@ -1,13 +1,25 @@
 // src/pages/public/PublicHomePage.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import logoUth from '../../assets/logoUTH.jpg';
 
 const PublicHomePage = () => {
   return (
     <div className="portal-page">
       <header className="portal-header">
         <div className="portal-logo">
-          <span className="portal-logo-mark">UTH</span>
+          <img 
+            src={logoUth} 
+            alt="UTH Logo" 
+            className="portal-logo-img"
+            style={{ 
+              height: '190px', 
+              width: 'auto', 
+              marginRight: '0px',
+              mixBlendMode: 'multiply' 
+            }} 
+          />
+
           <div className="portal-logo-text">
             <div className="portal-logo-title">UTH-CONFMS</div>
             <div className="portal-logo-subtitle">
