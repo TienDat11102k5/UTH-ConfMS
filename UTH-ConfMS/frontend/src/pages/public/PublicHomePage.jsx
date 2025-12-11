@@ -9,7 +9,7 @@ const PublicHomePage = () => {
         <div className="portal-logo">
           <span className="portal-logo-mark">UTH</span>
           <div className="portal-logo-text">
-            <div className="portal-logo-title">UTH-ConfMS</div>
+            <div className="portal-logo-title">UTH-CONFMS</div>
             <div className="portal-logo-subtitle">
               UTH Scientific Conference Paper Management System
             </div>
