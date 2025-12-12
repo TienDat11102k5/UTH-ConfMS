@@ -31,6 +31,9 @@ public class User {
   @Column(name = "full_name", length = 180)
   private String fullName;
 
+  @Column(name = "affiliation", length = 255)
+  private String affiliation;
+
   @Column(name = "avatar_url", length = 500)
   private String avatarUrl;
 
@@ -61,6 +64,9 @@ public class User {
 
   public String getFullName() { return fullName; }
   public void setFullName(String fullName) { this.fullName = fullName; }
+
+  public String getAffiliation() { return affiliation; }
+  public void setAffiliation(String affiliation) { this.affiliation = affiliation; }
 
   public String getAvatarUrl() { return avatarUrl; }
   public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }

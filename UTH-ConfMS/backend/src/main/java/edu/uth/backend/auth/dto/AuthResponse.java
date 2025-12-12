@@ -13,6 +13,7 @@ public class AuthResponse {
     public String fullName;
     public String avatarUrl;
     public String provider;
+    public String role;  // Primary role for routing
   }
 
   public String getAccessToken() { return accessToken; }

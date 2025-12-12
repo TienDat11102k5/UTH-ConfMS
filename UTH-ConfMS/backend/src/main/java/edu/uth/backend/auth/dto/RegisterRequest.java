@@ -12,6 +12,9 @@ public class RegisterRequest {
   @NotBlank @Size(max = 180)
   private String fullName;
 
+  @Size(max = 255)
+  private String affiliation;
+
   public String getEmail() { return email; }
   public void setEmail(String email) { this.email = email; }
 
@@ -20,4 +23,7 @@ public class RegisterRequest {
 
   public String getFullName() { return fullName; }
   public void setFullName(String fullName) { this.fullName = fullName; }
+
+  public String getAffiliation() { return affiliation; }
+  public void setAffiliation(String affiliation) { this.affiliation = affiliation; }
 }
