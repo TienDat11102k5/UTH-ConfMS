@@ -37,8 +37,9 @@ services:
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
 
-      # set cái này ở máy bạn (không hardcode)
-      JWT_SECRET: ${JWT_SECRET:-CHANGE_ME_DEV_ONLY}
+      # JWT configuration
+      APP_JWT_SECRET: ${JWT_SECRET:-put_a_very_long_random_secret_here_min_32_chars_uthconfms2024}
+      APP_JWT_EXPIRATION-MS: 86400000
 
       # Firebase Admin credentials path trong container
       FIREBASE_PROJECT_ID: uth-confms
@@ -47,7 +48,7 @@ services:
       # React dev
       CORS_ALLOWED_ORIGINS: http://localhost:5173
     volumes:
-      - ../backend/uth-confms-firebase-sa.json:/run/secrets/firebase-sa.json:ro
+      - ../uth-confms-firebase-sa.json:/run/secrets/firebase-sa.json:ro
 
   ai-service:
     build: ../ai-service
