@@ -61,11 +61,6 @@ const RegisterPage = () => {
     <div className="auth-page">
       <div className="auth-card">
         <h1 className="auth-title">Đăng ký tài khoản UTH-ConfMS</h1>
-        <p className="auth-subtitle">
-          Tài khoản mặc định cho vai trò Author. Reviewer/PC/Chair sẽ được
-          gán thêm quyền bởi Ban tổ chức.
-        </p>
-
         {error && <div className="auth-error">{error}</div>}
         {successMsg && <div className="auth-success">{successMsg}</div>}
 

@@ -69,9 +69,6 @@ const LoginPage = () => {
     <div className="auth-page">
       <div className="auth-card">
         <h1 className="auth-title">Đăng nhập UTH-ConfMS</h1>
-        <p className="auth-subtitle">
-          Đăng nhập để truy cập hệ thống hội nghị (Author / Reviewer / PC / Chair / Admin).
-        </p>
 
         {error && <div className="auth-error">{error}</div>}
 
