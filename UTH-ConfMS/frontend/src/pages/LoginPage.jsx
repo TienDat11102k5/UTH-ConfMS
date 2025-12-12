@@ -1,7 +1,24 @@
 // src/pages/LoginPage.jsx
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import apiClient from "../apiClient";
+import { setToken, setCurrentUser } from "../auth";
+
+import { signInWithPopup } from "firebase/auth";
+import { firebaseAuth, googleProvider } from "../firebase";
+
+const normalizeRole = (user) => {
+  // hỗ trợ nhiều dạng trả về từ backend
+  const raw =
+    user?.role ||
+    user?.primaryRole ||
+    user?.roles?.[0]?.name ||
+    user?.roles?.[0] ||
+    "";
+
+  if (!raw) return "";
+  return raw.startsWith("ROLE_") ? raw.substring(5) : raw; // ROLE_AUTHOR -> AUTHOR
+};
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -10,12 +27,39 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
+
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const from =
-    (location.state && location.state.from && location.state.from.pathname) ||
-    "/";
+  const from = useMemo(() => {
+    return (
+      (location.state && location.state.from && location.state.from.pathname) ||
+      "/"
+    );
+  }, [location.state]);
+
+  const routeByRole = (user) => {
+    const role = normalizeRole(user);
+
+    if (role === "AUTHOR") return "/author";
+    if (role === "REVIEWER" || role === "PC") return "/reviewer";
+    if (role === "CHAIR" || role === "TRACK_CHAIR") return "/chair";
+    if (role === "ADMIN") return "/admin";
+
+    return from;
+  };
+
+  const saveAuthAndRedirect = (data) => {
+    const { accessToken, user } = data || {};
+    if (accessToken) {
+      setToken(accessToken, { remember: rememberMe });
+    }
+    if (user) {
+      setCurrentUser(user, { remember: rememberMe });
+    }
+    navigate(routeByRole(user), { replace: true });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,45 +67,41 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const response = await apiClient.post("/auth/login", {
-        email,
-        password,
-      });
-
-      // Giả sử backend trả về: { accessToken, refreshToken, user: { id, name, role } }
-      const { accessToken, user } = response.data || {};
-
-      if (accessToken) {
-        if (rememberMe) {
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("currentUser", JSON.stringify(user));
-        } else {
-          sessionStorage.setItem("accessToken", accessToken);
-          sessionStorage.setItem("currentUser", JSON.stringify(user));
-        }
-      }
-
-      // Điều hướng theo role cơ bản (tùy backend)
-      if (user && user.role === "AUTHOR") {
-        navigate("/author", { replace: true });
-      } else if (user && (user.role === "REVIEWER" || user.role === "PC")) {
-        navigate("/reviewer", { replace: true });
-      } else if (user && (user.role === "CHAIR" || user.role === "TRACK_CHAIR")) {
-        navigate("/chair", { replace: true });
-      } else if (user && user.role === "ADMIN") {
-        navigate("/admin", { replace: true });
-      } else {
-        navigate(from, { replace: true });
-      }
+      const res = await apiClient.post("/auth/login", { email, password });
+      saveAuthAndRedirect(res.data);
     } catch (err) {
-      console.error(err);
       const message =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
         "Đăng nhập thất bại. Vui lòng kiểm tra email/mật khẩu.";
       setError(message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError("");
+    setGoogleLoading(true);
+
+    try {
+      const cred = await signInWithPopup(firebaseAuth, googleProvider);
+      const idToken = await cred.user.getIdToken();
+
+      // Backend cần 1 endpoint nhận Firebase ID Token để đổi ra JWT của hệ thống
+      // Ví dụ: POST /api/auth/firebase/google  { idToken }
+      const res = await apiClient.post("/auth/firebase/google", { idToken });
+
+      saveAuthAndRedirect(res.data);
+    } catch (err) {
+      const message =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        "Đăng nhập Google thất bại.";
+      setError(message);
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -109,18 +149,23 @@ const LoginPage = () => {
               <span>Ghi nhớ đăng nhập</span>
             </label>
 
-            {/* Nếu sau này có chức năng reset password thì gắn link */}
-            {/* <Link to="/forgot-password" className="link-inline">
+            <Link to="/forgot-password" className="link-inline">
               Quên mật khẩu?
-            </Link> */}
+            </Link>
           </div>
 
-          <button
-            type="submit"
-            className="btn-primary"
-            disabled={loading}
-          >
+          <button type="submit" className="btn-primary" disabled={loading || googleLoading}>
             {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+          </button>
+
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={handleGoogleLogin}
+            disabled={loading || googleLoading}
+            style={{ width: "100%", marginTop: "0.75rem" }}
+          >
+            {googleLoading ? "Đang đăng nhập Google..." : "Đăng nhập bằng Google"}
           </button>
         </form>
 

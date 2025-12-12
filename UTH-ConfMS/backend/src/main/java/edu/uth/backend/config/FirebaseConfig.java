@@ -15,15 +15,24 @@ public class FirebaseConfig {
   @Value("${app.firebase.service-account:}")
   private String serviceAccountPath;
 
+  // Backward-compat: nếu app.firebase.service-account không được set,
+  // dùng app.firebase.credentials (đã khai báo trong application.properties).
+  @Value("${app.firebase.credentials:}")
+  private String credentialsPath;
+
   @PostConstruct
   public void initFirebase() throws Exception {
     if (FirebaseApp.getApps() != null && !FirebaseApp.getApps().isEmpty()) return;
-    if (serviceAccountPath == null || serviceAccountPath.isBlank()) {
+    String path = (serviceAccountPath != null && !serviceAccountPath.isBlank())
+        ? serviceAccountPath
+        : credentialsPath;
+
+    if (path == null || path.isBlank()) {
       // Không init nếu bạn chưa cấu hình; Google login sẽ fail -> đúng hành vi
       return;
     }
 
-    try (InputStream is = new FileInputStream(serviceAccountPath)) {
+    try (InputStream is = new FileInputStream(path)) {
       FirebaseOptions options = FirebaseOptions.builder()
           .setCredentials(GoogleCredentials.fromStream(is))
           .build();
