@@ -1,6 +1,6 @@
 version: "3.8"
+
 services:
-  # 1. Database Postgres
   postgres:
     image: postgres:16-alpine
     container_name: uth_db
@@ -10,30 +10,50 @@ services:
       POSTGRES_DB: confms_db
     ports:
       - "5435:5432"
+    volumes:
+      - uth_pgdata:/var/lib/postgresql/data
 
-  # 2. Redis (Yêu cầu đề bài)
   redis:
     image: redis:alpine
     container_name: uth_redis
     ports:
       - "6379:6379"
 
-  # 3. Backend Java
-  #backend:
-  #build: ../backend
-  #container_name: uth_backend
-  #ports:
-  # - "9090:8080"
-  #depends_on:
-  # - postgres
-  #- redis
-  #environment:
-  #SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/confms_db
-  #SPRING_DATA_REDIS_HOST: redis
+  backend:
+    build: ../backend
+    container_name: uth_backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      SERVER_PORT: 8080
 
-  # 4. AI Service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/confms_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123456
+
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+
+      # set cái này ở máy bạn (không hardcode)
+      JWT_SECRET: ${JWT_SECRET:-CHANGE_ME_DEV_ONLY}
+
+      # Firebase Admin credentials path trong container
+      FIREBASE_PROJECT_ID: uth-confms
+      FIREBASE_CREDENTIALS: /run/secrets/firebase-sa.json
+
+      # React dev
+      CORS_ALLOWED_ORIGINS: http://localhost:5173
+    volumes:
+      - ../backend/uth-confms-firebase-sa.json:/run/secrets/firebase-sa.json:ro
+
   ai-service:
     build: ../ai-service
     container_name: uth_ai
     ports:
       - "8001:8000"
+
+volumes:
+  uth_pgdata:
