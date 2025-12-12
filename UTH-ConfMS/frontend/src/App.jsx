@@ -8,6 +8,8 @@ import NotFoundPage from "./pages/NotFound.jsx";
 import UnauthorizedPage from "./pages/Unauthorized.jsx";
 
 import PublicHomePage from "./pages/public/PublicHomePage.jsx";
+import PublicProgram from "./pages/public/PublicProgram";
+
 
 import AuthorDashboard from "./pages/author/AuthorDashboard.jsx";
 import AuthorSubmissionsPage from "./pages/author/AuthorSubmissionsPage.jsx";
@@ -23,6 +25,7 @@ const App = () => {
       <Routes>
         {/* Public portal */}
         <Route path="/" element={<PublicHomePage />} />
+        <Route path="/program" element={<PublicProgram />} />
 
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
