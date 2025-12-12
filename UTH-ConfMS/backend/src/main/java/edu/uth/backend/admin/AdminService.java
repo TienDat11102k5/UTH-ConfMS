@@ -18,7 +18,7 @@ public class AdminService {
 
     public User toggleUserActive(Long userId) {
         User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User không tồn tại"));
-        user.setActive(!user.isActive());
+        user.setEnabled(!user.isEnabled());
         return userRepo.save(user);
     }
 

@@ -1,58 +1,125 @@
 package edu.uth.backend.auth;
 
-import edu.uth.backend.common.RoleConstants; 
-import edu.uth.backend.entity.*;
-import edu.uth.backend.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseToken;
+import edu.uth.backend.auth.dto.*;
+import edu.uth.backend.common.RoleConstants;
+import edu.uth.backend.entity.Role;
+import edu.uth.backend.entity.User;
+import edu.uth.backend.repository.RoleRepository;
+import edu.uth.backend.repository.UserRepository;
+import edu.uth.backend.security.JwtTokenProvider;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.HashSet; 
-import java.util.Set;
 
 @Service
 public class AuthService {
-    @Autowired private UserRepository userRepo;
-    @Autowired private RoleRepository roleRepo;
-    @Autowired private PasswordEncoder passwordEncoder;
 
-    // Đăng ký tài khoản
-    public User register(User user, String rawPassword) { 
-        // 1. Validate
-        if (user.getEmail() == null || user.getEmail().isEmpty()) {
-            throw new RuntimeException("Email không được để trống!");
-        }
-        if (userRepo.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email '" + user.getEmail() + "' đã được sử dụng!");
-        }
+  private final UserRepository userRepository;
+  private final RoleRepository roleRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final AuthenticationManager authenticationManager;
+  private final JwtTokenProvider jwtTokenProvider;
 
-        // 2. Mã hóa mật khẩu & Thiết lập cơ bản
-        user.setPasswordHash(passwordEncoder.encode(rawPassword));
-        user.setActive(true); 
+  public AuthService(
+      UserRepository userRepository,
+      RoleRepository roleRepository,
+      PasswordEncoder passwordEncoder,
+      AuthenticationManager authenticationManager,
+      JwtTokenProvider jwtTokenProvider
+  ) {
+    this.userRepository = userRepository;
+    this.roleRepository = roleRepository;
+    this.passwordEncoder = passwordEncoder;
+    this.authenticationManager = authenticationManager;
+    this.jwtTokenProvider = jwtTokenProvider;
+  }
 
-        // 3. Gán quyền mặc định (QUAN TRỌNG: Dùng HashSet để sau này còn thêm quyền được)
-        Set<Role> roles = new HashSet<>();
-        Role authorRole = roleRepo.findByName(RoleConstants.AUTHOR)
-                .orElseThrow(() -> new RuntimeException("Lỗi hệ thống: Không tìm thấy Role AUTHOR."));
-        roles.add(authorRole);
-        
-        user.setRoles(roles);
-
-        return userRepo.save(user);
+  public AuthResponse register(RegisterRequest req) {
+    if (userRepository.existsByEmail(req.getEmail())) {
+      throw new IllegalArgumentException("Email already exists");
     }
 
-    // Đăng nhập
-    public User login(String email, String rawPassword) {
-        User user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại!"));
-        
-        // Gọi hàm isActive() thủ công mà bạn đã thêm vào Entity User
-        if (!user.isActive()) {
-            throw new RuntimeException("Tài khoản đã bị khóa!");
-        }
-        
-        if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
-            throw new RuntimeException("Sai mật khẩu!");
-        }
-        return user;
+    Role authorRole = roleRepository.findByName(RoleConstants.ROLE_AUTHOR)
+        .orElseGet(() -> roleRepository.save(new Role(RoleConstants.ROLE_AUTHOR)));
+
+    User u = new User();
+    u.setEmail(req.getEmail().toLowerCase());
+    u.setPasswordHash(passwordEncoder.encode(req.getPassword()));
+    u.setFullName(req.getFullName());
+    u.setProvider(User.AuthProvider.LOCAL);
+    u.getRoles().add(authorRole);
+
+    User saved = userRepository.save(u);
+    return buildAuthResponse(saved);
+  }
+
+  public AuthResponse login(LoginRequest req) {
+    Authentication auth = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(req.getEmail().toLowerCase(), req.getPassword())
+    );
+    // Nếu authenticate ok thì user tồn tại
+    User user = userRepository.findByEmail(req.getEmail().toLowerCase())
+        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    return buildAuthResponse(user);
+  }
+
+  public AuthResponse loginWithFirebaseGoogle(FirebaseLoginRequest req) throws Exception {
+    FirebaseToken decoded = FirebaseAuth.getInstance().verifyIdToken(req.getIdToken());
+
+    String email = decoded.getEmail();
+    if (email == null || email.isBlank()) {
+      throw new IllegalArgumentException("Firebase token has no email");
     }
+
+    String uid = decoded.getUid();
+    String name = (String) decoded.getClaims().getOrDefault("name", null);
+    String picture = (String) decoded.getClaims().getOrDefault("picture", null);
+
+    Role authorRole = roleRepository.findByName(RoleConstants.ROLE_AUTHOR)
+        .orElseGet(() -> roleRepository.save(new Role(RoleConstants.ROLE_AUTHOR)));
+
+    User user = userRepository.findByEmail(email.toLowerCase()).orElse(null);
+    if (user == null) {
+      user = new User();
+      user.setEmail(email.toLowerCase());
+      user.setProvider(User.AuthProvider.GOOGLE);
+      user.setFirebaseUid(uid);
+      user.setFullName(name);
+      user.setAvatarUrl(picture);
+      user.getRoles().add(authorRole);
+      user = userRepository.save(user);
+    } else {
+      // đồng bộ provider/firebaseUid nếu user đã tồn tại
+      if (user.getProvider() != User.AuthProvider.GOOGLE) {
+        user.setProvider(User.AuthProvider.GOOGLE);
+      }
+      user.setFirebaseUid(uid);
+      if (user.getFullName() == null || user.getFullName().isBlank()) user.setFullName(name);
+      if (user.getAvatarUrl() == null || user.getAvatarUrl().isBlank()) user.setAvatarUrl(picture);
+      user = userRepository.save(user);
+    }
+
+    return buildAuthResponse(user);
+  }
+
+  private AuthResponse buildAuthResponse(User user) {
+    String token = jwtTokenProvider.generateToken(user);
+
+    AuthResponse res = new AuthResponse();
+    res.setAccessToken(token);
+    res.setExpiresInMs(jwtTokenProvider.getExpirationMs());
+
+    AuthResponse.UserInfo ui = new AuthResponse.UserInfo();
+    ui.id = user.getId();
+    ui.email = user.getEmail();
+    ui.fullName = user.getFullName();
+    ui.avatarUrl = user.getAvatarUrl();
+    ui.provider = user.getProvider().name();
+    res.setUser(ui);
+
+    return res;
+  }
 }
