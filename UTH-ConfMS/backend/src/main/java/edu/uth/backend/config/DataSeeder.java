@@ -1,92 +1,81 @@
 package edu.uth.backend.config;
 
-import edu.uth.backend.entity.*;
-import edu.uth.backend.repository.*;
+import edu.uth.backend.entity.Role;
+import edu.uth.backend.entity.User;
+import edu.uth.backend.repository.RoleRepository;
+import edu.uth.backend.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-//import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Configuration
-public class DataSeeder {
+@Component
+@ConditionalOnProperty(name = "app.seed.enabled", havingValue = "true", matchIfMissing = true)
+public class DataSeeder implements CommandLineRunner {
 
-    @Bean
-    CommandLineRunner initDatabase(
-            UserRepository userRepo,
-            RoleRepository roleRepo,
-            ConferenceRepository confRepo,
-            TrackRepository trackRepo,
-            PaperRepository paperRepo,
-            PasswordEncoder passwordEncoder) {
-        return args -> {
-            System.out.println("⏳ Đang khởi tạo dữ liệu mẫu...");
+    private final UserRepository userRepo;
+    private final RoleRepository roleRepo;
+    private final PasswordEncoder passwordEncoder;
 
-            // 1. TẠO ROLES (Nếu chưa có)
-            if (roleRepo.count() == 0) {
-                roleRepo.save(new Role("ROLE_ADMIN"));
-                roleRepo.save(new Role("ROLE_CHAIR"));
-                roleRepo.save(new Role("ROLE_AUTHOR"));
-                roleRepo.save(new Role("ROLE_REVIEWER"));
-                System.out.println("✅ Đã tạo Roles");
-            }
+    public DataSeeder(UserRepository userRepo, RoleRepository roleRepo, PasswordEncoder passwordEncoder) {
+        this.userRepo = userRepo;
+        this.roleRepo = roleRepo;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-            // 2. TẠO ADMIN (Nếu chưa có)
-            if (!userRepo.existsByEmail("admin@uth.edu.vn")) {
-                User admin = new User();
-                admin.setEmail("admin@uth.edu.vn");
-                admin.setFullName("Super Administrator");
-                admin.setPasswordHash(passwordEncoder.encode("admin123")); // Pass: admin123
-                admin.setActive(true);
-                
-                // Gán quyền Admin
-                Role adminRole = roleRepo.findByName("ROLE_ADMIN").orElseThrow();
-                Set<Role> roles = new HashSet<>();
-                roles.add(adminRole);
-                admin.setRoles(roles);
+    @Override
+    @Transactional
+    public void run(String... args) {
+        System.out.println("⏳ DataSeeder: initializing base data...");
 
+        Role roleAdmin = ensureRole("ROLE_ADMIN");
+        ensureRole("ROLE_CHAIR");
+        ensureRole("ROLE_AUTHOR");
+        ensureRole("ROLE_REVIEWER");
+
+        User admin = userRepo.findByEmail("admin@uth.edu.vn").orElse(null);
+
+        if (admin == null) {
+            admin = new User();
+            admin.setEmail("admin@uth.edu.vn");
+            admin.setFullName("Super Administrator");
+            admin.setPasswordHash(passwordEncoder.encode("admin123"));
+
+            Set<Role> roles = new HashSet<>();
+            roles.add(roleAdmin);
+            admin.setRoles(roles);
+
+            userRepo.save(admin);
+            System.out.println("✅ Seeded admin user: admin@uth.edu.vn (password: admin123)");
+        } else {
+            if (admin.getRoles() == null) admin.setRoles(new HashSet<>());
+
+            boolean hasAdminRole = admin.getRoles().stream()
+                    .anyMatch(r -> "ROLE_ADMIN".equals(r.getName()));
+
+            if (!hasAdminRole) {
+                admin.getRoles().add(roleAdmin);
                 userRepo.save(admin);
-                System.out.println("✅ Đã tạo Admin: admin@uth.edu.vn / admin123");
+                System.out.println("✅ Updated existing admin user: added ROLE_ADMIN");
+            } else {
+                System.out.println("ℹ️ Admin already exists with ROLE_ADMIN");
             }
+        }
 
-            // 3. TẠO DỮ LIỆU TEST REPOSITORY (Conference & Paper)
-            //if (confRepo.count() == 0) {
-                // Tạo Hội nghị
-                //Conference conf = new Conference();
-                //conf.setName("UTH Science 2025");
-                //conf.setDescription("Hội nghị khoa học công nghệ thường niên");
-                //conf.setStartDate(LocalDateTime.now().plusMonths(1));
-                //conf.setSubmissionDeadline(LocalDateTime.now().plusWeeks(2));
-                //conf.setOrganizer(userRepo.findByEmail("admin@uth.edu.vn").get()); // Admin làm Chair luôn
-                
-                // confRepo.save(conf);
+        System.out.println("✅ DataSeeder done.");
+    }
 
-                // Tạo Track (Chủ đề)
-                //Track trackCNTT = new Track();
-                //trackCNTT.setName("Công nghệ thông tin");
-                //trackCNTT.setConference(conf);
-                //trackRepo.save(trackCNTT);
-
-                //Track trackKinhTe = new Track();
-                //trackKinhTe.setName("Kinh tế vận tải");
-                //trackKinhTe.setConference(conf);
-                //trackRepo.save(trackKinhTe);
-
-                // Tạo Bài báo (Nộp thử)
-                //Paper paper = new Paper();
-                //paper.setTitle("Nghiên cứu AI trong quản lý giao thông");
-                //paper.setAbstractText("Tóm tắt bài báo abc xyz...");
-                //paper.setStatus(PaperStatus.SUBMITTED);
-                //paper.setMainAuthor(userRepo.findByEmail("admin@uth.edu.vn").get()); // Admin nộp bài
-                //paper.setTrack(trackCNTT); // Nộp vào track CNTT
-
-                //paperRepo.save(paper);
-                
-                //System.out.println("Đã tạo dữ liệu mẫu: 1 Hội nghị, 2 Tracks, 1 Bài báo.");
-            //};
-        };
+    private Role ensureRole(String roleName) {
+        return roleRepo.findByName(roleName)
+                .orElseGet(() -> {
+                    Role r = new Role(roleName);
+                    Role saved = roleRepo.save(r);
+                    System.out.println("✅ Seeded role: " + roleName);
+                    return saved;
+                });
     }
 }

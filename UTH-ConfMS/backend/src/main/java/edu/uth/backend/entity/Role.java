@@ -1,16 +1,26 @@
 package edu.uth.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "roles")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class Role extends BaseEntity {
-    
-    @Column(unique = true, nullable = false)
-    private String name; // Ví dụ: ROLE_ADMIN, ROLE_CHAIR, ROLE_AUTHOR
+public class Role {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column(nullable = false, unique = true, length = 80)
+  private String name;
+
+  public Role() {}
+
+  public Role(String name) {
+    this.name = name;
+  }
+
+  public Long getId() { return id; }
+
+  public String getName() { return name; }
+  public void setName(String name) { this.name = name; }
 }

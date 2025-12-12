@@ -1,8 +1,10 @@
 package edu.uth.backend.common;
 
-public class RoleConstants {
-    public static final String ADMIN = "ROLE_ADMIN";
-    public static final String CHAIR = "ROLE_CHAIR";
-    public static final String AUTHOR = "ROLE_AUTHOR";
-    public static final String REVIEWER = "ROLE_REVIEWER";
+public final class RoleConstants {
+  private RoleConstants() {}
+
+  public static final String ROLE_AUTHOR = "ROLE_AUTHOR";
+  public static final String ROLE_REVIEWER = "ROLE_REVIEWER";
+  public static final String ROLE_CHAIR = "ROLE_CHAIR";
+  public static final String ROLE_ADMIN = "ROLE_ADMIN";
 }

@@ -1,40 +1,82 @@
 package edu.uth.backend.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import edu.uth.backend.security.JwtAuthFilter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.*;
+import org.springframework.security.authentication.*;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.*;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.*;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
-@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  private final JwtAuthFilter jwtAuthFilter;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            // 1. Tắt CSRF (Cross-Site Request Forgery) vì chúng ta giao tiếp qua API (Postman/React)
-            .csrf(AbstractHttpConfigurer::disable)
-            
-            // 2. Cấu hình quyền truy cập
-            .authorizeHttpRequests(auth -> auth
-                // Cho phép truy cập tự do vào các API Auth (Đăng ký/Đăng nhập)
-                .requestMatchers("/api/auth/**").permitAll()
-                // Cho phép truy cập tự do vào Swagger (nếu có dùng)
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                // TẠM THỜI: Cho phép tất cả các request khác cũng truy cập được luôn (để bạn test Nộp bài, Tạo hội nghị cho dễ)
-                // Sau này làm xong tính năng Login lấy Token thì sẽ sửa dòng này lại sau.
-                .anyRequest().permitAll() 
-            );
+  @Value("${app.cors.allowed-origins}")
+  private String allowedOrigins;
 
-        return http.build();
-    }
+  public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+    this.jwtAuthFilter = jwtAuthFilter;
+  }
+
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(csrf -> csrf.disable())
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+                "/api/auth/**",
+                "/v3/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html"
+            ).permitAll()
+            .anyRequest().authenticated()
+        )
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+    return http.build();
+  }
+
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    return config.getAuthenticationManager();
+  }
+
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration cfg = new CorsConfiguration();
+
+    List<String> origins = Arrays.stream(allowedOrigins.split(","))
+        .map(String::trim)
+        .filter(s -> !s.isBlank())
+        .toList();
+
+    cfg.setAllowedOrigins(origins);
+    cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+    cfg.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+    cfg.setExposedHeaders(List.of("Authorization"));
+    cfg.setAllowCredentials(true);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", cfg);
+    return source;
+  }
 }
