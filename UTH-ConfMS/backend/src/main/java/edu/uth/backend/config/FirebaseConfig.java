@@ -29,6 +29,15 @@ public class FirebaseConfig {
 
     if (path == null || path.isBlank()) {
       // Không init nếu bạn chưa cấu hình; Google login sẽ fail -> đúng hành vi
+      System.out.println("⚠️ Firebase credentials not configured. Google login will be disabled.");
+      return;
+    }
+
+    // Kiểm tra file tồn tại
+    java.io.File credFile = new java.io.File(path);
+    if (!credFile.exists()) {
+      System.out.println("⚠️ Firebase credentials file not found: " + credFile.getAbsolutePath());
+      System.out.println("⚠️ Google login will be disabled.");
       return;
     }
 
@@ -37,6 +46,11 @@ public class FirebaseConfig {
           .setCredentials(GoogleCredentials.fromStream(is))
           .build();
       FirebaseApp.initializeApp(options);
+      System.out.println("✅ Firebase initialized successfully");
+    } catch (Exception e) {
+      System.err.println("⚠️ Failed to initialize Firebase: " + e.getMessage());
+      System.err.println("⚠️ Google login will be disabled.");
+      // Don't throw exception - allow app to start without Firebase
     }
   }
 }

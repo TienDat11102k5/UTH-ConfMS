@@ -114,6 +114,12 @@
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- Send email (forgot/reset password) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

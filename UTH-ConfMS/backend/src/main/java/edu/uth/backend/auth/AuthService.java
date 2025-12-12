@@ -3,6 +3,7 @@ package edu.uth.backend.auth;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import edu.uth.backend.auth.dto.*;
+import edu.uth.backend.common.MailService;
 import edu.uth.backend.common.ResetTokenUtil;
 import edu.uth.backend.common.RoleConstants;
 import edu.uth.backend.entity.PasswordResetToken;
@@ -23,6 +24,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 
+/**
+ * Service xử lý authentication & account flows (register/login/google/fpwd/reset).
+ * Ghi chú bằng tiếng Việt để dễ hiểu chức năng từng phương thức.
+ */
 @Service
 public class AuthService {
 
@@ -33,7 +38,10 @@ public class AuthService {
   private final AuthenticationManager authenticationManager;
   private final JwtTokenProvider jwtTokenProvider;
 
-  /** Base URL frontend để tạo reset link (dùng log/email) */
+  // Service gửi email qua SMTP (MailService phải được implement trong package common)
+  private final MailService mailService;
+
+  /** Base URL frontend để tạo reset link (vd: http://localhost:5173) */
   @Value("${app.frontend.base-url:http://localhost:5173}")
   private String frontendBaseUrl;
 
@@ -47,7 +55,8 @@ public class AuthService {
       PasswordResetTokenRepository passwordResetTokenRepository,
       PasswordEncoder passwordEncoder,
       AuthenticationManager authenticationManager,
-      JwtTokenProvider jwtTokenProvider
+      JwtTokenProvider jwtTokenProvider,
+      MailService mailService
   ) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
@@ -55,6 +64,7 @@ public class AuthService {
     this.passwordEncoder = passwordEncoder;
     this.authenticationManager = authenticationManager;
     this.jwtTokenProvider = jwtTokenProvider;
+    this.mailService = mailService;
   }
 
   /**
@@ -151,7 +161,6 @@ public class AuthService {
       if (user.getAvatarUrl() == null || user.getAvatarUrl().isBlank()) user.setAvatarUrl(picture);
 
       if (user.getRoles() == null) user.setRoles(new HashSet<>());
-      // nếu user chưa có role nào thì gán ROLE_AUTHOR mặc định
       if (user.getRoles().isEmpty()) user.getRoles().add(authorRole);
 
       user = userRepository.save(user);
@@ -161,13 +170,13 @@ public class AuthService {
   }
 
   /**
-   * Quên mật khẩu:
-   * - Luôn trả OK ở Controller (tránh lộ email có tồn tại hay không)
+   * Quên mật khẩu (GỬI EMAIL THẬT):
+   * - Controller luôn trả OK (chống dò email có tồn tại hay không)
    * - Nếu user tồn tại:
    *    + Xoá token cũ của user (để chỉ còn 1 token hiệu lực)
    *    + Tạo rawToken, hash, expiresAt
    *    + Lưu DB (chỉ lưu hash)
-   *    + Log reset link (bạn thay bằng gửi email thật sau)
+   *    + Gửi email reset link qua SMTP (sử dụng MailService)
    */
   @Transactional
   public void forgotPassword(ForgotPasswordRequest req) {
@@ -179,9 +188,10 @@ public class AuthService {
       return;
     }
 
-    // Giữ 1 token active cho mỗi user (đơn giản để demo)
+    // Giữ 1 token active cho mỗi user (đơn giản, dễ demo)
     passwordResetTokenRepository.deleteByUser_Id(user.getId());
 
+    // Tạo token thô (raw) để gửi cho user, DB chỉ lưu hash
     String rawToken = ResetTokenUtil.generateRawToken();
     String tokenHash = ResetTokenUtil.sha256Hex(rawToken);
 
@@ -198,9 +208,14 @@ public class AuthService {
 
     passwordResetTokenRepository.save(token);
 
-    // TODO: gửi email thật. Tạm thời log để test.
+    // Tạo link reset cho frontend
     String resetLink = frontendBaseUrl + "/reset-password?token=" + rawToken;
-    System.out.println("🔐 Reset password link for " + email + ": " + resetLink);
+
+    // GỬI EMAIL THẬT (SMTP) — MailService phải implement phương thức sendResetPasswordEmail
+    mailService.sendResetPasswordEmail(user.getEmail(), user.getFullName(), resetLink);
+
+    // (tuỳ chọn) log để debug
+    System.out.println("✅ Sent reset password email to: " + email);
   }
 
   /**
