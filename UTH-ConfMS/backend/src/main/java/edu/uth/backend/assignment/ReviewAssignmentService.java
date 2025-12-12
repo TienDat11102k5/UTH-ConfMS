@@ -14,6 +14,9 @@ public class ReviewAssignmentService {
     @Autowired private ReviewAssignmentRepository assignmentRepo;
     @Autowired private PaperRepository paperRepo;
     @Autowired private UserRepository userRepo;
+    
+    // Để kết nối với bảng Xung đột lợi ích
+    @Autowired private ConflictOfInterestRepository coiRepo; 
 
     // 1. Hàm Phân công (Assign) - TP4
     public ReviewAssignment assignReviewer(Long paperId, Long reviewerId) {
@@ -25,18 +28,23 @@ public class ReviewAssignmentService {
         User reviewer = userRepo.findById(reviewerId)
                 .orElseThrow(() -> new RuntimeException("Lỗi: Reviewer không tồn tại!"));
 
-        // c. Check COI (Xung đột lợi ích): Tác giả không được chấm bài mình [cite: 865]
+        // c. Check COI Cơ bản: Tác giả không được chấm bài mình
         if (paper.getMainAuthor().getId().equals(reviewerId)) {
             throw new RuntimeException("Lỗi COI: Tác giả không thể tự chấm bài của mình!");
         }
+        // Nếu Reviewer đã khai báo xung đột trong bảng conflicts_of_interest thì chặn lại
+        if (coiRepo.existsByPaperIdAndReviewerId(paperId, reviewerId)) {
+             throw new RuntimeException("Lỗi COI: Không thể phân công vì Reviewer này đã khai báo Xung đột lợi ích!");
+        }
+        // -----------------------------------------------------------
 
-        // d. Check COI (Nâng cao): Nếu cùng đơn vị công tác (Affiliation) [cite: 865]
-        // (Logic này tùy chọn, nhưng rất nên có cho đồ án xịn)
+        // d. Check COI (Nâng cao): Nếu cùng đơn vị công tác (Affiliation)
+        // (Giữ lại logic này của bạn vì nó rất tốt)
         String authorAffiliation = paper.getMainAuthor().getAffiliation();
         String reviewerAffiliation = reviewer.getAffiliation();
         if (authorAffiliation != null && reviewerAffiliation != null && 
             authorAffiliation.equalsIgnoreCase(reviewerAffiliation)) {
-             throw new RuntimeException("Cảnh báo COI: Reviewer và Tác giả cùng đơn vị công tác (" + authorAffiliation + ")!");
+              throw new RuntimeException("Cảnh báo COI: Reviewer và Tác giả cùng đơn vị công tác (" + authorAffiliation + ")!");
         }
 
         // e. Kiểm tra xem đã phân công cho ông này chưa (Tránh trùng)
@@ -48,9 +56,8 @@ public class ReviewAssignmentService {
         ReviewAssignment assignment = new ReviewAssignment();
         assignment.setPaper(paper);
         assignment.setReviewer(reviewer);
-        assignment.setStatus(AssignmentStatus.PENDING); // Trạng thái ban đầu là Chờ xác nhận [cite: 250]
+        assignment.setStatus(AssignmentStatus.PENDING); // Trạng thái ban đầu là Chờ xác nhận
         assignment.setAssignedDate(LocalDateTime.now());
-        
         // (Optional) Cập nhật trạng thái bài báo sang UNDER_REVIEW
         if (paper.getStatus() == PaperStatus.SUBMITTED) {
             paper.setStatus(PaperStatus.UNDER_REVIEW);
