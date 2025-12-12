@@ -3,6 +3,7 @@ package edu.uth.backend.decision;
 import edu.uth.backend.entity.*;
 import edu.uth.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import edu.uth.backend.notification.NotificationService;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -11,6 +12,7 @@ public class DecisionService {
 
     @Autowired private PaperRepository paperRepo;
     @Autowired private ReviewRepository reviewRepo;
+    @Autowired private NotificationService notificationService;
 
     // 1. Hàm tính điểm trung bình (Để Chair xem trước khi quyết định)
     public double calculateAverageScore(Long paperId) {
@@ -38,11 +40,15 @@ public class DecisionService {
         paper.setStatus(decision);
         // (Optional: Có thể lưu comment của Chair vào đâu đó nếu muốn mở rộng DB)
         Paper savedPaper = paperRepo.save(paper);
-
-        // --- MOCK GỬI EMAIL THÔNG BÁO ---
-        System.out.println(">>> [EMAIL] Gửi tới tác giả: " + savedPaper.getMainAuthor().getEmail());
-        System.out.println(">>> Tiêu đề: Thông báo kết quả bài báo " + savedPaper.getTitle());
-        System.out.println(">>> Nội dung: Bài báo của bạn đã được " + decision);
+        // --- GỌI NOTIFICATION SERVICE ĐỂ GỬI MAIL ---
+        notificationService.sendDecisionEmail(
+                savedPaper.getMainAuthor().getEmail(),      // Email tác giả
+                savedPaper.getMainAuthor().getFullName(),   // Tên tác giả
+                savedPaper.getTitle(),                      // Tên bài báo
+                decision                                    // Kết quả
+        );
+        // ---------------------------------------------
+       
         return savedPaper;
     }
 }
