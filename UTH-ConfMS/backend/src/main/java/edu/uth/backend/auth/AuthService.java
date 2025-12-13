@@ -49,6 +49,10 @@ public class AuthService {
   @Value("${app.reset-password.token-ttl-minutes:30}")
   private long resetTokenTtlMinutes;
 
+  /** Tự động tạo Firebase user khi đăng ký LOCAL (true/false) */
+  @Value("${app.auth.create-firebase-user:false}")
+  private boolean createFirebaseUserOnRegister;
+
   public AuthService(
       UserRepository userRepository,
       RoleRepository roleRepository,
@@ -69,103 +73,229 @@ public class AuthService {
 
   /**
    * Đăng ký tài khoản LOCAL (mặc định ROLE_AUTHOR).
-   * - Kiểm tra trùng email
-   * - Mã hoá mật khẩu
-   * - Tạo user provider LOCAL
+   * 
+   * FLOW:
+   * 1. Validate email chưa tồn tại
+   * 2. Validate password strength (tối thiểu 6 ký tự)
+   * 3. Tạo user trong database với password đã mã hóa
+   * 4. Gán role ROLE_AUTHOR mặc định
+   * 5. [TUỲ CHỌN] Tạo Firebase Authentication user nếu config bật
+   * 6. Trả về JWT token
+   * 
+   * LƯU Ý:
+   * - Email được chuẩn hóa (lowercase, trim)
+   * - Password được mã hóa bằng BCrypt
+   * - Provider = LOCAL (phân biệt với GOOGLE)
+   * - Nếu tạo Firebase user thất bại, vẫn giữ user trong DB (vì đã validate email)
    */
+  @Transactional
   public AuthResponse register(RegisterRequest req) {
+    // 1. Chuẩn hóa và validate email
     String email = req.getEmail().trim().toLowerCase();
     if (userRepository.existsByEmail(email)) {
-      throw new IllegalArgumentException("Email already exists");
+      throw new IllegalArgumentException("Email đã tồn tại trong hệ thống");
     }
 
+    // 2. Validate password (đã có @Size trong DTO nhưng kiểm tra thêm)
+    if (req.getPassword() == null || req.getPassword().length() < 6) {
+      throw new IllegalArgumentException("Mật khẩu phải có ít nhất 6 ký tự");
+    }
+
+    // 3. Validate fullName
+    if (req.getFullName() == null || req.getFullName().trim().isEmpty()) {
+      throw new IllegalArgumentException("Họ tên không được để trống");
+    }
+
+    // 4. Lấy hoặc tạo role AUTHOR
     Role authorRole = roleRepository.findByName(RoleConstants.ROLE_AUTHOR)
         .orElseGet(() -> roleRepository.save(new Role(RoleConstants.ROLE_AUTHOR)));
 
+    // 5. Tạo user entity
     User u = new User();
     u.setEmail(email);
     u.setPasswordHash(passwordEncoder.encode(req.getPassword()));
-    u.setFullName(req.getFullName());
-    u.setAffiliation(req.getAffiliation());
+    u.setFullName(req.getFullName().trim());
+    u.setAffiliation(req.getAffiliation() != null ? req.getAffiliation().trim() : null);
     u.setProvider(User.AuthProvider.LOCAL);
 
-    // đảm bảo roles không null (tránh NPE nếu entity chưa init)
+    // 6. Gán roles
     if (u.getRoles() == null) u.setRoles(new HashSet<>());
     u.getRoles().add(authorRole);
 
+    // 7. Lưu vào database
     User saved = userRepository.save(u);
+
+    // 8. [TUỲ CHỌN] Tạo Firebase Authentication user (nếu config bật)
+    if (createFirebaseUserOnRegister) {
+      try {
+        createFirebaseUser(email, req.getPassword(), req.getFullName());
+        System.out.println("✅ Created Firebase Authentication user for: " + email);
+      } catch (Exception e) {
+        // Log lỗi nhưng KHÔNG rollback transaction (user đã được lưu vào DB)
+        System.err.println("⚠️ Failed to create Firebase user for " + email + ": " + e.getMessage());
+        // Có thể gửi thông báo cho admin hoặc retry sau
+      }
+    }
+
+    // 9. Trả về JWT token
     return buildAuthResponse(saved);
   }
 
   /**
-   * Đăng nhập LOCAL:
-   * - Dùng AuthenticationManager để check email/password
-   * - Nếu đúng -> phát hành JWT bằng JwtTokenProvider
+   * Tạo user trong Firebase Authentication.
+   * Sử dụng Firebase Admin SDK để tạo user với email/password.
+   * 
+   * LƯU Ý: Method này chỉ được gọi nếu config bật createFirebaseUserOnRegister.
+   */
+  private void createFirebaseUser(String email, String password, String displayName) throws Exception {
+    try {
+      var createRequest = new com.google.firebase.auth.UserRecord.CreateRequest()
+          .setEmail(email)
+          .setPassword(password)
+          .setDisplayName(displayName)
+          .setEmailVerified(false); // User cần verify email sau
+
+      FirebaseAuth.getInstance().createUser(createRequest);
+    } catch (com.google.firebase.auth.FirebaseAuthException e) {
+      // Log chi tiết lỗi
+      System.err.println("Firebase createUser failed: " + e.getMessage());
+      throw e;
+    }
+  }
+
+  /**
+   * Đăng nhập LOCAL (email/password).
+   * 
+   * FLOW:
+   * 1. Chuẩn hóa email (lowercase, trim)
+   * 2. Authenticate bằng Spring Security AuthenticationManager
+   * 3. Lấy user từ database
+   * 4. Phát hành JWT token
+   * 
+   * LƯU Ý:
+   * - AuthenticationManager tự động check password hash
+   * - Nếu sai email/password -> throw BadCredentialsException
+   * - Chỉ hỗ trợ user có provider = LOCAL
    */
   public AuthResponse login(LoginRequest req) {
+    // 1. Chuẩn hóa email
     String email = req.getEmail().trim().toLowerCase();
 
+    // 2. Kiểm tra user tồn tại và là LOCAL provider
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new IllegalArgumentException("Email hoặc mật khẩu không đúng"));
+
+    // 3. Kiểm tra provider
+    if (user.getProvider() != User.AuthProvider.LOCAL) {
+      throw new IllegalArgumentException(
+          "Tài khoản này đăng nhập bằng " + user.getProvider() + ". Vui lòng sử dụng phương thức đăng nhập tương ứng."
+      );
+    }
+
+    // 4. Authenticate (Spring Security tự check password)
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(email, req.getPassword())
     );
 
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
+    // 5. Phát hành JWT
     return buildAuthResponse(user);
   }
 
   /**
-   * Đăng nhập Google qua Firebase:
-   * - Verify idToken bằng Firebase Admin SDK
-   * - Nếu user chưa tồn tại -> tạo mới (provider GOOGLE, firebaseUid, avatar, name)
-   * - Nếu đã tồn tại -> đồng bộ firebaseUid/provider/avatar/name (nếu thiếu)
-   * - Phát hành JWT của backend
+   * Đăng nhập Google qua Firebase Authentication.
+   * 
+   * FLOW:
+   * 1. Verify Firebase ID Token bằng Firebase Admin SDK
+   * 2. Extract email, uid, name, picture từ token
+   * 3. Tìm user trong database theo email:
+   *    - Nếu CHƯA TỒN TẠI: tạo user mới với provider GOOGLE
+   *    - Nếu ĐÃ TỒN TẠI:
+   *      + Provider = LOCAL: merge thành GOOGLE (user có thể dùng cả 2 cách)
+   *      + Provider = GOOGLE: cập nhật thông tin mới nhất
+   * 4. Đảm bảo user có ít nhất role AUTHOR
+   * 5. Phát hành JWT token
+   * 
+   * LƯU Ý:
+   * - Firebase token được verify bởi Firebase Admin SDK (an toàn)
+   * - Hỗ trợ merge account: user đăng ký LOCAL có thể đăng nhập Google sau
+   * - Avatar và displayName được đồng bộ từ Google
    */
+  @Transactional
   public AuthResponse loginWithFirebaseGoogle(FirebaseLoginRequest req) throws Exception {
-    FirebaseToken decoded = FirebaseAuth.getInstance().verifyIdToken(req.getIdToken());
+    // 1. Verify Firebase ID Token
+    FirebaseToken decoded;
+    try {
+      decoded = FirebaseAuth.getInstance().verifyIdToken(req.getIdToken());
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Firebase token không hợp lệ: " + e.getMessage());
+    }
 
+    // 2. Extract thông tin từ token
     String email = decoded.getEmail();
     if (email == null || email.isBlank()) {
-      throw new IllegalArgumentException("Firebase token has no email");
+      throw new IllegalArgumentException("Firebase token không chứa email");
     }
     email = email.trim().toLowerCase();
 
     String uid = decoded.getUid();
-    String name = (String) decoded.getClaims().getOrDefault("name", null);
+    String name = (String) decoded.getClaims().getOrDefault("name", "");
     String picture = (String) decoded.getClaims().getOrDefault("picture", null);
 
+    // 3. Lấy hoặc tạo role AUTHOR
     Role authorRole = roleRepository.findByName(RoleConstants.ROLE_AUTHOR)
         .orElseGet(() -> roleRepository.save(new Role(RoleConstants.ROLE_AUTHOR)));
 
+    // 4. Tìm hoặc tạo user
     User user = userRepository.findByEmail(email).orElse(null);
+    
     if (user == null) {
+      // 4a. User chưa tồn tại -> tạo mới
       user = new User();
       user.setEmail(email);
       user.setProvider(User.AuthProvider.GOOGLE);
       user.setFirebaseUid(uid);
-      user.setFullName(name);
+      user.setFullName(name != null && !name.isBlank() ? name : email.split("@")[0]);
       user.setAvatarUrl(picture);
 
       if (user.getRoles() == null) user.setRoles(new HashSet<>());
       user.getRoles().add(authorRole);
 
       user = userRepository.save(user);
+      System.out.println("✅ Created new GOOGLE user: " + email);
+      
     } else {
-      if (user.getProvider() != User.AuthProvider.GOOGLE) {
+      // 4b. User đã tồn tại -> cập nhật thông tin
+      
+      // Merge account: cho phép user LOCAL đăng nhập bằng Google
+      if (user.getProvider() == User.AuthProvider.LOCAL) {
+        System.out.println("ℹ️ Merging LOCAL account to GOOGLE: " + email);
         user.setProvider(User.AuthProvider.GOOGLE);
       }
+      
+      // Cập nhật Firebase UID (quan trọng cho các tính năng Firebase khác)
       user.setFirebaseUid(uid);
 
-      if (user.getFullName() == null || user.getFullName().isBlank()) user.setFullName(name);
-      if (user.getAvatarUrl() == null || user.getAvatarUrl().isBlank()) user.setAvatarUrl(picture);
+      // Cập nhật fullName nếu chưa có hoặc rỗng
+      if (user.getFullName() == null || user.getFullName().isBlank()) {
+        user.setFullName(name != null && !name.isBlank() ? name : email.split("@")[0]);
+      }
+      
+      // Cập nhật avatar nếu chưa có
+      if (user.getAvatarUrl() == null || user.getAvatarUrl().isBlank()) {
+        user.setAvatarUrl(picture);
+      }
 
+      // Đảm bảo có role
       if (user.getRoles() == null) user.setRoles(new HashSet<>());
-      if (user.getRoles().isEmpty()) user.getRoles().add(authorRole);
+      if (user.getRoles().isEmpty()) {
+        user.getRoles().add(authorRole);
+      }
 
       user = userRepository.save(user);
+      System.out.println("✅ Updated GOOGLE user: " + email);
     }
 
+    // 5. Phát hành JWT
     return buildAuthResponse(user);
   }
 
@@ -212,10 +342,17 @@ public class AuthService {
     String resetLink = frontendBaseUrl + "/reset-password?token=" + rawToken;
 
     // GỬI EMAIL THẬT (SMTP) — MailService phải implement phương thức sendResetPasswordEmail
-    mailService.sendResetPasswordEmail(user.getEmail(), user.getFullName(), resetLink);
-
-    // (tuỳ chọn) log để debug
-    System.out.println("✅ Sent reset password email to: " + email);
+    try {
+      mailService.sendResetPasswordEmail(user.getEmail(), user.getFullName(), resetLink);
+      System.out.println("✅ Sent reset password email to: " + email);
+    } catch (Exception e) {
+      System.err.println("⚠️ Failed to send reset email to " + email + ": " + e.getMessage());
+      // Nếu gửi email thất bại, có thể:
+      // 1. Log để admin biết
+      // 2. Xóa token (hoặc giữ lại để retry)
+      // 3. Throw exception (hoặc silent fail)
+      // Ở đây chọn silent fail để không lộ email có tồn tại
+    }
   }
 
   /**
@@ -248,33 +385,43 @@ public class AuthService {
   }
 
   /**
-   * Build response đăng nhập:
-   * - Phát hành accessToken JWT
-   * - Trả user info cơ bản
-   * - role trả về dạng không có prefix "ROLE_" để frontend route dễ hơn (AUTHOR/ADMIN/...)
+   * Build AuthResponse với JWT token và user info.
+   * 
+   * Chuẩn hóa role name:
+   * - ROLE_AUTHOR -> AUTHOR
+   * - ROLE_ADMIN -> ADMIN
+   * - ROLE_REVIEWER -> REVIEWER
+   * - ROLE_CHAIR -> CHAIR
+   * 
+   * Frontend sẽ dùng role này để routing và phân quyền UI.
    */
   private AuthResponse buildAuthResponse(User user) {
+    // 1. Phát hành JWT token
     String token = jwtTokenProvider.generateToken(user);
 
+    // 2. Build response
     AuthResponse res = new AuthResponse();
     res.setAccessToken(token);
     res.setExpiresInMs(jwtTokenProvider.getExpirationMs());
 
+    // 3. Build user info
     AuthResponse.UserInfo ui = new AuthResponse.UserInfo();
     ui.id = user.getId();
     ui.email = user.getEmail();
-    ui.fullName = user.getFullName();
+    ui.fullName = user.getFullName() != null ? user.getFullName() : user.getEmail().split("@")[0];
     ui.avatarUrl = user.getAvatarUrl();
-    ui.provider = user.getProvider() != null ? user.getProvider().name() : "UNKNOWN";
+    ui.provider = user.getProvider() != null ? user.getProvider().name() : "LOCAL";
 
-    // Set primary role (chuẩn hoá ROLE_AUTHOR -> AUTHOR)
+    // 4. Set primary role (chuẩn hoá: bỏ prefix "ROLE_")
     if (user.getRoles() != null && !user.getRoles().isEmpty()) {
       String roleName = user.getRoles().iterator().next().getName();
       if (roleName != null && roleName.startsWith("ROLE_")) {
-        ui.role = roleName.substring("ROLE_".length());
+        ui.role = roleName.substring("ROLE_".length()); // ROLE_AUTHOR -> AUTHOR
       } else {
         ui.role = roleName;
       }
+    } else {
+      ui.role = "AUTHOR"; // Default role nếu không có
     }
 
     res.setUser(ui);
