@@ -5,6 +5,7 @@ import edu.uth.backend.repository.UserRepository;
 import edu.uth.backend.user.dto.ChangePasswordRequest;
 import edu.uth.backend.user.dto.UpdateProfileRequest;
 import edu.uth.backend.user.dto.UserProfileResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.UUID;
@@ -56,7 +56,7 @@ public class UserController {
 
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(
-            @RequestBody UpdateProfileRequest request,
+            @Valid @RequestBody UpdateProfileRequest request,
             Authentication auth
     ) {
         if (auth == null || auth.getPrincipal() == null) {
@@ -70,8 +70,16 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
+        System.out.println("Updating profile for user: " + email);
+        System.out.println("Request data: fullName=" + request.getFullName() + 
+                         ", phone=" + request.getPhone() + 
+                         ", gender=" + request.getGender() +
+                         ", address=" + request.getAddress() +
+                         ", dateOfBirth=" + request.getDateOfBirth() +
+                         ", affiliation=" + request.getAffiliation());
+
         // Update user profile
-        if (request.getFullName() != null) {
+        if (request.getFullName() != null && !request.getFullName().isEmpty()) {
             user.setFullName(request.getFullName());
         }
         if (request.getPhone() != null) {
@@ -80,14 +88,21 @@ public class UserController {
         if (request.getAffiliation() != null) {
             user.setAffiliation(request.getAffiliation());
         }
-        if (request.getCountry() != null) {
-            user.setCountry(request.getCountry());
+        if (request.getGender() != null) {
+            user.setGender(request.getGender());
+        }
+        if (request.getAddress() != null) {
+            user.setAddress(request.getAddress());
+        }
+        if (request.getDateOfBirth() != null) {
+            user.setDateOfBirth(request.getDateOfBirth());
         }
         if (request.getBio() != null) {
             user.setBio(request.getBio());
         }
 
         userRepository.save(user);
+        System.out.println("Profile updated successfully for user: " + email);
 
         return ResponseEntity.ok(new UserProfileResponse(user));
     }
@@ -125,7 +140,7 @@ public class UserController {
 
         try {
             // Create upload directory if not exists
-            Path uploadPath = Paths.get(uploadDir, "avatars");
+            Path uploadPath = Path.of(uploadDir, "avatars");
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }

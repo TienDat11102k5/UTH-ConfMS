@@ -27,11 +27,11 @@ public class SubmissionController {
     // API: Nộp bài báo mới
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> submitPaper(
-            @RequestParam("title") String title,
+            @RequestParam String title,
             @RequestParam("abstract") String abstractText,
-            @RequestParam("authorId") Long authorId,
-            @RequestParam("trackId") Long trackId,
-            @RequestParam("file") MultipartFile file,
+            @RequestParam Long authorId,
+            @RequestParam Long trackId,
+            @RequestParam MultipartFile file,
             // Nhận chuỗi JSON đồng tác giả (Không bắt buộc)
             @RequestParam(value = "coAuthors", required = false) String coAuthorsJson 
     ) {

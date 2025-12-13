@@ -2,6 +2,7 @@ package edu.uth.backend.user.dto;
 
 import edu.uth.backend.entity.Role;
 import edu.uth.backend.entity.User;
+import java.time.LocalDate;
 
 public class UserProfileResponse {
     private Long id;
@@ -11,6 +12,9 @@ public class UserProfileResponse {
     private String avatarUrl;
     private String phone;
     private String country;
+    private String gender;
+    private String address;
+    private LocalDate dateOfBirth;
     private String bio;
     private String role;
     private String provider;
@@ -23,6 +27,9 @@ public class UserProfileResponse {
         this.avatarUrl = user.getAvatarUrl();
         this.phone = user.getPhone();
         this.country = user.getCountry();
+        this.gender = user.getGender();
+        this.address = user.getAddress();
+        this.dateOfBirth = user.getDateOfBirth();
         this.bio = user.getBio();
         this.provider = user.getProvider().name();
         
@@ -87,6 +94,30 @@ public class UserProfileResponse {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public String getBio() {
