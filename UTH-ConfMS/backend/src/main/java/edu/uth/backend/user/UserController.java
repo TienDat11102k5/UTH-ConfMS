@@ -2,7 +2,6 @@ package edu.uth.backend.user;
 
 import edu.uth.backend.entity.User;
 import edu.uth.backend.repository.UserRepository;
-import edu.uth.backend.security.JwtUtil;
 import edu.uth.backend.user.dto.ChangePasswordRequest;
 import edu.uth.backend.user.dto.UpdateProfileRequest;
 import edu.uth.backend.user.dto.UserProfileResponse;
