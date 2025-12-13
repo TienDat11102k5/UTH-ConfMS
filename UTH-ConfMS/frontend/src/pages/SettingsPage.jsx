@@ -43,7 +43,7 @@ const SettingsPage = () => {
     setLoading(true);
 
     try {
-      await apiClient.put("/user/change-password", {
+      await apiClient.put("/user/change-password", {  // Giả sử path này đúng, nếu sai thì thêm /api
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
       });
@@ -160,80 +160,7 @@ const SettingsPage = () => {
             </div>
           )}
 
-          {/* Notifications Section */}
-          <div className="settings-section">
-            <h2>Thông báo</h2>
-            <p className="section-description">
-              Quản lý cách bạn nhận thông báo từ hệ thống
-            </p>
 
-            <div className="settings-options">
-              <div className="setting-item">
-                <div className="setting-info">
-                  <h3>Email thông báo</h3>
-                  <p>Nhận email khi có cập nhật về bài nộp của bạn</p>
-                </div>
-                <label className="toggle">
-                  <input type="checkbox" defaultChecked />
-                  <span className="toggle-slider"></span>
-                </label>
-              </div>
-
-              <div className="setting-item">
-                <div className="setting-info">
-                  <h3>Thông báo review</h3>
-                  <p>Nhận thông báo khi có review mới cho bài nộp</p>
-                </div>
-                <label className="toggle">
-                  <input type="checkbox" defaultChecked />
-                  <span className="toggle-slider"></span>
-                </label>
-              </div>
-
-              <div className="setting-item">
-                <div className="setting-info">
-                  <h3>Thông báo quyết định</h3>
-                  <p>Nhận thông báo khi có quyết định Accept/Reject</p>
-                </div>
-                <label className="toggle">
-                  <input type="checkbox" defaultChecked />
-                  <span className="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* Privacy Section */}
-          <div className="settings-section">
-            <h2>Quyền riêng tư</h2>
-            <p className="section-description">
-              Quản lý thông tin cá nhân và quyền riêng tư của bạn
-            </p>
-
-            <div className="settings-options">
-              <div className="setting-item">
-                <div className="setting-info">
-                  <h3>Hiển thị email công khai</h3>
-                  <p>Cho phép người khác xem địa chỉ email của bạn</p>
-                </div>
-                <label className="toggle">
-                  <input type="checkbox" />
-                  <span className="toggle-slider"></span>
-                </label>
-              </div>
-
-              <div className="setting-item">
-                <div className="setting-info">
-                  <h3>Hiển thị profile công khai</h3>
-                  <p>Cho phép người khác xem thông tin profile của bạn</p>
-                </div>
-                <label className="toggle">
-                  <input type="checkbox" defaultChecked />
-                  <span className="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
