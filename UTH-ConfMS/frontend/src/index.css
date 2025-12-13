@@ -1,5 +1,5 @@
 /* --- RESET & VARIABLES --- */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 :root {
   /* Palette mới: Sâu hơn, hiện đại hơn */
@@ -12,22 +12,24 @@
   --text-main: #161616;
   --text-muted: #525252;
   --text-light: #a8a8a8;
-  
+
   /* Backgrounds */
   --bg-body: #f4f7fb;
   --bg-surface: #ffffff;
   --bg-subtle: #f8f9fa;
-  
+
   /* Shadows - Soft & Modern */
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
-  --shadow-md: 0 8px 24px rgba(15, 98, 254, 0.08), 0 4px 8px rgba(0,0,0,0.04);
-  --shadow-lg: 0 16px 48px rgba(15, 98, 254, 0.12), 0 8px 24px rgba(0,0,0,0.08);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 8px 24px rgba(15, 98, 254, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 16px 48px rgba(15, 98, 254, 0.12),
+    0 8px 24px rgba(0, 0, 0, 0.08);
 
   --radius-sm: 0.5rem;
   --radius-md: 1rem;
   --radius-lg: 1.5rem;
-  
-  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
   --header-height: 72px;
 }
 
@@ -43,8 +45,16 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   /* Thêm background pattern nhẹ cho toàn trang */
-  background-image: radial-gradient(circle at 10% 20%, rgba(15, 98, 254, 0.03) 0%, transparent 20%),
-                    radial-gradient(circle at 90% 80%, rgba(0, 217, 249, 0.03) 0%, transparent 20%);
+  background-image: radial-gradient(
+      circle at 10% 20%,
+      rgba(15, 98, 254, 0.03) 0%,
+      transparent 20%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      rgba(0, 217, 249, 0.03) 0%,
+      transparent 20%
+    );
   background-attachment: fixed;
 }
 
@@ -56,21 +66,29 @@ a {
 
 /* Animation cơ bản để tạo sự sinh động khi load trang */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.auth-card, .portal-hero-left, .dash-section {
+.auth-card,
+.portal-hero-left,
+.dash-section {
   animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-
 /* --- BUTTONS & LINKS --- */
 button {
-    font-family: inherit;
+  font-family: inherit;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -88,7 +106,11 @@ button {
 
 /* Hiệu ứng nút Primary sinh động hơn */
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-dark)
+  );
   color: white;
   box-shadow: 0 4px 12px rgba(15, 98, 254, 0.2);
 }
@@ -99,8 +121,8 @@ button {
 }
 
 .btn-primary:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(15, 98, 254, 0.2);
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(15, 98, 254, 0.2);
 }
 
 .btn-primary:disabled {
@@ -133,53 +155,52 @@ button {
 
 /* Hiệu ứng gạch chân sinh động khi hover link */
 .link-inline::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    transform: scaleX(0);
-    height: 2px;
-    bottom: -2px;
-    left: 0;
-    background-color: var(--primary-color);
-    transform-origin: bottom right;
-    transition: transform 0.3s ease-out;
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--primary-color);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
 }
 .link-inline:hover::after {
   transform: scaleX(1);
   transform-origin: bottom left;
 }
 
-
 /* --- FORM INPUTS --- */
 .form-group label {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-main);
-    margin-bottom: 0.5rem;
-  }
-  
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
 .form-group input {
-    width: 100%;
-    padding: 0.875rem 1rem;
-    border: 2px solid transparent;
-    background-color: #f2f4f8; /* Input nền xám nhẹ */
-    border-radius: var(--radius-sm);
-    font-size: 1rem;
-    color: var(--text-main);
-    transition: all 0.2s;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid transparent;
+  background-color: #f2f4f8; /* Input nền xám nhẹ */
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  color: var(--text-main);
+  transition: all 0.2s;
 }
 
 .form-group input::placeholder {
-    color: #a8b0b9;
+  color: #a8b0b9;
 }
 
 /* Hiệu ứng focus input hiện đại */
 .form-group input:focus {
-    outline: none;
-    background-color: var(--bg-surface);
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px var(--primary-light);
+  outline: none;
+  background-color: var(--bg-surface);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px var(--primary-light);
 }
 
 /* --- AUTH PAGES (Login / Register / 404) --- */
@@ -200,7 +221,7 @@ button {
   box-shadow: var(--shadow-lg); /* Bóng đổ sâu hơn */
   width: 100%;
   max-width: 480px;
-  border: 1px solid rgba(255,255,255,0.5); /* Viền nhẹ tạo cảm giác kính */
+  border: 1px solid rgba(255, 255, 255, 0.5); /* Viền nhẹ tạo cảm giác kính */
 }
 
 .auth-title {
@@ -219,14 +240,15 @@ button {
   margin-bottom: 2.5rem;
 }
 
-.auth-error, .auth-success {
-    padding: 1rem;
-    border-radius: var(--radius-sm);
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
+.auth-error,
+.auth-success {
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
 }
 
 .auth-error {
@@ -292,7 +314,7 @@ button {
 .dash-header {
   background-color: rgba(255, 255, 255, 0.8); /* Nền bán trong suốt */
   backdrop-filter: blur(12px); /* Hiệu ứng kính mờ (Glassmorphism) */
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   padding: 0 2.5rem;
   height: var(--header-height);
   display: flex;
@@ -310,7 +332,11 @@ button {
 }
 
 .dash-logo-mark {
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-dark)
+  );
   color: white;
   font-weight: 900;
   padding: 0.4rem 0.8rem;
@@ -344,22 +370,22 @@ button {
 }
 /* Hiệu ứng chấm tròn dưới chân link khi hover */
 .nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 6px;
-    height: 6px;
-    background-color: var(--primary-color);
-    border-radius: 50%;
-    transform: translateX(-50%) scale(0);
-    transition: transform 0.2s ease-in-out;
-    opacity: 0;
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  transform: translateX(-50%) scale(0);
+  transition: transform 0.2s ease-in-out;
+  opacity: 0;
 }
 
 .nav-link:hover::after {
-    transform: translateX(-50%) scale(1);
-    opacity: 1;
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
 }
 
 .dash-main {
@@ -388,14 +414,17 @@ button {
 
 .dash-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); /* Card rộng hơn chút */
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(340px, 1fr)
+  ); /* Card rộng hơn chút */
   gap: 2rem;
 }
 
 /* Card trong Dashboard sinh động hơn */
 .dash-card {
   background: var(--bg-surface);
-  border: 1px solid rgba(0,0,0,0.04);
+  border: 1px solid rgba(0, 0, 0, 0.04);
   border-radius: var(--radius-md);
   padding: 2rem;
   box-shadow: var(--shadow-sm);
@@ -409,16 +438,16 @@ button {
 
 /* Đường viền màu trên cùng của card khi hover */
 .dash-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease-in-out;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease-in-out;
 }
 
 .dash-card:hover {
@@ -428,7 +457,7 @@ button {
 }
 
 .dash-card:hover::before {
-    transform: scaleX(1);
+  transform: scaleX(1);
 }
 
 .dash-card h3 {
@@ -449,18 +478,18 @@ button {
 
 /* --- PUBLIC PORTAL HOMEPAGE (MÀU GIỐNG UTH) --- */
 :root {
-  --primary-color: #008689;        /* xanh ngọc UTH */
-  --primary-dark: #006B6D;         /* xanh đậm */
-  --primary-light: #C7F3F4;        /* xanh nhạt */
-  --accent-color: #0F62FE;         /* xanh lam điểm nhấn */
+  --primary-color: #008689; /* xanh ngọc UTH */
+  --primary-dark: #006b6d; /* xanh đậm */
+  --primary-light: #c7f3f4; /* xanh nhạt */
+  --accent-color: #0f62fe; /* xanh lam điểm nhấn */
 
-  --bg-body: #ECF7F8;              /* nền tổng thể */
-  --bg-surface: #FFFFFF;           /* card, box */
-  --bg-subtle: #F4FBFC;            /* footer */
+  --bg-body: #ecf7f8; /* nền tổng thể */
+  --bg-surface: #ffffff; /* card, box */
+  --bg-subtle: #f4fbfc; /* footer */
 
-  --text-main: #003234;            /* chữ đậm */
-  --text-muted: #577071;           /* chữ mô tả */
-  --text-light: #7FAAAA;           /* chữ nhẹ */
+  --text-main: #003234; /* chữ đậm */
+  --text-muted: #577071; /* chữ mô tả */
+  --text-light: #7faaaa; /* chữ nhẹ */
 
   --radius-sm: 8px;
   --radius-md: 16px;
@@ -483,7 +512,93 @@ button {
   padding: 1.5rem 3rem;
   max-width: 1400px;
   margin: 0 auto;
-  background: transparent; 
+  background: transparent;
+}
+/* =======================================================================
+   CODE CUỐI CÙNG: KHUNG BỌC HEADER GLASSMORPHISM XANH NGỌC (FIXED)
+   ======================================================================= */
+
+.portal-header-wrapper {
+  /* Vị trí mặc định: Cuộn cùng với trang */
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  /* Nền Xanh Ngọc Nhạt Glassmorphism */
+  background-color: rgba(
+    199,
+    243,
+    244,
+    0.75
+  ); /* MÀU XANH NGỌC NHẠT TRONG SUỐT */
+  backdrop-filter: blur(15px); /* Hiệu ứng kính mờ */
+
+  /* Bo cong 4 góc lớn */
+  border-radius: 2.5rem;
+
+  /* Viền và Đổ bóng */
+  border: 1px solid rgba(0, 134, 137, 0.35);
+  box-shadow: 0 10px 20px rgba(0, 134, 137, 0.1),
+    0 30px 60px rgba(0, 134, 137, 0.25);
+
+  z-index: 10;
+  margin-bottom: 3rem;
+  padding: 0;
+}
+
+/* Điều chỉnh header con để nó chứa padding */
+.portal-header {
+  padding: 1.5rem 3rem;
+  margin: 0 auto;
+  background: transparent;
+}
+
+/* =======================================================================
+   KHẮC PHỤC: NÚT ĐĂNG NHẬP VÀ HIỆU ỨNG ĐỘNG
+   ======================================================================= */
+
+/* Định nghĩa ban đầu cho link "Đăng nhập" */
+.portal-nav .nav-link {
+  color: var(--text-main); /* Màu chữ đậm nhất */
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  /* 🛑 CỰC KỲ QUAN TRỌNG: Thêm transition để hiệu ứng mượt mà */
+  transition: all 0.2s ease-in-out;
+  /* Thêm shadow nhẹ ban đầu để nút trông nổi hơn trên nền Glassmorphism */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Hiệu ứng khi rê chuột vào (Hover) */
+.portal-nav .nav-link:hover {
+  color: var(--primary-dark);
+
+  /* 🛑 HIỆU ỨNG ĐỘNG: Nổi lên 2px */
+  transform: translateY(-2px);
+
+  /* 🛑 HIỆU ỨNG NỀN: Đổi sang nền xanh nhạt đặc để nổi bật trên nền trong suốt */
+  background-color: var(--primary-light);
+
+  /* Đổ bóng mạnh hơn khi hover */
+  box-shadow: 0 4px 10px rgba(0, 134, 137, 0.15);
+}
+
+/* Đảm bảo link Đăng ký (primary) không bị ảnh hưởng */
+.nav-link-primary {
+  color: white !important;
+  padding: 0.75rem 1.5rem;
+}
+
+/* Cần điều chỉnh portal-header để không bị ảnh hưởng bởi padding */
+.portal-header {
+  /* Giữ nguyên các thuộc tính cũ... */
+  /* backdrop-filter, padding, max-width, margin-left, margin-right... */
+
+  /* Đảm bảo header nằm gọn trong wrapper */
+  background: transparent; /* Xóa background cũ nếu có */
+  /* Có thể giảm padding ngang nếu muốn logo nằm sát cạnh hơn */
+  padding: 1.5rem 3rem 2rem; /* Tăng padding dưới một chút cho đẹp */
 }
 
 .portal-logo {
@@ -528,7 +643,11 @@ button {
 }
 
 .nav-link-primary {
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-dark)
+  );
   color: white !important;
   padding: 0.75rem 1.5rem;
   border-radius: 2rem;
@@ -553,16 +672,16 @@ button {
 }
 
 .portal-hero::before {
-    content: '';
-    position: absolute;
-    top: -20%;
-    right: -10%;
-    width: 60%;
-    height: 120%;
-    background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
-    opacity: 0.6;
-    z-index: -1;
-    pointer-events: none;
+  content: "";
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 60%;
+  height: 120%;
+  background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
+  opacity: 0.6;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .portal-badge {
@@ -588,11 +707,15 @@ button {
 }
 
 .portal-title span {
-    color: var(--primary-color);
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+  color: var(--primary-color);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--accent-color)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .portal-description {
@@ -608,16 +731,17 @@ button {
   gap: 1.5rem;
   margin-bottom: 2.5rem;
 }
-.portal-actions .btn-primary, .portal-actions .btn-secondary {
-    padding: 1rem 2rem;
-    font-size: 1rem;
+.portal-actions .btn-primary,
+.portal-actions .btn-secondary {
+  padding: 1rem 2rem;
+  font-size: 1rem;
 }
 
 .portal-note {
   font-size: 0.9rem;
   color: var(--text-light);
   font-style: italic;
-  background-color: rgba(255,255,255,0.5);
+  background-color: rgba(255, 255, 255, 0.5);
   padding: 0.75rem 1rem;
   border-radius: var(--radius-sm);
   display: inline-block;
@@ -634,12 +758,12 @@ button {
   padding: 2rem;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
-  border: 1px solid rgba(255,255,255,0.8);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   transition: all 0.3s ease;
 }
 .portal-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: var(--shadow-lg);
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: var(--shadow-lg);
 }
 
 .portal-card-label {
@@ -693,14 +817,14 @@ button {
 }
 
 .portal-timeline::before {
-    content: '';
-    position: absolute;
-    top: 2.5rem;
-    left: 10%;
-    width: 80%;
-    height: 2px;
-    background-color: var(--primary-light);
-    z-index: 0;
+  content: "";
+  position: absolute;
+  top: 2.5rem;
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  background-color: var(--primary-light);
+  z-index: 0;
 }
 
 .portal-timeline-item {
@@ -712,7 +836,11 @@ button {
 .portal-timeline-badge {
   width: 5rem;
   height: 5rem;
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-dark)
+  );
   color: white;
   border-radius: 50%;
   display: flex;
@@ -726,19 +854,19 @@ button {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .portal-timeline-item:hover .portal-timeline-badge {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 .portal-timeline-content h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
 }
 
 .portal-timeline-content p {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    line-height: 1.5;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .portal-footer {
@@ -750,69 +878,72 @@ button {
   font-weight: 500;
 }
 
-
 /* Responsive Adjustment */
 @media (max-width: 992px) {
-    .portal-hero {
-      grid-template-columns: 1fr;
-      text-align: center;
-      padding: 4rem 2rem;
-      gap: 3rem;
-    }
-    .portal-hero::before {
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        background: radial-gradient(circle at center, var(--primary-light) 0%, transparent 60%);
-    }
-    .portal-title {
-        font-size: 2.75rem;
-    }
-    .portal-description {
-        margin-left: auto;
-        margin-right: auto;
-    }
-    .portal-actions {
-      justify-content: center;
-    }
-    .portal-card-grid {
-        max-width: 600px;
-        margin: 0 auto;
-    }
-    .portal-timeline {
-      grid-template-columns: 1fr;
-      text-align: left;
-      padding-left: 2rem;
-      gap: 2rem;
-    }
-    .portal-timeline::before {
-        top: 0;
-        left: 2.4rem;
-        width: 2px;
-        height: 100%;
-    }
-    .portal-timeline-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 1.5rem;
-        text-align: left;
-    }
-    .portal-timeline-badge {
-      margin: 0;
-      width: 4rem;
-      height: 4rem;
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-    .dash-header {
-        padding: 0 1.5rem;
-    }
-    .dash-main {
-        padding: 2rem 1.5rem;
-    }
+  .portal-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 4rem 2rem;
+    gap: 3rem;
   }
-  /* ===========================
+  .portal-hero::before {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: radial-gradient(
+      circle at center,
+      var(--primary-light) 0%,
+      transparent 60%
+    );
+  }
+  .portal-title {
+    font-size: 2.75rem;
+  }
+  .portal-description {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .portal-actions {
+    justify-content: center;
+  }
+  .portal-card-grid {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .portal-timeline {
+    grid-template-columns: 1fr;
+    text-align: left;
+    padding-left: 2rem;
+    gap: 2rem;
+  }
+  .portal-timeline::before {
+    top: 0;
+    left: 2.4rem;
+    width: 2px;
+    height: 100%;
+  }
+  .portal-timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    text-align: left;
+  }
+  .portal-timeline-badge {
+    margin: 0;
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+  .dash-header {
+    padding: 0 1.5rem;
+  }
+  .dash-main {
+    padding: 2rem 1.5rem;
+  }
+}
+/* ===========================
    DATA PAGES (list + form)
    =========================== */
 
@@ -1037,7 +1168,6 @@ button {
   opacity: 0.9;
 }
 
-
 /* ===== TIMELINE WITH CENTER TREE ===== */
 .timeline-container {
   width: 90%;
@@ -1094,7 +1224,6 @@ button {
   z-index: 20;
   box-shadow: 0px 3px 10px rgba(0, 134, 137, 0.35);
 }
-
 
 /* Card */
 .timeline-card {
