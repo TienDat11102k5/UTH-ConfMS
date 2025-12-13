@@ -45,10 +45,15 @@ services:
       FIREBASE_PROJECT_ID: uth-confms
       FIREBASE_CREDENTIALS: /run/secrets/firebase-sa.json
 
+      # Upload configuration
+      UPLOAD_DIR: /app/uploads
+      APP_BASE_URL: http://localhost:8080
+
       # React dev
       CORS_ALLOWED_ORIGINS: http://localhost:5173
     volumes:
-      - ../uth-confms-firebase-sa.json:/run/secrets/firebase-sa.json:ro
+      - ../backend/uth-confms-firebase-sa.json/uth-confms-firebase-sa.json:/run/secrets/firebase-sa.json:ro
+      - uth_uploads:/app/uploads
 
   ai-service:
     build: ../ai-service
@@ -58,3 +63,4 @@ services:
 
 volumes:
   uth_pgdata:
+  uth_uploads:
