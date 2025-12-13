@@ -1,6 +1,5 @@
 package edu.uth.backend.user.dto;
 
-import edu.uth.backend.entity.Role;
 import edu.uth.backend.entity.User;
 import java.time.LocalDate;
 
