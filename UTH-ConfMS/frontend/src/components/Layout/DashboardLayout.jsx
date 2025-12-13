@@ -1,6 +1,7 @@
 // src/components/Layout/DashboardLayout.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import UserProfileDropdown from "../UserProfileDropdown";
 
 const DashboardLayout = ({ roleLabel, title, subtitle, children }) => {
   return (
@@ -21,9 +22,7 @@ const DashboardLayout = ({ roleLabel, title, subtitle, children }) => {
           <Link to="/" className="nav-link">
             Cổng thông tin
           </Link>
-          <Link to="/login" className="nav-link">
-            Đăng xuất
-          </Link>
+          <UserProfileDropdown />
         </nav>
       </header>
 

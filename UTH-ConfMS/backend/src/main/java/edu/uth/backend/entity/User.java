@@ -37,6 +37,15 @@ public class User {
   @Column(name = "avatar_url", length = 500)
   private String avatarUrl;
 
+  @Column(length = 20)
+  private String phone;
+
+  @Column(length = 100)
+  private String country;
+
+  @Column(length = 1000)
+  private String bio;
+
   @Column(nullable = false)
   private boolean enabled = true;
 
@@ -70,6 +79,15 @@ public class User {
 
   public String getAvatarUrl() { return avatarUrl; }
   public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
+
+  public String getPhone() { return phone; }
+  public void setPhone(String phone) { this.phone = phone; }
+
+  public String getCountry() { return country; }
+  public void setCountry(String country) { this.country = country; }
+
+  public String getBio() { return bio; }
+  public void setBio(String bio) { this.bio = bio; }
 
   public boolean isEnabled() { return enabled; }
   public void setEnabled(boolean enabled) { this.enabled = enabled; }

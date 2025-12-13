@@ -6,6 +6,8 @@ import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
+import UserProfilePage from "./pages/UserProfilePage.jsx";
+import SettingsPage from "./pages/SettingsPage.jsx";
 
 import NotFoundPage from "./pages/NotFound.jsx";
 import UnauthorizedPage from "./pages/Unauthorized.jsx";
@@ -34,6 +36,10 @@ const App = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        {/* User Profile */}
+        <Route path="/profile" element={<UserProfilePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
 
         {/* Author */}
         <Route path="/author" element={<AuthorDashboard />} />
