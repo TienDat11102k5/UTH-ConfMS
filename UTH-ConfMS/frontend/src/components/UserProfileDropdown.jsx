@@ -1,0 +1,165 @@
+// src/components/UserProfileDropdown.jsx
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { getCurrentUser, clearAuth } from "../auth";
+import "../styles/UserProfileDropdown.css";
+
+const UserProfileDropdown = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+
+  const user = getCurrentUser();
+
+  // Đóng dropdown khi click bên ngoài
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const handleLogout = () => {
+    clearAuth();
+    navigate("/login", { replace: true });
+  };
+
+  if (!user) {
+    return null;
+  }
+
+  // Lấy thông tin hiển thị
+  const displayName = user.fullName || user.name || user.email || "User";
+  const userEmail = user.email || "";
+  const userAvatar = user.photoURL || user.avatarUrl || user.avatar || null;
+  const userRole = user.role || user.primaryRole || "";
+
+  // Tạo avatar initials nếu không có ảnh
+  const getInitials = (name) => {
+    if (!name) return "U";
+    const parts = name.trim().split(" ");
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
+
+  return (
+    <div className="user-profile-dropdown" ref={dropdownRef}>
+      <button
+        className="profile-trigger"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="User menu"
+      >
+        {userAvatar ? (
+          <img src={userAvatar} alt={displayName} className="profile-avatar" />
+        ) : (
+          <div className="profile-avatar-placeholder">
+            {getInitials(displayName)}
+          </div>
+        )}
+        <span className="profile-name">{displayName}</span>
+        <svg
+          className={`dropdown-arrow ${isOpen ? "open" : ""}`}
+          width="12"
+          height="8"
+          viewBox="0 0 12 8"
+          fill="none"
+        >
+          <path
+            d="M1 1.5L6 6.5L11 1.5"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className="dropdown-menu">
+          <div className="dropdown-header">
+            <div className="dropdown-user-info">
+              {userAvatar ? (
+                <img
+                  src={userAvatar}
+                  alt={displayName}
+                  className="dropdown-avatar"
+                />
+              ) : (
+                <div className="dropdown-avatar-placeholder">
+                  {getInitials(displayName)}
+                </div>
+              )}
+              <div className="dropdown-user-details">
+                <div className="dropdown-user-name">{displayName}</div>
+                <div className="dropdown-user-email">{userEmail}</div>
+                {userRole && (
+                  <div className="dropdown-user-role">
+                    {userRole.replace("ROLE_", "")}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="dropdown-divider"></div>
+
+          <Link
+            to="/profile"
+            className="dropdown-item"
+            onClick={() => setIsOpen(false)}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M8 8C10.21 8 12 6.21 12 4C12 1.79 10.21 0 8 0C5.79 0 4 1.79 4 4C4 6.21 5.79 8 8 8ZM8 10C5.33 10 0 11.34 0 14V16H16V14C16 11.34 10.67 10 8 10Z"
+                fill="currentColor"
+              />
+            </svg>
+            Thông tin cá nhân
+          </Link>
+
+          <Link
+            to="/settings"
+            className="dropdown-item"
+            onClick={() => setIsOpen(false)}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M13.5 8C13.5 8.17 13.49 8.34 13.47 8.51L15.12 9.77C15.26 9.88 15.3 10.07 15.22 10.24L13.65 13.03C13.57 13.2 13.39 13.26 13.22 13.2L11.27 12.43C10.89 12.72 10.47 12.96 10.02 13.14L9.72 15.23C9.69 15.41 9.54 15.55 9.35 15.55H6.22C6.03 15.55 5.88 15.41 5.85 15.23L5.55 13.14C5.1 12.96 4.68 12.72 4.3 12.43L2.35 13.2C2.18 13.26 2 13.2 1.92 13.03L0.35 10.24C0.27 10.07 0.31 9.88 0.45 9.77L2.1 8.51C2.08 8.34 2.07 8.17 2.07 8C2.07 7.83 2.08 7.66 2.1 7.49L0.45 6.23C0.31 6.12 0.27 5.93 0.35 5.76L1.92 2.97C2 2.8 2.18 2.74 2.35 2.8L4.3 3.57C4.68 3.28 5.1 3.04 5.55 2.86L5.85 0.77C5.88 0.59 6.03 0.45 6.22 0.45H9.35C9.54 0.45 9.69 0.59 9.72 0.77L10.02 2.86C10.47 3.04 10.89 3.28 11.27 3.57L13.22 2.8C13.39 2.74 13.57 2.8 13.65 2.97L15.22 5.76C15.3 5.93 15.26 6.12 15.12 6.23L13.47 7.49C13.49 7.66 13.5 7.83 13.5 8ZM7.78 5.5C6.4 5.5 5.28 6.62 5.28 8C5.28 9.38 6.4 10.5 7.78 10.5C9.16 10.5 10.28 9.38 10.28 8C10.28 6.62 9.16 5.5 7.78 5.5Z"
+                fill="currentColor"
+              />
+            </svg>
+            Cài đặt
+          </Link>
+
+          <div className="dropdown-divider"></div>
+
+          <button className="dropdown-item" onClick={handleLogout}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M6 14H3C2.73478 14 2.48043 13.8946 2.29289 13.7071C2.10536 13.5196 2 13.2652 2 13V3C2 2.73478 2.10536 2.48043 2.29289 2.29289C2.48043 2.10536 2.73478 2 3 2H6M11 11L14 8L11 5M14 8H6"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            Đăng xuất
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default UserProfileDropdown;
