@@ -29,7 +29,7 @@ public final class ResetTokenUtil {
       MessageDigest md = MessageDigest.getInstance("SHA-256");
       byte[] digest = md.digest(raw.getBytes(StandardCharsets.UTF_8));
       StringBuilder sb = new StringBuilder(digest.length * 2);
-      for (byte b : digest) sb.append(String.format("%02x", b));
+      for (byte b : digest) sb.append("%02x".formatted(b));
       return sb.toString();
     } catch (Exception e) {
       throw new IllegalStateException("Không thể hash token", e);

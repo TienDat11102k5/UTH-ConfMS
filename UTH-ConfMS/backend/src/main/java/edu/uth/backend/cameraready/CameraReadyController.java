@@ -19,7 +19,7 @@ public class CameraReadyController {
     @PostMapping(value = "/{paperId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> submitCameraReady(
             @PathVariable Long paperId,
-            @RequestParam("file") MultipartFile file
+            @RequestParam MultipartFile file
     ) {
         try {
             return ResponseEntity.ok(cameraReadyService.submitCameraReady(paperId, file));

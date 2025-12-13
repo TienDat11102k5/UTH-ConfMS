@@ -7,69 +7,78 @@ import "../styles/UserProfilePage.css";
 
 const UserProfilePage = () => {
   const navigate = useNavigate();
-  const currentUser = getCurrentUser();
-
+  const [currentUserState, setCurrentUserState] = useState(getCurrentUser()); // Thêm state cho currentUser
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
-
+  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
+    dateOfBirth: "",
     email: "",
     phone: "",
     affiliation: "",
-    country: "",
+    gender: "",
+    address: "",
     bio: "",
   });
-
+  const [originalFormData, setOriginalFormData] = useState({});
   const [avatarPreview, setAvatarPreview] = useState(null);
 
   useEffect(() => {
-    if (!currentUser) {
+    if (!currentUserState) {
       navigate("/login");
       return;
     }
-
     // Khởi tạo form với dữ liệu user hiện tại
-    setFormData({
-      fullName: currentUser.fullName || currentUser.name || "",
-      email: currentUser.email || "",
-      phone: currentUser.phone || "",
-      affiliation: currentUser.affiliation || "",
-      country: currentUser.country || "",
-      bio: currentUser.bio || "",
-    });
+    const userData = {
+      fullName: currentUserState.fullName || currentUserState.name || "",
+      dateOfBirth: currentUserState.dateOfBirth || "",
+      email: currentUserState.email || "",
+      phone: currentUserState.phone || "",
+      affiliation: currentUserState.affiliation || "",
+      gender: currentUserState.gender || "",
+      address: currentUserState.address || "",
+      bio: currentUserState.bio || "",
+    };
 
+    setFormData(userData);
+    setOriginalFormData(userData);
     setAvatarPreview(
-      currentUser.photoURL || currentUser.avatarUrl || currentUser.avatar
+      currentUserState.photoURL || currentUserState.avatarUrl || currentUserState.avatar
     );
-  }, [currentUser, navigate]);
+  }, [currentUserState, navigate]); // Depend vào currentUserState (state ổn định)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handlePhoneChange = (e) => {
+    const value = e.target.value;
+    // Chỉ cho phép nhập số và tối đa 10 ký tự
+    const phoneRegex = /^[0-9]*$/;
+    if (phoneRegex.test(value) && value.length <= 10) {
+      setFormData((prev) => ({ ...prev, phone: value }));
+    }
+  };
+
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     // Kiểm tra file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       setError("Kích thước ảnh không được vượt quá 5MB");
       return;
     }
-
     // Kiểm tra file type
     if (!file.type.startsWith("image/")) {
       setError("Vui lòng chọn file ảnh");
       return;
     }
-
     setUploadingAvatar(true);
     setError("");
-
     try {
       // Preview local
       const reader = new FileReader();
@@ -77,21 +86,18 @@ const UserProfilePage = () => {
         setAvatarPreview(reader.result);
       };
       reader.readAsDataURL(file);
-
       // Upload lên server
       const formData = new FormData();
       formData.append("avatar", file);
-
       const res = await apiClient.post("/user/upload-avatar", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      // Cập nhật user trong localStorage
-      const updatedUser = { ...currentUser, ...res.data };
+      // Cập nhật user trong localStorage và state
+      const updatedUser = { ...currentUserState, ...res.data };
       setCurrentUser(updatedUser, { remember: true });
-
+      setCurrentUserState(updatedUser); // Update state để re-render đúng
       setSuccess("Cập nhật avatar thành công!");
     } catch (err) {
       setError(
@@ -99,11 +105,27 @@ const UserProfilePage = () => {
       );
       // Rollback preview
       setAvatarPreview(
-        currentUser.photoURL || currentUser.avatarUrl || currentUser.avatar
+        currentUserState.photoURL || currentUserState.avatarUrl || currentUserState.avatar
       );
     } finally {
       setUploadingAvatar(false);
     }
+  };
+
+  const handleEditClick = () => {
+    console.log("handleEditClick called - isEditing before:", isEditing);
+    setIsEditing(true);
+    console.log("handleEditClick - setting isEditing to true");
+    setError("");
+    setSuccess("");
+  };
+
+  const handleCancelEdit = () => {
+    console.log("handleCancelEdit called - isEditing before:", isEditing);
+    setIsEditing(false);
+    setFormData(originalFormData);
+    setError("");
+    setSuccess("");
   };
 
   const handleSubmit = async (e) => {
@@ -111,28 +133,49 @@ const UserProfilePage = () => {
     setError("");
     setSuccess("");
     setLoading(true);
-
     try {
+      console.log("Submitting profile update:", formData);
       const res = await apiClient.put("/user/profile", formData);
-
-      // Cập nhật user trong localStorage
-      const updatedUser = { ...currentUser, ...res.data };
+      console.log("Profile update response:", res.data);
+      // Cập nhật user trong localStorage và state
+      const updatedUser = { ...currentUserState, ...res.data };
       setCurrentUser(updatedUser, { remember: true });
-
+      setCurrentUserState(updatedUser); // Update state để re-render đúng
+      // Cập nhật original data và thoát edit mode
+      setOriginalFormData(formData);
+      setIsEditing(false);
       setSuccess("Cập nhật thông tin thành công!");
+
+      // Scroll to top to show success message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
-      setError(
-        err?.response?.data?.message ||
-          "Không thể cập nhật thông tin. Vui lòng thử lại."
-      );
+      console.error("Profile update error:", err);
+      console.error("Error response:", err?.response?.data);
+
+      let errorMessage = "Không thể cập nhật thông tin. Vui lòng thử lại.";
+
+      if (err?.response?.status === 401) {
+        errorMessage = "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.";
+      } else if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err?.message) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
+
+      // Scroll to top to show error message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setLoading(false);
     }
   };
 
-  if (!currentUser) {
+  if (!currentUserState) {
     return null;
   }
+
+  // console.log("Rendering - isEditing:", isEditing); // Comment để tránh spam console
 
   const getInitials = (name) => {
     if (!name) return "U";
@@ -152,10 +195,8 @@ const UserProfilePage = () => {
             ← Quay lại
           </button>
         </div>
-
         {error && <div className="alert alert-error">{error}</div>}
         {success && <div className="alert alert-success">{success}</div>}
-
         <div className="profile-content">
           {/* Avatar Section */}
           <div className="profile-avatar-section">
@@ -191,12 +232,22 @@ const UserProfilePage = () => {
               <p className="avatar-hint">JPG, PNG, GIF (tối đa 5MB)</p>
             </div>
           </div>
-
           {/* Profile Form */}
           <form className="profile-form" onSubmit={handleSubmit}>
             <div className="form-section">
-              <h2>Thông tin cơ bản</h2>
-
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h2>Thông tin cơ bản</h2>
+                {!isEditing && (
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    onClick={handleEditClick}
+                    style={{ padding: '8px 20px', fontSize: '14px' }}
+                  >
+                    ✏️ Chỉnh sửa
+                  </button>
+                )}
+              </div>
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="fullName">Họ và tên *</label>
@@ -207,89 +258,136 @@ const UserProfilePage = () => {
                     value={formData.fullName}
                     onChange={handleChange}
                     required
+                    disabled={!isEditing}
+                    style={isEditing ? { backgroundColor: 'white', cursor: 'text', opacity: 1 } : {}}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="email">Email *</label>
+                  <label htmlFor="dateOfBirth">Ngày tháng năm sinh</label>
                   <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
+                    id="dateOfBirth"
+                    name="dateOfBirth"
+                    type="date"
+                    value={formData.dateOfBirth || ""}
                     onChange={handleChange}
-                    required
-                    disabled
-                    title="Email không thể thay đổi"
+                    disabled={!isEditing}
+                    style={isEditing ? { backgroundColor: 'white', cursor: 'text', opacity: 1 } : {}}
                   />
                 </div>
               </div>
-
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="phone">Số điện thoại</label>
                   <input
                     id="phone"
                     name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="+84 xxx xxx xxx"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="^0[0-9]{9}$"
+                    value={formData.phone || ""}
+                    onChange={handlePhoneChange}
+                    placeholder="0xxxxxxxxx (10 số, bắt đầu bằng 0)"
+                    disabled={!isEditing}
+                    maxLength="10"
+                    title="Số điện thoại phải có 10 số và bắt đầu bằng số 0"
+                    style={isEditing ? { backgroundColor: 'white', cursor: 'text', opacity: 1 } : {}}
                   />
+                  {isEditing && formData.phone && formData.phone.length > 0 && (
+                    <small style={{ color: formData.phone.length === 10 && formData.phone.startsWith('0') ? '#16a34a' : '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+                      {!formData.phone.startsWith('0') ? '⚠️ Phải bắt đầu bằng số 0' : 
+                       formData.phone.length < 10 ? `⚠️ Còn ${10 - formData.phone.length} số nữa` : 
+                       '✓ Hợp lệ'}
+                    </small>
+                  )}
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="country">Quốc gia</label>
-                  <input
-                    id="country"
-                    name="country"
-                    type="text"
-                    value={formData.country}
+                  <label htmlFor="gender">Giới tính</label>
+                  <select
+                    id="gender"
+                    name="gender"
+                    value={formData.gender || ""}
                     onChange={handleChange}
-                    placeholder="Việt Nam"
-                  />
+                    disabled={!isEditing}
+                    style={isEditing ? { backgroundColor: 'white', cursor: 'pointer', opacity: 1 } : {}}
+                  >
+                    <option value="">-- Chọn giới tính --</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                  </select>
                 </div>
               </div>
-
+              <div className="form-group">
+                <label htmlFor="email">Email *</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  disabled
+                  title="Email không thể thay đổi"
+                />
+              </div>
               <div className="form-group">
                 <label htmlFor="affiliation">Cơ quan/Tổ chức</label>
                 <input
                   id="affiliation"
                   name="affiliation"
                   type="text"
-                  value={formData.affiliation}
+                  value={formData.affiliation || ""}
                   onChange={handleChange}
                   placeholder="Trường Đại học, Công ty..."
+                  disabled={!isEditing}
+                  style={isEditing ? { backgroundColor: 'white', cursor: 'text', opacity: 1 } : {}}
                 />
               </div>
-
+              <div className="form-group">
+                <label htmlFor="address">Địa chỉ</label>
+                <input
+                  id="address"
+                  name="address"
+                  type="text"
+                  value={formData.address || ""}
+                  onChange={handleChange}
+                  placeholder="Địa chỉ liên hệ"
+                  disabled={!isEditing}
+                  style={isEditing ? { backgroundColor: 'white', cursor: 'text', opacity: 1 } : {}}
+                />
+              </div>
               <div className="form-group">
                 <label htmlFor="bio">Giới thiệu bản thân</label>
                 <textarea
                   id="bio"
                   name="bio"
                   rows="4"
-                  value={formData.bio}
+                  value={formData.bio || ""}
                   onChange={handleChange}
                   placeholder="Viết vài dòng về bản thân, lĩnh vực nghiên cứu..."
+                  disabled={!isEditing}
+                  style={isEditing ? { backgroundColor: 'white', cursor: 'text', opacity: 1 } : {}}
                 />
               </div>
             </div>
-
-            <div className="form-actions">
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => navigate(-1)}
-              >
-                Hủy
-              </button>
-              <button type="submit" className="btn-primary" disabled={loading}>
-                {loading ? "Đang lưu..." : "Lưu thay đổi"}
-              </button>
-            </div>
+            {isEditing && (
+              <div className="form-actions">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={handleCancelEdit}
+                  disabled={loading}
+                >
+                  Hủy
+                </button>
+                <button type="submit" className="btn-primary" disabled={loading}>
+                  {loading ? "Đang lưu..." : "Lưu thay đổi"}
+                </button>
+              </div>
+            )}
           </form>
-
           {/* Account Info */}
           <div className="account-info-section">
             <h2>Thông tin tài khoản</h2>
@@ -297,18 +395,18 @@ const UserProfilePage = () => {
               <div className="info-item">
                 <span className="info-label">Vai trò:</span>
                 <span className="info-value">
-                  {currentUser.role?.replace("ROLE_", "") || "N/A"}
+                  {currentUserState.role?.replace("ROLE_", "") || "N/A"}
                 </span>
               </div>
               <div className="info-item">
                 <span className="info-label">Trạng thái:</span>
                 <span className="info-value status-active">Hoạt động</span>
               </div>
-              {currentUser.createdAt && (
+              {currentUserState.createdAt && (
                 <div className="info-item">
                   <span className="info-label">Ngày tạo:</span>
                   <span className="info-value">
-                    {new Date(currentUser.createdAt).toLocaleDateString("vi-VN")}
+                    {new Date(currentUserState.createdAt).toLocaleDateString("vi-VN")}
                   </span>
                 </div>
               )}

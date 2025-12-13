@@ -43,6 +43,15 @@ public class User {
   @Column(length = 100)
   private String country;
 
+  @Column(length = 10)
+  private String gender;
+
+  @Column(length = 500)
+  private String address;
+
+  @Column(name = "date_of_birth")
+  private java.time.LocalDate dateOfBirth;
+
   @Column(length = 1000)
   private String bio;
 
@@ -85,6 +94,15 @@ public class User {
 
   public String getCountry() { return country; }
   public void setCountry(String country) { this.country = country; }
+
+  public String getGender() { return gender; }
+  public void setGender(String gender) { this.gender = gender; }
+
+  public String getAddress() { return address; }
+  public void setAddress(String address) { this.address = address; }
+
+  public java.time.LocalDate getDateOfBirth() { return dateOfBirth; }
+  public void setDateOfBirth(java.time.LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
 
   public String getBio() { return bio; }
   public void setBio(String bio) { this.bio = bio; }
