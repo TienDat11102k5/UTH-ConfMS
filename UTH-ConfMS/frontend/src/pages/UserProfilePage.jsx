@@ -46,7 +46,9 @@ const UserProfilePage = () => {
     setFormData(userData);
     setOriginalFormData(userData);
     setAvatarPreview(
-      currentUserState.photoURL || currentUserState.avatarUrl || currentUserState.avatar
+      currentUserState.photoURL ||
+        currentUserState.avatarUrl ||
+        currentUserState.avatar
     );
   }, [currentUserState, navigate]); // Depend vào currentUserState (state ổn định)
 
@@ -101,11 +103,14 @@ const UserProfilePage = () => {
       setSuccess("Cập nhật avatar thành công!");
     } catch (err) {
       setError(
-        err?.response?.data?.message || "Không thể upload avatar. Vui lòng thử lại."
+        err?.response?.data?.message ||
+          "Không thể upload avatar. Vui lòng thử lại."
       );
       // Rollback preview
       setAvatarPreview(
-        currentUserState.photoURL || currentUserState.avatarUrl || currentUserState.avatar
+        currentUserState.photoURL ||
+          currentUserState.avatarUrl ||
+          currentUserState.avatar
       );
     } finally {
       setUploadingAvatar(false);
@@ -133,39 +138,44 @@ const UserProfilePage = () => {
     setError("");
     setSuccess("");
     setLoading(true);
+
     try {
-      console.log("Submitting profile update:", formData);
-      const res = await apiClient.put("/user/profile", formData);
-      console.log("Profile update response:", res.data);
-      // Cập nhật user trong localStorage và state
+      // Tạo payload mới (KHÔNG gửi field rỗng)
+      const payload = { ...formData };
+
+      if (!payload.phone || payload.phone.trim() === "") {
+        delete payload.phone;
+      }
+
+      if (!payload.dateOfBirth) {
+        delete payload.dateOfBirth;
+      }
+
+      console.log("Payload gửi lên:", payload);
+
+      const res = await apiClient.put("/user/profile", payload);
+
       const updatedUser = { ...currentUserState, ...res.data };
       setCurrentUser(updatedUser, { remember: true });
-      setCurrentUserState(updatedUser); // Update state để re-render đúng
-      // Cập nhật original data và thoát edit mode
-      setOriginalFormData(formData);
+      setCurrentUserState(updatedUser);
+
+      setOriginalFormData(payload);
       setIsEditing(false);
       setSuccess("Cập nhật thông tin thành công!");
 
-      // Scroll to top to show success message
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error("Profile update error:", err);
-      console.error("Error response:", err?.response?.data);
 
       let errorMessage = "Không thể cập nhật thông tin. Vui lòng thử lại.";
-
       if (err?.response?.status === 401) {
         errorMessage = "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.";
       } else if (err?.response?.data?.message) {
         errorMessage = err.response.data.message;
-      } else if (err?.message) {
-        errorMessage = err.message;
       }
 
       setError(errorMessage);
-
-      // Scroll to top to show error message
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
       setLoading(false);
     }
@@ -235,14 +245,20 @@ const UserProfilePage = () => {
           {/* Profile Form */}
           <form className="profile-form" onSubmit={handleSubmit}>
             <div className="form-section">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
                 <h2>Thông tin cơ bản</h2>
                 {!isEditing && (
                   <button
                     type="button"
                     className="btn-primary"
                     onClick={handleEditClick}
-                    style={{ padding: '8px 20px', fontSize: '14px' }}
+                    style={{ padding: "8px 20px", fontSize: "14px" }}
                   >
                     ✏️ Chỉnh sửa
                   </button>
@@ -259,7 +275,15 @@ const UserProfilePage = () => {
                     onChange={handleChange}
                     required
                     disabled={!isEditing}
-                    style={isEditing ? { backgroundColor: 'white', cursor: 'text', opacity: 1 } : {}}
+                    style={
+                      isEditing
+                        ? {
+                            backgroundColor: "white",
+                            cursor: "text",
+                            opacity: 1,
+                          }
+                        : {}
+                    }
                   />
                 </div>
 
@@ -272,7 +296,15 @@ const UserProfilePage = () => {
                     value={formData.dateOfBirth || ""}
                     onChange={handleChange}
                     disabled={!isEditing}
-                    style={isEditing ? { backgroundColor: 'white', cursor: 'text', opacity: 1 } : {}}
+                    style={
+                      isEditing
+                        ? {
+                            backgroundColor: "white",
+                            cursor: "text",
+                            opacity: 1,
+                          }
+                        : {}
+                    }
                   />
                 </div>
               </div>
@@ -291,13 +323,33 @@ const UserProfilePage = () => {
                     disabled={!isEditing}
                     maxLength="10"
                     title="Số điện thoại phải có 10 số và bắt đầu bằng số 0"
-                    style={isEditing ? { backgroundColor: 'white', cursor: 'text', opacity: 1 } : {}}
+                    style={
+                      isEditing
+                        ? {
+                            backgroundColor: "white",
+                            cursor: "text",
+                            opacity: 1,
+                          }
+                        : {}
+                    }
                   />
                   {isEditing && formData.phone && formData.phone.length > 0 && (
-                    <small style={{ color: formData.phone.length === 10 && formData.phone.startsWith('0') ? '#16a34a' : '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-                      {!formData.phone.startsWith('0') ? '⚠️ Phải bắt đầu bằng số 0' : 
-                       formData.phone.length < 10 ? `⚠️ Còn ${10 - formData.phone.length} số nữa` : 
-                       '✓ Hợp lệ'}
+                    <small
+                      style={{
+                        color:
+                          formData.phone.length === 10 &&
+                          formData.phone.startsWith("0")
+                            ? "#16a34a"
+                            : "#dc2626",
+                        fontSize: "0.75rem",
+                        marginTop: "0.25rem",
+                      }}
+                    >
+                      {!formData.phone.startsWith("0")
+                        ? "⚠️ Phải bắt đầu bằng số 0"
+                        : formData.phone.length < 10
+                        ? `⚠️ Còn ${10 - formData.phone.length} số nữa`
+                        : "✓ Hợp lệ"}
                     </small>
                   )}
                 </div>
@@ -310,7 +362,15 @@ const UserProfilePage = () => {
                     value={formData.gender || ""}
                     onChange={handleChange}
                     disabled={!isEditing}
-                    style={isEditing ? { backgroundColor: 'white', cursor: 'pointer', opacity: 1 } : {}}
+                    style={
+                      isEditing
+                        ? {
+                            backgroundColor: "white",
+                            cursor: "pointer",
+                            opacity: 1,
+                          }
+                        : {}
+                    }
                   >
                     <option value="">-- Chọn giới tính --</option>
                     <option value="Nam">Nam</option>
@@ -342,7 +402,11 @@ const UserProfilePage = () => {
                   onChange={handleChange}
                   placeholder="Trường Đại học, Công ty..."
                   disabled={!isEditing}
-                  style={isEditing ? { backgroundColor: 'white', cursor: 'text', opacity: 1 } : {}}
+                  style={
+                    isEditing
+                      ? { backgroundColor: "white", cursor: "text", opacity: 1 }
+                      : {}
+                  }
                 />
               </div>
               <div className="form-group">
@@ -355,7 +419,11 @@ const UserProfilePage = () => {
                   onChange={handleChange}
                   placeholder="Địa chỉ liên hệ"
                   disabled={!isEditing}
-                  style={isEditing ? { backgroundColor: 'white', cursor: 'text', opacity: 1 } : {}}
+                  style={
+                    isEditing
+                      ? { backgroundColor: "white", cursor: "text", opacity: 1 }
+                      : {}
+                  }
                 />
               </div>
               <div className="form-group">
@@ -368,7 +436,11 @@ const UserProfilePage = () => {
                   onChange={handleChange}
                   placeholder="Viết vài dòng về bản thân, lĩnh vực nghiên cứu..."
                   disabled={!isEditing}
-                  style={isEditing ? { backgroundColor: 'white', cursor: 'text', opacity: 1 } : {}}
+                  style={
+                    isEditing
+                      ? { backgroundColor: "white", cursor: "text", opacity: 1 }
+                      : {}
+                  }
                 />
               </div>
             </div>
@@ -382,7 +454,11 @@ const UserProfilePage = () => {
                 >
                   Hủy
                 </button>
-                <button type="submit" className="btn-primary" disabled={loading}>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={loading}
+                >
                   {loading ? "Đang lưu..." : "Lưu thay đổi"}
                 </button>
               </div>
@@ -406,7 +482,9 @@ const UserProfilePage = () => {
                 <div className="info-item">
                   <span className="info-label">Ngày tạo:</span>
                   <span className="info-value">
-                    {new Date(currentUserState.createdAt).toLocaleDateString("vi-VN")}
+                    {new Date(currentUserState.createdAt).toLocaleDateString(
+                      "vi-VN"
+                    )}
                   </span>
                 </div>
               )}

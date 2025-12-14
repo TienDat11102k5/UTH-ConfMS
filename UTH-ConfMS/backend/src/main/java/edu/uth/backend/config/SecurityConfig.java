@@ -11,6 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.*;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.*;
 
@@ -46,6 +47,9 @@ public class SecurityConfig {
             ).permitAll()
             .anyRequest().authenticated()
         )
+        .headers(headers -> headers.addHeaderWriter(
+          new StaticHeadersWriter("Cross-Origin-Opener-Policy", "same-origin-allow-popups")
+        ))
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
@@ -70,9 +74,11 @@ public class SecurityConfig {
         .filter(s -> !s.isBlank())
         .toList();
 
+    // allow specific origins (or patterns) and common headers so browser preflight succeeds
     cfg.setAllowedOrigins(origins);
+    cfg.setAllowedOriginPatterns(origins);
     cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-    cfg.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+    cfg.setAllowedHeaders(List.of("*"));
     cfg.setExposedHeaders(List.of("Authorization"));
     cfg.setAllowCredentials(true);
 
