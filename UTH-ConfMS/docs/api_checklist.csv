@@ -1,0 +1,34 @@
+Task,Done (X),Status,Notes,Related Endpoint/File
+Authentication (register/login/firebase/google),X,Done,Local + Firebase (backend verifies ID token),backend/src/main/java/edu/uth/backend/auth/AuthController.java
+User profile (view/edit/upload avatar/change password),X,Done,Profile endpoints implemented,backend/src/main/java/edu/uth/backend/user/UserController.java
+Conference CRUD (create/list/get),X,Done,Create and list available,backend/src/main/java/edu/uth/backend/conference/ConferenceController.java
+Submission: create (multipart upload),X,Done,Submit with co-authors JSON supported,backend/src/main/java/edu/uth/backend/submission/SubmissionController.java
+Submission: edit before deadline,,Missing,PUT endpoint to edit submission required,
+Submission: withdraw submission,,Missing,Endpoint to withdraw paper required,
+Submission: author dashboard/list submissions,,Missing,GET list by author required,
+Submission: get submission details,,Missing,GET /api/submissions/{id} required,
+Camera-ready (final upload),X,Done,Camera-ready upload implemented,backend/src/main/java/edu/uth/backend/cameraready/CameraReadyController.java
+Review: submit review,X,Done,POST /api/reviews implemented,backend/src/main/java/edu/uth/backend/review/ReviewController.java
+Assignment: manual assign,X,Done,Assign endpoint and queries present,backend/src/main/java/edu/uth/backend/assignment/ReviewAssignmentController.java
+Assignment: reviewer accept/decline,,Missing,Endpoint for reviewer to accept/decline assignments needed,
+Conflict of Interest (declare COI),X,Done,POST /api/conflicts implemented,backend/src/main/java/edu/uth/backend/assignment/ConflictController.java
+Decisions (make decision, get avg score),X,Done,Decision endpoints implemented,backend/src/main/java/edu/uth/backend/decision/DecisionController.java
+Proceedings (public),X,Done,GET proceedings by conference implemented,backend/src/main/java/edu/uth/backend/proceedings/ProceedingsController.java
+Track management (create/edit tracks, deadlines),,Missing,Track endpoints not found,
+PC member invitations (invite/accept),,Missing,Invite flow and tokens missing,
+Bulk notifications / templated emails,,Missing,Bulk email send API missing though SMTP configured,
+Admin / Platform: user list & toggle,X (partial),Partial,AdminService exists but controller endpoint may be missing,backend/src/main/java/edu/uth/backend/admin/AdminService.java
+Tenancy & RBAC management,,Missing,Multi-tenant and role management APIs missing,
+Audit logs (store & query),,Missing,Audit recording endpoints not found,
+Reports & analytics (acceptance rates, SLA),,Partial,Basic stats in AdminService; richer reports missing,backend/src/main/java/edu/uth/backend/admin/AdminService.java
+AI integrations (spellcheck/summarize/embeddings),,Missing,ai-service folder exists but proxy endpoints missing,ai-service/
+AI governance (feature flags + audit),,Missing,Feature-flag endpoints and AI audit not implemented,backend/src/main/java/edu/uth/backend/config
+Security: Role-based enforcement (method-level),,Missing,Controllers lack @PreAuthorize annotations; need method security applied,backend/src/main/java/edu/uth/backend/config/SecurityConfig.java
+Security: CORS & COOP headers,X,Done,CORS relaxed and COOP header added,backend/src/main/java/edu/uth/backend/config/SecurityConfig.java
+Firebase credentials file present on server,X (local folder),Partial,Repository contains `uth-confms-firebase-sa.json` folder — ensure single JSON file path is used,backend/uth-confms-firebase-sa.json/uth-confms-firebase-sa.json
+Docker Compose build/run,,Blocked,Docker build failed due to Maven network issues; suggest running Maven locally or fixing network,
+Maven build & backend start,X (partial),Blocked,Maven downloads succeeded partially but build failed earlier due to network; need network or local cache,
+Swagger/OpenAPI docs,,Partial,Paths for v3/api-docs permitted; confirm springdoc config,
+Unit / Integration tests,,Missing,Tests presence limited; recommend adding coverage for critical flows,
+Documentation: SRS/Design/Install/Test plans,X,Done,Docs folder contains required documents,docs/
+
