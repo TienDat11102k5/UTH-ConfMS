@@ -42,3 +42,5 @@ logs/
 # Temporary files
 tmp/
 temp/
+# Khóa Google Cloud/Firebase Service Account
+**/uth-confms-firebase-sa.json
