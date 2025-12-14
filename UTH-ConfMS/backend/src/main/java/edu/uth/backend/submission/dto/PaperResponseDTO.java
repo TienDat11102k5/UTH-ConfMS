@@ -1,6 +1,9 @@
 package edu.uth.backend.submission.dto;
 
 import lombok.Data;
+import java.util.List;
+
+
 
 @Data
 public class PaperResponseDTO {
@@ -13,4 +16,6 @@ public class PaperResponseDTO {
     private String authorName;   // Chỉ trả về Tên tác giả (Che password)
     private String trackName;    // Tên Track
     private String conferenceName; // Tên Hội nghị (Thêm cái này cho đầy đủ)
+    private List<CoAuthorDTO> coAuthors; // Danh sách đồng tác giả
+    private String downloadUrl; // URL để frontend tải file
 }
