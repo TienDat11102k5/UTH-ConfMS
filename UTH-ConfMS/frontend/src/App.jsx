@@ -13,6 +13,7 @@ import NotFoundPage from "./pages/NotFound.jsx";
 import UnauthorizedPage from "./pages/Unauthorized.jsx";
 
 import PublicHomePage from "./pages/public/PublicHomePage.jsx";
+import ConferenceList from "./pages/author/ConferenceList.jsx";
 import PublicProgram from "./pages/public/PublicProgram";
 
 import AuthorDashboard from "./pages/author/AuthorDashboard.jsx";
@@ -30,6 +31,7 @@ const App = () => {
         {/* Public portal */}
         <Route path="/" element={<PublicHomePage />} />
         <Route path="/program" element={<PublicProgram />} />
+        <Route path="/conferences" element={<ConferenceList />} />
 
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
@@ -42,7 +44,8 @@ const App = () => {
         <Route path="/settings" element={<SettingsPage />} />
 
         {/* Author */}
-        <Route path="/author" element={<AuthorDashboard />} />
+        <Route path="/author" element={<ConferenceList />} />
+        <Route path="/author/dashboard" element={<AuthorDashboard />} />
         <Route path="/author/submissions" element={<AuthorSubmissionsPage />} />
         <Route path="/author/submit" element={<AuthorSubmissionFormPage />} />
 

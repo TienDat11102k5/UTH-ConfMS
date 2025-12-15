@@ -154,7 +154,11 @@ const LoginPage = () => {
             </Link>
           </div>
 
-          <button type="submit" className="btn-primary" disabled={loading || googleLoading}>
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={loading || googleLoading}
+          >
             {loading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
 
@@ -165,7 +169,9 @@ const LoginPage = () => {
             disabled={loading || googleLoading}
             style={{ width: "100%", marginTop: "0.75rem" }}
           >
-            {googleLoading ? "Đang đăng nhập Google..." : "Đăng nhập bằng Google"}
+            {googleLoading
+              ? "Đang đăng nhập Google..."
+              : "Đăng nhập bằng Google"}
           </button>
         </form>
 
