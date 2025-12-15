@@ -15,6 +15,10 @@ import UnauthorizedPage from "./pages/Unauthorized.jsx";
 import PublicHomePage from "./pages/public/PublicHomePage.jsx";
 import ConferenceList from "./pages/author/ConferenceList.jsx";
 import PublicProgram from "./pages/public/PublicProgram";
+import PublicHome from "./pages/public/PublicHome";
+
+
+
 
 import AuthorDashboard from "./pages/author/AuthorDashboard.jsx";
 import AuthorSubmissionsPage from "./pages/author/AuthorSubmissionsPage.jsx";
@@ -32,6 +36,7 @@ const App = () => {
         <Route path="/" element={<PublicHomePage />} />
         <Route path="/program" element={<PublicProgram />} />
         <Route path="/conferences" element={<ConferenceList />} />
+        <Route path="/publichome" element={<PublicHome />} />
 
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
