@@ -6,7 +6,7 @@ import logoUth from "../../assets/logoUTH.jpg";
 const PublicHomePage = () => {
   return (
     <div className="portal-page">
-      <div className="portal-header-wrapper">
+      <div className="portal-header-container">
         <header className="portal-header">
           <div className="portal-logo">
             <img

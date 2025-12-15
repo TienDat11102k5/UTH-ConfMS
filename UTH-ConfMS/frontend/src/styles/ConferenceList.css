@@ -1,0 +1,148 @@
+/* --- CSS RIÊNG CHO TRANG CONFERENCE LIST (ĐỒNG BỘ INDEX) --- */
+
+/* Hero Section: Dùng màu nền nhạt của Primary */
+.conf-hero {
+  text-align: center;
+  padding: 5rem 2rem;
+  background: linear-gradient(
+    180deg,
+    var(--bg-body) 0%,
+    #e5f0ff 100%
+  ); /* Gradient xanh nhạt */
+  border-bottom: 1px solid rgba(15, 98, 254, 0.1);
+}
+
+.conf-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 1rem;
+  letter-spacing: -1px;
+}
+
+.conf-title span {
+  color: var(--primary-color); /* Màu xanh IBM chủ đạo */
+  position: relative;
+  display: inline-block;
+}
+
+/* Gạch chân điệu đà cho chữ nhấn mạnh */
+.conf-title span::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background-color: var(--accent-color);
+  opacity: 0.3;
+  z-index: -1;
+}
+
+.conf-desc {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  max-width: 700px;
+  margin: 0 auto 2rem;
+}
+
+/* Nút Dashboard đặc biệt trên Menu */
+.btn-dashboard-nav {
+  background-color: var(--primary-color);
+  color: white !important;
+  padding: 0.6rem 1.25rem;
+  border-radius: 2rem; /* Bo tròn viên thuốc */
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(15, 98, 254, 0.3);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-dashboard-nav:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 98, 254, 0.4);
+}
+
+/* Grid Card */
+.conf-section {
+  max-width: 1200px;
+  margin: -3rem auto 0; /* Kéo lên đè vào Hero một chút cho đẹp */
+  padding: 0 2rem 5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.conf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 2rem;
+}
+
+.conf-card {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md); /* Bóng đổ chuẩn từ index */
+  padding: 2rem;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.conf-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-light);
+}
+
+.conf-date {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.5px;
+  background: var(--primary-light);
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.conf-card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 1rem;
+  line-height: 1.3;
+}
+
+.conf-card-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  flex: 1; /* Đẩy nút xuống đáy */
+}
+
+.conf-stats {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.conf-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Chỉnh lại nút trong card cho khớp */
+.conf-actions .btn-secondary {
+  border: 1px solid #e0e0e0;
+}
