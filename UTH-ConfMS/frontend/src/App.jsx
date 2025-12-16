@@ -15,6 +15,8 @@ import ConferenceList from "./pages/author/ConferenceList.jsx";
 import ConferenceDetail from "./pages/author/ConferenceDetail.jsx";
 import PublicProgram from "./pages/public/PublicProgram";
 import PublicHome from "./pages/public/PublicHome";
+import PublicCfp from "./pages/public/PublicCfp";
+import PublicAcceptedPapers from "./pages/public/PublicAcceptedPapers";
 
 import AuthorDashboard from "./pages/author/AuthorDashboard.jsx";
 import AuthorSubmissionsPage from "./pages/author/AuthorSubmissionsPage.jsx";
@@ -45,6 +47,9 @@ const App = () => {
         <Route path="/conferences" element={<ConferenceList />} />
         <Route path="/conferences/:id" element={<ConferenceDetail />} />
         <Route path="/publichome" element={<PublicHome />} />
+        <Route path="/cfp" element={<PublicCfp />} />
+        <Route path="/accepted-papers" element={<PublicAcceptedPapers />} />
+
 
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
