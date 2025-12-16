@@ -14,11 +14,9 @@ import UnauthorizedPage from "./pages/Unauthorized.jsx";
 
 import PublicHomePage from "./pages/public/PublicHomePage.jsx";
 import ConferenceList from "./pages/author/ConferenceList.jsx";
+import ConferenceDetail from "./pages/author/ConferenceDetail.jsx";
 import PublicProgram from "./pages/public/PublicProgram";
 import PublicHome from "./pages/public/PublicHome";
-
-
-
 
 import AuthorDashboard from "./pages/author/AuthorDashboard.jsx";
 import AuthorSubmissionsPage from "./pages/author/AuthorSubmissionsPage.jsx";
@@ -27,6 +25,9 @@ import AuthorSubmissionFormPage from "./pages/author/AuthorSubmissionFormPage.js
 import ReviewerDashboard from "./pages/reviewer/ReviewerDashboard.jsx";
 import ChairDashboard from "./pages/chair/ChairDashboard.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
+import AdminConferences from "./pages/admin/AdminConferences";
+import AdminConferenceEdit from "./pages/admin/AdminConferenceEdit";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
         <Route path="/" element={<PublicHomePage />} />
         <Route path="/program" element={<PublicProgram />} />
         <Route path="/conferences" element={<ConferenceList />} />
+        <Route path="/conferences/:id" element={<ConferenceDetail />} />
         <Route path="/publichome" element={<PublicHome />} />
 
         {/* Auth */}
@@ -57,7 +59,30 @@ const App = () => {
         {/* Reviewer / Chair / Admin */}
         <Route path="/reviewer" element={<ReviewerDashboard />} />
         <Route path="/chair" element={<ChairDashboard />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requiredRole={"ADMIN"}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/conferences"
+          element={
+            <ProtectedRoute requiredRole={"ADMIN"}>
+              <AdminConferences />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/conferences/:id/edit"
+          element={
+            <ProtectedRoute requiredRole={"ADMIN"}>
+              <AdminConferenceEdit />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Error pages */}
         <Route path="/unauthorized" element={<UnauthorizedPage />} />

@@ -1,0 +1,156 @@
+/* src/styles/ConferenceDetail.css */
+.conf-detail {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3.5rem;
+}
+
+.conf-detail-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.8fr);
+  gap: 1.75rem;
+  align-items: start;
+  margin-bottom: 2rem;
+}
+
+.conf-detail-title {
+  font-size: 2rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.conf-detail-desc {
+  color: #4b5563;
+  margin: 0 0 1rem 0;
+  line-height: 1.6;
+}
+
+.conf-detail-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.conf-detail-meta .meta-item {
+  background: #f9fbfb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+}
+
+.meta-label {
+  display: block;
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.meta-value {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.conf-detail-cta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.conf-detail-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+.conf-detail-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+.conf-detail-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.conf-detail-section {
+  margin-top: 2.5rem;
+}
+
+.conf-detail-section h2 {
+  margin-bottom: 1rem;
+}
+
+.conf-detail-timeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.timeline-item {
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.timeline-label {
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-date {
+  color: #475569;
+}
+
+.conf-detail-tracks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.track-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  background: #ffffff;
+}
+
+.track-title {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.track-desc {
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.conf-detail-loading,
+.conf-detail-error {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #374151;
+}
+
+.conf-detail-error {
+  color: #b91c1c;
+}
+
+.conf-detail-actions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+  .conf-detail-header {
+    grid-template-columns: 1fr;
+  }
+}
