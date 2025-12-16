@@ -2,6 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import UserProfileDropdown from "../UserProfileDropdown";
+import logoUTH from "../../assets/logoUTH.jpg";
 
 const DashboardLayout = ({ roleLabel, title, subtitle, children }) => {
   return (
@@ -9,7 +10,9 @@ const DashboardLayout = ({ roleLabel, title, subtitle, children }) => {
       {/* HEADER */}
       <header className="dash-header">
         <div className="dash-header-left">
-          <span className="dash-logo-mark">UTH</span>
+          <div className="dash-logo-mark">
+            <img src={logoUTH} alt="UTH logo" className="dash-logo-img" />
+          </div>
           <div>
             <div className="dash-logo-text">UTH-ConfMS · {roleLabel}</div>
             <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>
