@@ -1,207 +1,268 @@
-/* ===== PAGE ===== */
-.portal-page {
-  min-height: 100vh;
-  background: #f4f6f9;
-  display: flex;
-  flex-direction: column;
-}
+/* --- CSS RIÊNG CHO TRANG CONFERENCE LIST (ĐỒNG BỘ INDEX) --- */
 
-.page-center {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.1rem;
-}
-
-/* ===== HEADER ===== */
-.uth-header {
-  background: rgba(255, 255, 255, 0.95);
-  border-bottom: 1px solid #e5e7eb;
-}
-.dash-logo-mark {
-  background: linear-gradient(135deg, #009b9e, #00b3ad);
-  color: #ffffff;
-  font-size: 1.6rem;
-  font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 10px;      /* bo tròn mềm hơn */
-  letter-spacing: 1px;
-}
-.dash-logo-text {
-  margin-left: 8px;
-  font-weight: 600;
-}
-
-.portal-nav {
+/* Hero Section: Dùng màu nền nhạt của Primary */
+/* HEADER brand */
+.portal-brand {
   display: flex;
   align-items: center;
-  gap: 16px;
-}
-
-.nav-link {
+  gap: 12px;
   text-decoration: none;
-  color: #333;
-  font-weight: 500;
+  color: inherit;
 }
 
-.nav-link:hover {
-  color: #008689;
+.portal-logo-small {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.btn-dashboard-nav {
-  background: #008689;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
+.dash-logo-sub {
+  font-size: 0.8rem;
+  color: #6b7280;
 }
-/* ===== HERO (ULTRA COMPACT) ===== */
+
+/* Hero Section */
 .conf-hero {
-  background: linear-gradient(135deg, #008689, #00a7a0);
-  color: #fff;
-  padding: 0.9rem 1.5rem;   /* rất thấp */
-  text-align: center;
+  padding: 5rem 2rem;
+  background: linear-gradient(135deg, #eaf2ff 0%, #f9fbff 50%, #e6f0ff 100%);
+  border-bottom: 1px solid rgba(15, 98, 254, 0.1);
+}
+
+.conf-hero-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.badge-soft {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 98, 254, 0.08);
+  color: var(--primary-color);
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .conf-title {
-  font-size: 1.6rem;
+  font-size: clamp(2.5rem, 5vw, 3.25rem);
   font-weight: 800;
-  line-height: 1.2;
+  color: var(--text-main);
+  margin: 1rem 0 0.75rem;
+  letter-spacing: -1px;
+  line-height: 1.15;
 }
 
 .conf-title span {
-  display: block;
-  font-size: 0.85rem;
-  margin-top: 4px;
-  opacity: 0.85;
+  color: var(--primary-color);
+  position: relative;
+  display: inline-block;
+}
+
+.conf-title span::after {
+  content: "";
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  width: 100%;
+  height: 9px;
+  background-color: var(--accent-color);
+  opacity: 0.3;
+  z-index: -1;
 }
 
 .conf-desc {
-  max-width: 480px;
-  margin: 0.4rem auto 0.8rem;
-  font-size: 0.85rem;
-}
-.btn-primary {
-  background: #008689;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  max-width: 640px;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
 }
 
-.btn-secondary {
-  background: #fff;
-  color: #008689;
-  padding: 10px 20px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
+.conf-cta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
 }
 
-/* ===== LIST ===== */
+.conf-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.meta-item {
+  background: white;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.meta-number {
+  display: block;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+.meta-label {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.conf-hero-card {
+  background: white;
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  padding: 1.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.hero-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.hero-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.hero-label {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.hero-sub {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.hero-list {
+  margin: 0 0 1.5rem 0;
+  padding-left: 1.1rem;
+  color: var(--text-main);
+  line-height: 1.55;
+}
+
+.full-width {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+}
+
+/* Nút Dashboard đặc biệt trên Menu */
+.btn-dashboard-nav {
+  background-color: var(--primary-color);
+  color: white !important;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(15, 98, 254, 0.3);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-dashboard-nav:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 98, 254, 0.4);
+}
+
+/* Grid Card */
 .conf-section {
   max-width: 1200px;
-  margin: 3rem auto;
-  padding: 0 1.5rem;
-  flex: 1;
-}
-
-.section-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
-}
-
-.empty-text {
-  text-align: center;
-  color: #777;
+  margin: -3rem auto 0; /* Kéo lên đè vào Hero một chút cho đẹp */
+  padding: 0 2rem 5rem;
+  position: relative;
+  z-index: 2;
 }
 
 .conf-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 2rem;
 }
 
-/* ===== CARD ===== */
 .conf-card {
-  background: #fff;
-  border-radius: 10px;
-  padding: 1.5rem;
-  border: 1px solid #e5e7eb;
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md); /* Bóng đổ chuẩn từ index */
+  padding: 2rem;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
 }
 
-.conf-card-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
+.conf-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-light);
 }
 
 .conf-date {
   font-size: 0.85rem;
-  color: #555;
-}
-
-.conf-badge {
-  background: #e6f6f5;
-  color: #008689;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.75rem;
   font-weight: 700;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.5px;
+  background: var(--primary-light);
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
 }
 
 .conf-card-title {
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  margin: 10px 0;
+  color: var(--text-main);
+  margin: 0 0 1rem;
+  line-height: 1.3;
 }
 
 .conf-card-desc {
   font-size: 0.95rem;
-  color: #555;
-  margin-bottom: 1rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  flex: 1; /* Đẩy nút xuống đáy */
 }
 
 .conf-stats {
   display: flex;
-  justify-content: space-between;
-  font-size: 0.85rem;
-  color: #555;
-  margin-bottom: 1rem;
+  gap: 15px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }
+
 .conf-actions {
-  display: flex;
-  gap: 14px;        
-  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
-.btn-outline {
-  border: 1px solid #008689;
-  color: #008689;
-  padding: 8px 16px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-/* ===== FOOTER ===== */
-.portal-footer {
-  text-align: center;
-  padding: 1rem;
-  font-size: 0.85rem;
-  color: #777;
-  border-top: 1px solid #e5e7eb;
-  background: #fff;
-}
-.conf-actions .btn-primary,
+/* Chỉnh lại nút trong card cho khớp */
 .conf-actions .btn-secondary {
-  padding: 10px 18px;
-  border-radius: 10px;
-  white-space: nowrap;
+  border: 1px solid #e0e0e0;
 }
