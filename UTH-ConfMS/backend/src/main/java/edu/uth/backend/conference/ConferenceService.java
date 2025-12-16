@@ -42,16 +42,66 @@ public class ConferenceService {
 
     @Transactional
     public Conference createConference(Conference conf) {
-        if (conf.getEndDate() != null && conf.getStartDate().isAfter(conf.getEndDate())) {
-            throw new RuntimeException("Ngày kết thúc phải sau ngày bắt đầu!");
-        }
+        validateConference(conf);
+        attachTracks(conf);
+        return confRepo.save(conf);
+    }
 
-        // Gắn cha-con để lưu DB chuẩn
+    @Transactional
+    public Conference updateConference(Long id, Conference incoming) {
+        Conference existing = confRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hội nghị"));
+
+        // Áp dụng các trường được phép cập nhật
+        existing.setName(incoming.getName());
+        existing.setDescription(incoming.getDescription());
+        existing.setStartDate(incoming.getStartDate());
+        existing.setEndDate(incoming.getEndDate());
+        existing.setSubmissionDeadline(incoming.getSubmissionDeadline());
+        existing.setReviewDeadline(incoming.getReviewDeadline());
+        existing.setCameraReadyDeadline(incoming.getCameraReadyDeadline());
+        existing.setBlindReview(incoming.isBlindReview());
+
+        // Tracks (nếu gửi kèm)
+        existing.setTracks(incoming.getTracks());
+        attachTracks(existing);
+
+        validateConference(existing);
+        return confRepo.save(existing);
+    }
+
+    @Transactional
+    public void deleteConference(Long id) {
+        if (!confRepo.existsById(id)) {
+            throw new RuntimeException("Không tìm thấy hội nghị");
+        }
+        confRepo.deleteById(id);
+    }
+
+    private void validateConference(Conference conf) {
+        if (conf.getName() == null || conf.getName().isBlank()) {
+            throw new RuntimeException("Tên hội nghị là bắt buộc");
+        }
+        if (conf.getDescription() == null || conf.getDescription().isBlank()) {
+            throw new RuntimeException("Mô tả hội nghị là bắt buộc");
+        }
+        if (conf.getStartDate() == null || conf.getEndDate() == null) {
+            throw new RuntimeException("Ngày bắt đầu và ngày kết thúc là bắt buộc");
+        }
+        if (conf.getStartDate().isAfter(conf.getEndDate())) {
+            throw new RuntimeException("Ngày kết thúc phải sau ngày bắt đầu");
+        }
+        if (conf.getSubmissionDeadline() != null && conf.getStartDate() != null
+                && conf.getSubmissionDeadline().isAfter(conf.getStartDate())) {
+            throw new RuntimeException("Hạn nộp bài phải trước hoặc bằng ngày bắt đầu hội nghị");
+        }
+    }
+
+    private void attachTracks(Conference conf) {
         if (conf.getTracks() != null) {
             for (Track track : conf.getTracks()) {
                 track.setConference(conf);
             }
         }
-        return confRepo.save(conf);
     }
 }

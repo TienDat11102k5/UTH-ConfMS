@@ -40,12 +40,14 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(
               "/api/auth/**",
-              "/api/conferences/**",
               "/uploads/**",
               "/v3/api-docs/**",
               "/swagger-ui/**",
               "/swagger-ui.html"
             ).permitAll()
+            // Public GET cho danh sách/chi tiết hội nghị
+            .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/conferences/**").permitAll()
+            // Các method khác cần xác thực (và đã có @PreAuthorize kiểm soát role)
             .anyRequest().authenticated()
         )
         .headers(headers -> headers.addHeaderWriter(
