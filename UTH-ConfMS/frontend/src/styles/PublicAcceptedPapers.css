@@ -1,0 +1,113 @@
+/* ===== PAGE ===== */
+.public-accepted-page {
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+/* ===== HERO ===== */
+.accepted-hero {
+  background: linear-gradient(135deg, #008080, #009999);
+  color: #ffffff;
+  text-align: center;
+  padding: 2.5rem 1.5rem; /* gọn lại */
+}
+
+.accepted-hero h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.accepted-hero p {
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  opacity: 0.95;
+}
+
+/* ===== CONTENT ===== */
+.accepted-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+/* ===== TABLE ===== */
+.accepted-table-wrapper {
+  overflow-x: auto;
+}
+
+.accepted-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.accepted-table thead {
+  background-color: #e6f4f4;
+}
+
+.accepted-table th,
+.accepted-table td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.accepted-table th {
+  color: #006666;
+  font-weight: 600;
+  border-bottom: 2px solid #cceaea;
+}
+
+.accepted-table tbody tr {
+  border-bottom: 1px solid #eeeeee;
+}
+
+.accepted-table tbody tr:hover {
+  background-color: #f9fefe;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-row {
+  text-align: center;
+  padding: 1.5rem;
+  font-style: italic;
+  color: #6b7280;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .accepted-hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .accepted-content {
+    padding: 2rem 1rem;
+  }
+
+  .accepted-table th,
+  .accepted-table td {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+  }
+}
+/* ===== BACK BUTTON ===== */
+.accepted-content .btn-secondary {
+  display: inline-block;
+  padding: 0.65rem 1.6rem;
+  border-radius: 6px;
+  border: 1px solid #006666;
+  color: #006666;
+  background-color: #ffffff;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.accepted-content .btn-secondary:hover {
+  background-color: #e6f4f4;
+  transform: translateY(-1px);
+}
