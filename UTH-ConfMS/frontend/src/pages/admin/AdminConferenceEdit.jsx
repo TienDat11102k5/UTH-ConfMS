@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 
@@ -129,7 +129,7 @@ const AdminConferenceEdit = () => {
   if (loading)
     return (
       <DashboardLayout title="Đang tải..." roleLabel="Admin">
-        <div className="form-card">Đang tải dữ liệu...</div>
+        <div>Loading...</div>
       </DashboardLayout>
     );
 
@@ -139,134 +139,143 @@ const AdminConferenceEdit = () => {
       title={`Sửa Hội Nghị #${id}`}
       subtitle="Cập nhật thông tin chi tiết và danh sách tracks."
     >
-      <div className="data-page-header">
-        <div className="data-page-header-left">
-          <div className="breadcrumb">
-            <Link to="/admin/conferences" className="breadcrumb-link">
-              Hội nghị
-            </Link>
-            <span className="breadcrumb-separator">/</span>
-            <span className="breadcrumb-current">Chỉnh sửa #{id}</span>
-          </div>
-          <h2 className="data-page-title">Cập nhật thông tin hội nghị</h2>
-          <p className="data-page-subtitle">
-            Điều chỉnh nội dung, thời gian tổ chức và danh sách tracks cho hội nghị.
-          </p>
-        </div>
-      </div>
+      <form onSubmit={handleSave} style={{ maxWidth: 900 }}>
+        {error && <div className="alert alert-danger mb-3">{error}</div>}
 
-      <form onSubmit={handleSave} className="submission-form" style={{ maxWidth: 960 }}>
-        {error && (
-          <div className="form-card" style={{ border: "1px solid #ffd4d4", color: "#d72d2d" }}>
-            {error}
-          </div>
-        )}
-
-        <div className="form-card">
-          <h3>Thông tin chung</h3>
-          <div className="form-group">
-            <label className="form-label">Tên hội nghị *</label>
-            <input
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              placeholder="Ví dụ: UTH Conference 2025"
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Mô tả chi tiết *</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={5}
-              required
-              className="textarea-input"
-            />
-          </div>
-          <label className="checkbox">
-            <input
-              type="checkbox"
-              name="blindReview"
-              checked={formData.blindReview}
-              onChange={handleChange}
-            />
-            Bật chế độ Blind Review (Phản biện kín)
-          </label>
-        </div>
-
-        <div className="form-card">
-          <h3>Thời gian tổ chức</h3>
-          <div className="form-grid">
-            <div className="form-group">
-              <label className="form-label">Ngày bắt đầu *</label>
+        {/* 1. Thông tin cơ bản */}
+        <div className="card mb-4">
+          <div className="card-header bg-light fw-bold">Thông tin chung</div>
+          <div className="card-body">
+            <div className="mb-3">
+              <label className="form-label">Tên hội nghị (*)</label>
               <input
-                type="datetime-local"
-                name="startDate"
-                value={formData.startDate}
+                className="form-control"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
                 required
               />
             </div>
-            <div className="form-group">
-              <label className="form-label">Ngày kết thúc *</label>
-              <input
-                type="datetime-local"
-                name="endDate"
-                value={formData.endDate}
+            <div className="mb-3">
+              <label className="form-label">Mô tả chi tiết (*)</label>
+              <textarea
+                className="form-control"
+                name="description"
+                value={formData.description}
                 onChange={handleChange}
+                rows={5}
                 required
               />
             </div>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Hạn nộp bài (Submission Deadline)</label>
-            <input
-              type="datetime-local"
-              name="submissionDeadline"
-              value={formData.submissionDeadline}
-              onChange={handleChange}
-            />
-            <div className="field-hint">Lưu ý: Hạn nộp phải trước ngày bắt đầu hội nghị.</div>
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                name="blindReview"
+                checked={formData.blindReview}
+                onChange={handleChange}
+                id="blindReviewCheck"
+              />
+              <label className="form-check-label" htmlFor="blindReviewCheck">
+                Bật chế độ Blind Review (Phản biện kín)
+              </label>
+            </div>
           </div>
         </div>
 
-        <div className="form-card">
-          <h3>Danh sách Tracks (Chủ đề)</h3>
-          {formData.tracks.map((track, index) => (
-            <div key={index} className="inline-actions" style={{ marginBottom: "0.75rem" }}>
-              <span style={{ color: "var(--text-light)", width: 32 }}>{index + 1}.</span>
+        {/* 2. Thời gian */}
+        <div className="card mb-4">
+          <div className="card-header bg-light fw-bold">Thời gian tổ chức</div>
+          <div className="card-body">
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Ngày bắt đầu (*)</label>
+                <input
+                  type="datetime-local"
+                  className="form-control"
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Ngày kết thúc (*)</label>
+                <input
+                  type="datetime-local"
+                  className="form-control"
+                  name="endDate"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+            <div className="mb-3">
+              <label className="form-label text-danger fw-bold">
+                Hạn nộp bài (Submission Deadline)
+              </label>
               <input
-                style={{ flex: 1, minWidth: 0 }}
-                placeholder="Tên track (VD: AI, Software Engineering...)"
-                value={track.name}
-                onChange={(e) => handleTrackChange(index, e.target.value)}
+                type="datetime-local"
+                className="form-control border-danger"
+                name="submissionDeadline"
+                value={formData.submissionDeadline}
+                onChange={handleChange}
               />
+              <small className="text-muted">
+                Lưu ý: Hạn nộp phải trước ngày bắt đầu hội nghị.
+              </small>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Tracks Management */}
+        <div className="card mb-4">
+          <div className="card-header bg-light fw-bold">
+            Danh sách Tracks (Chủ đề)
+          </div>
+          <div className="card-body">
+            {formData.tracks.map((track, index) => (
+              <div key={index} className="d-flex gap-2 mb-2 align-items-center">
+                <span className="text-muted" style={{ width: "30px" }}>
+                  {index + 1}.
+                </span>
+                <input
+                  className="form-control"
+                  placeholder="Tên track (VD: AI, Software Engineering...)"
+                  value={track.name}
+                  onChange={(e) => handleTrackChange(index, e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline-danger btn-sm"
+                  onClick={() => removeTrack(index)}
+                  title="Xóa track này"
+                >
+                  <i className="bi bi-trash"></i> X
+                </button>
+              </div>
+            ))}
+            <div className="mt-3">
               <button
                 type="button"
-                className="btn-secondary table-action"
-                style={{ color: "#d72d2d" }}
-                onClick={() => removeTrack(index)}
-                title="Xóa track này"
+                className="btn btn-sm btn-secondary"
+                onClick={addTrack}
               >
-                Xóa
+                + Thêm Track mới
               </button>
             </div>
-          ))}
-          <button type="button" className="btn-secondary table-action" onClick={addTrack}>
-            + Thêm Track mới
-          </button>
+          </div>
         </div>
 
-        <div className="form-actions">
-          <button className="btn-primary" type="submit" disabled={saving}>
+        {/* Buttons */}
+        <div className="d-flex gap-2 mb-5">
+          <button className="btn btn-primary" type="submit" disabled={saving}>
             {saving ? "Đang lưu..." : "Lưu thay đổi"}
           </button>
           <button
             type="button"
-            className="btn-secondary"
+            className="btn btn-secondary"
             onClick={() => navigate("/admin/conferences")}
           >
             Quay lại danh sách

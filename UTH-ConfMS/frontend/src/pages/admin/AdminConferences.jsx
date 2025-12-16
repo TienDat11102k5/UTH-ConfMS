@@ -141,250 +141,256 @@ const AdminConferences = () => {
       title="Quản lý Hội nghị"
       subtitle="Tạo và quản lý các hội nghị khoa học."
     >
-      <div className="data-page-header">
-        <div className="data-page-header-left">
-          <div className="breadcrumb">
-            <span className="breadcrumb-current">Hội nghị</span>
-          </div>
-          <h2 className="data-page-title">Danh sách hội nghị</h2>
-          <p className="data-page-subtitle">
-            Tạo mới, chỉnh sửa và theo dõi tất cả hội nghị đang quản lý trên hệ thống.
-          </p>
-        </div>
-
-        <div className="data-page-header-right">
-          <button className="btn-secondary" type="button" onClick={fetchConfs}>
-            Làm mới
-          </button>
+      <div style={{ maxWidth: 1000 }}>
+        {/* Nút mở Modal tạo mới */}
+        <div style={{ marginBottom: 20 }}>
           <button
-            className="btn-primary"
-            type="button"
+            className="btn btn-primary"
             onClick={() => {
               resetForm();
               setShowModal(true);
             }}
           >
-            + Tạo hội nghị
+            + Tạo Hội Nghị Mới
           </button>
         </div>
-      </div>
 
-      <div className="table-wrapper">
-        <table className="simple-table">
-          <thead>
-            <tr>
-              <th style={{ width: "60px" }}>ID</th>
-              <th>Tên Hội nghị</th>
-              <th>Thời gian diễn ra</th>
-              <th>Hạn nộp bài</th>
-              <th style={{ width: "220px" }}>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
+        {/* Danh sách Hội nghị */}
+        {loading ? (
+          <div>Đang tải dữ liệu...</div>
+        ) : error ? (
+          <div className="alert alert-danger">{error}</div>
+        ) : (
+          <table className="table table-bordered table-hover">
+            <thead className="table-light">
               <tr>
-                <td colSpan={5} className="table-empty">
-                  Đang tải dữ liệu...
-                </td>
+                <th style={{ width: "50px" }}>ID</th>
+                <th>Tên Hội nghị</th>
+                <th>Thời gian diễn ra</th>
+                <th>Hạn nộp bài</th>
+                <th style={{ width: "200px" }}>Thao tác</th>
               </tr>
-            ) : error ? (
-              <tr>
-                <td colSpan={5} className="table-empty" style={{ color: "#d72d2d" }}>
-                  {error}
-                </td>
-              </tr>
-            ) : conferences.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="table-empty">
-                  Chưa có hội nghị nào. Nhấn{" "}
-                  <button
-                    type="button"
-                    className="link-inline"
-                    onClick={() => {
-                      resetForm();
-                      setShowModal(true);
-                    }}
-                    style={{ background: "none", border: "none", padding: 0 }}
-                  >
-                    “Tạo hội nghị”
-                  </button>{" "}
-                  để thêm mới.
-                </td>
-              </tr>
-            ) : (
-              conferences.map((c) => (
+            </thead>
+            <tbody>
+              {conferences.map((c) => (
                 <tr key={c.id}>
                   <td>{c.id}</td>
                   <td>
                     <strong>{c.name}</strong>
                     <div style={{ fontSize: "0.85em", color: "#666" }}>
                       {c.tracks && c.tracks.length > 0
-                        ? `${c.tracks.length} track${c.tracks.length > 1 ? "s" : ""}`
+                        ? `${c.tracks.length} tracks`
                         : "Chưa có track"}
                     </div>
                   </td>
                   <td>
-                    {c.startDate ? new Date(c.startDate).toLocaleDateString() : "..."} -{" "}
-                    {c.endDate ? new Date(c.endDate).toLocaleDateString() : "..."}
+                    {c.startDate
+                      ? new Date(c.startDate).toLocaleDateString()
+                      : "..."}
+                    {" - "}
+                    {c.endDate
+                      ? new Date(c.endDate).toLocaleDateString()
+                      : "..."}
                   </td>
                   <td>
                     {c.submissionDeadline ? (
-                      <span className="badge-soft">
+                      <span className="text-danger">
                         {new Date(c.submissionDeadline).toLocaleDateString()}
                       </span>
                     ) : (
-                      <span style={{ color: "var(--text-light)" }}>Chưa đặt</span>
+                      "Không set"
                     )}
                   </td>
                   <td>
-                    <div className="inline-actions">
-                      <button
-                        className="btn-secondary table-action"
-                        type="button"
-                        onClick={() => navigate(`/conferences/${c.id}`)}
-                      >
-                        Chi tiết
-                      </button>
-                      <button
-                        className="btn-primary table-action"
-                        type="button"
-                        onClick={() => navigate(`/admin/conferences/${c.id}/edit`)}
-                      >
-                        Sửa
-                      </button>
-                      <button
-                        className="btn-secondary table-action"
-                        type="button"
-                        style={{ color: "#d72d2d" }}
-                        onClick={() => handleDelete(c.id)}
-                      >
-                        Xoá
-                      </button>
-                    </div>
+                    <button
+                      className="btn btn-sm btn-info me-2"
+                      onClick={() => navigate(`/conferences/${c.id}`)}
+                    >
+                      Chi tiết
+                    </button>
+                    <button
+                      className="btn btn-sm btn-warning me-2"
+                      onClick={() =>
+                        navigate(`/admin/conferences/${c.id}/edit`)
+                      }
+                    >
+                      Sửa
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDelete(c.id)}
+                    >
+                      Xoá
+                    </button>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ))}
+              {conferences.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="text-center">
+                    Chưa có hội nghị nào.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
 
-      {/* --- MODAL FORM TẠO MỚI --- */}
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-card">
-            <h3>Tạo Hội Nghị Mới</h3>
-            <form onSubmit={handleCreate} className="submission-form">
-              <div className="form-group">
-                <label className="form-label">Tên hội nghị *</label>
-                <input
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  placeholder="Ví dụ: UTH Conference 2025"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Mô tả *</label>
-                <textarea
-                  name="description"
-                  rows="3"
-                  value={formData.description}
-                  onChange={handleChange}
-                  required
-                  className="textarea-input"
-                  placeholder="Giới thiệu ngắn gọn về hội nghị..."
-                />
-              </div>
-
-              <div className="form-grid">
-                <div className="form-group">
-                  <label className="form-label">Ngày bắt đầu *</label>
+        {/* --- MODAL FORM TẠO MỚI (Overlay thủ công) --- */}
+        {showModal && (
+          <div className="modal-overlay" style={overlayStyle}>
+            <div className="modal-content" style={modalStyle}>
+              <h3>Tạo Hội Nghị Mới</h3>
+              <form onSubmit={handleCreate}>
+                {/* 1. Thông tin chung */}
+                <div className="mb-3">
+                  <label className="form-label">Tên hội nghị (*)</label>
                   <input
-                    type="datetime-local"
-                    name="startDate"
-                    value={formData.startDate}
+                    className="form-control"
+                    name="name"
+                    value={formData.name}
                     onChange={handleChange}
                     required
                   />
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Ngày kết thúc *</label>
-                  <input
-                    type="datetime-local"
-                    name="endDate"
-                    value={formData.endDate}
+
+                <div className="mb-3">
+                  <label className="form-label">Mô tả (*)</label>
+                  <textarea
+                    className="form-control"
+                    name="description"
+                    rows="3"
+                    value={formData.description}
                     onChange={handleChange}
                     required
                   />
                 </div>
-              </div>
 
-              <div className="form-group">
-                <label className="form-label text-danger">
-                  Hạn nộp bài (Phải trước ngày bắt đầu)
-                </label>
-                <input
-                  type="datetime-local"
-                  name="submissionDeadline"
-                  value={formData.submissionDeadline}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-card" style={{ padding: "1rem" }}>
-                <label className="form-label">Danh sách Tracks (Chủ đề)</label>
-                {formData.tracks.map((track, index) => (
-                  <div key={index} className="inline-actions" style={{ width: "100%" }}>
+                {/* 2. Ngày tháng (Grid 2 cột) */}
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Ngày bắt đầu (*)</label>
                     <input
-                      style={{ flex: 1, minWidth: 0 }}
-                      placeholder={`Tên track ${index + 1} (VD: AI, Security...)`}
-                      value={track.name}
-                      onChange={(e) => handleTrackChange(index, e.target.value)}
+                      type="datetime-local"
+                      className="form-control"
+                      name="startDate"
+                      value={formData.startDate}
+                      onChange={handleChange}
+                      required
                     />
-                    {formData.tracks.length > 1 && (
-                      <button
-                        type="button"
-                        className="btn-secondary table-action"
-                        style={{ color: "#d72d2d" }}
-                        onClick={() => removeTrack(index)}
-                      >
-                        Xóa
-                      </button>
-                    )}
                   </div>
-                ))}
-                <button type="button" className="btn-secondary table-action" onClick={addTrack}>
-                  + Thêm Track
-                </button>
-              </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Ngày kết thúc (*)</label>
+                    <input
+                      type="datetime-local"
+                      className="form-control"
+                      name="endDate"
+                      value={formData.endDate}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
 
-              <label className="checkbox" style={{ marginTop: "0.5rem" }}>
-                <input
-                  type="checkbox"
-                  name="blindReview"
-                  checked={formData.blindReview}
-                  onChange={handleChange}
-                />
-                Bật chế độ Blind Review
-              </label>
+                <div className="mb-3">
+                  <label className="form-label text-danger">
+                    Hạn nộp bài (Phải trước ngày bắt đầu)
+                  </label>
+                  <input
+                    type="datetime-local"
+                    className="form-control"
+                    name="submissionDeadline"
+                    value={formData.submissionDeadline}
+                    onChange={handleChange}
+                  />
+                </div>
 
-              <div className="modal-actions">
-                <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>
-                  Hủy
-                </button>
-                <button type="submit" className="btn-primary" disabled={submitting}>
-                  {submitting ? "Đang xử lý..." : "Tạo Hội Nghị"}
-                </button>
-              </div>
-            </form>
+                {/* 3. Tracks (Chủ đề) */}
+                <div className="mb-3 border p-3 bg-light rounded">
+                  <label className="form-label fw-bold">
+                    Danh sách Tracks (Chủ đề)
+                  </label>
+                  {formData.tracks.map((track, index) => (
+                    <div key={index} className="d-flex gap-2 mb-2">
+                      <input
+                        className="form-control"
+                        placeholder={`Tên track ${
+                          index + 1
+                        } (VD: AI, Security...)`}
+                        value={track.name}
+                        onChange={(e) =>
+                          handleTrackChange(index, e.target.value)
+                        }
+                      />
+                      {formData.tracks.length > 1 && (
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger"
+                          onClick={() => removeTrack(index)}
+                        >
+                          X
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-secondary"
+                    onClick={addTrack}
+                  >
+                    + Thêm Track
+                  </button>
+                </div>
+
+                {/* Footer Buttons */}
+                <div className="d-flex justify-content-end gap-2 mt-4">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={submitting}
+                  >
+                    {submitting ? "Đang xử lý..." : "Tạo Hội Nghị"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </DashboardLayout>
   );
+};
+
+// CSS nội bộ cho Modal nhanh (Cậu có thể chuyển sang file CSS riêng)
+const overlayStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: "rgba(0,0,0,0.5)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 1000,
+};
+
+const modalStyle = {
+  backgroundColor: "white",
+  padding: "20px",
+  borderRadius: "8px",
+  width: "90%",
+  maxWidth: "700px",
+  maxHeight: "90vh",
+  overflowY: "auto",
+  boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
 };
 
 export default AdminConferences;

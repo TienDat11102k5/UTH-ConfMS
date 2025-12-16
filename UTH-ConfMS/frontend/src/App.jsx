@@ -8,15 +8,15 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import UserProfilePage from "./pages/UserProfilePage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
+
 import NotFoundPage from "./pages/NotFound.jsx";
 import UnauthorizedPage from "./pages/Unauthorized.jsx";
+
 import PublicHomePage from "./pages/public/PublicHomePage.jsx";
 import ConferenceList from "./pages/author/ConferenceList.jsx";
 import ConferenceDetail from "./pages/author/ConferenceDetail.jsx";
 import PublicProgram from "./pages/public/PublicProgram";
 import PublicHome from "./pages/public/PublicHome";
-import PublicCfp from "./pages/public/PublicCfp";
-import PublicAcceptedPapers from "./pages/public/PublicAcceptedPapers";
 
 import AuthorDashboard from "./pages/author/AuthorDashboard.jsx";
 import AuthorSubmissionsPage from "./pages/author/AuthorSubmissionsPage.jsx";
@@ -24,17 +24,9 @@ import AuthorSubmissionFormPage from "./pages/author/AuthorSubmissionFormPage.js
 
 import ReviewerDashboard from "./pages/reviewer/ReviewerDashboard.jsx";
 import ChairDashboard from "./pages/chair/ChairDashboard.jsx";
-
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
-import AdminConferences from "./pages/admin/AdminConferences.jsx";
-import AdminConferenceEdit from "./pages/admin/AdminConferenceEdit.jsx";
-import TenantManagement from "./pages/admin/TenantManagement.jsx";     
-import SmtpConfigPage from "./pages/admin/SmtpConfigPage.jsx";         
-import AuditLogPage from "./pages/admin/AuditLogPage.jsx";            
-import BackupPage from "./pages/admin/BackupPage.jsx";                
-import AiGovernancePage from "./pages/admin/AiGovernancePage.jsx";     
-import RbacManagement from "./pages/admin/RbacManagement.jsx";         
-
+import AdminConferences from "./pages/admin/AdminConferences";
+import AdminConferenceEdit from "./pages/admin/AdminConferenceEdit";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
@@ -47,9 +39,6 @@ const App = () => {
         <Route path="/conferences" element={<ConferenceList />} />
         <Route path="/conferences/:id" element={<ConferenceDetail />} />
         <Route path="/publichome" element={<PublicHome />} />
-        <Route path="/cfp" element={<PublicCfp />} />
-        <Route path="/accepted-papers" element={<PublicAcceptedPapers />} />
-
 
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
@@ -67,13 +56,9 @@ const App = () => {
         <Route path="/author/submissions" element={<AuthorSubmissionsPage />} />
         <Route path="/author/submit" element={<AuthorSubmissionFormPage />} />
 
-        {/* Reviewer / Chair */}
+        {/* Reviewer / Chair / Admin */}
         <Route path="/reviewer" element={<ReviewerDashboard />} />
         <Route path="/chair" element={<ChairDashboard />} />
-
-        {/* --- ADMIN ROUTES (Đã cập nhật đầy đủ) --- */}
-        
-        {/* 1. Dashboard */}
         <Route
           path="/admin"
           element={
@@ -82,8 +67,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
-        {/* 2. Quản lý Hội nghị */}
         <Route
           path="/admin/conferences"
           element={
@@ -97,62 +80,6 @@ const App = () => {
           element={
             <ProtectedRoute requiredRole={"ADMIN"}>
               <AdminConferenceEdit />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* 3. Quản lý Users (TenantManagement) */}
-        <Route
-          path="/admin/users"
-          element={
-            <ProtectedRoute requiredRole={"ADMIN"}>
-              <TenantManagement />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* 4. Cấu hình Email (SmtpConfigPage) */}
-        <Route
-          path="/admin/email-settings"  
-          element={
-            <ProtectedRoute requiredRole={"ADMIN"}>
-              <SmtpConfigPage />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* 5. Logs & Backup */}
-        <Route
-          path="/admin/logs"
-          element={
-            <ProtectedRoute requiredRole={"ADMIN"}>
-              <AuditLogPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/backups"
-          element={
-            <ProtectedRoute requiredRole={"ADMIN"}>
-              <BackupPage />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* 6. AI & RBAC */}
-        <Route
-          path="/admin/ai-governance"
-          element={
-            <ProtectedRoute requiredRole={"ADMIN"}>
-              <AiGovernancePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/rbac"
-          element={
-            <ProtectedRoute requiredRole={"ADMIN"}>
-              <RbacManagement />
             </ProtectedRoute>
           }
         />

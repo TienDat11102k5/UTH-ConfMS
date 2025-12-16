@@ -18,14 +18,9 @@ const AdminDashboard = () => {
             vai trò (Author, Reviewer, PC, Chair, Admin) và phân quyền truy cập
             chi tiết.
           </p>
-          <div className="inline-actions">
-            <Link to="/admin/users" className="btn-primary">
-              Quản lý người dùng
-            </Link>
-            <Link to="/admin/rbac" className="btn-secondary">
-              Cấu hình RBAC
-            </Link>
-          </div>
+          <button className="btn-primary">
+            Quản lý người dùng &amp; vai trò
+          </button>
         </div>
 
         <div className="dash-card">
@@ -34,9 +29,7 @@ const AdminDashboard = () => {
             Cấu hình SMTP server, domain gửi email, giới hạn quota theo hội
             nghị, theo dõi lỗi gửi và trạng thái hàng đợi email.
           </p>
-          <Link to="/admin/email-settings" className="btn-secondary">
-            Cấu hình email hệ thống
-          </Link>
+          <button className="btn-secondary">Cấu hình email hệ thống</button>
         </div>
 
         <div className="dash-card">
@@ -45,14 +38,9 @@ const AdminDashboard = () => {
             Thực hiện backup định kỳ dữ liệu hội nghị, khôi phục khi cần; xem
             audit log các thao tác quan trọng trong hệ thống.
           </p>
-          <div className="inline-actions">
-            <Link to="/admin/backups" className="btn-secondary">
-              Backup / Restore
-            </Link>
-            <Link to="/admin/logs" className="btn-secondary">
-              Audit Logs
-            </Link>
-          </div>
+          <button className="btn-secondary">
+            Mở màn hình backup &amp; logs
+          </button>
         </div>
 
         <div className="dash-card">
@@ -62,9 +50,9 @@ const AdminDashboard = () => {
             hints…), xem log AI (prompt, model ID, timestamp, input hash) và
             xuất báo cáo phục vụ kiểm toán.
           </p>
-          <Link to="/admin/ai-governance" className="btn-secondary">
+          <button className="btn-secondary">
             Bảng điều khiển AI governance
-          </Link>
+          </button>
         </div>
 
         <div className="dash-card">
