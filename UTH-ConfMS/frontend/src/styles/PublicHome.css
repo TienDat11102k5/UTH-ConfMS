@@ -1,0 +1,169 @@
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.public-home {
+  font-family: 'Roboto', Arial, sans-serif;
+  color: #0b2e59;
+  background-color: #ffffff; /* ❗ nền trắng toàn trang */
+  line-height: 1.6;
+}
+
+/* =======================
+   HERO (XANH PORTAL UTH)
+======================= */
+.hero {
+  background-color: #008080; /* ✅ xanh portal UTH */
+  color: #ffffff;
+  text-align: center;
+  padding: 100px 20px 80px;
+}
+
+.hero h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.hero p {
+  font-size: 1.15rem;
+  max-width: 700px;
+  margin: 0 auto 28px;
+}
+
+.hero .btn {
+  background-color: #ffffff;
+  color: #008080;
+  padding: 12px 30px;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.hero .btn:hover {
+  background-color: #f1f1f1;
+  transform: translateY(-2px);
+}
+
+/* =======================
+   SECTIONS (TRẮNG – NHẠT)
+======================= */
+.section {
+  padding: 70px 20px;
+  background-color: #ffffff; /* ❗ không xám */
+  text-align: center;
+}
+
+.section:nth-child(even) {
+  background-color: #f6f8f8; /* xám rất nhạt giống portal */
+}
+
+.section h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #008080;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.section h2::after {
+  content: "";
+  width: 60px;
+  height: 4px;
+  background-color: #008080;
+  display: block;
+  margin: 12px auto 0;
+  border-radius: 2px;
+}
+
+/* =======================
+   CARDS
+======================= */
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 22px;
+}
+
+.card {
+  background-color: #ffffff;
+  width: 280px;
+  padding: 24px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 22px rgba(0,0,0,0.12);
+}
+
+.card h3 {
+  color: #008080;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 0.95rem;
+  color: #333333;
+}
+
+/* =======================
+   NEWS LIST
+======================= */
+.news-list {
+  list-style: none;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0;
+  text-align: left;
+}
+
+.news-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e5e5;
+  font-size: 1.05rem;
+}
+
+.news-list li strong {
+  color: #008080;
+}
+
+/* =======================
+   FOOTER (XANH PORTAL)
+======================= */
+.footer {
+  background-color: #008080;
+  color: #ffffff;
+  text-align: center;
+  padding: 36px 20px;
+  font-size: 0.95rem;
+}
+
+.footer a {
+  color: #e0f2f2;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* =======================
+   LINKS
+======================= */
+a {
+  transition: all 0.3s ease;
+}
+
+a:hover {
+  opacity: 0.85;
+}
