@@ -1,5 +1,6 @@
 // src/pages/admin/AdminDashboard.jsx
 import React from "react";
+import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/Layout/DashboardLayout.jsx";
 
 const AdminDashboard = () => {
@@ -13,9 +14,9 @@ const AdminDashboard = () => {
         <div className="dash-card">
           <h3>Tenancy &amp; RBAC</h3>
           <p>
-            Quản lý nhiều conference trong cùng một hệ thống, tạo tài khoản,
-            gán vai trò (Author, Reviewer, PC, Chair, Admin) và phân quyền truy
-            cập chi tiết.
+            Quản lý nhiều conference trong cùng một hệ thống, tạo tài khoản, gán
+            vai trò (Author, Reviewer, PC, Chair, Admin) và phân quyền truy cập
+            chi tiết.
           </p>
           <button className="btn-primary">
             Quản lý người dùng &amp; vai trò
@@ -28,9 +29,7 @@ const AdminDashboard = () => {
             Cấu hình SMTP server, domain gửi email, giới hạn quota theo hội
             nghị, theo dõi lỗi gửi và trạng thái hàng đợi email.
           </p>
-          <button className="btn-secondary">
-            Cấu hình email hệ thống
-          </button>
+          <button className="btn-secondary">Cấu hình email hệ thống</button>
         </div>
 
         <div className="dash-card">
@@ -54,6 +53,14 @@ const AdminDashboard = () => {
           <button className="btn-secondary">
             Bảng điều khiển AI governance
           </button>
+        </div>
+
+        <div className="dash-card">
+          <h3>Conference Management</h3>
+          <p>Quản lý hội nghị: tạo, chỉnh sửa, xoá hội nghị (chỉ admin).</p>
+          <Link to="/admin/conferences" className="btn-primary">
+            Quản lý hội nghị
+          </Link>
         </div>
       </div>
     </DashboardLayout>
