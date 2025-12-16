@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import apiClient from "../../apiClient";
+import PortalHeader from "../../components/PortalHeader";
 
 const AuthorNewSubmissionPage = () => {
   const navigate = useNavigate();
@@ -79,22 +80,7 @@ const AuthorNewSubmissionPage = () => {
 
   return (
     <div className="dash-page">
-      <header className="dash-header">
-        <div className="dash-header-left">
-          <div className="dash-logo-mark">UTH</div>
-          <div className="dash-logo-text">
-            UTH-ConfMS · New Submission
-          </div>
-        </div>
-        <nav className="dash-header-right">
-          <Link to="/" className="nav-link">
-            Trang chủ
-          </Link>
-          <Link to="/author/submissions" className="nav-link">
-            Bài nộp của tôi
-          </Link>
-        </nav>
-      </header>
+      <PortalHeader ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
 
       <main className="dash-main">
         <section className="dash-section">
@@ -106,10 +92,7 @@ const AuthorNewSubmissionPage = () => {
                   Portal
                 </Link>
                 <span className="breadcrumb-separator">/</span>
-                <Link
-                  to="/author/submissions"
-                  className="breadcrumb-link"
-                >
+                <Link to="/author/submissions" className="breadcrumb-link">
                   Author submissions
                 </Link>
                 <span className="breadcrumb-separator">/</span>
@@ -158,8 +141,7 @@ const AuthorNewSubmissionPage = () => {
 
                   <div className="form-group">
                     <label htmlFor="abstractText">
-                      Tóm tắt (Abstract){" "}
-                      <span style={{ color: "red" }}>*</span>
+                      Tóm tắt (Abstract) <span style={{ color: "red" }}>*</span>
                     </label>
                     <textarea
                       id="abstractText"
@@ -197,8 +179,7 @@ const AuthorNewSubmissionPage = () => {
                 <div>
                   <div className="form-group">
                     <label htmlFor="trackId">
-                      Track / Chủ đề{" "}
-                      <span style={{ color: "red" }}>*</span>
+                      Track / Chủ đề <span style={{ color: "red" }}>*</span>
                     </label>
                     <input
                       id="trackId"
@@ -212,15 +193,14 @@ const AuthorNewSubmissionPage = () => {
                       placeholder="Nhập ID track (ví dụ: 1, 2, 3...)"
                     />
                     <div className="field-hint">
-                      Tạm thời nhập ID track thực tế theo cấu hình backend
-                      (sau này có thể load danh sách track từ API riêng).
+                      Tạm thời nhập ID track thực tế theo cấu hình backend (sau
+                      này có thể load danh sách track từ API riêng).
                     </div>
                   </div>
 
                   <div className="form-group">
                     <label htmlFor="file">
-                      File bài báo (PDF){" "}
-                      <span style={{ color: "red" }}>*</span>
+                      File bài báo (PDF) <span style={{ color: "red" }}>*</span>
                     </label>
                     <input
                       id="file"

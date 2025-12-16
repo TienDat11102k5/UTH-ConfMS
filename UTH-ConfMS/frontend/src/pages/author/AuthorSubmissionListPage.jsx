@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import apiClient from "../../apiClient";
+import PortalHeader from "../../components/PortalHeader";
 
 const AuthorSubmissionListPage = () => {
   const navigate = useNavigate();
@@ -53,22 +54,7 @@ const AuthorSubmissionListPage = () => {
 
   return (
     <div className="dash-page">
-      <header className="dash-header">
-        <div className="dash-header-left">
-          <div className="dash-logo-mark">UTH</div>
-          <div className="dash-logo-text">
-            UTH-ConfMS · Author Submissions
-          </div>
-        </div>
-        <nav className="dash-header-right">
-          <Link to="/" className="nav-link">
-            Trang chủ
-          </Link>
-          <Link to="/author/submissions" className="nav-link">
-            Bài nộp của tôi
-          </Link>
-        </nav>
-      </header>
+      <PortalHeader ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
 
       <main className="dash-main">
         <section className="dash-section">
@@ -129,8 +115,7 @@ const AuthorSubmissionListPage = () => {
                   <tr>
                     <td colSpan={7} className="table-empty">
                       Chưa có bài nộp nào. Hãy bấm{" "}
-                      <strong>“Nộp bài mới”</strong> để tạo submission đầu
-                      tiên.
+                      <strong>“Nộp bài mới”</strong> để tạo submission đầu tiên.
                     </td>
                   </tr>
                 )}
@@ -147,9 +132,7 @@ const AuthorSubmissionListPage = () => {
                       <button
                         type="button"
                         className="btn-secondary table-action"
-                        onClick={() =>
-                          navigate(`/author/submissions/${s.id}`)
-                        }
+                        onClick={() => navigate(`/author/submissions/${s.id}`)}
                       >
                         Chi tiết
                       </button>

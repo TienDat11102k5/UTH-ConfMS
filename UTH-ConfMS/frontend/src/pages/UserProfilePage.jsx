@@ -8,7 +8,8 @@ import "../styles/UserProfilePage.css";
 const UserProfilePage = () => {
   const navigate = useNavigate();
   const [currentUserState, setCurrentUserState] = useState(getCurrentUser()); // Thêm state cho currentUser
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // loading khi submit
+  const [fetchingProfile, setFetchingProfile] = useState(false); // loading khi đồng bộ profile
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -31,7 +32,7 @@ const UserProfilePage = () => {
       navigate("/login");
       return;
     }
-    // Khởi tạo form với dữ liệu user hiện tại
+    // Khởi tạo form với dữ liệu user hiện tại (local)
     const userData = {
       fullName: currentUserState.fullName || currentUserState.name || "",
       dateOfBirth: currentUserState.dateOfBirth || "",
@@ -50,7 +51,45 @@ const UserProfilePage = () => {
         currentUserState.avatarUrl ||
         currentUserState.avatar
     );
-  }, [currentUserState, navigate]); // Depend vào currentUserState (state ổn định)
+
+    // Đồng bộ lại dữ liệu mới nhất từ backend để tránh mất dữ liệu sau reload
+    const loadProfile = async () => {
+      try {
+        setFetchingProfile(true);
+        const res = await apiClient.get("/user/profile");
+        if (!res?.data) return;
+        const refreshed = {
+          fullName: res.data.fullName || res.data.name || "",
+          dateOfBirth: res.data.dateOfBirth || "",
+          email: res.data.email || "",
+          phone: res.data.phone || "",
+          affiliation: res.data.affiliation || "",
+          gender: res.data.gender || "",
+          address: res.data.address || "",
+          bio: res.data.bio || "",
+          avatar: res.data.avatarUrl || res.data.avatar || res.data.photoURL,
+        };
+        setFormData((prev) => ({ ...prev, ...refreshed }));
+        setOriginalFormData(refreshed);
+        setAvatarPreview(
+          refreshed.avatar ||
+            currentUserState.photoURL ||
+            currentUserState.avatarUrl ||
+            currentUserState.avatar
+        );
+        // Lưu lại localStorage để lần vào sau vẫn có dữ liệu
+        const updatedUser = { ...currentUserState, ...res.data };
+        setCurrentUser(updatedUser, { remember: true });
+        setCurrentUserState(updatedUser);
+      } catch (err) {
+        console.error("Không tải được profile mới nhất:", err);
+      } finally {
+        setFetchingProfile(false);
+      }
+    };
+
+    loadProfile();
+  }, [navigate]); // chỉ chạy khi mount hoặc navigate đổi (tránh loop)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -207,6 +246,14 @@ const UserProfilePage = () => {
         </div>
         {error && <div className="alert alert-error">{error}</div>}
         {success && <div className="alert alert-success">{success}</div>}
+        {fetchingProfile && (
+          <div
+            className="alert"
+            style={{ marginTop: "1rem", color: "#6b7280" }}
+          >
+            Đang tải thông tin mới nhất...
+          </div>
+        )}
         <div className="profile-content">
           {/* Avatar Section */}
           <div className="profile-avatar-section">
@@ -260,7 +307,7 @@ const UserProfilePage = () => {
                     onClick={handleEditClick}
                     style={{ padding: "8px 20px", fontSize: "14px" }}
                   >
-                    ✏️ Chỉnh sửa
+                    Chỉnh sửa
                   </button>
                 )}
               </div>
