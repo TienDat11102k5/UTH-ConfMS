@@ -5,10 +5,12 @@ import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
 import "../../styles/ConferenceDetail.css";
 
-const formatDate = (dateString) => {
+const formatDateTime = (dateString) => {
   if (!dateString) return "Đang cập nhật";
   try {
-    return new Date(dateString).toLocaleDateString("vi-VN", {
+    return new Date(dateString).toLocaleString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -82,6 +84,12 @@ const ConferenceDetail = () => {
     conf.submitDeadline ||
     conf.deadline ||
     conf.paperDeadline;
+  const reviewDeadline = conf.reviewDeadline;
+  const cameraReadyDeadline = conf.cameraReadyDeadline;
+  const blindReview =
+    conf.isBlindReview === true ||
+    conf.blindReview === true ||
+    conf.isBlindReview === "true";
 
   const isPastDeadline = (() => {
     if (!submissionDeadline) return false;
@@ -107,28 +115,38 @@ const ConferenceDetail = () => {
             <div className="conf-detail-meta">
               <div className="meta-item">
                 <span className="meta-label">Ngày bắt đầu</span>
-                <span className="meta-value">{formatDate(conf.startDate)}</span>
+                <span className="meta-value">
+                  {formatDateTime(conf.startDate)}
+                </span>
               </div>
               <div className="meta-item">
                 <span className="meta-label">Ngày kết thúc</span>
-                <span className="meta-value">{formatDate(conf.endDate)}</span>
+                <span className="meta-value">
+                  {formatDateTime(conf.endDate)}
+                </span>
               </div>
               <div className="meta-item">
                 <span className="meta-label">Hạn nộp bài</span>
                 <span className="meta-value">
-                  {formatDate(submissionDeadline)}
+                  {formatDateTime(submissionDeadline)}
                 </span>
               </div>
-              {conf.location && (
-                <div className="meta-item">
-                  <span className="meta-label">Địa điểm</span>
-                  <span className="meta-value">{conf.location}</span>
-                </div>
-              )}
+              <div className="meta-item">
+                <span className="meta-label">Hạn review</span>
+                <span className="meta-value">
+                  {formatDateTime(reviewDeadline)}
+                </span>
+              </div>
+              <div className="meta-item">
+                <span className="meta-label">Hạn camera-ready</span>
+                <span className="meta-value">
+                  {formatDateTime(cameraReadyDeadline)}
+                </span>
+              </div>
             </div>
             <div className="conf-detail-cta">
               <Link
-                to={`/author/submit?confId=${conf.id}`}
+                to={`/author/submissions/new?confId=${conf.id}`}
                 className={`btn-primary ${isPastDeadline ? "disabled" : ""}`}
                 onClick={(e) => {
                   if (isPastDeadline) e.preventDefault();
@@ -139,6 +157,12 @@ const ConferenceDetail = () => {
               </Link>
               <Link to="/author/dashboard" className="btn-secondary">
                 Vào dashboard tác giả
+              </Link>
+              <Link
+                to={`/author/submissions?confId=${conf.id}`}
+                className="btn-secondary"
+              >
+                Bài đã nộp cho hội nghị này
               </Link>
             </div>
           </div>
@@ -152,15 +176,10 @@ const ConferenceDetail = () => {
                   : "Đang cập nhật"}
               </li>
               <li>
-                <strong>Trạng thái:</strong> {conf.status || "Đang mở"}
+                <strong>Blind review:</strong> {blindReview ? "Có" : "Không"}
               </li>
               <li>
-                <strong>Ngôn ngữ:</strong>{" "}
-                {conf.language || conf.languages || "Đang cập nhật"}
-              </li>
-              <li>
-                <strong>Hình thức:</strong>{" "}
-                {conf.format || "Trực tiếp / Online"}
+                <strong>Tên hội nghị:</strong> {conf.name}
               </li>
             </ul>
           </div>
@@ -171,17 +190,33 @@ const ConferenceDetail = () => {
           <div className="conf-detail-timeline">
             <div className="timeline-item">
               <div className="timeline-label">Mở nộp bài</div>
-              <div className="timeline-date">{formatDate(conf.startDate)}</div>
+              <div className="timeline-date">
+                {formatDateTime(conf.startDate)}
+              </div>
             </div>
             <div className="timeline-item">
               <div className="timeline-label">Hạn nộp bài</div>
               <div className="timeline-date">
-                {formatDate(submissionDeadline)}
+                {formatDateTime(submissionDeadline)}
+              </div>
+            </div>
+            <div className="timeline-item">
+              <div className="timeline-label">Kết thúc review</div>
+              <div className="timeline-date">
+                {formatDateTime(reviewDeadline)}
+              </div>
+            </div>
+            <div className="timeline-item">
+              <div className="timeline-label">Hạn camera-ready</div>
+              <div className="timeline-date">
+                {formatDateTime(cameraReadyDeadline)}
               </div>
             </div>
             <div className="timeline-item">
               <div className="timeline-label">Ngày diễn ra</div>
-              <div className="timeline-date">{formatDate(conf.endDate)}</div>
+              <div className="timeline-date">
+                {formatDateTime(conf.endDate)}
+              </div>
             </div>
           </div>
         </section>

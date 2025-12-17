@@ -19,8 +19,9 @@ import PublicCfp from "./pages/public/PublicCfp";
 import PublicAcceptedPapers from "./pages/public/PublicAcceptedPapers";
 
 import AuthorDashboard from "./pages/author/AuthorDashboard.jsx";
-import AuthorSubmissionsPage from "./pages/author/AuthorSubmissionsPage.jsx";
-import AuthorSubmissionFormPage from "./pages/author/AuthorSubmissionFormPage.jsx";
+import AuthorSubmissionListPage from "./pages/author/AuthorSubmissionListPage.jsx";
+import AuthorSubmissionEditPage from "./pages/author/AuthorSubmissionEditPage.jsx";
+import AuthorNewSubmissionPage from "./pages/author/AuthorNewSubmissionPage.jsx";
 
 import ReviewerDashboard from "./pages/reviewer/ReviewerDashboard.jsx";
 import ChairDashboard from "./pages/chair/ChairDashboard.jsx";
@@ -29,12 +30,12 @@ import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminConferences from "./pages/admin/AdminConferences.jsx";
 import AdminConferenceEdit from "./pages/admin/AdminConferenceEdit.jsx";
 
-import TenantManagement from "./pages/admin/TenantManagement.jsx";     
-import SmtpConfigPage from "./pages/admin/SmtpConfigPage.jsx";         
-import AuditLogPage from "./pages/admin/AuditLogPage.jsx";             
-import BackupPage from "./pages/admin/BackupPage.jsx";                
-import AiGovernancePage from "./pages/admin/AiGovernancePage.jsx";   
-import RbacManagement from "./pages/admin/RbacManagement.jsx";         
+import TenantManagement from "./pages/admin/TenantManagement.jsx";
+import SmtpConfigPage from "./pages/admin/SmtpConfigPage.jsx";
+import AuditLogPage from "./pages/admin/AuditLogPage.jsx";
+import BackupPage from "./pages/admin/BackupPage.jsx";
+import AiGovernancePage from "./pages/admin/AiGovernancePage.jsx";
+import RbacManagement from "./pages/admin/RbacManagement.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -50,7 +51,6 @@ const App = () => {
         <Route path="/publichome" element={<PublicHome />} />
         <Route path="/cfp" element={<PublicCfp />} />
         <Route path="/accepted-papers" element={<PublicAcceptedPapers />} />
-        
 
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
@@ -64,16 +64,62 @@ const App = () => {
 
         {/* Author */}
         <Route path="/author" element={<ConferenceList />} />
-        <Route path="/author/dashboard" element={<AuthorDashboard />} />
-        <Route path="/author/submissions" element={<AuthorSubmissionsPage />} />
-        <Route path="/author/submit" element={<AuthorSubmissionFormPage />} />
+        <Route
+          path="/author/dashboard"
+          element={
+            <ProtectedRoute>
+              <AuthorDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/author/submissions"
+          element={
+            <ProtectedRoute>
+              <AuthorSubmissionListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/author/submissions/:id"
+          element={
+            <ProtectedRoute>
+              <AuthorSubmissionListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/author/submissions/:id/edit"
+          element={
+            <ProtectedRoute>
+              <AuthorSubmissionEditPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/author/submissions/new"
+          element={
+            <ProtectedRoute>
+              <AuthorNewSubmissionPage />
+            </ProtectedRoute>
+          }
+        />
+        {/* Giữ đường dẫn cũ để tránh lỗi link cũ */}
+        <Route
+          path="/author/submit"
+          element={
+            <ProtectedRoute>
+              <AuthorNewSubmissionPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Reviewer / Chair */}
         <Route path="/reviewer" element={<ReviewerDashboard />} />
         <Route path="/chair" element={<ChairDashboard />} />
 
         {/* --- ADMIN ROUTES (Đã cập nhật đầy đủ) --- */}
-        
+
         {/* 1. Dashboard */}
         <Route
           path="/admin"
@@ -114,7 +160,7 @@ const App = () => {
 
         {/* 4. Cấu hình Email (SmtpConfigPage) */}
         <Route
-          path="/admin/email-settings"  // 👈 Đây chính là đường dẫn bạn đang tìm
+          path="/admin/email-settings" // 👈 Đây chính là đường dẫn bạn đang tìm
           element={
             <ProtectedRoute requiredRole={"ADMIN"}>
               <SmtpConfigPage />
