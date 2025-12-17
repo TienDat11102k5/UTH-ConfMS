@@ -30,6 +30,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminConferences from "./pages/admin/AdminConferences.jsx";
 import AdminConferenceEdit from "./pages/admin/AdminConferenceEdit.jsx";
 import AdminUserEdit from "./pages/admin/AdminUserEdit.jsx";
+import AdminUserCreate from "./pages/admin/AdminUserCreate.jsx";
 
 import TenantManagement from "./pages/admin/TenantManagement.jsx";
 import SmtpConfigPage from "./pages/admin/SmtpConfigPage.jsx";
@@ -164,6 +165,15 @@ const App = () => {
           element={
             <ProtectedRoute requiredRole={"ADMIN"}>
               <AdminUserEdit />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/users/create"
+          element={
+            <ProtectedRoute requiredRole={"ADMIN"}>
+              <AdminUserCreate />
             </ProtectedRoute>
           }
         />
