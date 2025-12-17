@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import apiClient from "../../apiClient";
 
+const roles = ["ADMIN", "CHAIR", "REVIEWER", "AUTHOR"];
+
 const AdminUserCreate = () => {
   const navigate = useNavigate();
 
@@ -10,6 +12,7 @@ const AdminUserCreate = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [role, setRole] = useState("AUTHOR");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -65,7 +68,26 @@ const AdminUserCreate = () => {
         password,
       };
 
-      await apiClient.post("/auth/register", payload, { skipAuth: true });
+      // Use public register endpoint to create local account
+      const res = await apiClient.post("/auth/register", payload, { skipAuth: true });
+
+      // If admin selected a role other than default, update via admin API
+      const newUserId = res?.data?.user?.id;
+      const desiredRole = String(role || "AUTHOR").toUpperCase();
+      if (newUserId && desiredRole && desiredRole !== "AUTHOR") {
+        try {
+          await apiClient.put(`/admin/users/${newUserId}/role`, { role: desiredRole });
+          setSuccessMsg("Tạo tài khoản & phân quyền thành công! Đang quay lại danh sách...");
+          setTimeout(() => navigate("/admin/users"), 900);
+          return;
+        } catch (roleErr) {
+          console.error("Failed to set role:", roleErr);
+          setSuccessMsg("Tạo tài khoản thành công!");
+          setError("Tạo tài khoản thành công nhưng phân quyền thất bại. Bạn có thể phân quyền lại ở danh sách người dùng.");
+          setTimeout(() => navigate("/admin/users"), 1200);
+          return;
+        }
+      }
 
       setSuccessMsg("Tạo tài khoản thành công! Đang quay lại danh sách...");
       setTimeout(() => navigate("/admin/users"), 900);
@@ -99,7 +121,7 @@ const AdminUserCreate = () => {
     <DashboardLayout
       roleLabel="Site Administrator"
       title="Tạo tài khoản"
-      subtitle="Dùng lại API đăng ký để tạo tài khoản LOCAL (mặc định vai trò AUTHOR)."
+      subtitle="Dùng lại API đăng ký để tạo tài khoản LOCAL, sau đó phân quyền theo lựa chọn."
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
@@ -166,8 +188,20 @@ const AdminUserCreate = () => {
 
             <div className="form-group">
               <label className="form-label">Vai trò</label>
-              <input disabled value="AUTHOR" />
-              <small className="form-hint">API đăng ký hiện gán mặc định ROLE_AUTHOR</small>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                disabled={loading}
+              >
+                {roles.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+              <small className="form-hint">
+                Nếu chọn khác AUTHOR, hệ thống sẽ gọi API admin để phân quyền sau khi tạo.
+              </small>
             </div>
           </div>
 
