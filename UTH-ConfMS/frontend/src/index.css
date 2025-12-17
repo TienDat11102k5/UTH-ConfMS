@@ -139,12 +139,26 @@ button {
   box-shadow: var(--shadow-sm);
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover:not(:disabled) {
   background-color: var(--primary-light);
   border-color: var(--primary-light);
   color: var(--primary-dark);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+}
+
+.btn-secondary:disabled {
+  background-color: var(--bg-subtle);
+  color: var(--text-light);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.link-inline:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--primary-light);
 }
 
 .link-inline {
@@ -180,7 +194,9 @@ button {
   margin-bottom: 0.5rem;
 }
 
-.form-group input {
+.form-group input,
+.form-group select,
+.form-group textarea {
   width: 100%;
   padding: 0.875rem 1rem;
   border: 2px solid transparent;
@@ -191,16 +207,27 @@ button {
   transition: all 0.2s;
 }
 
-.form-group input::placeholder {
+.form-group input::placeholder,
+.form-group textarea::placeholder {
   color: #a8b0b9;
 }
 
 /* Hiệu ứng focus input hiện đại */
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
   outline: none;
   background-color: var(--bg-surface);
   border-color: var(--primary-color);
   box-shadow: 0 0 0 4px var(--primary-light);
+}
+
+.form-group input:disabled,
+.form-group select:disabled,
+.form-group textarea:disabled {
+  background-color: var(--bg-subtle);
+  color: var(--text-muted);
+  cursor: not-allowed;
 }
 
 /* --- AUTH PAGES (Login / Register / 404) --- */
@@ -294,6 +321,13 @@ button {
   margin-top: 1rem;
   padding: 0.875rem;
   font-size: 1rem;
+}
+
+/* Secondary action button (e.g. Google login) full-width on auth pages */
+.auth-form .btn-secondary {
+  width: 100%;
+  justify-content: center;
+  margin-top: 0.75rem;
 }
 
 .auth-footer {
@@ -1015,7 +1049,9 @@ button {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   border: 1px solid rgba(0, 0, 0, 0.04);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .simple-table {
@@ -1207,11 +1243,16 @@ button {
   width: 100%;
   text-align: center;
   padding: 50px 20px;
-  background: linear-gradient(135deg, #008689, #00a6a8);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--accent-color)
+  );
   border-bottom-left-radius: 40px;
   border-bottom-right-radius: 40px;
   color: white;
-  box-shadow: 0 4px 15px rgba(0, 134, 137, 0.3);
+  box-shadow: 0 4px 15px
+    color-mix(in srgb, var(--primary-color) 30%, transparent);
 }
 
 .public-title {
@@ -1237,12 +1278,13 @@ button {
 .timeline-line {
   position: absolute;
   width: 4px;
-  background: #008689;
+  background: var(--primary-color);
   top: 0;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 0 10px rgba(0, 134, 137, 0.4);
+  box-shadow: 0 0 10px
+    color-mix(in srgb, var(--primary-color) 40%, transparent);
   border-radius: 2px;
 }
 
@@ -1275,32 +1317,34 @@ button {
   width: 20px;
   height: 20px;
   background: #ffffff;
-  border: 4px solid #008689;
+  border: 4px solid var(--primary-color);
   border-radius: 50%;
   z-index: 20;
-  box-shadow: 0px 3px 10px rgba(0, 134, 137, 0.35);
+  box-shadow: 0px 3px 10px
+    color-mix(in srgb, var(--primary-color) 35%, transparent);
 }
 
 /* Card */
 .timeline-card {
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 18px 22px;
   border-radius: 16px;
   width: 85%;
-  box-shadow: 0 4px 12px rgba(0, 134, 137, 0.15);
-  border-left: 5px solid #008689;
+  box-shadow: 0 4px 12px
+    color-mix(in srgb, var(--primary-color) 18%, transparent);
+  border-left: 5px solid var(--primary-color);
 }
 
 .timeline-item.left .timeline-card {
   margin-left: auto;
   border-left: none;
-  border-right: 5px solid #008689;
+  border-right: 5px solid var(--primary-color);
 }
 
 .timeline-title {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #005f61;
+  color: var(--primary-dark);
 }
 
 .timeline-info {
