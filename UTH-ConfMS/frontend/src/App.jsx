@@ -29,6 +29,7 @@ import ChairDashboard from "./pages/chair/ChairDashboard.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminConferences from "./pages/admin/AdminConferences.jsx";
 import AdminConferenceEdit from "./pages/admin/AdminConferenceEdit.jsx";
+import AdminUserEdit from "./pages/admin/AdminUserEdit.jsx";
 
 import TenantManagement from "./pages/admin/TenantManagement.jsx";
 import SmtpConfigPage from "./pages/admin/SmtpConfigPage.jsx";
@@ -154,6 +155,15 @@ const App = () => {
           element={
             <ProtectedRoute requiredRole={"ADMIN"}>
               <TenantManagement />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/users/:id/edit"
+          element={
+            <ProtectedRoute requiredRole={"ADMIN"}>
+              <AdminUserEdit />
             </ProtectedRoute>
           }
         />
