@@ -29,6 +29,11 @@ const AuthorNewSubmissionPage = () => {
   const [loadingConf, setLoadingConf] = useState(false);
   const [confError, setConfError] = useState("");
 
+  // Danh sách hội nghị để cho tác giả chọn, không phải nhớ ID
+  const [conferences, setConferences] = useState([]);
+  const [loadingConfs, setLoadingConfs] = useState(false);
+  const [confListError, setConfListError] = useState("");
+
   const [formValues, setFormValues] = useState({
     title: "",
     abstractText: "",
@@ -43,6 +48,43 @@ const AuthorNewSubmissionPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  // Load danh sách hội nghị đang mở (hoặc tất cả) để user chọn
+  useEffect(() => {
+    let ignore = false;
+    const loadConferences = async () => {
+      try {
+        setLoadingConfs(true);
+        setConfListError("");
+        const res = await apiClient.get("/conferences", {
+          skipAuth: true,
+        });
+        if (ignore) return;
+
+        const all = Array.isArray(res.data) ? res.data : [];
+        // Có thể lọc thêm theo thời hạn nộp nếu cần, tạm thời để nguyên
+        setConferences(all);
+      } catch (err) {
+        if (ignore) return;
+        console.error("Error loading conferences for new submission", err);
+        const status = err?.response?.status;
+        if (status === 401 || status === 403) {
+          navigate("/login");
+          return;
+        }
+        setConfListError(
+          "Không tải được danh sách hội nghị. Bạn vẫn có thể nhập Track ID thủ công."
+        );
+      } finally {
+        if (!ignore) setLoadingConfs(false);
+      }
+    };
+
+    loadConferences();
+    return () => {
+      ignore = true;
+    };
+  }, [navigate]);
 
   useEffect(() => {
     if (!confId) return;
@@ -222,6 +264,61 @@ const AuthorNewSubmissionPage = () => {
               Đang tải thông tin hội nghị...
             </div>
           )}
+
+          {/* Chọn hội nghị đang diễn ra để nộp bài */}
+          <div
+            style={{
+              marginBottom: "1rem",
+              padding: "10px 12px",
+              border: "1px solid #e5e7eb",
+              borderRadius: "10px",
+              background: "#fafafa",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "12px",
+              alignItems: "center",
+            }}
+          >
+            <div style={{ fontWeight: 500 }}>Chọn hội nghị muốn nộp bài:</div>
+            <select
+              className="select-input"
+              style={{ minWidth: 260, maxWidth: 360 }}
+              value={confId || ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (!value) {
+                  // Bỏ chọn hội nghị → xoá confId trên URL
+                  navigate("/author/submissions/new");
+                } else {
+                  navigate(`/author/submissions/new?confId=${value}`);
+                }
+              }}
+            >
+              <option value="">-- Chọn hội nghị --</option>
+              {conferences.map((conf) => (
+                <option key={conf.id} value={conf.id}>
+                  {conf.name || `Hội nghị #${conf.id}`}
+                </option>
+              ))}
+            </select>
+            {loadingConfs && (
+              <span style={{ fontSize: "0.9rem", color: "#6b7280" }}>
+                Đang tải danh sách hội nghị...
+              </span>
+            )}
+            {confId && (
+              <span style={{ fontSize: "0.9rem", color: "#374151" }}>
+                Đang nộp bài cho hội nghị ID #{confId}.
+              </span>
+            )}
+          </div>
+
+          {confListError && (
+            <div className="auth-error" style={{ marginBottom: "1rem" }}>
+              {confListError}
+            </div>
+          )}
+
           {conference && (
             <div
               style={{
@@ -237,15 +334,12 @@ const AuthorNewSubmissionPage = () => {
               </div>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 <span>
-                  Hạn nộp bài:{" "}
-                  {formatDateTime(conference.submissionDeadline)}
+                  Hạn nộp bài: {formatDateTime(conference.submissionDeadline)}
                 </span>
                 <span>
                   Hạn review: {formatDateTime(conference.reviewDeadline)}
                 </span>
-                <span>
-                  Track đang mở: {tracks.length || "Đang cập nhật"}
-                </span>
+                <span>Track đang mở: {tracks.length || "Đang cập nhật"}</span>
               </div>
             </div>
           )}
@@ -368,7 +462,12 @@ const AuthorNewSubmissionPage = () => {
                   </div>
 
                   <div className="form-group">
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
                       <label>Đồng tác giả (tùy chọn)</label>
                       <button
                         type="button"
@@ -411,11 +510,20 @@ const AuthorNewSubmissionPage = () => {
                           placeholder="Đơn vị / Affiliation"
                           value={c.affiliation}
                           onChange={(e) =>
-                            handleCoAuthorChange(idx, "affiliation", e.target.value)
+                            handleCoAuthorChange(
+                              idx,
+                              "affiliation",
+                              e.target.value
+                            )
                           }
                           style={{ gridColumn: "1 / span 2" }}
                         />
-                        <div style={{ gridColumn: "1 / span 2", textAlign: "right" }}>
+                        <div
+                          style={{
+                            gridColumn: "1 / span 2",
+                            textAlign: "right",
+                          }}
+                        >
                           {coAuthors.length > 1 && (
                             <button
                               type="button"
@@ -430,8 +538,8 @@ const AuthorNewSubmissionPage = () => {
                       </div>
                     ))}
                     <div className="field-hint">
-                      Bạn có thể bỏ trống nếu không có đồng tác giả. Điền ít nhất tên
-                      hoặc email để lưu đồng tác giả.
+                      Bạn có thể bỏ trống nếu không có đồng tác giả. Điền ít
+                      nhất tên hoặc email để lưu đồng tác giả.
                     </div>
                   </div>
                 </div>

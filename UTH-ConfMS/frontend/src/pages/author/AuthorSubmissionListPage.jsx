@@ -9,8 +9,11 @@ const AuthorSubmissionListPage = () => {
   const [searchParams] = useSearchParams();
   const confId = searchParams.get("confId");
   const [submissions, setSubmissions] = useState([]);
+  const [conferences, setConferences] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingConfs, setLoadingConfs] = useState(false);
   const [error, setError] = useState("");
+  const [confError, setConfError] = useState("");
   const [debugInfo, setDebugInfo] = useState("");
   const [withdrawingId, setWithdrawingId] = useState(null);
 
@@ -63,6 +66,43 @@ const AuthorSubmissionListPage = () => {
       ignore = true;
     };
   }, [confId]);
+
+  // Load danh sách hội nghị để hiển thị dropdown lọc
+  useEffect(() => {
+    let ignore = false;
+
+    const fetchConferences = async () => {
+      try {
+        setLoadingConfs(true);
+        setConfError("");
+        const res = await apiClient.get("/conferences", {
+          skipAuth: true,
+        });
+        if (!ignore) {
+          setConferences(Array.isArray(res.data) ? res.data : []);
+        }
+      } catch (err) {
+        if (!ignore) {
+          console.error("Error loading conferences", err);
+          const status = err?.response?.status;
+          if (status === 401 || status === 403) {
+            navigate("/login");
+            return;
+          }
+          setConfError(
+            "Không tải được danh sách hội nghị. Bạn vẫn có thể xem tất cả bài nộp."
+          );
+        }
+      } finally {
+        if (!ignore) setLoadingConfs(false);
+      }
+    };
+
+    fetchConferences();
+    return () => {
+      ignore = true;
+    };
+  }, [navigate]);
 
   const handleWithdraw = async (id) => {
     if (!id) return;
@@ -144,27 +184,58 @@ const AuthorSubmissionListPage = () => {
             </div>
           </div>
 
-          {confId && (
-            <div
-              style={{
-                marginBottom: "1rem",
-                padding: "10px 12px",
-                border: "1px solid #e5e7eb",
-                borderRadius: "10px",
-                background: "#fafafa",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
+          {/* Bộ lọc theo hội nghị */}
+          <div
+            style={{
+              marginBottom: "1rem",
+              padding: "10px 12px",
+              border: "1px solid #e5e7eb",
+              borderRadius: "10px",
+              background: "#fafafa",
+              display: "flex",
+              gap: "12px",
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <div style={{ fontWeight: 500 }}>Lọc theo hội nghị:</div>
+            <select
+              className="select-input"
+              style={{ minWidth: 240, maxWidth: 360 }}
+              value={confId || ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (!value) {
+                  navigate("/author/submissions");
+                } else {
+                  navigate(`/author/submissions?confId=${value}`);
+                }
               }}
             >
-              <div>Chỉ hiển thị submission của hội nghị ID #{confId}.</div>
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => navigate("/author/submissions")}
-              >
-                Bỏ lọc
-              </button>
+              <option value="">Tất cả hội nghị</option>
+              {conferences.map((conf) => (
+                <option key={conf.id} value={conf.id}>
+                  {conf.name || `Conference #${conf.id}`}
+                </option>
+              ))}
+            </select>
+
+            {loadingConfs && (
+              <span style={{ fontSize: "0.9rem", color: "#6b7280" }}>
+                Đang tải danh sách hội nghị...
+              </span>
+            )}
+
+            {confId && (
+              <span style={{ fontSize: "0.9rem", color: "#374151" }}>
+                Đang hiển thị submission cho hội nghị ID #{confId}.
+              </span>
+            )}
+          </div>
+
+          {confError && (
+            <div className="auth-error" style={{ marginBottom: "1rem" }}>
+              {confError}
             </div>
           )}
 
@@ -194,6 +265,7 @@ const AuthorSubmissionListPage = () => {
                 <tr>
                   <th>Mã</th>
                   <th>Tiêu đề</th>
+                  <th>Hội nghị</th>
                   <th>Track</th>
                   <th>Trạng thái</th>
                   <th>Ngày nộp</th>
@@ -204,7 +276,7 @@ const AuthorSubmissionListPage = () => {
               <tbody>
                 {!loading && submissions.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="table-empty">
+                    <td colSpan={8} className="table-empty">
                       Chưa có bài nộp nào. Hãy bấm{" "}
                       <strong>“Nộp bài mới”</strong> để tạo submission đầu tiên.
                     </td>
@@ -215,6 +287,7 @@ const AuthorSubmissionListPage = () => {
                   <tr key={s.id}>
                     <td>{s.id}</td>
                     <td>{s.title}</td>
+                    <td>{s.conferenceName || s.conferenceId || "-"}</td>
                     <td>{s.trackName || s.trackCode || s.trackId}</td>
                     <td>{s.status || s.reviewStatus}</td>
                     <td>{formatDate(s.submittedAt || s.createdAt)}</td>
