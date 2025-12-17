@@ -77,10 +77,15 @@ public class SubmissionController {
 
     // ==================== 3. XEM LIST CỦA TÔI ====================
     @GetMapping
-    public ResponseEntity<?> getMySubmissions(Authentication authentication) {
+    public ResponseEntity<?> getMySubmissions(
+            Authentication authentication,
+            @RequestParam(value = "conferenceId", required = false) Long conferenceId
+    ) {
         try {
             User currentUser = getCurrentUser(authentication);
-            List<Paper> papers = submissionService.getPapersByAuthor(currentUser.getId());
+            List<Paper> papers = (conferenceId != null)
+                    ? submissionService.getPapersByAuthorAndConference(currentUser.getId(), conferenceId)
+                    : submissionService.getPapersByAuthor(currentUser.getId());
             
             List<PaperResponseDTO> dtos = papers.stream().map(this::mapToDTO).collect(Collectors.toList());
             return ResponseEntity.ok(dtos);

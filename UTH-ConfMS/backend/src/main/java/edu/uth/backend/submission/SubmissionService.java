@@ -73,8 +73,14 @@ public class SubmissionService {
     }
 
     // --- 2. XEM DANH SÁCH BÀI CỦA TÁC GIẢ ---
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public List<Paper> getPapersByAuthor(Long authorId) {
-        return paperRepo.findByMainAuthorId(authorId);
+        return paperRepo.findAllWithDetailsByAuthorId(authorId);
+    }
+
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public List<Paper> getPapersByAuthorAndConference(Long authorId, Long conferenceId) {
+        return paperRepo.findAllWithDetailsByAuthorAndConferenceId(authorId, conferenceId);
     }
 
     // --- 3. XEM CHI TIẾT 1 BÀI ---
