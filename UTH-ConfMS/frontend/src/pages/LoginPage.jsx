@@ -112,13 +112,16 @@ const LoginPage = () => {
 
         {error && <div className="auth-error">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="auth-form" autoComplete="on">
           <div className="form-group">
             <label htmlFor="email">Email *</label>
             <input
               id="email"
+              name="email"
               type="email"
-              autoComplete="email"
+              autoComplete="username"
+              inputMode="email"
+              autoCapitalize="none"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
@@ -130,6 +133,7 @@ const LoginPage = () => {
             <label htmlFor="password">Mật khẩu *</label>
             <input
               id="password"
+              name="password"
               type="password"
               autoComplete="current-password"
               value={password}

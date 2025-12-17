@@ -7,10 +7,18 @@
 ### POST /api/auth/refresh-token
 
 ## 2. User Management APIs
-### GET /api/users
-### GET /api/users/{id}
-### PUT /api/users/{id}
-### DELETE /api/users/{id}
+
+### User (self-service)
+- GET /api/user/profile
+- PUT /api/user/profile
+- POST /api/user/upload-avatar
+
+### Admin user management
+- GET /api/admin/users
+- PUT /api/admin/users/{id}/role
+- PUT /api/admin/users/{id}/status
+- PUT /api/admin/users/{id}/name
+- DELETE /api/admin/users/{id}
 
 ## 3. Conference APIs
 ### GET /api/conferences
