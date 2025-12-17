@@ -154,6 +154,10 @@ public class SubmissionController {
         response.setFilePath(paper.getFilePath());
         if (paper.getStatus() != null) response.setStatus(paper.getStatus().toString());
 
+        // Thời gian tạo/cập nhật (dùng cho ngày nộp / ngày cập nhật)
+        response.setCreatedAt(paper.getCreatedAt());
+        response.setUpdatedAt(paper.getUpdatedAt());
+
         if (paper.getMainAuthor() != null) {
             response.setAuthorId(paper.getMainAuthor().getId());
             response.setAuthorName(paper.getMainAuthor().getFullName());
