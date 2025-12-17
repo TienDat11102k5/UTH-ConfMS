@@ -35,6 +35,27 @@ public class AdminService {
         return userRepo.save(user);
     }
 
+    public AdminUserResponse updateUserStatus(Long userId, boolean enabled) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+        user.setEnabled(enabled);
+        User saved = userRepo.save(user);
+        return new AdminUserResponse(saved);
+    }
+
+    public AdminUserResponse updateUserFullName(Long userId, String fullName) {
+        if (!StringUtils.hasText(fullName)) {
+            throw new RuntimeException("fullName không được để trống");
+        }
+
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        user.setFullName(fullName.trim());
+        User saved = userRepo.save(user);
+        return new AdminUserResponse(saved);
+    }
+
     public Map<String, Long> getSystemStats() {
         Map<String, Long> stats = new HashMap<>();
         stats.put("totalUsers", userRepo.count());
