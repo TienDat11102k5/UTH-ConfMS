@@ -90,8 +90,8 @@ const ConferenceList = () => {
               đồng nghiên cứu.
             </p>
             <div className="conf-cta">
-              <Link to="/author/dashboard" className="btn-primary">
-                Vào Dashboard tác giả
+              <Link to="/author/submissions/new" className="btn-primary">
+                Nộp bài ngay
               </Link>
               <Link to="/program" className="btn-secondary">
                 Xem chương trình
@@ -169,7 +169,10 @@ const ConferenceList = () => {
                   >
                     Xem chi tiết
                   </Link>
-                  <Link to="/author/dashboard" className="btn-primary">
+                  <Link
+                    to={`/author/submissions/new?confId=${conf.id}`}
+                    className="btn-primary"
+                  >
                     Nộp bài
                   </Link>
                 </div>
