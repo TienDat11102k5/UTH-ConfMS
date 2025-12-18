@@ -1,16 +1,16 @@
 /* src/styles/SettingsPage.css */
 .settings-page {
   min-height: 100vh;
-  background-color: #f6f8f8; /* nền portal */
+  background-color: var(--portal-bg); /* nền portal */
   padding: 2rem 1rem;
 }
 
 .settings-container {
   max-width: 800px;
   margin: 0 auto;
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
@@ -20,7 +20,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
-  background-color: #008080; /* xanh portal UTH */
+  background-color: var(--portal-color); /* xanh portal UTH */
   color: #ffffff;
 }
 
@@ -84,7 +84,7 @@
 .settings-section h2 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #008080; /* portal */
+  color: var(--portal-color); /* portal */
   margin-bottom: 0.5rem;
 }
 
@@ -99,20 +99,20 @@
   max-width: 500px;
 }
 
-.form-group {
+.settings-page .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
   margin-bottom: 1.25rem;
 }
 
-.form-group label {
+.settings-page .form-group label {
   font-size: 0.875rem;
   font-weight: 500;
   color: #374151;
 }
 
-.form-group input {
+.settings-page .form-group input {
   padding: 0.625rem 0.875rem;
   border: 1px solid #d1d5db;
   border-radius: 0.375rem;
@@ -120,20 +120,20 @@
   transition: border-color 0.15s ease;
 }
 
-.form-group input:focus {
+.settings-page .form-group input:focus {
   outline: none;
-  border-color: #008080;
-  box-shadow: 0 0 0 3px rgba(0,128,128,0.15);
+  border-color: var(--portal-color);
+  box-shadow: 0 0 0 3px rgba(var(--portal-rgb), 0.15);
 }
 
 /* ===== BUTTON ===== */
-.form-actions {
+.settings-page .form-actions {
   margin-top: 1.5rem;
 }
 
-.btn-primary {
+.settings-page .btn-primary {
   padding: 0.625rem 1.5rem;
-  background-color: #008080;
+  background-color: var(--portal-color);
   color: #ffffff;
   border: none;
   border-radius: 0.375rem;
@@ -143,11 +143,11 @@
   transition: background-color 0.2s ease;
 }
 
-.btn-primary:hover:not(:disabled) {
-  background-color: #006666;
+.settings-page .btn-primary:hover:not(:disabled) {
+  background-color: var(--portal-dark);
 }
 
-.btn-primary:disabled {
+.settings-page .btn-primary:disabled {
   background-color: #9ca3af;
   cursor: not-allowed;
 }

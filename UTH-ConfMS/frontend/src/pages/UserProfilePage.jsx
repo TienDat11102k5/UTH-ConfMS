@@ -247,10 +247,7 @@ const UserProfilePage = () => {
         {error && <div className="alert alert-error">{error}</div>}
         {success && <div className="alert alert-success">{success}</div>}
         {fetchingProfile && (
-          <div
-            className="alert"
-            style={{ marginTop: "1rem", color: "#6b7280" }}
-          >
+          <div className="alert profile-alert-loading">
             Đang tải thông tin mới nhất...
           </div>
         )}
@@ -282,7 +279,7 @@ const UserProfilePage = () => {
                   accept="image/*"
                   onChange={handleAvatarChange}
                   disabled={uploadingAvatar}
-                  style={{ display: "none" }}
+                  className="visually-hidden"
                 />
                 {uploadingAvatar ? "Đang tải lên..." : "Thay đổi ảnh đại diện"}
               </label>
@@ -292,20 +289,13 @@ const UserProfilePage = () => {
           {/* Profile Form */}
           <form className="profile-form" onSubmit={handleSubmit}>
             <div className="form-section">
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
+              <div className="profile-section-header">
                 <h2>Thông tin cơ bản</h2>
                 {!isEditing && (
                   <button
                     type="button"
-                    className="btn-primary"
+                    className="btn-primary profile-edit-btn"
                     onClick={handleEditClick}
-                    style={{ padding: "8px 20px", fontSize: "14px" }}
                   >
                     Chỉnh sửa
                   </button>
@@ -322,15 +312,6 @@ const UserProfilePage = () => {
                     onChange={handleChange}
                     required
                     disabled={!isEditing}
-                    style={
-                      isEditing
-                        ? {
-                            backgroundColor: "white",
-                            cursor: "text",
-                            opacity: 1,
-                          }
-                        : {}
-                    }
                   />
                 </div>
 
@@ -343,15 +324,6 @@ const UserProfilePage = () => {
                     value={formData.dateOfBirth || ""}
                     onChange={handleChange}
                     disabled={!isEditing}
-                    style={
-                      isEditing
-                        ? {
-                            backgroundColor: "white",
-                            cursor: "text",
-                            opacity: 1,
-                          }
-                        : {}
-                    }
                   />
                 </div>
               </div>
@@ -370,15 +342,6 @@ const UserProfilePage = () => {
                     disabled={!isEditing}
                     maxLength="10"
                     title="Số điện thoại phải có 10 số và bắt đầu bằng số 0"
-                    style={
-                      isEditing
-                        ? {
-                            backgroundColor: "white",
-                            cursor: "text",
-                            opacity: 1,
-                          }
-                        : {}
-                    }
                   />
                   {isEditing && formData.phone && formData.phone.length > 0 && (
                     <small

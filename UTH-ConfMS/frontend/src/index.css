@@ -8,6 +8,13 @@
   --primary-light: #e5f0ff;
   --accent-color: #00d9f9; /* Màu nhấn tươi sáng */
 
+  /* Portal (teal) palette used by some pages */
+  --portal-color: #008080;
+  --portal-dark: #006666;
+  --portal-light: #e6f4f4;
+  --portal-bg: #f6f8f8;
+  --portal-rgb: 0, 128, 128;
+
   /* Neutral scales */
   --text-main: #161616;
   --text-muted: #525252;
