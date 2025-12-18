@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.api.v1 import authors, reviewers, chairs, assignment, governance, monitoring
-from src.core.infra.config import get_settings
+from api.v1 import authors, reviewers, chairs, assignment, governance, monitoring
+from core.infra.config import get_settings
 import logging
 
 # Cấu hình logging
@@ -68,7 +68,7 @@ async def shutdown_event():
     logger.info("Dịch vụ AI đang tắt...")
     # Đóng các kết nối nếu cần
     try:
-        from src.core.governance.feature_flags import get_feature_flag_manager
+        from core.governance.feature_flags import get_feature_flag_manager
         manager = get_feature_flag_manager()
         await manager.close()
     except Exception as e:

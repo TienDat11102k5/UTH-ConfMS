@@ -19,6 +19,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy application code
 COPY src/ ./src/
 
+# Set Python path to include /app/src so imports work correctly
+ENV PYTHONPATH=/app/src
+
 # Create non-root user for security
 RUN useradd -m -u 1000 aiuser && \
     chown -R aiuser:aiuser /app
