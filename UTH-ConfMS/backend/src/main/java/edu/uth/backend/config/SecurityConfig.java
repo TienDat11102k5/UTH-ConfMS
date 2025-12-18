@@ -77,7 +77,7 @@ public class SecurityConfig {
         .filter(s -> !s.isBlank())
         .toList();
 
-    // allow specific origins (or patterns) and common headers so browser preflight succeeds
+    // Cho phép các origin cụ thể (hoặc mẫu) và header phổ biến để preflight của trình duyệt thành công
     cfg.setAllowedOrigins(origins);
     cfg.setAllowedOriginPatterns(origins);
     cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));

@@ -18,12 +18,12 @@ public class JwtTokenProvider {
   private final Key key;
   private final long expirationMs;
 
-  public JwtTokenProvider(
+    public JwtTokenProvider(
       @Value("${app.jwt.secret}") String secret,
       @Value("${app.jwt.expiration-ms}") long expirationMs
   ) {
     if (secret == null || secret.length() < 32) {
-      throw new IllegalArgumentException("JWT secret must be at least 32 characters.");
+      throw new IllegalArgumentException("JWT secret phải có ít nhất 32 ký tự.");
     }
     this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     this.expirationMs = expirationMs;

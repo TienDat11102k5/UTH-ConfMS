@@ -30,7 +30,7 @@ public class DataSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        System.out.println("⏳ DataSeeder: initializing base data...");
+        System.out.println("⏳ DataSeeder: khởi tạo dữ liệu cơ sở...");
 
         Role roleAdmin = ensureRole("ROLE_ADMIN");
         ensureRole("ROLE_CHAIR");
@@ -50,7 +50,7 @@ public class DataSeeder implements CommandLineRunner {
             admin.setRoles(roles);
 
             userRepo.save(admin);
-            System.out.println("✅ Seeded admin user: admin@uth.edu.vn (password: admin123)");
+            System.out.println("✅ Đã tạo người dùng admin: admin@uth.edu.vn (mật khẩu: admin123)");
         } else {
             if (admin.getRoles() == null) admin.setRoles(new HashSet<>());
 
@@ -60,13 +60,13 @@ public class DataSeeder implements CommandLineRunner {
             if (!hasAdminRole) {
                 admin.getRoles().add(roleAdmin);
                 userRepo.save(admin);
-                System.out.println("✅ Updated existing admin user: added ROLE_ADMIN");
+                System.out.println("✅ Đã cập nhật người dùng admin: thêm ROLE_ADMIN");
             } else {
-                System.out.println("ℹ️ Admin already exists with ROLE_ADMIN");
+                System.out.println("ℹ️ Người dùng admin đã tồn tại với ROLE_ADMIN");
             }
         }
 
-        System.out.println("✅ DataSeeder done.");
+        System.out.println("✅ DataSeeder hoàn tất.");
     }
 
     private Role ensureRole(String roleName) {
@@ -74,7 +74,7 @@ public class DataSeeder implements CommandLineRunner {
                 .orElseGet(() -> {
                     Role r = new Role(roleName);
                     Role saved = roleRepo.save(r);
-                    System.out.println("✅ Seeded role: " + roleName);
+                    System.out.println("✅ Đã khởi tạo role: " + roleName);
                     return saved;
                 });
     }

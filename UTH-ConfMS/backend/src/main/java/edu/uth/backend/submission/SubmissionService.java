@@ -93,7 +93,7 @@ public class SubmissionService {
     public Paper updatePaper(Long paperId, String newTitle, String newAbstract, MultipartFile newFile, Long currentUserId) {
         Paper paper = getPaperById(paperId);
 
-        // Security Check: Chỉ tác giả chính mới được sửa
+        // Kiểm tra bảo mật: chỉ tác giả chính mới được sửa
         if (!paper.getMainAuthor().getId().equals(currentUserId)) {
             throw new RuntimeException("Bạn không có quyền chỉnh sửa bài báo này!");
         }
@@ -115,7 +115,7 @@ public class SubmissionService {
             String old = paper.getFilePath();
             String fileName = fileStorageUtil.saveFile(newFile, "submissions");
             paper.setFilePath(fileName);
-            // Delete old file if exists
+            // Xóa file cũ nếu tồn tại
             try { fileStorageUtil.deleteFile(old, "submissions"); } catch (Exception ignored) {}
         }
 

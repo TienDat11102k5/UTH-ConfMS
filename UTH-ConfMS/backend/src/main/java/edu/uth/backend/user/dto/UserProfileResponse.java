@@ -32,13 +32,13 @@ public class UserProfileResponse {
         this.bio = user.getBio();
         this.provider = user.getProvider().name();
         
-        // Get primary role
+        // Lấy vai trò chính
         if (user.getRoles() != null && !user.getRoles().isEmpty()) {
             this.role = user.getRoles().iterator().next().getName();
         }
     }
 
-    // Getters and Setters
+    // Getter và Setter
     public Long getId() {
         return id;
     }

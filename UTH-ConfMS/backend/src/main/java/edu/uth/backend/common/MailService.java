@@ -33,9 +33,9 @@ public class MailService {
 
     try {
       sendHtmlEmail(to, subject, html, plainText);
-      logger.info("Sent reset password email to: {}", to);
+      logger.info("Đã gửi email đặt lại mật khẩu tới: {}", to);
     } catch (Exception ex) {
-      logger.error("Failed to send reset password email to {}: {}", to, ex.getMessage(), ex);
+      logger.error("Gửi email đặt lại mật khẩu tới {} thất bại: {}", to, ex.getMessage(), ex);
     }
   }
 
@@ -58,7 +58,7 @@ public class MailService {
       msg.setText(text);
       mailSender.send(msg);
     } catch (Exception ex) {
-      logger.error("Failed to send simple mail to {}: {}", to, ex.getMessage(), ex);
+      logger.error("Gửi email đơn giản tới {} thất bại: {}", to, ex.getMessage(), ex);
     }
   }
 

@@ -129,10 +129,10 @@ public class AuthService {
     if (createFirebaseUserOnRegister) {
       try {
         createFirebaseUser(email, req.getPassword(), req.getFullName());
-        System.out.println("✅ Created Firebase Authentication user for: " + email);
+          System.out.println("✅ Đã tạo Firebase Authentication user cho: " + email);
       } catch (Exception e) {
         // Log lỗi nhưng KHÔNG rollback transaction (user đã được lưu vào DB)
-        System.err.println("⚠️ Failed to create Firebase user for " + email + ": " + e.getMessage());
+        System.err.println("⚠️ Tạo Firebase user thất bại cho " + email + ": " + e.getMessage());
         // Có thể gửi thông báo cho admin hoặc retry sau
       }
     }
@@ -158,7 +158,7 @@ public class AuthService {
       FirebaseAuth.getInstance().createUser(createRequest);
     } catch (com.google.firebase.auth.FirebaseAuthException e) {
       // Log chi tiết lỗi
-      System.err.println("Firebase createUser failed: " + e.getMessage());
+      System.err.println("Tạo Firebase user thất bại: " + e.getMessage());
       throw e;
     }
   }
@@ -261,14 +261,14 @@ public class AuthService {
       user.getRoles().add(authorRole);
 
       user = userRepository.save(user);
-      System.out.println("✅ Created new GOOGLE user: " + email);
+      System.out.println("✅ Đã tạo người dùng GOOGLE mới: " + email);
       
     } else {
       // 4b. User đã tồn tại -> cập nhật thông tin
       
       // Merge account: cho phép user LOCAL đăng nhập bằng Google
       if (user.getProvider() == User.AuthProvider.LOCAL) {
-        System.out.println("ℹ️ Merging LOCAL account to GOOGLE: " + email);
+        System.out.println("ℹ️ Gộp tài khoản LOCAL sang GOOGLE: " + email);
         user.setProvider(User.AuthProvider.GOOGLE);
       }
       
@@ -292,7 +292,7 @@ public class AuthService {
       }
 
       user = userRepository.save(user);
-      System.out.println("✅ Updated GOOGLE user: " + email);
+      System.out.println("✅ Đã cập nhật người dùng GOOGLE: " + email);
     }
 
     // 5. Phát hành JWT
@@ -344,9 +344,9 @@ public class AuthService {
     // GỬI EMAIL THẬT (SMTP) — MailService phải implement phương thức sendResetPasswordEmail
     try {
       mailService.sendResetPasswordEmail(user.getEmail(), user.getFullName(), resetLink);
-      System.out.println("✅ Sent reset password email to: " + email);
+      System.out.println("✅ Đã gửi email hướng dẫn đặt lại mật khẩu tới: " + email);
     } catch (Exception e) {
-      System.err.println("⚠️ Failed to send reset email to " + email + ": " + e.getMessage());
+      System.err.println("⚠️ Gửi email đặt lại mật khẩu tới " + email + " thất bại: " + e.getMessage());
       // Nếu gửi email thất bại, có thể:
       // 1. Log để admin biết
       // 2. Xóa token (hoặc giữ lại để retry)

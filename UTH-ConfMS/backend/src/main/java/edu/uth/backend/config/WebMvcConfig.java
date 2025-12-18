@@ -15,7 +15,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Serve uploaded files
+        // Phục vụ các file đã tải lên
         String uploadPath = Path.of(uploadDir).toAbsolutePath().toString();
         registry
             .addResourceHandler("/uploads/**")

@@ -120,6 +120,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-mail</artifactId>
     </dependency>
+
+    <!-- WebClient for AI Service calls -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webflux</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

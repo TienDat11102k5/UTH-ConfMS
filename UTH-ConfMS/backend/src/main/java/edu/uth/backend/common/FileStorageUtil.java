@@ -31,15 +31,15 @@ public class FileStorageUtil {
         try {
             if (!Files.exists(rootLocation)) {
                 Files.createDirectories(rootLocation);
-                logger.info("Created upload directory: {}", rootLocation.toAbsolutePath());
+                logger.info("Đã tạo thư mục upload: {}", rootLocation.toAbsolutePath());
             }
 
             Path target = rootLocation.resolve(fileName);
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
-            logger.info("Saved uploaded file to {} (size: {} bytes)", target.toAbsolutePath(), file.getSize());
+            logger.info("Đã lưu file tải lên tại {} (kích thước: {} bytes)", target.toAbsolutePath(), file.getSize());
             return fileName;
         } catch (IOException e) {
-            logger.error("Error saving uploaded file to {}: {}", rootLocation, e.getMessage());
+            logger.error("Lỗi khi lưu file lên {}: {}", rootLocation, e.getMessage());
             throw new RuntimeException("Lỗi hệ thống khi lưu file: " + e.getMessage());
         }
     }
@@ -52,10 +52,10 @@ public class FileStorageUtil {
             Path target = rootLocation.resolve(fileName);
             if (Files.exists(target)) {
                 Files.delete(target);
-                logger.info("Deleted file {}", target.toAbsolutePath());
+                logger.info("Đã xóa file {}", target.toAbsolutePath());
             }
         } catch (IOException e) {
-            logger.warn("Failed to delete file {}: {}", fileName, e.getMessage());
+            logger.warn("Xóa file {} thất bại: {}", fileName, e.getMessage());
         }
     }
 }

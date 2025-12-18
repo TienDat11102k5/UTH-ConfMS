@@ -10,11 +10,11 @@ public class NotificationService {
     public void sendDecisionEmail(String toEmail, String fullName, String paperTitle, PaperStatus decision) {
         // Logic giả lập gửi email (Mock)
         System.out.println("==================================================================");
-        System.out.println("[MOCK EMAIL SERVICE] SENDING DECISION NOTIFICATION...");
+        System.out.println("[MOCK DỊCH VỤ EMAIL] ĐANG GỬI THÔNG BÁO KẾT QUẢ...");
         System.out.println("------------------------------------------------------------------");
-        System.out.println("TO      : " + toEmail + " (" + fullName + ")");
-        System.out.println("SUBJECT : Thông báo kết quả bài báo: " + paperTitle);
-        System.out.println("CONTENT :");
+        System.out.println("NGƯỜI NHẬN: " + toEmail + " (" + fullName + ")");
+        System.out.println("TIÊU ĐỀ : Thông báo kết quả bài báo: " + paperTitle);
+        System.out.println("NỘI DUNG :");
         System.out.println("   Kính gửi tác giả " + fullName + ",");
         System.out.println("   Ban tổ chức xin thông báo bài báo của bạn đã có kết quả: " + decision);
         

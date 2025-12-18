@@ -15,7 +15,7 @@ public class UpdateProfileRequest {
     private LocalDate dateOfBirth;
     private String bio;
 
-    // Getters and Setters
+    // Getter và Setter
     public String getFullName() {
         return fullName;
     }

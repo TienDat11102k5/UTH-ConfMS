@@ -105,7 +105,7 @@ public class SubmissionController {
     ) {
         try {
             User currentUser = getCurrentUser(authentication);
-            // Ownership check
+            // Kiểm tra quyền sở hữu (chỉ tác giả chính được phép)
             Paper existing = submissionService.getPaperById(id);
             if (existing.getMainAuthor() == null || !existing.getMainAuthor().getId().equals(currentUser.getId())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không có quyền sửa bài này");
@@ -180,7 +180,7 @@ public class SubmissionController {
             response.setCoAuthors(ca);
         }
 
-        // Provide download URL for frontend
+        // Cung cấp URL tải về cho frontend
         if (paper.getFilePath() != null && !paper.getFilePath().isBlank()) {
             response.setDownloadUrl(baseUrl + "/uploads/submissions/" + paper.getFilePath());
         }

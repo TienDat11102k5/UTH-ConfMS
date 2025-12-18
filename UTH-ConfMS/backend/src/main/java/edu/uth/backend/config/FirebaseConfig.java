@@ -28,16 +28,16 @@ public class FirebaseConfig {
         : credentialsPath;
 
     if (path == null || path.isBlank()) {
-      // Không init nếu bạn chưa cấu hình; Google login sẽ fail -> đúng hành vi
-      System.out.println("⚠️ Firebase credentials not configured. Google login will be disabled.");
+      // Không init nếu bạn chưa cấu hình; đăng nhập Google sẽ thất bại -> đây là hành vi mong muốn
+      System.out.println("⚠️ Chưa cấu hình credentials Firebase. Đăng nhập Google sẽ bị vô hiệu hóa.");
       return;
     }
 
     // Kiểm tra file tồn tại
     java.io.File credFile = new java.io.File(path);
     if (!credFile.exists()) {
-      System.out.println("⚠️ Firebase credentials file not found: " + credFile.getAbsolutePath());
-      System.out.println("⚠️ Google login will be disabled.");
+      System.out.println("⚠️ Không tìm thấy tệp credentials Firebase: " + credFile.getAbsolutePath());
+      System.out.println("⚠️ Đăng nhập Google sẽ bị vô hiệu hóa.");
       return;
     }
 
@@ -46,11 +46,11 @@ public class FirebaseConfig {
           .setCredentials(GoogleCredentials.fromStream(is))
           .build();
       FirebaseApp.initializeApp(options);
-      System.out.println("✅ Firebase initialized successfully");
+      System.out.println("✅ Firebase khởi tạo thành công");
     } catch (Exception e) {
-      System.err.println("⚠️ Failed to initialize Firebase: " + e.getMessage());
-      System.err.println("⚠️ Google login will be disabled.");
-      // Don't throw exception - allow app to start without Firebase
+      System.err.println("⚠️ Khởi tạo Firebase thất bại: " + e.getMessage());
+      System.err.println("⚠️ Đăng nhập Google sẽ bị vô hiệu hóa.");
+      // Không ném ngoại lệ - cho phép ứng dụng khởi động mà không có Firebase
     }
   }
 }

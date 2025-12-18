@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.*;
  * 
  * ERROR HANDLING:
  * - IllegalArgumentException -> 400 Bad Request
- * - AuthenticationException -> 401 Unauthorized
- * - Exception -> 500 Internal Server Error
+ * - AuthenticationException -> 401 Không được phép
+ * - Exception -> 500 Lỗi máy chủ
  * 
  * SECURITY:
  * - Tất cả endpoints đều public (không cần authentication)
@@ -75,7 +75,7 @@ public class AuthController {
    * 
    * ERRORS:
    * - 400: Email/password sai, account không phải LOCAL
-   * - 401: Authentication failed
+  * - 401: Xác thực thất bại
    */
   @PostMapping("/login")
   public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest req) {
@@ -100,7 +100,7 @@ public class AuthController {
    * 
    * ERRORS:
    * - 400: Token không hợp lệ, không có email
-   * - 500: Firebase verification failed
+  * - 500: Xác minh Firebase thất bại
    */
   @PostMapping("/firebase/google")
   public ResponseEntity<AuthResponse> firebaseGoogle(@Valid @RequestBody FirebaseLoginRequest req) throws Exception {
