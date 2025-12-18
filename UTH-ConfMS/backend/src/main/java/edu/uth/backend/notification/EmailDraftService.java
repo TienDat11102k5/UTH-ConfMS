@@ -2,8 +2,11 @@ package edu.uth.backend.notification;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.uth.backend.ai.AIProxyService;
+import edu.uth.backend.common.MailService;
 import edu.uth.backend.entity.EmailDraft;
+import edu.uth.backend.entity.User;
 import edu.uth.backend.repository.EmailDraftRepository;
+import edu.uth.backend.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,12 @@ public class EmailDraftService {
     
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private MailService mailService;
 
     /**
      * Tạo bản nháp email bằng dịch vụ AI.
@@ -160,13 +169,46 @@ public class EmailDraftService {
             throw new RuntimeException("Bản nháp email phải được phê duyệt trước khi gửi");
         }
 
-        // TODO: Triển khai gửi email thực tế bằng MailService
-        // Hiện tại tạm thời, chỉ đánh dấu là đã gửi
+        Long recipientId = draft.getRecipientId();
+        if (recipientId == null) {
+            throw new RuntimeException("Bản nháp email không có recipientId để gửi");
+        }
+
+        User recipient = userRepository.findById(recipientId)
+                .orElseThrow(() -> new RuntimeException("User người nhận không tồn tại: " + recipientId));
+
+        String to = recipient.getEmail();
+        if (to == null || to.isBlank()) {
+            throw new RuntimeException("Email người nhận trống (userId=" + recipientId + ")");
+        }
+
+        String subject = (draft.getEditedSubject() != null && !draft.getEditedSubject().isBlank())
+                ? draft.getEditedSubject()
+                : draft.getSubject();
+        String body = (draft.getEditedBody() != null && !draft.getEditedBody().isBlank())
+                ? draft.getEditedBody()
+                : draft.getBody();
+
+        boolean looksLikeHtml = (draft.getTemplateType() != null && draft.getTemplateType().toLowerCase().contains("html"))
+                || (body != null && body.contains("<") && body.contains(">"));
+
+        boolean sent;
+        if (looksLikeHtml) {
+            sent = mailService.trySendHtmlEmail(to, subject, body, body);
+        } else {
+            sent = mailService.trySendSimpleEmail(to, subject, body);
+        }
+
+        if (!sent) {
+            logger.warn("Gửi email draft {} thất bại (to={})", draftId, to);
+            return false;
+        }
+
         draft.setSentAt(LocalDateTime.now());
         draft.setStatus(EmailDraft.DraftStatus.SENT);
         draftRepository.save(draft);
-        
-        logger.info("Bản nháp email {} đã được đánh dấu là đã gửi", draftId);
+
+        logger.info("Đã gửi email draft {} tới {}", draftId, to);
         return true;
     }
 

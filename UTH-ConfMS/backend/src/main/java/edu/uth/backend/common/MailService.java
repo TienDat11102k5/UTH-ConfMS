@@ -39,6 +39,31 @@ public class MailService {
     }
   }
 
+  public boolean trySendHtmlEmail(String to, String subject, String htmlBody, String textBody) {
+    try {
+      sendHtmlEmail(to, subject, htmlBody, textBody);
+      return true;
+    } catch (Exception ex) {
+      logger.error("Gửi email HTML tới {} thất bại: {}", to, ex.getMessage(), ex);
+      return false;
+    }
+  }
+
+  public boolean trySendSimpleEmail(String to, String subject, String text) {
+    try {
+      SimpleMailMessage msg = new SimpleMailMessage();
+      if (fromAddress != null && !fromAddress.isBlank()) msg.setFrom(fromAddress);
+      msg.setTo(to);
+      msg.setSubject(subject);
+      msg.setText(text);
+      mailSender.send(msg);
+      return true;
+    } catch (Exception ex) {
+      logger.error("Gửi email đơn giản tới {} thất bại: {}", to, ex.getMessage(), ex);
+      return false;
+    }
+  }
+
   public void sendHtmlEmail(String to, String subject, String htmlBody, String textBody) throws MessagingException {
     MimeMessage message = mailSender.createMimeMessage();
     MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
