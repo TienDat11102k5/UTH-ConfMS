@@ -38,6 +38,7 @@ import AuditLogPage from "./pages/admin/AuditLogPage.jsx";
 import BackupPage from "./pages/admin/BackupPage.jsx";
 import AiGovernancePage from "./pages/admin/AiGovernancePage.jsx";
 import RbacManagement from "./pages/admin/RbacManagement.jsx";
+import AdminLoginPage from "./pages/admin/AdminLoginPage.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -56,6 +57,7 @@ const App = () => {
 
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
