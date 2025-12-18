@@ -1,4 +1,6 @@
 // src/auth.js
+import { useState, useEffect } from "react";
+
 const ACCESS_TOKEN_KEY = "accessToken";
 const CURRENT_USER_KEY = "currentUser";
 
@@ -57,4 +59,20 @@ export const clearAuth = () => {
 
 export const isAuthenticated = () => {
   return !!getToken();
+};
+
+// React hook để sử dụng auth trong components
+export const useAuth = () => {
+  const [user, setUser] = useState(getCurrentUser);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUser(getCurrentUser());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  return { user };
 };
