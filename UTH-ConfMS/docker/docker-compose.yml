@@ -38,8 +38,8 @@ services:
       SPRING_DATA_REDIS_PORT: 6379
 
       # JWT configuration
-      APP_JWT_SECRET: ${JWT_SECRET:-put_a_very_long_random_secret_here_min_32_chars_uthconfms2024}
-      APP_JWT_EXPIRATION-MS: 86400000
+      JWT_SECRET: ${JWT_SECRET:-put_a_very_long_random_secret_here_min_32_chars_uthconfms2024}
+      JWT_EXPIRATION_MS: 86400000
 
       # Firebase Admin credentials path trong container
       FIREBASE_PROJECT_ID: uth-confms
@@ -49,8 +49,18 @@ services:
       APP_UPLOAD_DIR: /app/uploads
       APP_BASE_URL: http://localhost:8080
 
-      # React dev
-      CORS_ALLOWED_ORIGINS: http://localhost:5173
+      # CORS
+      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://localhost:3000
+
+      # Mail configuration
+      MAIL_HOST: smtp.gmail.com
+      MAIL_PORT: 587
+      MAIL_USERNAME: ${MAIL_USERNAME:-datpham100705@gmail.com}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-UTH-ConfMS <datpham100705@gmail.com>}
+
+      # AI Service
+      AI_SERVICE_URL: http://ai-service:8000
     volumes:
       - ../backend/uth-confms-firebase-sa.json/uth-confms-firebase-sa.json:/run/secrets/firebase-sa.json:ro
       - ../uploads:/app/uploads
@@ -106,6 +116,29 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    restart: unless-stopped
+
+  frontend:
+    build: ../frontend
+    container_name: uth_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8080/api}
+      VITE_FIREBASE_API_KEY: ${VITE_FIREBASE_API_KEY:-AIzaSyCIQokev-0C6019T6xJ-opYRaNuH8WKPQk}
+      VITE_FIREBASE_AUTH_DOMAIN: ${VITE_FIREBASE_AUTH_DOMAIN:-uth-confms.firebaseapp.com}
+      VITE_FIREBASE_PROJECT_ID: ${VITE_FIREBASE_PROJECT_ID:-uth-confms}
+      VITE_FIREBASE_STORAGE_BUCKET: ${VITE_FIREBASE_STORAGE_BUCKET:-uth-confms.firebasestorage.app}
+      VITE_FIREBASE_MESSAGING_SENDER_ID: ${VITE_FIREBASE_MESSAGING_SENDER_ID:-905110851118}
+      VITE_FIREBASE_APP_ID: ${VITE_FIREBASE_APP_ID:-1:905110851118:web:db0e25ed966014ad4f59bf}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
     restart: unless-stopped
 
 volumes:
