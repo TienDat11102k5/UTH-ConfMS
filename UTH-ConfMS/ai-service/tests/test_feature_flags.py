@@ -40,11 +40,11 @@ async def test_enable_feature(feature_flag_manager):
     # Mock database pool
     mock_conn = AsyncMock()
     mock_conn.execute = AsyncMock()
+    mock_conn.__aenter__ = AsyncMock(return_value=mock_conn)
+    mock_conn.__aexit__ = AsyncMock(return_value=None)
     
-    mock_pool = AsyncMock()
-    mock_pool.acquire = AsyncMock(return_value=mock_conn)
-    mock_pool.__aenter__ = AsyncMock(return_value=mock_conn)
-    mock_pool.__aexit__ = AsyncMock(return_value=None)
+    mock_pool = Mock()
+    mock_pool.acquire = Mock(return_value=mock_conn)
     
     feature_flag_manager.db_pool = mock_pool
     
@@ -64,9 +64,11 @@ async def test_disable_feature(feature_flag_manager):
     # Mock database pool
     mock_conn = AsyncMock()
     mock_conn.execute = AsyncMock()
+    mock_conn.__aenter__ = AsyncMock(return_value=mock_conn)
+    mock_conn.__aexit__ = AsyncMock(return_value=None)
     
-    mock_pool = AsyncMock()
-    mock_pool.acquire = AsyncMock(return_value=mock_conn)
+    mock_pool = Mock()
+    mock_pool.acquire = Mock(return_value=mock_conn)
     
     feature_flag_manager.db_pool = mock_pool
     
@@ -104,9 +106,11 @@ async def test_is_enabled_with_database_fallback(feature_flag_manager):
     
     mock_conn = AsyncMock()
     mock_conn.fetchrow = AsyncMock(return_value=mock_row)
+    mock_conn.__aenter__ = AsyncMock(return_value=mock_conn)
+    mock_conn.__aexit__ = AsyncMock(return_value=None)
     
-    mock_pool = AsyncMock()
-    mock_pool.acquire = AsyncMock(return_value=mock_conn)
+    mock_pool = Mock()
+    mock_pool.acquire = Mock(return_value=mock_conn)
     
     feature_flag_manager.db_pool = mock_pool
     
@@ -128,9 +132,11 @@ async def test_get_all_features(feature_flag_manager):
     
     mock_conn = AsyncMock()
     mock_conn.fetch = AsyncMock(return_value=[mock_row1, mock_row2])
+    mock_conn.__aenter__ = AsyncMock(return_value=mock_conn)
+    mock_conn.__aexit__ = AsyncMock(return_value=None)
     
-    mock_pool = AsyncMock()
-    mock_pool.acquire = AsyncMock(return_value=mock_conn)
+    mock_pool = Mock()
+    mock_pool.acquire = Mock(return_value=mock_conn)
     
     feature_flag_manager.db_pool = mock_pool
     

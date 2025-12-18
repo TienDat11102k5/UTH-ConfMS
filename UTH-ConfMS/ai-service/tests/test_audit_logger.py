@@ -29,9 +29,11 @@ async def test_log_operation(audit_logger):
     # Mock database pool
     mock_conn = AsyncMock()
     mock_conn.fetchval = AsyncMock(return_value="123")
+    mock_conn.__aenter__ = AsyncMock(return_value=mock_conn)
+    mock_conn.__aexit__ = AsyncMock(return_value=None)
     
-    mock_pool = AsyncMock()
-    mock_pool.acquire = AsyncMock(return_value=mock_conn)
+    mock_pool = Mock()
+    mock_pool.acquire = Mock(return_value=mock_conn)
     
     audit_logger.db_pool = mock_pool
     
@@ -55,9 +57,11 @@ async def test_log_operation_with_long_output(audit_logger):
     # Mock database pool
     mock_conn = AsyncMock()
     mock_conn.fetchval = AsyncMock(return_value="123")
+    mock_conn.__aenter__ = AsyncMock(return_value=mock_conn)
+    mock_conn.__aexit__ = AsyncMock(return_value=None)
     
-    mock_pool = AsyncMock()
-    mock_pool.acquire = AsyncMock(return_value=mock_conn)
+    mock_pool = Mock()
+    mock_pool.acquire = Mock(return_value=mock_conn)
     
     audit_logger.db_pool = mock_pool
     
@@ -75,8 +79,12 @@ async def test_log_operation_with_long_output(audit_logger):
     
     assert log_id == "123"
     # Verify truncation happened
-    call_args = mock_conn.fetchval.call_args[0]
-    output_summary = call_args[8]  # output_summary is 9th parameter (0-indexed)
+    # fetchval is called with: (SQL string, timestamp, conference_id, user_id, feature, action, prompt, model_id, input_hash, output_summary, accepted, metadata)
+    # So output_summary is at index 9 (starting from index 1 for first param after SQL)
+    call_args = mock_conn.fetchval.call_args
+    # call_args[0] is the positional arguments tuple
+    # Index 0 is SQL, so output_summary is at index 9
+    output_summary = call_args[0][9]
     assert len(output_summary) <= 5000
     assert output_summary.endswith("...")
 
@@ -96,9 +104,11 @@ async def test_get_usage_stats(audit_logger):
     
     mock_conn = AsyncMock()
     mock_conn.fetch = AsyncMock(return_value=[mock_row1])
+    mock_conn.__aenter__ = AsyncMock(return_value=mock_conn)
+    mock_conn.__aexit__ = AsyncMock(return_value=None)
     
-    mock_pool = AsyncMock()
-    mock_pool.acquire = AsyncMock(return_value=mock_conn)
+    mock_pool = Mock()
+    mock_pool.acquire = Mock(return_value=mock_conn)
     
     audit_logger.db_pool = mock_pool
     
@@ -125,9 +135,11 @@ async def test_get_acceptance_rate(audit_logger):
     
     mock_conn = AsyncMock()
     mock_conn.fetchrow = AsyncMock(return_value=mock_row)
+    mock_conn.__aenter__ = AsyncMock(return_value=mock_conn)
+    mock_conn.__aexit__ = AsyncMock(return_value=None)
     
-    mock_pool = AsyncMock()
-    mock_pool.acquire = AsyncMock(return_value=mock_conn)
+    mock_pool = Mock()
+    mock_pool.acquire = Mock(return_value=mock_conn)
     
     audit_logger.db_pool = mock_pool
     
@@ -162,9 +174,11 @@ async def test_get_audit_logs(audit_logger):
     
     mock_conn = AsyncMock()
     mock_conn.fetch = AsyncMock(return_value=[mock_row])
+    mock_conn.__aenter__ = AsyncMock(return_value=mock_conn)
+    mock_conn.__aexit__ = AsyncMock(return_value=None)
     
-    mock_pool = AsyncMock()
-    mock_pool.acquire = AsyncMock(return_value=mock_conn)
+    mock_pool = Mock()
+    mock_pool.acquire = Mock(return_value=mock_conn)
     
     audit_logger.db_pool = mock_pool
     

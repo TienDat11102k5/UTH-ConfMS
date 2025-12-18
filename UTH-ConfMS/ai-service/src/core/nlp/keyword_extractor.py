@@ -48,13 +48,13 @@ class KeywordSuggester:
             Danh sách các đối tượng Keyword được sắp xếp theo điểm liên quan
         """
         if not title and not abstract:
-            raise ValueError("Phải cung cấp tiêu đề hoặc tóm tắt")
+            raise ValueError("Title or abstract must be provided")
         
         # Kiểm tra độ dài đầu vào
         if len(title) > 500:
-            raise ValueError("Tiêu đề quá dài. Tối đa 500 ký tự.")
+            raise ValueError("Title too long. Maximum 500 characters")
         if len(abstract) > 2000:
-            raise ValueError("Tóm tắt quá dài. Tối đa 2000 ký tự.")
+            raise ValueError("Abstract too long. Maximum 2000 characters")
         
         try:
             # Sử dụng LLM để trích xuất từ khóa thông minh

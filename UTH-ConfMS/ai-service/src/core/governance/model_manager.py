@@ -222,7 +222,7 @@ class ModelManager:
         # Kiểm tra giới hạn tốc độ nếu được bật
         if check_rate_limit and conference_id:
             if not self._check_rate_limit(conference_id):
-                raise Exception(f"Giới hạn tốc độ bị vượt quá cho hội nghị {conference_id}")
+                raise Exception(f"Rate limit exceeded for conference {conference_id}")
         
         # Sử dụng mặc định từ settings nếu không được cung cấp
         model = model or self.settings.model_name

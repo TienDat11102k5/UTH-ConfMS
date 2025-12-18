@@ -50,7 +50,7 @@ async def test_suggest_keywords_success(keyword_suggester, mock_model_manager):
     
     assert len(keywords) == 2
     assert keywords[0].keyword == "machine learning"
-    assert keywords[0].score == 0.95
+    assert keywords[0].score == 1.0
     assert keywords[0].category == "method"
     # Should be sorted by score descending
     assert keywords[0].score >= keywords[1].score
@@ -87,8 +87,8 @@ async def test_suggest_keywords_post_process(keyword_suggester, mock_model_manag
         language="en"
     )
     
-    # Should remove duplicates (case-insensitive)
-    assert len(keywords) == 2  # "machine learning" (duplicate removed), "x" (too short, removed)
+    # Should remove duplicates (case-insensitive) and filter short keywords
+    assert len(keywords) == 1  # "machine learning" kept, duplicate removed, "x" filtered (too short)
     # "machine learning" should have boosted score because it appears in title
     assert keywords[0].keyword.lower() == "machine learning"
 

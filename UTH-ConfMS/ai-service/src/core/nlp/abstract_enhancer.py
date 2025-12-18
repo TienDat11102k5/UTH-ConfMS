@@ -58,11 +58,11 @@ class AbstractPolisher:
             PolishResult với văn bản gốc, văn bản đã đánh bóng và các thay đổi
         """
         if not text or len(text.strip()) == 0:
-            raise ValueError("Văn bản tóm tắt không được để trống")
+            raise ValueError("Abstract text cannot be empty")
         
         # Kiểm tra độ dài đầu vào
         if len(text) > 2000:
-            raise ValueError("Tóm tắt quá dài. Tối đa 2000 ký tự.")
+            raise ValueError("Abstract too long. Maximum 2000 characters")
         
         try:
             system_instruction = self._get_polish_system_prompt(
