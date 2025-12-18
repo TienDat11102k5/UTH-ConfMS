@@ -1,0 +1,158 @@
+/* SimilarityExplainerModal Styles */
+.explainer-modal {
+  max-width: 600px;
+}
+
+.explainer-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.explainer-section h3 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.explainer-section h4 {
+  margin: 0;
+  color: #666;
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+.score-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.score-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.score-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.score-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.score-value.high {
+  background-color: #4caf50;
+  color: white;
+}
+
+.score-value.medium {
+  background-color: #ff9800;
+  color: white;
+}
+
+.score-value.low {
+  background-color: #f44336;
+  color: white;
+}
+
+.expertise-match {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.match-label {
+  color: #666;
+}
+
+.match-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  font-weight: bold;
+}
+
+.match-badge.high {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+.match-badge.medium {
+  background-color: #ffe0b2;
+  color: #e65100;
+}
+
+.match-badge.low {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
+.keywords-section,
+.topics-section,
+.rationale-section {
+  margin-bottom: 1.5rem;
+}
+
+.keywords-section h4,
+.topics-section h4,
+.rationale-section h4 {
+  margin: 0 0 0.75rem 0;
+  color: #333;
+  font-size: 1rem;
+}
+
+.keywords-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.keyword-tag {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 0.375rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.875rem;
+}
+
+.topics-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.topics-list li {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  background-color: #f5f5f5;
+  border-left: 3px solid #2196f3;
+  border-radius: 4px;
+}
+
+.rationale-section p {
+  margin: 0;
+  line-height: 1.6;
+  color: #333;
+}
+
+.disclaimer {
+  margin-top: 1.5rem;
+  padding: 0.75rem;
+  background-color: #fff3cd;
+  border-left: 3px solid #ffc107;
+  border-radius: 4px;
+}
+
+.disclaimer small {
+  color: #856404;
+}
+
+

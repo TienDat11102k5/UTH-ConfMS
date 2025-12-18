@@ -1,0 +1,186 @@
+/* SynopsisCard Styles */
+.synopsis-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.synopsis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  border-radius: 8px 8px 0 0;
+  transition: background-color 0.2s;
+}
+
+.synopsis-header:hover {
+  background-color: #eeeeee;
+}
+
+.synopsis-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.synopsis-title .icon {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.word-count {
+  font-size: 0.875rem;
+  color: #666;
+  font-weight: normal;
+}
+
+.synopsis-badge {
+  background-color: #2196f3;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.synopsis-content {
+  padding: 1rem;
+}
+
+.synopsis-disclaimer {
+  padding: 0.75rem;
+  background-color: #fff3cd;
+  border-left: 3px solid #ffc107;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: #856404;
+}
+
+.synopsis-text {
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+}
+
+.key-themes {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.key-themes strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.themes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.theme-tag {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.875rem;
+}
+
+.synopsis-metadata {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metadata-item {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.metadata-item strong {
+  color: #333;
+  margin-right: 0.5rem;
+}
+
+.report-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #666;
+  transition: background-color 0.2s;
+}
+
+.report-button:hover {
+  background-color: #eeeeee;
+}
+
+.report-form {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.report-form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.report-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.submit-button,
+.cancel-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.submit-button {
+  background-color: #2196f3;
+  color: white;
+}
+
+.submit-button:hover {
+  background-color: #1976d2;
+}
+
+.cancel-button {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.cancel-button:hover {
+  background-color: #eeeeee;
+}
+
+

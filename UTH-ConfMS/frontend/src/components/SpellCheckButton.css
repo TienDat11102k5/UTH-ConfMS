@@ -1,0 +1,108 @@
+/* SpellCheckButton Styles */
+.spell-check-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.spell-check-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.spell-check-button:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.spell-check-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.spell-check-button .icon {
+  font-weight: bold;
+}
+
+.spell-check-button .spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #ffffff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spell-check-error {
+  padding: 0.75rem;
+  background-color: #ffebee;
+  color: #c62828;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.spell-check-results {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background-color: #fff3e0;
+  border: 1px solid #ffb74d;
+  border-radius: 4px;
+}
+
+.results-header {
+  margin-bottom: 0.75rem;
+  color: #e65100;
+  font-size: 0.9rem;
+}
+
+.errors-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.error-item {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  background-color: white;
+  border-left: 3px solid #ff9800;
+  border-radius: 2px;
+  font-size: 0.875rem;
+}
+
+.error-word {
+  font-weight: bold;
+  color: #e65100;
+  margin-right: 0.5rem;
+}
+
+.suggestions {
+  color: #1976d2;
+  margin-left: 0.5rem;
+}
+
+.context {
+  display: block;
+  color: #666;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+
