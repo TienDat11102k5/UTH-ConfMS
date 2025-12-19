@@ -1,11 +1,11 @@
 // src/pages/chair/ChairAssignmentManagement.jsx
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 
 const ChairAssignmentManagement = () => {
-  const { conferenceId } = useParams();
+  const [conferences, setConferences] = useState([]);
+  const [selectedConference, setSelectedConference] = useState(null);
   const [papers, setPapers] = useState([]);
   const [reviewers, setReviewers] = useState([]);
   const [assignments, setAssignments] = useState({});
@@ -16,32 +16,60 @@ const ChairAssignmentManagement = () => {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [selectedReviewer, setSelectedReviewer] = useState("");
 
+  // Load conferences
+  useEffect(() => {
+    const loadConferences = async () => {
+      try {
+        const res = await apiClient.get("/conferences");
+        setConferences(res.data || []);
+        if (res.data && res.data.length > 0) {
+          setSelectedConference(res.data[0].id);
+        }
+      } catch (err) {
+        console.error("Load conferences error:", err);
+      }
+    };
+    
+    // Debug: Check if user is logged in
+    const token = sessionStorage.getItem("accessToken") || localStorage.getItem("accessToken");
+    const user = sessionStorage.getItem("currentUser") || localStorage.getItem("currentUser");
+    console.log("=== DEBUG AUTH ===");
+    console.log("Token exists:", !!token);
+    console.log("Token preview:", token ? token.substring(0, 20) + "..." : "null");
+    console.log("User:", user ? JSON.parse(user) : null);
+    console.log("==================");
+    
+    loadConferences();
+  }, []);
+
   useEffect(() => {
     const loadData = async () => {
+      if (!selectedConference) return;
+      
       try {
         setLoading(true);
+        setError("");
 
         // Load papers của conference
-        // Sửa: Gọi API cụ thể cho conference thay vì lấy toàn bộ (gây lỗi 403)
+        console.log("Loading papers for conference:", selectedConference);
         const papersRes = await apiClient.get(
-          `/decisions/papers/${conferenceId}`
+          `/decisions/papers/${selectedConference}`
         );
+        console.log("Papers response:", papersRes.data);
         const confPapers = papersRes.data || [];
         setPapers(confPapers);
 
         // Load reviewers
         try {
+          console.log("Loading reviewers...");
           const usersRes = await apiClient.get("/decisions/reviewers");
+          console.log("Reviewers response:", usersRes.data);
           const allUsers = usersRes.data || [];
-          const reviewerUsers = allUsers.filter(
-            (u) =>
-              u.role === "REVIEWER" ||
-              u.role === "PC" ||
-              u.roles?.some((r) => r === "REVIEWER" || r === "PC")
-          );
-          setReviewers(reviewerUsers);
+          // Backend đã lọc rồi, không cần filter nữa
+          setReviewers(allUsers);
         } catch (uErr) {
-          console.warn("Không thể tải danh sách reviewers:", uErr);
+          console.error("Không thể tải danh sách reviewers:", uErr);
+          setError("Không thể tải danh sách reviewers: " + (uErr.response?.data || uErr.message));
         }
 
         // Load assignments for each paper
@@ -64,8 +92,8 @@ const ChairAssignmentManagement = () => {
         setLoading(false);
       }
     };
-    if (conferenceId) loadData();
-  }, [conferenceId]);
+    loadData();
+  }, [selectedConference]);
 
   const handleAssign = async () => {
     if (!selectedPaper || !selectedReviewer) {
@@ -163,6 +191,38 @@ const ChairAssignmentManagement = () => {
         </div>
       </div>
 
+      {/* Conference Selector */}
+      {conferences.length > 0 && (
+        <div
+          style={{
+            marginBottom: "2rem",
+            padding: "1rem",
+            background: "#f5f5f5",
+            borderRadius: "8px",
+          }}
+        >
+          <label style={{ marginRight: "1rem", fontWeight: "bold" }}>
+            Chọn hội nghị:
+          </label>
+          <select
+            value={selectedConference || ""}
+            onChange={(e) => setSelectedConference(parseInt(e.target.value))}
+            style={{
+              padding: "0.5rem",
+              borderRadius: "4px",
+              border: "1px solid #ddd",
+              minWidth: "300px",
+            }}
+          >
+            {conferences.map((conf) => (
+              <option key={conf.id} value={conf.id}>
+                {conf.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {error && (
         <div
           style={{
@@ -253,7 +313,7 @@ const ChairAssignmentManagement = () => {
                           onClick={() => {
                             // View details
                             window.open(
-                              `/conferences/${conferenceId}`,
+                              `/conferences/${selectedConference}`,
                               "_blank"
                             );
                           }}

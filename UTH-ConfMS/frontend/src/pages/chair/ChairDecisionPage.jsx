@@ -1,11 +1,11 @@
 // src/pages/chair/ChairDecisionPage.jsx
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 
 const ChairDecisionPage = () => {
-  const { conferenceId } = useParams();
+  const [conferences, setConferences] = useState([]);
+  const [selectedConference, setSelectedConference] = useState(null);
   const [papers, setPapers] = useState([]);
   const [reviews, setReviews] = useState({});
   const [statistics, setStatistics] = useState({});
@@ -16,16 +16,36 @@ const ChairDecisionPage = () => {
   const [decision, setDecision] = useState("");
   const [comment, setComment] = useState("");
 
+  // Load conferences
+  useEffect(() => {
+    const loadConferences = async () => {
+      try {
+        const res = await apiClient.get("/conferences");
+        setConferences(res.data || []);
+        if (res.data && res.data.length > 0) {
+          setSelectedConference(res.data[0].id);
+        }
+      } catch (err) {
+        console.error("Load conferences error:", err);
+      }
+    };
+    loadConferences();
+  }, []);
+
   useEffect(() => {
     const loadData = async () => {
+      if (!selectedConference) return;
+      
       try {
         setLoading(true);
+        setError("");
 
         // Load papers
-        // Sửa: Gọi API lấy paper theo conference để tránh lỗi 403 Access Denied
+        console.log("Loading papers for conference:", selectedConference);
         const papersRes = await apiClient.get(
-          `/decisions/papers/${conferenceId}`
+          `/decisions/papers/${selectedConference}`
         );
+        console.log("Papers response:", papersRes.data);
         const allPapers = papersRes.data || [];
         const confPapers = allPapers.filter((p) => p.status === "UNDER_REVIEW");
         setPapers(confPapers);
@@ -58,8 +78,8 @@ const ChairDecisionPage = () => {
         setLoading(false);
       }
     };
-    if (conferenceId) loadData();
-  }, [conferenceId]);
+    loadData();
+  }, [selectedConference]);
 
   const handleMakeDecision = async () => {
     if (!selectedPaper || !decision) {
@@ -82,7 +102,7 @@ const ChairDecisionPage = () => {
 
       // Reload papers
       const papersRes = await apiClient.get(
-        `/decisions/papers/${conferenceId}`
+        `/decisions/papers/${selectedConference}`
       );
       const allPapers = papersRes.data || [];
       const confPapers = allPapers.filter((p) => p.status === "UNDER_REVIEW");
@@ -148,6 +168,38 @@ const ChairDecisionPage = () => {
           </p>
         </div>
       </div>
+
+      {/* Conference Selector */}
+      {conferences.length > 0 && (
+        <div
+          style={{
+            marginBottom: "2rem",
+            padding: "1rem",
+            background: "#f5f5f5",
+            borderRadius: "8px",
+          }}
+        >
+          <label style={{ marginRight: "1rem", fontWeight: "bold" }}>
+            Chọn hội nghị:
+          </label>
+          <select
+            value={selectedConference || ""}
+            onChange={(e) => setSelectedConference(parseInt(e.target.value))}
+            style={{
+              padding: "0.5rem",
+              borderRadius: "4px",
+              border: "1px solid #ddd",
+              minWidth: "300px",
+            }}
+          >
+            {conferences.map((conf) => (
+              <option key={conf.id} value={conf.id}>
+                {conf.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {error && (
         <div

@@ -1,21 +1,39 @@
 // src/pages/chair/ChairProgressTracking.jsx
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 
 const ChairProgressTracking = () => {
-  const { conferenceId } = useParams();
+  const [conferences, setConferences] = useState([]);
+  const [selectedConference, setSelectedConference] = useState(null);
   const [progressData, setProgressData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Load conferences
+  useEffect(() => {
+    const loadConferences = async () => {
+      try {
+        const res = await apiClient.get("/conferences");
+        setConferences(res.data || []);
+        if (res.data && res.data.length > 0) {
+          setSelectedConference(res.data[0].id);
+        }
+      } catch (err) {
+        console.error("Load conferences error:", err);
+      }
+    };
+    loadConferences();
+  }, []);
+
   useEffect(() => {
     const loadProgress = async () => {
+      if (!selectedConference) return;
+      
       try {
         setLoading(true);
         const res = await apiClient.get(
-          `/reports/conference/${conferenceId}/review-progress`
+          `/reports/conference/${selectedConference}/review-progress`
         );
         setProgressData(res.data);
       } catch (err) {
@@ -25,8 +43,8 @@ const ChairProgressTracking = () => {
         setLoading(false);
       }
     };
-    if (conferenceId) loadProgress();
-  }, [conferenceId]);
+    loadProgress();
+  }, [selectedConference]);
 
   if (loading) {
     return (
@@ -58,6 +76,38 @@ const ChairProgressTracking = () => {
           <h2 className="data-page-title">Theo dõi tiến độ Review</h2>
         </div>
       </div>
+
+      {/* Conference Selector */}
+      {conferences.length > 0 && (
+        <div
+          style={{
+            marginBottom: "2rem",
+            padding: "1rem",
+            background: "#f5f5f5",
+            borderRadius: "8px",
+          }}
+        >
+          <label style={{ marginRight: "1rem", fontWeight: "bold" }}>
+            Chọn hội nghị:
+          </label>
+          <select
+            value={selectedConference || ""}
+            onChange={(e) => setSelectedConference(parseInt(e.target.value))}
+            style={{
+              padding: "0.5rem",
+              borderRadius: "4px",
+              border: "1px solid #ddd",
+              minWidth: "300px",
+            }}
+          >
+            {conferences.map((conf) => (
+              <option key={conf.id} value={conf.id}>
+                {conf.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {progressData && (
         <div className="dash-grid" style={{ marginTop: "2rem" }}>

@@ -1,11 +1,11 @@
 // src/pages/chair/ChairReports.jsx
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 
 const ChairReports = () => {
-  const { conferenceId } = useParams();
+  const [conferences, setConferences] = useState([]);
+  const [selectedConference, setSelectedConference] = useState(null);
   const [conferenceReport, setConferenceReport] = useState(null);
   const [trackReport, setTrackReport] = useState(null);
   const [progressReport, setProgressReport] = useState(null);
@@ -13,15 +13,33 @@ const ChairReports = () => {
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
 
+  // Load conferences
+  useEffect(() => {
+    const loadConferences = async () => {
+      try {
+        const res = await apiClient.get("/conferences");
+        setConferences(res.data || []);
+        if (res.data && res.data.length > 0) {
+          setSelectedConference(res.data[0].id);
+        }
+      } catch (err) {
+        console.error("Load conferences error:", err);
+      }
+    };
+    loadConferences();
+  }, []);
+
   useEffect(() => {
     const loadReports = async () => {
+      if (!selectedConference) return;
+      
       try {
         setLoading(true);
 
         const [confRes, trackRes, progressRes] = await Promise.all([
-          apiClient.get(`/reports/conference/${conferenceId}`),
-          apiClient.get(`/reports/conference/${conferenceId}/tracks`),
-          apiClient.get(`/reports/conference/${conferenceId}/review-progress`),
+          apiClient.get(`/reports/conference/${selectedConference}`),
+          apiClient.get(`/reports/conference/${selectedConference}/tracks`),
+          apiClient.get(`/reports/conference/${selectedConference}/review-progress`),
         ]);
 
         setConferenceReport(confRes.data);
@@ -34,20 +52,24 @@ const ChairReports = () => {
         setLoading(false);
       }
     };
-    if (conferenceId) loadReports();
-  }, [conferenceId]);
+    loadReports();
+  }, [selectedConference]);
 
   const handleExportProceedings = async () => {
+    if (!selectedConference) {
+      alert("Vui lòng chọn hội nghị!");
+      return;
+    }
     try {
       const res = await apiClient.get(
-        `/reports/conference/${conferenceId}/export-proceedings`
+        `/reports/conference/${selectedConference}/export-proceedings`
       );
       const data = JSON.stringify(res.data, null, 2);
       const blob = new Blob([data], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `proceedings-${conferenceId}-${
+      a.download = `proceedings-${selectedConference}-${
         new Date().toISOString().split("T")[0]
       }.json`;
       a.click();
@@ -84,6 +106,38 @@ const ChairReports = () => {
           </button>
         </div>
       </div>
+
+      {/* Conference Selector */}
+      {conferences.length > 0 && (
+        <div
+          style={{
+            marginBottom: "2rem",
+            padding: "1rem",
+            background: "#f5f5f5",
+            borderRadius: "8px",
+          }}
+        >
+          <label style={{ marginRight: "1rem", fontWeight: "bold" }}>
+            Chọn hội nghị:
+          </label>
+          <select
+            value={selectedConference || ""}
+            onChange={(e) => setSelectedConference(parseInt(e.target.value))}
+            style={{
+              padding: "0.5rem",
+              borderRadius: "4px",
+              border: "1px solid #ddd",
+              minWidth: "300px",
+            }}
+          >
+            {conferences.map((conf) => (
+              <option key={conf.id} value={conf.id}>
+                {conf.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {error && (
         <div

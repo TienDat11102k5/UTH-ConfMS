@@ -205,7 +205,7 @@ const App = () => {
         {/* ----------------------------------------------------------- */}
 
         <Route
-          path="/chair/assignments/:conferenceId"
+          path="/chair/assignments"
           element={
             <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
               <ChairAssignmentManagement />
@@ -213,7 +213,7 @@ const App = () => {
           }
         />
         <Route
-          path="/chair/decisions/:conferenceId"
+          path="/chair/decisions"
           element={
             <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
               <ChairDecisionPage />
@@ -221,7 +221,7 @@ const App = () => {
           }
         />
         <Route
-          path="/chair/progress/:conferenceId"
+          path="/chair/progress"
           element={
             <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
               <ChairProgressTracking />
@@ -229,7 +229,7 @@ const App = () => {
           }
         />
         <Route
-          path="/chair/reports/:conferenceId"
+          path="/chair/reports"
           element={
             <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
               <ChairReports />
