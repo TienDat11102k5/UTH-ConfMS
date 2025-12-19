@@ -1,6 +1,7 @@
 package edu.uth.backend.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,5 +45,6 @@ public class Paper extends BaseEntity {
 
     // Danh sách đồng tác giả (Metadata hiển thị)
     @OneToMany(mappedBy = "paper", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<PaperCoAuthor> coAuthors;
 }

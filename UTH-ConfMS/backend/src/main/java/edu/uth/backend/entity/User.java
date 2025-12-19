@@ -1,5 +1,6 @@
 package edu.uth.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +20,7 @@ public class User {
 
   // LOCAL dùng passwordHash; GOOGLE có thể null
   @Column(name = "password_hash", length = 255)
+  @JsonIgnore
   private String passwordHash;
 
   @Enumerated(EnumType.STRING)
