@@ -1,5 +1,6 @@
 // src/pages/reviewer/ReviewerDashboard.jsx
 import React from "react";
+import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/Layout/DashboardLayout.jsx";
 
 const ReviewerDashboard = () => {
@@ -14,11 +15,12 @@ const ReviewerDashboard = () => {
           <h3>Bài được phân công</h3>
           <p>
             Danh sách submission bạn đang phụ trách phản biện, cùng với deadline
-            review, số lượng review tối thiểu và trạng thái đã/ chưa gửi nhận xét.
+            review, số lượng review tối thiểu và trạng thái đã/ chưa gửi nhận
+            xét.
           </p>
-          <button className="btn-primary">
+          <Link to="/reviewer/assignments" className="btn-primary">
             Mở danh sách assignment
-          </button>
+          </Link>
         </div>
 
         <div className="dash-card">
@@ -27,9 +29,9 @@ const ReviewerDashboard = () => {
             Gửi điểm (scores), nhận xét chi tiết, khuyến nghị (accept / reject /
             borderline) theo form chuẩn của hội nghị.
           </p>
-          <button className="btn-secondary">
+          <Link to="/reviewer/assignments" className="btn-secondary">
             Vào form review
-          </button>
+          </Link>
         </div>
 
         <div className="dash-card">
@@ -38,8 +40,8 @@ const ReviewerDashboard = () => {
             Tham gia thảo luận private giữa các PC cho từng bài: hỏi đáp, tranh
             luận, điều chỉnh nhận xét trước khi Chair đưa ra quyết định cuối.
           </p>
-          <button className="btn-secondary">
-            Mở thread thảo luận
+          <button className="btn-secondary" disabled>
+            Mở thread thảo luận (Sắp có)
           </button>
         </div>
 
@@ -47,11 +49,12 @@ const ReviewerDashboard = () => {
           <h3>COI &amp; Bidding (tuỳ chọn)</h3>
           <p>
             Khai báo và cập nhật xung đột lợi ích (COI), xem gợi ý bài phù hợp
-            từ topic/keyword embeddings phục vụ bidding (chỉ là gợi ý, không auto-assign).
+            từ topic/keyword embeddings phục vụ bidding (chỉ là gợi ý, không
+            auto-assign).
           </p>
-          <button className="btn-secondary">
+          <Link to="/reviewer/coi" className="btn-secondary">
             Quản lý COI &amp; bidding
-          </button>
+          </Link>
         </div>
       </div>
     </DashboardLayout>

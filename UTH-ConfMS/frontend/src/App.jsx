@@ -2,6 +2,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+// --- Auth & Public Imports ---
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
@@ -11,27 +12,41 @@ import SettingsPage from "./pages/SettingsPage.jsx";
 import NotFoundPage from "./pages/NotFound.jsx";
 import UnauthorizedPage from "./pages/Unauthorized.jsx";
 import PublicHomePage from "./pages/public/PublicHomePage.jsx";
-import ConferenceList from "./pages/author/ConferenceList.jsx";
-import ConferenceDetail from "./pages/author/ConferenceDetail.jsx";
 import PublicProgram from "./pages/public/PublicProgram";
 import PublicHome from "./pages/public/PublicHome";
 import PublicCfp from "./pages/public/PublicCfp";
 import PublicAcceptedPapers from "./pages/public/PublicAcceptedPapers";
 
+// --- Author Imports ---
+import ConferenceList from "./pages/author/ConferenceList.jsx";
+import ConferenceDetail from "./pages/author/ConferenceDetail.jsx";
 import AuthorDashboard from "./pages/author/AuthorDashboard.jsx";
 import AuthorSubmissionListPage from "./pages/author/AuthorSubmissionListPage.jsx";
 import AuthorSubmissionEditPage from "./pages/author/AuthorSubmissionEditPage.jsx";
 import AuthorNewSubmissionPage from "./pages/author/AuthorNewSubmissionPage.jsx";
 
+// --- Reviewer Imports ---
 import ReviewerDashboard from "./pages/reviewer/ReviewerDashboard.jsx";
-import ChairDashboard from "./pages/chair/ChairDashboard.jsx";
+import ReviewerAssignments from "./pages/reviewer/ReviewerAssignments.jsx";
+import ReviewerReviewForm from "./pages/reviewer/ReviewerReviewForm.jsx";
+import ReviewerCOI from "./pages/reviewer/ReviewerCOI.jsx";
 
+// --- Chair Imports ---
+import ChairDashboard from "./pages/chair/ChairDashboard.jsx";
+import ChairAssignmentManagement from "./pages/chair/ChairAssignmentManagement.jsx";
+import ChairDecisionPage from "./pages/chair/ChairDecisionPage.jsx";
+import ChairProgressTracking from "./pages/chair/ChairProgressTracking.jsx";
+import ChairReports from "./pages/chair/ChairReports.jsx";
+// Đã thêm 2 import bị thiếu ở đây
+import ChairConferenceManager from "./pages/chair/ChairConferenceManager.jsx";
+import ChairConferenceEdit from "./pages/chair/ChairConferenceEdit.jsx";
+
+// --- Admin Imports ---
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminConferences from "./pages/admin/AdminConferences.jsx";
 import AdminConferenceEdit from "./pages/admin/AdminConferenceEdit.jsx";
 import AdminUserEdit from "./pages/admin/AdminUserEdit.jsx";
 import AdminUserCreate from "./pages/admin/AdminUserCreate.jsx";
-
 import TenantManagement from "./pages/admin/TenantManagement.jsx";
 import SmtpConfigPage from "./pages/admin/SmtpConfigPage.jsx";
 import AuditLogPage from "./pages/admin/AuditLogPage.jsx";
@@ -118,11 +133,111 @@ const App = () => {
           }
         />
 
-        {/* Reviewer / Chair */}
-        <Route path="/reviewer" element={<ReviewerDashboard />} />
-        <Route path="/chair" element={<ChairDashboard />} />
+        {/* Reviewer / PC */}
+        <Route
+          path="/reviewer"
+          element={
+            <ProtectedRoute requiredRole={["REVIEWER", "PC"]}>
+              <ReviewerDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reviewer/assignments"
+          element={
+            <ProtectedRoute requiredRole={["REVIEWER", "PC"]}>
+              <ReviewerAssignments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reviewer/review/:assignmentId"
+          element={
+            <ProtectedRoute requiredRole={["REVIEWER", "PC"]}>
+              <ReviewerReviewForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reviewer/coi"
+          element={
+            <ProtectedRoute requiredRole={["REVIEWER", "PC"]}>
+              <ReviewerCOI />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* --- ADMIN ROUTES (Đã cập nhật đầy đủ) --- */}
+        {/* Chair */}
+        <Route
+          path="/chair"
+          element={
+            <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
+              <ChairDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* --- ĐÃ THÊM CÁC ROUTE QUẢN LÝ CONFERENCE CỦA CHAIR VÀO ĐÂY --- */}
+        <Route
+          path="/chair/conferences"
+          element={
+            <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
+              <ChairConferenceManager />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chair/conferences/create"
+          element={
+            <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
+              <ChairConferenceEdit />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chair/conferences/:id/edit"
+          element={
+            <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
+              <ChairConferenceEdit />
+            </ProtectedRoute>
+          }
+        />
+        {/* ----------------------------------------------------------- */}
+
+        <Route
+          path="/chair/assignments/:conferenceId"
+          element={
+            <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
+              <ChairAssignmentManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chair/decisions/:conferenceId"
+          element={
+            <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
+              <ChairDecisionPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chair/progress/:conferenceId"
+          element={
+            <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
+              <ChairProgressTracking />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chair/reports/:conferenceId"
+          element={
+            <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
+              <ChairReports />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* --- ADMIN ROUTES --- */}
 
         {/* 1. Dashboard */}
         <Route
@@ -146,7 +261,7 @@ const App = () => {
         <Route
           path="/admin/conferences/:id/edit"
           element={
-            <ProtectedRoute requiredRole={"ADMIN"}>
+            <ProtectedRoute requiredRole={["ADMIN", "CHAIR", "TRACK_CHAIR"]}>
               <AdminConferenceEdit />
             </ProtectedRoute>
           }
@@ -180,9 +295,9 @@ const App = () => {
           }
         />
 
-        {/* 4. Cấu hình Email (SmtpConfigPage) */}
+        {/* 4. Cấu hình Email */}
         <Route
-          path="/admin/email-settings" // 👈 Đây chính là đường dẫn bạn đang tìm
+          path="/admin/email-settings"
           element={
             <ProtectedRoute requiredRole={"ADMIN"}>
               <SmtpConfigPage />
