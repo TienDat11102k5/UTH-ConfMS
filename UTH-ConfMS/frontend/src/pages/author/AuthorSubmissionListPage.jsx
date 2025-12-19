@@ -303,23 +303,38 @@ const AuthorSubmissionListPage = () => {
                         >
                           Chi tiết
                         </button>
-                        <button
-                          type="button"
-                          className="btn-secondary table-action"
-                          onClick={() =>
-                            navigate(`/author/submissions/${s.id}/edit`)
-                          }
-                        >
-                          Sửa
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-secondary table-action"
-                          disabled={withdrawingId === s.id}
-                          onClick={() => handleWithdraw(s.id)}
-                        >
-                          {withdrawingId === s.id ? "Đang rút..." : "Rút bài"}
-                        </button>
+                        {(s.status === "ACCEPTED" || s.status === "REJECTED") && (
+                          <button
+                            type="button"
+                            className="btn-primary table-action"
+                            onClick={() =>
+                              navigate(`/author/submissions/${s.id}/reviews`)
+                            }
+                          >
+                            Xem Reviews
+                          </button>
+                        )}
+                        {s.status === "SUBMITTED" && (
+                          <button
+                            type="button"
+                            className="btn-secondary table-action"
+                            onClick={() =>
+                              navigate(`/author/submissions/${s.id}/edit`)
+                            }
+                          >
+                            Sửa
+                          </button>
+                        )}
+                        {(s.status === "SUBMITTED" || s.status === "UNDER_REVIEW") && (
+                          <button
+                            type="button"
+                            className="btn-secondary table-action"
+                            disabled={withdrawingId === s.id}
+                            onClick={() => handleWithdraw(s.id)}
+                          >
+                            {withdrawingId === s.id ? "Đang rút..." : "Rút bài"}
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

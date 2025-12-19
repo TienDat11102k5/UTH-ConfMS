@@ -29,23 +29,30 @@ const ChairAssignmentManagement = () => {
         console.error("Load conferences error:", err);
       }
     };
-    
+
     // Debug: Check if user is logged in
-    const token = sessionStorage.getItem("accessToken") || localStorage.getItem("accessToken");
-    const user = sessionStorage.getItem("currentUser") || localStorage.getItem("currentUser");
+    const token =
+      sessionStorage.getItem("accessToken") ||
+      localStorage.getItem("accessToken");
+    const user =
+      sessionStorage.getItem("currentUser") ||
+      localStorage.getItem("currentUser");
     console.log("=== DEBUG AUTH ===");
     console.log("Token exists:", !!token);
-    console.log("Token preview:", token ? token.substring(0, 20) + "..." : "null");
+    console.log(
+      "Token preview:",
+      token ? token.substring(0, 20) + "..." : "null"
+    );
     console.log("User:", user ? JSON.parse(user) : null);
     console.log("==================");
-    
+
     loadConferences();
   }, []);
 
   useEffect(() => {
     const loadData = async () => {
       if (!selectedConference) return;
-      
+
       try {
         setLoading(true);
         setError("");
@@ -69,7 +76,10 @@ const ChairAssignmentManagement = () => {
           setReviewers(allUsers);
         } catch (uErr) {
           console.error("Không thể tải danh sách reviewers:", uErr);
-          setError("Không thể tải danh sách reviewers: " + (uErr.response?.data || uErr.message));
+          setError(
+            "Không thể tải danh sách reviewers: " +
+              (uErr.response?.data || uErr.message)
+          );
         }
 
         // Load assignments for each paper
@@ -122,6 +132,13 @@ const ChairAssignmentManagement = () => {
         [selectedPaper.id]: assignRes.data || [],
       });
     } catch (err) {
+      // Log chi tiết lỗi để debug
+      console.error("Assignment error:", err);
+      if (err.response) {
+        console.error("Response data:", err.response.data);
+        console.error("Status:", err.response.status);
+        console.error("Headers:", err.response.headers);
+      }
       alert("Lỗi: " + (err.response?.data?.message || err.message));
     } finally {
       setSubmitting(false);

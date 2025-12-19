@@ -23,6 +23,7 @@ import ConferenceDetail from "./pages/author/ConferenceDetail.jsx";
 import AuthorDashboard from "./pages/author/AuthorDashboard.jsx";
 import AuthorSubmissionListPage from "./pages/author/AuthorSubmissionListPage.jsx";
 import AuthorSubmissionEditPage from "./pages/author/AuthorSubmissionEditPage.jsx";
+import AuthorPaperReviews from "./pages/author/AuthorPaperReviews.jsx";
 import AuthorNewSubmissionPage from "./pages/author/AuthorNewSubmissionPage.jsx";
 
 // --- Reviewer Imports ---
@@ -112,6 +113,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <AuthorSubmissionEditPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/author/submissions/:paperId/reviews"
+          element={
+            <ProtectedRoute>
+              <AuthorPaperReviews />
             </ProtectedRoute>
           }
         />
