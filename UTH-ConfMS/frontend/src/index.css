@@ -239,13 +239,19 @@ button {
 
 /* --- AUTH PAGES (Login / Register / 404) --- */
 .auth-page {
-  min-height: 100vh; /* ĐÃ SỬA LỖI TẠI ĐÂY */
+  min-height: 85vh;             
+  padding: 3rem 6%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  /* Nền gradient nhẹ nhàng */
-  background: linear-gradient(135deg, var(--bg-body) 0%, #eef4ff 100%);
+  justify-content: flex-end;      
+  background-image: url("/background.jpg");
+  background-size: cover;         
+  background-position: center top;
+  background-repeat: no-repeat;
+  position: relative;
+  background-attachment: fixed;
+  overflow: hidden;
+  height: 100vh;
 }
 
 .auth-card {
