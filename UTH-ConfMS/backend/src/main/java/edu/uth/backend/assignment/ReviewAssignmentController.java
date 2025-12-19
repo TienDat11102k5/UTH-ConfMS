@@ -27,6 +27,7 @@ public class ReviewAssignmentController {
 
     // API: Xem danh sách bài mình được phân công (Reviewer dùng)
     // GET /api/assignments/my-assignments?reviewerId=1
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR','ROLE_REVIEWER','ROLE_PC')")
     @GetMapping("/my-assignments")
     public ResponseEntity<?> getMyAssignments(@RequestParam Long reviewerId) {
         return ResponseEntity.ok(assignmentService.getMyAssignments(reviewerId));
@@ -42,6 +43,7 @@ public class ReviewAssignmentController {
 
     // API: Reviewer chấp nhận assignment
     // PUT /api/assignments/{assignmentId}/accept
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_REVIEWER','ROLE_PC')")
     @PutMapping("/{assignmentId}/accept")
     public ResponseEntity<?> acceptAssignment(@PathVariable Long assignmentId) {
         try {
@@ -53,6 +55,7 @@ public class ReviewAssignmentController {
 
     // API: Reviewer từ chối assignment
     // PUT /api/assignments/{assignmentId}/decline
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_REVIEWER','ROLE_PC')")
     @PutMapping("/{assignmentId}/decline")
     public ResponseEntity<?> declineAssignment(@PathVariable Long assignmentId) {
         try {
@@ -81,6 +84,7 @@ public class ReviewAssignmentController {
 
     // API: Lấy assignment theo ID
     // GET /api/assignments/{assignmentId}
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR','ROLE_REVIEWER','ROLE_PC')")
     @GetMapping("/{assignmentId}")
     public ResponseEntity<?> getAssignmentById(@PathVariable Long assignmentId) {
         try {

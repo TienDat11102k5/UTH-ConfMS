@@ -65,4 +65,13 @@ public class ReviewService {
         return reviewRepo.findByAssignmentId(assignmentId)
                 .orElseThrow(() -> new RuntimeException("Chưa có review cho assignment này!"));
     }
+    
+    // Lấy reviews cho Author xem (chỉ hiển thị commentForAuthor, ẩn commentForPC)
+    @Transactional(readOnly = true)
+    public List<Review> getReviewsForAuthor(Long paperId) {
+        List<Review> reviews = reviewRepo.findByAssignment_PaperId(paperId);
+        // Clear commentForPC để không lộ thông tin nội bộ
+        reviews.forEach(review -> review.setCommentForPC(null));
+        return reviews;
+    }
 }

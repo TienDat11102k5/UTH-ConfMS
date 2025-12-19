@@ -1,6 +1,7 @@
 package edu.uth.backend.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ReviewAssignment extends BaseEntity {
 
     @ManyToOne
@@ -33,6 +35,8 @@ public class ReviewAssignment extends BaseEntity {
     private LocalDateTime dueDate;
 
     // Map 1-1 với kết quả Review (Nếu đã chấm xong)
+    // JsonIgnore to prevent circular reference: ReviewAssignment -> Review -> ReviewAssignment
     @OneToOne(mappedBy = "assignment", cascade = CascadeType.ALL)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Review review;
 }

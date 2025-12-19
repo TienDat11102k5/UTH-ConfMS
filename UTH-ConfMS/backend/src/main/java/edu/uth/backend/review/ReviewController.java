@@ -43,4 +43,11 @@ public class ReviewController {
     public ResponseEntity<?> getReviewByAssignment(@PathVariable Long assignmentId) {
         return ResponseEntity.ok(reviewService.getReviewByAssignment(assignmentId));
     }
+    
+    // API: Lấy reviews của paper (cho Author xem - chỉ hiển thị commentForAuthor)
+    // GET /api/reviews/paper/{paperId}/for-author
+    @GetMapping("/paper/{paperId}/for-author")
+    public ResponseEntity<?> getReviewsForAuthor(@PathVariable Long paperId) {
+        return ResponseEntity.ok(reviewService.getReviewsForAuthor(paperId));
+    }
 }

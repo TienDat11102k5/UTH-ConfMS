@@ -1,6 +1,7 @@
 package edu.uth.backend.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,10 +14,12 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Review extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "assignment_id", unique = true, nullable = false)
+    @JsonIgnoreProperties({"review", "paper"})  // Prevent circular reference
     private ReviewAssignment assignment;
 
     private Integer score; 

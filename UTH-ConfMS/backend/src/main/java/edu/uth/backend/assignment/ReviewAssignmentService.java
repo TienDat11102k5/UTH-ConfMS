@@ -68,13 +68,29 @@ public class ReviewAssignmentService {
     }
 
     // 2. Hàm lấy danh sách bài được phân công (Dành cho Reviewer xem - TP5)
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public List<ReviewAssignment> getMyAssignments(Long reviewerId) {
-        return assignmentRepo.findByReviewerId(reviewerId);
+        List<ReviewAssignment> assignments = assignmentRepo.findByReviewerId(reviewerId);
+        // Eager load lazy collections to avoid LazyInitializationException
+        for (ReviewAssignment assignment : assignments) {
+            if (assignment.getPaper() != null && assignment.getPaper().getCoAuthors() != null) {
+                assignment.getPaper().getCoAuthors().size(); // Force initialization
+            }
+        }
+        return assignments;
     }
     
     // 3. Hàm lấy danh sách phân công theo bài báo (Dành cho Chair quản lý - TP4)
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public List<ReviewAssignment> getAssignmentsByPaper(Long paperId) {
-        return assignmentRepo.findByPaperId(paperId);
+        List<ReviewAssignment> assignments = assignmentRepo.findByPaperId(paperId);
+        // Eager load lazy collections to avoid LazyInitializationException
+        for (ReviewAssignment assignment : assignments) {
+            if (assignment.getPaper() != null && assignment.getPaper().getCoAuthors() != null) {
+                assignment.getPaper().getCoAuthors().size(); // Force initialization
+            }
+        }
+        return assignments;
     }
 
     // 4. Reviewer chấp nhận assignment
@@ -121,8 +137,14 @@ public class ReviewAssignmentService {
     }
 
     // 7. Lấy assignment theo ID
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public ReviewAssignment getAssignmentById(Long assignmentId) {
-        return assignmentRepo.findById(assignmentId)
+        ReviewAssignment assignment = assignmentRepo.findById(assignmentId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy assignment này!"));
+        // Eager load lazy collections
+        if (assignment.getPaper() != null && assignment.getPaper().getCoAuthors() != null) {
+            assignment.getPaper().getCoAuthors().size();
+        }
+        return assignment;
     }
 }

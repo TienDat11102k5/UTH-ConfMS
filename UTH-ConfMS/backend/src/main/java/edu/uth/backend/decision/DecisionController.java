@@ -76,4 +76,15 @@ public class DecisionController {
     public ResponseEntity<?> getReviewers() {
         return ResponseEntity.ok(submissionService.getAllReviewers());
     }
+    
+    // API: Lấy decision của một paper (cho Author xem)
+    // GET /api/decisions/paper/{paperId}
+    @GetMapping("/paper/{paperId}")
+    public ResponseEntity<?> getDecisionByPaper(@PathVariable Long paperId) {
+        try {
+            return ResponseEntity.ok(decisionService.getDecisionByPaper(paperId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

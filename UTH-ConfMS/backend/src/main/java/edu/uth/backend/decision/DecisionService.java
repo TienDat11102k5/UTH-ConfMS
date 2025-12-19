@@ -114,4 +114,21 @@ public class DecisionService {
         stats.put("reviews", reviews);
         return stats;
     }
+    
+    // 5. Lấy decision của một paper (cho Author xem)
+    @Transactional(readOnly = true)
+    public java.util.Map<String, Object> getDecisionByPaper(Long paperId) {
+        Paper paper = paperRepo.findById(paperId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài báo"));
+        
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        result.put("paperId", paperId);
+        result.put("status", paper.getStatus());
+        result.put("decidedAt", paper.getUpdatedAt());
+        
+        // Có thể thêm comment từ decision nếu có lưu trong database
+        // Hiện tại chỉ trả về status
+        
+        return result;
+    }
 }
