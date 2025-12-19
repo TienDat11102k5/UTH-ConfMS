@@ -12,7 +12,7 @@ import java.util.List;
 public class ConferenceService {
     @Autowired private ConferenceRepository confRepo;
 
-    // ✅ Thêm Transactional để giữ kết nối DB
+    // Thêm Transactional để giữ kết nối DB
     @Transactional(readOnly = true)
     public List<Conference> getAllConferences() {
         List<Conference> list = confRepo.findAll();
@@ -27,7 +27,7 @@ public class ConferenceService {
         return list;
     }
 
-    // ✅ Thêm Transactional cho hàm này nữa (nếu bạn dùng endpoint chi tiết)
+    //  Thêm Transactional cho hàm này nữa (nếu bạn dùng endpoint chi tiết)
     @Transactional(readOnly = true)
     public Conference getConferenceById(Long id) {
         Conference conf = confRepo.findById(id)

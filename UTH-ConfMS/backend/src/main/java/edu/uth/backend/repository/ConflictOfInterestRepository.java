@@ -11,6 +11,9 @@ public interface ConflictOfInterestRepository extends JpaRepository<ConflictOfIn
     // Lấy danh sách COI của một bài báo (Để Chair biết đường tránh)
     List<ConflictOfInterest> findByPaperId(Long paperId);
 
+    // Lấy danh sách COI của một reviewer
+    List<ConflictOfInterest> findByReviewerId(Long reviewerId);
+
     // Kiểm tra nhanh xem 2 người này có bị xung đột với bài này không
     boolean existsByPaperIdAndReviewerId(Long paperId, Long reviewerId);
 }

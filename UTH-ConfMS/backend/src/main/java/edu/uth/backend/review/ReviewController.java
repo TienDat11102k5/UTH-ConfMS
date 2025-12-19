@@ -29,4 +29,18 @@ public class ReviewController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    // API: Lấy tất cả reviews của một paper (Chair xem)
+    // GET /api/reviews/paper/{paperId}
+    @GetMapping("/paper/{paperId}")
+    public ResponseEntity<?> getReviewsByPaper(@PathVariable Long paperId) {
+        return ResponseEntity.ok(reviewService.getReviewsByPaper(paperId));
+    }
+
+    // API: Lấy review của một assignment cụ thể
+    // GET /api/reviews/assignment/{assignmentId}
+    @GetMapping("/assignment/{assignmentId}")
+    public ResponseEntity<?> getReviewByAssignment(@PathVariable Long assignmentId) {
+        return ResponseEntity.ok(reviewService.getReviewByAssignment(assignmentId));
+    }
 }

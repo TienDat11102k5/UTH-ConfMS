@@ -1,12 +1,17 @@
+
 package edu.uth.backend.review;
 
 import edu.uth.backend.entity.*;
 import edu.uth.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
+import java.util.List;
+
 @Service
+@Transactional
 public class ReviewService {
 
     @Autowired private ReviewRepository reviewRepo;
@@ -46,5 +51,18 @@ public class ReviewService {
         assignmentRepo.save(assignment);
 
         return savedReview;
+    }
+
+    // Lấy tất cả reviews của một paper
+    @Transactional(readOnly = true)
+    public List<Review> getReviewsByPaper(Long paperId) {
+        return reviewRepo.findByAssignment_PaperId(paperId);
+    }
+
+    // Lấy review của một assignment cụ thể
+    @Transactional(readOnly = true)
+    public Review getReviewByAssignment(Long assignmentId) {
+        return reviewRepo.findByAssignmentId(assignmentId)
+                .orElseThrow(() -> new RuntimeException("Chưa có review cho assignment này!"));
     }
 }

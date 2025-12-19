@@ -16,6 +16,7 @@ public class SubmissionService {
     @Autowired private PaperRepository paperRepo;
     @Autowired private UserRepository userRepo;
     @Autowired private TrackRepository trackRepo;
+    @Autowired private ConferenceRepository conferenceRepo;
     @Autowired private FileStorageUtil fileStorageUtil;
     @Autowired private PaperCoAuthorRepository coAuthorRepo;
 
@@ -83,6 +84,19 @@ public class SubmissionService {
         return paperRepo.findAllWithDetailsByAuthorAndConferenceId(authorId, conferenceId);
     }
 
+    // --- 2.1. (MỚI) LẤY DANH SÁCH BÀI CỦA HỘI NGHỊ (Dành cho Chair) ---
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public List<Paper> getPapersByConference(Long conferenceId) {
+        Conference conference = conferenceRepo.findById(conferenceId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hội nghị"));
+        List<Track> tracks = conference.getTracks();
+        java.util.List<Paper> papers = new java.util.ArrayList<>();
+        for (Track track : tracks) {
+            papers.addAll(paperRepo.findByTrackId(track.getId()));
+        }
+        return papers;
+    }
+
     // --- 3. XEM CHI TIẾT 1 BÀI ---
     public Paper getPaperById(Long paperId) {
         return paperRepo.findById(paperId)
@@ -137,5 +151,10 @@ public class SubmissionService {
 
         paper.setStatus(PaperStatus.WITHDRAWN);
         return paperRepo.save(paper);
+    }
+
+    // --- 6. LẤY DANH SÁCH REVIEWER (Dành cho Chair phân công) ---
+    public List<User> getAllReviewers() {
+        return userRepo.findAll();
     }
 }

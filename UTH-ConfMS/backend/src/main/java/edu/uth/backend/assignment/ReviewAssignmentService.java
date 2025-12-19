@@ -76,4 +76,53 @@ public class ReviewAssignmentService {
     public List<ReviewAssignment> getAssignmentsByPaper(Long paperId) {
         return assignmentRepo.findByPaperId(paperId);
     }
+
+    // 4. Reviewer chấp nhận assignment
+    public ReviewAssignment acceptAssignment(Long assignmentId) {
+        ReviewAssignment assignment = assignmentRepo.findById(assignmentId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phân công này!"));
+        
+        if (assignment.getStatus() != AssignmentStatus.PENDING) {
+            throw new RuntimeException("Chỉ có thể chấp nhận assignment ở trạng thái PENDING!");
+        }
+        
+        assignment.setStatus(AssignmentStatus.ACCEPTED);
+        return assignmentRepo.save(assignment);
+    }
+
+    // 5. Reviewer từ chối assignment
+    public ReviewAssignment declineAssignment(Long assignmentId) {
+        ReviewAssignment assignment = assignmentRepo.findById(assignmentId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phân công này!"));
+        
+        if (assignment.getStatus() != AssignmentStatus.PENDING) {
+            throw new RuntimeException("Chỉ có thể từ chối assignment ở trạng thái PENDING!");
+        }
+        
+        assignment.setStatus(AssignmentStatus.DECLINED);
+        return assignmentRepo.save(assignment);
+    }
+
+    // 6. Bulk assignment - phân công nhiều reviewer cho nhiều paper
+    public List<ReviewAssignment> bulkAssign(List<Long> paperIds, List<Long> reviewerIds) {
+        List<ReviewAssignment> results = new java.util.ArrayList<>();
+        for (Long paperId : paperIds) {
+            for (Long reviewerId : reviewerIds) {
+                try {
+                    ReviewAssignment assignment = assignReviewer(paperId, reviewerId);
+                    results.add(assignment);
+                } catch (RuntimeException e) {
+                    // Log error nhưng tiếp tục với các assignment khác
+                    System.err.println("Lỗi khi phân công paper " + paperId + " cho reviewer " + reviewerId + ": " + e.getMessage());
+                }
+            }
+        }
+        return results;
+    }
+
+    // 7. Lấy assignment theo ID
+    public ReviewAssignment getAssignmentById(Long assignmentId) {
+        return assignmentRepo.findById(assignmentId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy assignment này!"));
+    }
 }

@@ -9,6 +9,7 @@ import edu.uth.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/conflicts")
@@ -48,6 +49,33 @@ public class ConflictController {
 
             return ResponseEntity.ok(coiRepo.save(coi));
 
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // API: Lấy danh sách COI của một reviewer
+    // GET /api/conflicts/reviewer/{reviewerId}
+    @GetMapping("/reviewer/{reviewerId}")
+    public ResponseEntity<?> getReviewerConflicts(@PathVariable Long reviewerId) {
+        try {
+            List<ConflictOfInterest> conflicts = coiRepo.findByReviewerId(reviewerId);
+            return ResponseEntity.ok(conflicts);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // API: Xóa COI
+    // DELETE /api/conflicts/{coiId}
+    @DeleteMapping("/{coiId}")
+    public ResponseEntity<?> deleteConflict(@PathVariable Long coiId) {
+        try {
+            if (!coiRepo.existsById(coiId)) {
+                return ResponseEntity.badRequest().body("Không tìm thấy COI này!");
+            }
+            coiRepo.deleteById(coiId);
+            return ResponseEntity.ok("Đã xóa COI thành công");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
