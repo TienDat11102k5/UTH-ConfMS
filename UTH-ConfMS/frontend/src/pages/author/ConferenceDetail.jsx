@@ -58,9 +58,7 @@ const ConferenceDetail = () => {
     return (
       <div className="portal-page">
         <PortalHeader />
-        <div className="conf-detail-loading">
-          Đang tải chi tiết hội nghị...
-        </div>
+        <div className="conf-detail-loading">Đang tải chi tiết hội nghị...</div>
       </div>
     );
   }
@@ -111,136 +109,111 @@ const ConferenceDetail = () => {
       <main className="conf-detail">
         {/* ===== HEADER ===== */}
         <div className="conf-detail-header">
-          <div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.75rem",
+              flexWrap: "wrap",
+            }}
+          >
             <div className="badge-soft">Hội nghị · ID #{conf.id}</div>
-            <h1 className="conf-detail-title">{conf.name}</h1>
-            <p className="conf-detail-desc">
-              {conf.description ||
-                "Hội nghị khoa học được tổ chức bởi UTH. Theo dõi timeline, chủ đề và nộp bài tại đây."}
-            </p>
+            {blindReview && (
+              <span className="blind-review-badge" title="Blind Review">
+                Ẩn danh
+              </span>
+            )}
+          </div>
+          <h1 className="conf-detail-title">{conf.name}</h1>
 
-            <div className="conf-detail-meta">
-              <div className="meta-item">
-                <span className="meta-label">Ngày bắt đầu</span>
-                <span className="meta-value">
-                  {formatDateTime(conf.startDate)}
-                </span>
-              </div>
-
-              <div className="meta-item">
-                <span className="meta-label">Ngày kết thúc</span>
-                <span className="meta-value">
-                  {formatDateTime(conf.endDate)}
-                </span>
-              </div>
-
-              <div className="meta-item">
-                <span className="meta-label">Hạn nộp bài</span>
-                <span className="meta-value">
-                  {formatDateTime(submissionDeadline)}
-                </span>
-              </div>
-
-              <div className="meta-item">
-                <span className="meta-label">Hạn review</span>
-                <span className="meta-value">
-                  {formatDateTime(reviewDeadline)}
-                </span>
-              </div>
-
-              <div className="meta-item">
-                <span className="meta-label">Hạn camera-ready</span>
-                <span className="meta-value">
-                  {formatDateTime(cameraReadyDeadline)}
-                </span>
-              </div>
+          <div className="conf-detail-meta">
+            <div className="meta-item">
+              <span className="meta-label">Ngày bắt đầu</span>
+              <span className="meta-value">
+                {formatDateTime(conf.startDate)}
+              </span>
             </div>
-
-            <div className="conf-detail-cta">
-              <Link
-                to={`/author/submissions/new?confId=${conf.id}`}
-                className={`btn-primary ${isPastDeadline ? "disabled" : ""}`}
-                onClick={(e) => isPastDeadline && e.preventDefault()}
-                aria-disabled={isPastDeadline}
-              >
-                {isPastDeadline ? "Đã quá hạn nộp bài" : "Nộp bài ngay"}
-              </Link>
-
-              <Link to="/author/dashboard" className="btn-secondary">
-                Vào dashboard tác giả
-              </Link>
-
-              <Link
-                to={`/author/submissions?confId=${conf.id}`}
-                className="btn-secondary"
-              >
-                Bài đã nộp cho hội nghị này
-              </Link>
+            <div className="meta-item">
+              <span className="meta-label">Ngày kết thúc</span>
+              <span className="meta-value">{formatDateTime(conf.endDate)}</span>
+            </div>
+            <div className="meta-item">
+              <span className="meta-label">Hạn nộp bài</span>
+              <span className="meta-value">
+                {formatDateTime(submissionDeadline)}
+              </span>
+            </div>
+            <div className="meta-item">
+              <span className="meta-label">Hạn review</span>
+              <span className="meta-value">
+                {formatDateTime(reviewDeadline)}
+              </span>
+            </div>
+            <div className="meta-item">
+              <span className="meta-label">Hạn camera-ready</span>
+              <span className="meta-value">
+                {formatDateTime(cameraReadyDeadline)}
+              </span>
             </div>
           </div>
 
-          <div className="conf-detail-card">
-            <h3>Thông tin chính</h3>
-            <ul>
-              <li>
-                <strong>Chủ đề / Tracks:</strong>{" "}
-                {conf.tracks?.length
-                  ? `${conf.tracks.length} tracks`
-                  : "Đang cập nhật"}
-              </li>
-              <li>
-                <strong>Blind review:</strong>{" "}
-                {blindReview ? "Có" : "Không"}
-              </li>
-              <li>
-                <strong>Tên hội nghị:</strong> {conf.name}
-              </li>
-            </ul>
+          <div className="conf-detail-cta">
+            <Link
+              to={`/author/submissions/new?confId=${conf.id}`}
+              className={`btn-primary ${isPastDeadline ? "disabled" : ""}`}
+              onClick={(e) => isPastDeadline && e.preventDefault()}
+              aria-disabled={isPastDeadline}
+            >
+              {isPastDeadline ? "Đã quá hạn nộp bài" : "Nộp bài ngay"}
+            </Link>
+            <Link to="/author/dashboard" className="btn-secondary">
+              Vào dashboard tác giả
+            </Link>
+            <Link
+              to={`/author/submissions?confId=${conf.id}`}
+              className="btn-secondary"
+            >
+              Bài đã nộp cho hội nghị này
+            </Link>
           </div>
         </div>
 
-        {/* ===== TIMELINE CARD ===== */}
-        <section className="conf-detail-section">
-          <h2>Timeline hội nghị</h2>
+        {/* ===== CHỦ ĐỀ VÀ MÔ TẢ ===== */}
+        {(conf.tracks && conf.tracks.length > 0) || conf.description ? (
+          <section className="conf-detail-section">
+            <div className="conf-detail-card">
+              {/* Chủ đề / Tracks */}
+              {conf.tracks && conf.tracks.length > 0 && (
+                <div
+                  style={{ marginBottom: conf.description ? "2.5rem" : "0" }}
+                >
+                  <h2 className="section-title" style={{ marginTop: 0 }}>
+                    Chủ đề
+                  </h2>
+                  <div className="conf-detail-tracks">
+                    {conf.tracks.map((track, index) => (
+                      <div key={track.id || index} className="track-badge">
+                        <span className="track-badge-name">{track.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-          <div className="timeline-cards">
-            <div className="timeline-card done">
-              <div className="timeline-icon">✓</div>
-              <h4>Mở nộp bài</h4>
-              <span>{formatDateTime(conf.startDate)}</span>
+              {/* Mô tả */}
+              {conf.description && (
+                <div>
+                  <h2 className="section-title" style={{ marginTop: 0 }}>
+                    Mô tả chi tiết
+                  </h2>
+                  <div className="conf-description">
+                    <p>{conf.description}</p>
+                  </div>
+                </div>
+              )}
             </div>
-
-            <div
-              className={`timeline-card ${
-                isPastDeadline ? "done" : "current"
-              }`}
-            >
-              <div className="timeline-icon">
-                {isPastDeadline ? "✓" : "✍"}
-              </div>
-              <h4>Nộp bài</h4>
-              <span>{formatDateTime(submissionDeadline)}</span>
-            </div>
-
-            <div className="timeline-card upcoming">
-              <div className="timeline-icon">🔍</div>
-              <h4>Review</h4>
-              <span>{formatDateTime(reviewDeadline)}</span>
-            </div>
-
-            <div className="timeline-card upcoming">
-              <div className="timeline-icon">📄</div>
-              <h4>Camera-ready</h4>
-              <span>{formatDateTime(cameraReadyDeadline)}</span>
-            </div>
-
-            <div className="timeline-card upcoming">
-              <div className="timeline-icon">🎤</div>
-              <h4>Hội nghị</h4>
-              <span>{formatDateTime(conf.endDate)}</span>
-            </div>
-          </div>
-        </section>
+          </section>
+        ) : null}
       </main>
     </div>
   );

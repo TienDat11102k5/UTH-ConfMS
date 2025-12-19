@@ -159,7 +159,7 @@ const ConferenceList = () => {
                 </p>
 
                 <div className="conf-stats">
-                  <span>{conf.tracks?.length || 0} Tracks</span>
+                  <span>{conf.tracks?.length || 0} Chủ đề </span>
                 </div>
 
                 <div className="conf-actions">

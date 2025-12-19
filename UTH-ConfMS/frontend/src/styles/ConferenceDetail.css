@@ -6,16 +6,26 @@
 }
 
 .conf-detail-header {
-  display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.8fr);
-  gap: 1.75rem;
-  align-items: start;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .conf-detail-title {
   font-size: 2rem;
   margin: 0.5rem 0 0.75rem;
+}
+
+.blind-review-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #92400e;
 }
 
 .conf-detail-desc {
@@ -79,11 +89,33 @@
 }
 
 .conf-detail-section {
-  margin-top: 2.5rem;
+  margin-top: 3rem;
 }
 
-.conf-detail-section h2 {
-  margin-bottom: 1rem;
+.section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.conf-detail-card .section-title {
+  margin-top: 0;
+}
+
+.conf-description {
+  line-height: 1.85;
+  color: #4b5563;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+
+.conf-description p {
+  margin: 0;
+  white-space: pre-wrap;
+  text-align: justify;
 }
 
 .conf-detail-timeline {
@@ -110,26 +142,33 @@
 }
 
 .conf-detail-tracks {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
-.track-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1rem;
-  background: #ffffff;
+.track-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #bae6fd;
+  border-radius: 20px;
+  transition: all 0.2s ease;
 }
 
-.track-title {
-  font-weight: 700;
-  margin-bottom: 0.4rem;
+.track-badge:hover {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-color: #93c5fd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 }
 
-.track-desc {
-  color: #4b5563;
+.track-badge-name {
   font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e40af;
+  white-space: nowrap;
 }
 
 .conf-detail-loading,
@@ -149,11 +188,6 @@
   margin-bottom: 2rem;
 }
 
-@media (max-width: 900px) {
-  .conf-detail-header {
-    grid-template-columns: 1fr;
-  }
-}
 /* ===== TIMELINE ===== */
 .timeline-vertical {
   position: relative;
@@ -276,4 +310,3 @@
     font-size: 0.8rem;
   }
 }
-
