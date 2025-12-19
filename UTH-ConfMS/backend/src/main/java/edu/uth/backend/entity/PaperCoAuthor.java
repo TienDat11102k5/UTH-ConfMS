@@ -1,6 +1,7 @@
 package edu.uth.backend.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ public class PaperCoAuthor extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "paper_id", nullable = false)
+    @JsonIgnore  // Prevent circular reference when serializing
     private Paper paper;
 
     private String name;

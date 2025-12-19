@@ -43,6 +43,17 @@ public interface PaperRepository extends JpaRepository<Paper, Long> {
 
     // 2. Lấy danh sách bài thuộc Track này (Trang quản lý của Chair)
     List<Paper> findByTrackId(Long trackId);
+    
+    // 2b. Lấy danh sách bài thuộc Track với eager loading để tránh LazyInit
+    @Query("""
+        select distinct p
+        from Paper p
+        left join fetch p.coAuthors ca
+        left join fetch p.track t
+        left join fetch p.mainAuthor a
+        where t.id = :trackId
+    """)
+    List<Paper> findAllWithDetailsByTrackId(@Param("trackId") Long trackId);
 
     // 3. Đếm số lượng bài theo trạng thái (VD: Có bao nhiêu bài đang SUBMITTED)
     long countByStatus(PaperStatus status);

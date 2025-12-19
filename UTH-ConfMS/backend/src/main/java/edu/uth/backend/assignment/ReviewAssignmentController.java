@@ -15,6 +15,7 @@ public class ReviewAssignmentController {
 
     // API: Phân công Reviewer (Admin/Chair dùng)
     // POST /api/assignments
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
     @PostMapping
     public ResponseEntity<?> assignReviewer(@RequestBody AssignmentRequestDTO req) {
         try {
@@ -33,6 +34,7 @@ public class ReviewAssignmentController {
 
     // API: Xem bài báo này đã gán cho ai (Chair dùng)
     // GET /api/assignments/paper/{paperId}
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
     @GetMapping("/paper/{paperId}")
     public ResponseEntity<?> getAssignmentsByPaper(@PathVariable Long paperId) {
         return ResponseEntity.ok(assignmentService.getAssignmentsByPaper(paperId));
@@ -62,6 +64,7 @@ public class ReviewAssignmentController {
 
     // API: Bulk assignment
     // POST /api/assignments/bulk
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
     @PostMapping("/bulk")
     public ResponseEntity<?> bulkAssign(@RequestBody java.util.Map<String, java.util.List<Long>> request) {
         try {

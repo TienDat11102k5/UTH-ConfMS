@@ -28,6 +28,7 @@ public class DecisionController {
 
     // API: Ra quyết định (Accept/Reject)
     // POST /api/decisions
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
     @PostMapping
     public ResponseEntity<?> makeDecision(@RequestBody DecisionRequestDTO req) {
         try {
@@ -39,6 +40,7 @@ public class DecisionController {
 
     // API: Bulk decision - ra quyết định cho nhiều bài
     // POST /api/decisions/bulk
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
     @PostMapping("/bulk")
     public ResponseEntity<?> bulkMakeDecision(@RequestBody java.util.Map<String, Object> request) {
         try {
@@ -55,18 +57,21 @@ public class DecisionController {
 
     // API: Lấy thống kê reviews của một paper
     // GET /api/decisions/statistics/{paperId}
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
     @GetMapping("/statistics/{paperId}")
     public ResponseEntity<?> getReviewStatistics(@PathVariable Long paperId) {
         return ResponseEntity.ok(decisionService.getReviewStatistics(paperId));
     }
 
     // API: Lấy danh sách bài báo theo hội nghị (Dành cho Chair)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
     @GetMapping("/papers/{conferenceId}")
     public ResponseEntity<?> getConferencePapers(@PathVariable Long conferenceId) {
         return ResponseEntity.ok(submissionService.getPapersByConference(conferenceId));
     }
 
     // API: Lấy danh sách Reviewer (Dành cho Chair phân công)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
     @GetMapping("/reviewers")
     public ResponseEntity<?> getReviewers() {
         return ResponseEntity.ok(submissionService.getAllReviewers());

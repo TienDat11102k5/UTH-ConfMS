@@ -92,7 +92,8 @@ public class SubmissionService {
         List<Track> tracks = conference.getTracks();
         java.util.List<Paper> papers = new java.util.ArrayList<>();
         for (Track track : tracks) {
-            papers.addAll(paperRepo.findByTrackId(track.getId()));
+            // Use eager loading query to avoid LazyInitializationException
+            papers.addAll(paperRepo.findAllWithDetailsByTrackId(track.getId()));
         }
         return papers;
     }
@@ -155,6 +156,6 @@ public class SubmissionService {
 
     // --- 6. LẤY DANH SÁCH REVIEWER (Dành cho Chair phân công) ---
     public List<User> getAllReviewers() {
-        return userRepo.findAll();
+        return userRepo.findAllReviewers();
     }
 }
