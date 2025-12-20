@@ -93,10 +93,55 @@ export const reportInaccuracy = async (synopsisId, issue, reviewerId) => {
   return { success: true, message: "Feedback recorded" };
 };
 
+/**
+ * Get paper recommendations for a reviewer based on AI matching
+ */
+export const getPaperRecommendations = async (
+  reviewerId,
+  reviewerExpertise,
+  conferenceId
+) => {
+  try {
+    const response = await aiApiClient.post("/paper-recommendations", {
+      reviewerId: reviewerId,
+      reviewerExpertise: reviewerExpertise,
+      conferenceId: conferenceId
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 403) {
+      throw new Error("Paper recommendation feature is not enabled for this conference");
+    }
+    throw new Error(
+      error.response?.data?.detail || "Failed to get paper recommendations. Please try again."
+    );
+  }
+};
+
+/**
+ * Submit bidding interest for papers
+ */
+export const submitBidding = async (reviewerId, paperId, interest) => {
+  try {
+    const response = await aiApiClient.post("/reviewer-bidding", {
+      reviewerId: reviewerId,
+      paperId: paperId,
+      interest: interest // 'high', 'medium', 'low', or 'conflict'
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.detail || "Failed to submit bidding. Please try again."
+    );
+  }
+};
+
 export default {
   generateSynopsis,
   extractKeyPoints,
   reportInaccuracy,
+  getPaperRecommendations,
+  submitBidding,
 };
 
 

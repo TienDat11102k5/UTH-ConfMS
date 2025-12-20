@@ -358,10 +358,10 @@ const ReviewerCOI = () => {
       {/* Bidding Tab */}
       {activeTab === "bidding" && (
         <div className="form-card">
-          <h3>Gợi ý bài phù hợp (Bidding)</h3>
+          <h3>Danh sách bài được phân công</h3>
           <p style={{ color: "#666", marginBottom: "1.5rem" }}>
             Dưới đây là danh sách các bài báo hiện được phân công cho bạn. 
-            Tính năng gợi ý bài dựa trên keyword/topic embeddings sẽ được bổ sung trong phiên bản tiếp theo.
+            Bạn có thể xem chi tiết và tiến hành review cho từng bài.
           </p>
 
           {myPapers.length === 0 ? (
@@ -409,20 +409,6 @@ const ReviewerCOI = () => {
               </tbody>
             </table>
           )}
-
-          <div
-            style={{
-              marginTop: "2rem",
-              padding: "1rem",
-              background: "#fff3cd",
-              border: "1px solid #ffc107",
-              borderRadius: "8px",
-            }}
-          >
-            <strong>💡 Lưu ý:</strong> Tính năng bidding tự động dựa trên 
-            keyword/topic embeddings (AI) sẽ được tích hợp sau. Hiện tại việc phân 
-            công bài được thực hiện thủ công bởi Chair.
-          </div>
         </div>
       )}
     </DashboardLayout>

@@ -48,9 +48,8 @@ const ReviewerDashboard = () => {
         <div className="dash-card">
           <h3>COI &amp; Bidding (tuỳ chọn)</h3>
           <p>
-            Khai báo và cập nhật xung đột lợi ích (COI), xem gợi ý bài phù hợp
-            từ topic/keyword embeddings phục vụ bidding (chỉ là gợi ý, không
-            auto-assign).
+            Khai báo và cập nhật xung đột lợi ích (COI), xem danh sách bài được
+            phân công để chuẩn bị cho việc review.
           </p>
           <Link to="/reviewer/coi" className="btn-secondary">
             Quản lý COI &amp; bidding
