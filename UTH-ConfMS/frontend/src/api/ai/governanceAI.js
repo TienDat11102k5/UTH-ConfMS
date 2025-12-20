@@ -35,7 +35,7 @@ export const getFeatureFlags = async (conferenceId) => {
   } catch (error) {
     throw new Error(
       error.response?.data?.detail ||
-        "Không thể tải cấu hình tính năng AI. Vui lòng thử lại."
+      "Không thể tải cấu hình tính năng AI. Vui lòng thử lại."
     );
   }
 };
@@ -54,7 +54,7 @@ export const enableFeature = async (conferenceId, featureName, userId) => {
   } catch (error) {
     throw new Error(
       error.response?.data?.detail ||
-        "Không thể bật tính năng AI. Vui lòng thử lại."
+      "Không thể bật tính năng AI. Vui lòng thử lại."
     );
   }
 };
@@ -73,7 +73,7 @@ export const disableFeature = async (conferenceId, featureName, userId) => {
   } catch (error) {
     throw new Error(
       error.response?.data?.detail ||
-        "Không thể tắt tính năng AI. Vui lòng thử lại."
+      "Không thể tắt tính năng AI. Vui lòng thử lại."
     );
   }
 };
@@ -102,7 +102,7 @@ export const getAuditLogs = async ({
   } catch (error) {
     throw new Error(
       error.response?.data?.detail ||
-        "Không thể tải nhật ký AI. Vui lòng thử lại."
+      "Không thể tải nhật ký AI. Vui lòng thử lại."
     );
   }
 };

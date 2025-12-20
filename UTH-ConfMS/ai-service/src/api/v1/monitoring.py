@@ -172,8 +172,8 @@ async def readiness_check():
         model_manager = get_model_manager()
         provider_info = model_manager.get_provider_info()
         
-        if not provider_info.get("openai_configured") and not provider_info.get("anthropic_configured"):
-            raise HTTPException(status_code=503, detail="Không có nhà cung cấp AI nào được cấu hình")
+        if not provider_info.get("gemini_configured"):
+            raise HTTPException(status_code=503, detail="Gemini AI chưa được cấu hình")
         
         return {"status": "ready"}
         

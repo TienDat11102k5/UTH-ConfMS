@@ -22,6 +22,7 @@ from core.nlp.keyword_extractor import (
 from core.governance.feature_flags import get_feature_flag_manager
 from core.governance.audit_logger import get_audit_logger
 from core.governance.model_manager import get_model_manager
+from core.infra.config import get_settings
 import logging
 import uuid
 
@@ -225,7 +226,7 @@ async def check_spelling(request: SpellCheckRequest):
             feature="spell_check",
             action="check_spelling",
             prompt=request.text[:1000],  # Truncate for logging
-            model_id="gpt-4o-mini",
+            model_id=get_settings().model_name,
             output_summary=f"Found {len(errors)} spelling errors",
             accepted=None  # User hasn't accepted/rejected yet
         )
@@ -283,7 +284,7 @@ async def check_grammar(request: GrammarCheckRequest):
             feature="grammar_check",
             action="check_grammar",
             prompt=request.text[:1000],
-            model_id="gpt-4o-mini",
+            model_id=get_settings().model_name,
             output_summary=f"Tìm thấy {len(errors)} lỗi ngữ pháp",
             accepted=None
         )
@@ -345,7 +346,7 @@ async def polish_abstract(request: PolishAbstractRequest):
             feature="abstract_polish",
             action="polish_abstract",
             prompt=request.abstract[:1000],
-            model_id="gpt-4o-mini",
+            model_id=get_settings().model_name,
             output_summary=f"Đã đánh bóng tóm tắt với {len(result.changes)} thay đổi. Lý do: {result.rationale[:200]}",
             accepted=None  # Người dùng chưa chấp nhận
         )
@@ -410,7 +411,7 @@ async def suggest_keywords(request: SuggestKeywordsRequest):
             feature="keyword_suggest",
             action="suggest_keywords",
             prompt=f"Tiêu đề: {request.title[:500]}\nTóm tắt: {request.abstract[:500]}",
-            model_id="gpt-4o-mini",
+            model_id=get_settings().model_name,
             output_summary=f"Đã gợi ý {len(keywords)} từ khóa",
             accepted=None
         )
@@ -480,5 +481,6 @@ async def apply_polish(request: ApplyPolishRequest):
     except Exception as e:
         logger.error(f"Áp dụng đánh bóng thất bại: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Không thể ghi lại việc áp dụng đánh bóng")
+
 
 

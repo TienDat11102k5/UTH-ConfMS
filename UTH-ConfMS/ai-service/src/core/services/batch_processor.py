@@ -9,6 +9,7 @@ from datetime import datetime
 from core.nlp.synopsis_generator import get_synopsis_generator
 from core.governance.feature_flags import get_feature_flag_manager
 from core.governance.audit_logger import get_audit_logger
+from core.infra.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +84,7 @@ class BatchSynopsisGenerator:
                         feature="synopsis_generation",
                         action="batch_generate_synopsis",
                         prompt=f"Tạo lô cho bài báo {paper_meta.get('paper_id')}",
-                        model_id="gpt-4o-mini",
+                        model_id=get_settings().model_name,
                         output_summary=f"Đã tạo tóm tắt {length}: {synopsis.word_count} từ",
                         accepted=None
                     )
@@ -136,5 +137,6 @@ def get_batch_generator() -> BatchSynopsisGenerator:
     if _batch_generator is None:
         _batch_generator = BatchSynopsisGenerator()
     return _batch_generator
+
 
 

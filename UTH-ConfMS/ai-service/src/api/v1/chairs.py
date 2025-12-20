@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from core.services.email_generator import get_email_generator
 from core.governance.feature_flags import get_feature_flag_manager
 from core.governance.audit_logger import get_audit_logger
+from core.infra.config import get_settings
 from datetime import datetime
 import logging
 import uuid
@@ -161,7 +162,7 @@ async def draft_email(request: DraftEmailRequest):
             feature="email_draft_assist",
             action="draft_email",
             prompt=f"Email type: {request.email_type}, Paper: {request.paper_id or 'N/A'}",
-            model_id="gpt-4o-mini",
+            model_id=get_settings().model_name,
             output_summary=f"Generated {request.email_type} email draft",
             accepted=None
         )
@@ -219,5 +220,6 @@ async def approve_email_draft(request: ApproveEmailDraftRequest):
         ready_to_send=True,
         message="Nháp email đã được phê duyệt và sẵn sàng gửi"
     )
+
 
 

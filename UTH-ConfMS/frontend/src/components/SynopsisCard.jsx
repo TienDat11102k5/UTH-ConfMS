@@ -111,3 +111,5 @@ const SynopsisCard = ({
 export default SynopsisCard;
 
 
+
+

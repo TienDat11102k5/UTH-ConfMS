@@ -29,6 +29,12 @@ public class PaperSynopsis extends BaseEntity {
     @Column(name = "key_themes", columnDefinition = "TEXT")
     private String keyThemes; // Mảng JSON dưới dạng chuỗi
 
+    @Column(name = "claims", columnDefinition = "TEXT")
+    private String claims; // Mảng JSON
+
+    @Column(name = "datasets", columnDefinition = "TEXT")
+    private String datasets; // Mảng JSON
+
     @Column(name = "methodology", length = 100)
     private String methodology;
 
@@ -45,7 +51,7 @@ public class PaperSynopsis extends BaseEntity {
     private String language = "vi";
 
     @Column(name = "model_used", length = 50)
-    private String modelUsed = "gpt-4o-mini";
+    private String modelUsed = "gemini-1.5-flash";
 
     @Column(name = "generated_at")
     private LocalDateTime generatedAt;
@@ -56,5 +62,3 @@ public class PaperSynopsis extends BaseEntity {
     @Column(name = "validation_issues", columnDefinition = "TEXT")
     private String validationIssues; // Mảng JSON các vấn đề (nếu có)
 }
-
-

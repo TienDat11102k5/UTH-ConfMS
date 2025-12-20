@@ -7,6 +7,7 @@ import re
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 from core.governance.model_manager import get_model_manager
+from core.infra.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ class KeywordSuggester:
             response = await self.model_manager.call_llm(
                 prompt=prompt,
                 system_instruction=system_instruction,
-                model="gpt-4o-mini",
+                model=get_settings().model_name,
                 temperature=0.2  # Nhiệt độ thấp cho kết quả trích xuất từ khóa ổn định
             )
             
@@ -245,5 +246,6 @@ def get_keyword_suggester() -> KeywordSuggester:
     if _keyword_suggester is None:
         _keyword_suggester = KeywordSuggester()
     return _keyword_suggester
+
 
 

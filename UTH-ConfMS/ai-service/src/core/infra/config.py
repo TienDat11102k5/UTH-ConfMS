@@ -13,14 +13,13 @@ class Settings(BaseSettings):
     """Cài đặt ứng dụng với hỗ trợ biến môi trường."""
     
     # Cấu hình Nhà cung cấp AI
-    ai_provider: str = "openai"  # openai, anthropic, local
-    model_name: str = "gpt-4o-mini"
+    ai_provider: str = "gemini"  # gemini, local
+    model_name: str = "gemini-1.5-flash"
     max_tokens: int = 2000
     temperature: float = 0.3
     
     # Khóa API
-    openai_api_key: Optional[str] = None
-    anthropic_api_key: Optional[str] = None
+    gemini_api_key: Optional[str] = None
     
     # Cấu hình Cơ sở dữ liệu
     database_url: str = "postgresql://postgres:123456@localhost:5435/confms_db"
@@ -68,5 +67,6 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """Lấy instance settings đã cache."""
     return Settings()
+
 
 

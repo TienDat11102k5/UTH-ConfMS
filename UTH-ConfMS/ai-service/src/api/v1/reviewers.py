@@ -10,6 +10,7 @@ from core.nlp.keypoint_extractor import get_keypoint_extractor
 from core.governance.feature_flags import get_feature_flag_manager
 from core.governance.audit_logger import get_audit_logger
 from core.governance.double_blind import get_double_blind_validator
+from core.infra.config import get_settings
 from datetime import datetime
 import logging
 
@@ -46,7 +47,7 @@ class GenerateSynopsisResponse(BaseModel):
     methodology: str
     contribution_type: str
     generated_at: str
-    model_used: str = "gpt-4o-mini"
+    model_used: str = Field(default_factory=lambda: get_settings().model_name)
     word_count: int
     length: str
     rationale: str
@@ -76,7 +77,7 @@ class ExtractKeyPointsResponse(BaseModel):
     novelty: Optional[str] = None
     limitations: Optional[str] = None
     extracted_at: str
-    model_used: str = "gpt-4o-mini"
+    model_used: str = Field(default_factory=lambda: get_settings().model_name)
 
 
 # ============================================
@@ -168,7 +169,7 @@ async def generate_synopsis(request: GenerateSynopsisRequest):
             feature="synopsis_generation",
             action="generate_synopsis",
             prompt=f"Title: {request.title[:500]}\nAbstract: {request.abstract[:500]}",
-            model_id="gpt-4o-mini",
+            model_id=get_settings().model_name,
             output_summary=f"Generated {request.length} synopsis: {synopsis.word_count} words",
             accepted=None
         )
@@ -179,7 +180,7 @@ async def generate_synopsis(request: GenerateSynopsisRequest):
             methodology=synopsis.methodology,
             contribution_type=synopsis.contribution_type,
             generated_at=datetime.utcnow().isoformat() + "Z",
-            model_used="gpt-4o-mini",
+            model_used=get_settings().model_name,
             word_count=synopsis.word_count,
             length=request.length,
             rationale=synopsis.rationale
@@ -233,7 +234,7 @@ async def extract_keypoints(request: ExtractKeyPointsRequest):
             feature="key_point_extraction",
             action="extract_keypoints",
             prompt=f"Title: {request.title[:500]}\nAbstract: {request.abstract[:500]}",
-            model_id="gpt-4o-mini",
+            model_id=get_settings().model_name,
             output_summary=f"Extracted {len(keypoints.claims)} claims, {len(keypoints.methods)} methods, {len(keypoints.datasets)} datasets",
             accepted=None
         )
@@ -254,7 +255,7 @@ async def extract_keypoints(request: ExtractKeyPointsRequest):
             novelty=keypoints.novelty,
             limitations=keypoints.limitations,
             extracted_at=datetime.utcnow().isoformat() + "Z",
-            model_used="gpt-4o-mini"
+            model_used=get_settings().model_name
         )
         
     except ValueError as e:
@@ -282,5 +283,6 @@ async def get_paper_synopsis(
         "paper_id": paper_id,
         "cached": False
     }
+
 
 

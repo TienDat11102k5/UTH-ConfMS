@@ -5,10 +5,10 @@
 import axios from "axios";
 import { getToken } from "../../auth";
 
-const AI_SERVICE_BASE_URL = import.meta.env.VITE_AI_SERVICE_URL || "http://localhost:8001";
+const AI_SERVICE_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 const aiApiClient = axios.create({
-  baseURL: `${AI_SERVICE_BASE_URL}/api/v1/reviewers`,
+  baseURL: `${AI_SERVICE_BASE_URL}/api/ai`,
   timeout: 30000,
 });
 
@@ -31,21 +31,16 @@ export const generateSynopsis = async (
   title,
   abstract,
   conferenceId,
-  keywords = [],
   length = "medium",
-  language = "en",
-  reviewerId = null
+  language = "en"
 ) => {
   try {
-    const response = await aiApiClient.post("/generate-synopsis", {
-      paper_id: paperId,
-      title,
-      abstract,
-      keywords,
-      conference_id: conferenceId,
-      length,
-      language,
-      reviewer_id: reviewerId,
+    const response = await aiApiClient.post("/synopsis", {
+      title: title,
+      abstractText: abstract, // Mapped to abstractText
+      language: language,
+      length: length,
+      conferenceId: conferenceId
     });
     return response.data;
   } catch (error) {
@@ -59,24 +54,23 @@ export const generateSynopsis = async (
 };
 
 /**
- * Extract key points from a paper
+ * Extract key points from a paper (Mapped to Synopsis generation as backend covers it)
  */
 export const extractKeyPoints = async (
   paperId,
   title,
   abstract,
   conferenceId,
-  language = "en",
-  reviewerId = null
+  language = "en"
 ) => {
   try {
-    const response = await aiApiClient.post("/extract-keypoints", {
-      paper_id: paperId,
-      title,
-      abstract,
-      conference_id: conferenceId,
-      language,
-      reviewer_id: reviewerId,
+    // Backend doesn't have specific extract-keypoints, but synopsis returns keyThemes & claims.
+    const response = await aiApiClient.post("/synopsis", {
+      title: title,
+      abstractText: abstract,
+      language: language,
+      length: "short", // Key points doesn't need long summary
+      conferenceId: conferenceId
     });
     return response.data;
   } catch (error) {

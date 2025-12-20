@@ -6,6 +6,7 @@ import logging
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 from core.governance.model_manager import get_model_manager
+from core.infra.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +74,7 @@ class AbstractPolisher:
             response = await self.model_manager.call_llm(
                 prompt=prompt,
                 system_instruction=system_instruction,
-                model="gpt-4o-mini",
+                model=get_settings().model_name,
                 temperature=0.3  # Slightly higher for more creative improvements
             )
             
@@ -236,5 +237,6 @@ def get_abstract_polisher() -> AbstractPolisher:
     if _abstract_polisher is None:
         _abstract_polisher = AbstractPolisher()
     return _abstract_polisher
+
 
 

@@ -8,6 +8,7 @@ from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 from core.governance.model_manager import get_model_manager
 from core.governance.data_privacy import get_redaction_service
+from core.infra.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +70,7 @@ class SpellChecker:
             response = await self.model_manager.call_llm(
                 prompt=prompt,
                 system_instruction=system_instruction,
-                model="gpt-4o-mini",
+                model=get_settings().model_name,
                 temperature=0.1  # Nhiệt độ thấp cho kết quả nhất quán
             )
             
@@ -210,7 +211,7 @@ class GrammarChecker:
             response = await self.model_manager.call_llm(
                 prompt=prompt,
                 system_instruction=system_instruction,
-                model="gpt-4o-mini",
+                model=get_settings().model_name,
                 temperature=0.1
             )
             
@@ -339,5 +340,6 @@ def get_grammar_checker() -> GrammarChecker:
     if _grammar_checker is None:
         _grammar_checker = GrammarChecker()
     return _grammar_checker
+
 
 

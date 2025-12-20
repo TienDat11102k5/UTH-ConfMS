@@ -7,6 +7,7 @@ from typing import List, Dict, Optional
 from dataclasses import dataclass
 from core.governance.model_manager import get_model_manager
 from core.governance.data_privacy import get_redaction_service
+from core.infra.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +93,7 @@ class KeyPointExtractor:
             response = await self.model_manager.call_llm(
                 prompt=prompt,
                 system_instruction=system_instruction,
-                model="gpt-4o-mini",
+                model=get_settings().model_name,
                 temperature=0.2  # Nhiệt độ thấp cho trích xuất theo sự thật
             )
             
@@ -261,5 +262,6 @@ def get_keypoint_extractor() -> KeyPointExtractor:
     if _keypoint_extractor is None:
         _keypoint_extractor = KeyPointExtractor()
     return _keypoint_extractor
+
 
 

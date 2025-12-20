@@ -7,6 +7,7 @@ from typing import List, Dict, Optional
 from dataclasses import dataclass
 from core.services.embedding_service import get_embedding_service
 from core.governance.model_manager import get_model_manager
+from core.infra.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -176,7 +177,7 @@ Chỉ trả về mảng JSON, không có markdown."""
             response = await self.model_manager.call_llm(
                 prompt=prompt,
                 system_instruction="Bạn là chuyên gia xác định sự trùng lặp chủ đề nghiên cứu.",
-                model="gpt-4o-mini",
+                model=get_settings().model_name,
                 temperature=0.2
             )
             
@@ -295,5 +296,6 @@ def get_similarity_calculator() -> SimilarityCalculator:
     if _similarity_calculator is None:
         _similarity_calculator = SimilarityCalculator()
     return _similarity_calculator
+
 
 

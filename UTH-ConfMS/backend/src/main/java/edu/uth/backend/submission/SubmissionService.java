@@ -13,18 +13,26 @@ import java.util.List;
 @Service
 public class SubmissionService {
 
-    @Autowired private PaperRepository paperRepo;
-    @Autowired private UserRepository userRepo;
-    @Autowired private TrackRepository trackRepo;
-    @Autowired private ConferenceRepository conferenceRepo;
-    @Autowired private FileStorageUtil fileStorageUtil;
-    @Autowired private PaperCoAuthorRepository coAuthorRepo;
+    @Autowired
+    private PaperRepository paperRepo;
+    @Autowired
+    private UserRepository userRepo;
+    @Autowired
+    private TrackRepository trackRepo;
+    @Autowired
+    private ConferenceRepository conferenceRepo;
+    @Autowired
+    private FileStorageUtil fileStorageUtil;
+    @Autowired
+    private PaperCoAuthorRepository coAuthorRepo;
 
     private static final long MAX_FILE_SIZE = 25L * 1024 * 1024; // 25MB
 
     private void validatePdf(MultipartFile file) {
-        if (file == null) throw new RuntimeException("File không được để trống");
-        if (file.getSize() > MAX_FILE_SIZE) throw new RuntimeException("Kích thước file vượt quá 25MB");
+        if (file == null)
+            throw new RuntimeException("File không được để trống");
+        if (file.getSize() > MAX_FILE_SIZE)
+            throw new RuntimeException("Kích thước file vượt quá 25MB");
         String ct = file.getContentType();
         String name = file.getOriginalFilename() != null ? file.getOriginalFilename().toLowerCase() : "";
         if (ct == null || (!ct.toLowerCase().contains("pdf") && !name.endsWith(".pdf"))) {
@@ -33,16 +41,19 @@ public class SubmissionService {
     }
 
     // --- 1. NỘP BÀI ---
-    public Paper submitPaper(String title, String abstractText, Long authorId, Long trackId, MultipartFile file, List<CoAuthorDTO> coAuthors) {
-        if (file.isEmpty()) throw new RuntimeException("File nộp không được để trống!");
+    public Paper submitPaper(String title, String abstractText, Long authorId, Long trackId, MultipartFile file,
+            List<CoAuthorDTO> coAuthors) {
+        if (file.isEmpty())
+            throw new RuntimeException("File nộp không được để trống!");
         validatePdf(file);
-        
+
         boolean isDuplicate = paperRepo.existsByMainAuthorIdAndTrackIdAndTitle(authorId, trackId, title);
-        if (isDuplicate) throw new RuntimeException("Lỗi: Bạn đã nộp bài báo có tiêu đề này vào Track này rồi!");
+        if (isDuplicate)
+            throw new RuntimeException("Lỗi: Bạn đã nộp bài báo có tiêu đề này vào Track này rồi!");
 
         User author = userRepo.findById(authorId).orElseThrow(() -> new RuntimeException("User không tồn tại"));
         Track track = trackRepo.findById(trackId).orElseThrow(() -> new RuntimeException("Track không tồn tại"));
-        
+
         Conference conf = track.getConference();
         if (conf.getSubmissionDeadline() != null && LocalDateTime.now().isAfter(conf.getSubmissionDeadline())) {
             throw new RuntimeException("Đã quá hạn nộp bài cho hội nghị này!");
@@ -57,7 +68,7 @@ public class SubmissionService {
         paper.setMainAuthor(author);
         paper.setTrack(track);
         paper.setStatus(PaperStatus.SUBMITTED);
-        
+
         Paper savedPaper = paperRepo.save(paper);
 
         if (coAuthors != null && !coAuthors.isEmpty()) {
@@ -105,7 +116,8 @@ public class SubmissionService {
     }
 
     // --- 4. SỬA BÀI (EDIT) - Đã thêm check User ---
-    public Paper updatePaper(Long paperId, String newTitle, String newAbstract, MultipartFile newFile, Long currentUserId) {
+    public Paper updatePaper(Long paperId, String newTitle, String newAbstract, MultipartFile newFile,
+            Long currentUserId) {
         Paper paper = getPaperById(paperId);
 
         // Kiểm tra bảo mật: chỉ tác giả chính mới được sửa
@@ -122,8 +134,10 @@ public class SubmissionService {
             throw new RuntimeException("Đã hết hạn nộp bài, không thể chỉnh sửa!");
         }
 
-        if (newTitle != null && !newTitle.isBlank()) paper.setTitle(newTitle);
-        if (newAbstract != null && !newAbstract.isBlank()) paper.setAbstractText(newAbstract);
+        if (newTitle != null && !newTitle.isBlank())
+            paper.setTitle(newTitle);
+        if (newAbstract != null && !newAbstract.isBlank())
+            paper.setAbstractText(newAbstract);
 
         if (newFile != null && !newFile.isEmpty()) {
             validatePdf(newFile);
@@ -131,9 +145,27 @@ public class SubmissionService {
             String fileName = fileStorageUtil.saveFile(newFile, "submissions");
             paper.setFilePath(fileName);
             // Xóa file cũ nếu tồn tại
-            try { fileStorageUtil.deleteFile(old, "submissions"); } catch (Exception ignored) {}
+            try {
+                fileStorageUtil.deleteFile(old, "submissions");
+            } catch (Exception ignored) {
+            }
         }
 
+        return paperRepo.save(paper);
+    }
+
+    // Tách hàm cập nhật Abstract riêng cho AI apply
+    public Paper updatePaperAbstract(Long paperId, String newAbstract, Long currentUserId) {
+        Paper paper = getPaperById(paperId);
+
+        if (!paper.getMainAuthor().getId().equals(currentUserId)) {
+            throw new RuntimeException("Bạn không có quyền chỉnh sửa bài báo này!");
+        }
+        if (paper.getStatus() != PaperStatus.SUBMITTED) {
+            throw new RuntimeException("Không thể sửa bài khi đã vào quy trình chấm!");
+        }
+
+        paper.setAbstractText(newAbstract);
         return paperRepo.save(paper);
     }
 

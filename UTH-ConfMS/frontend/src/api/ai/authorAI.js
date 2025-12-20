@@ -6,11 +6,12 @@ import axios from "axios";
 import { getToken } from "../../auth";
 
 // AI Service base URL (different from main backend)
-const AI_SERVICE_BASE_URL = import.meta.env.VITE_AI_SERVICE_URL || "http://localhost:8001";
+// AI Service base URL (Java Backend)
+const AI_SERVICE_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 const aiApiClient = axios.create({
-  baseURL: `${AI_SERVICE_BASE_URL}/api/v1/authors`,
-  timeout: 30000, // 30 seconds timeout for AI operations
+  baseURL: `${AI_SERVICE_BASE_URL}/api/ai`,
+  timeout: 30000,
 });
 
 // Add auth token to requests
@@ -26,20 +27,16 @@ aiApiClient.interceptors.request.use(
 );
 
 /**
- * Check spelling errors in text
+ * Check spelling errors in text (Mapped to Grammar Check)
  * @param {string} text - Text to check
  * @param {string} language - Language code ('en' or 'vi')
- * @param {string} conferenceId - Conference ID
- * @param {string} userId - Optional user ID
- * @returns {Promise<Object>} Response with errors array
- */
-export const checkSpelling = async (text, language, conferenceId, userId = null) => {
+// Parameters simplified as unused ones removed from signature
+export const checkSpelling = async (text, language, conferenceId) => {
   try {
-    const response = await aiApiClient.post("/check-spelling", {
-      text,
-      language,
-      conference_id: conferenceId,
-      user_id: userId,
+    const response = await aiApiClient.post("/grammar-check", {
+      text: text,
+      fieldName: "Content",
+      conferenceId: conferenceId
     });
     return response.data;
   } catch (error) {
@@ -52,21 +49,12 @@ export const checkSpelling = async (text, language, conferenceId, userId = null)
   }
 };
 
-/**
- * Check grammar errors in text
- * @param {string} text - Text to check
- * @param {string} language - Language code ('en' or 'vi')
- * @param {string} conferenceId - Conference ID
- * @param {string} userId - Optional user ID
- * @returns {Promise<Object>} Response with errors array
- */
-export const checkGrammar = async (text, language, conferenceId, userId = null) => {
+export const checkGrammar = async (text, language, conferenceId) => {
   try {
-    const response = await aiApiClient.post("/check-grammar", {
-      text,
-      language,
-      conference_id: conferenceId,
-      user_id: userId,
+    const response = await aiApiClient.post("/grammar-check", {
+      text: text,
+      fieldName: "Content",
+      conferenceId: conferenceId
     });
     return response.data;
   } catch (error) {
@@ -79,35 +67,16 @@ export const checkGrammar = async (text, language, conferenceId, userId = null) 
   }
 };
 
-/**
- * Polish abstract to improve clarity and academic tone
- * @param {string} abstract - Abstract text
- * @param {string} language - Language code ('en' or 'vi')
- * @param {string} conferenceId - Conference ID
- * @param {string} paperId - Optional paper ID
- * @param {string} userId - Optional user ID
- * @param {boolean} preserveMeaning - Whether to preserve original meaning
- * @param {boolean} enhanceTone - Whether to enhance academic tone
- * @returns {Promise<Object>} Response with polished abstract and changes
- */
 export const polishAbstract = async (
   abstract,
   language,
-  conferenceId,
-  paperId = null,
-  userId = null,
-  preserveMeaning = true,
-  enhanceTone = true
+  conferenceId
 ) => {
   try {
-    const response = await aiApiClient.post("/polish-abstract", {
-      abstract,
-      language,
-      conference_id: conferenceId,
-      paper_id: paperId,
-      user_id: userId,
-      preserve_meaning: preserveMeaning,
-      enhance_tone: enhanceTone,
+    const response = await aiApiClient.post("/polish", {
+      content: abstract,
+      type: "Abstract",
+      conferenceId: conferenceId
     });
     return response.data;
   } catch (error) {
@@ -120,32 +89,19 @@ export const polishAbstract = async (
   }
 };
 
-/**
- * Suggest keywords based on title and abstract
- * @param {string} title - Paper title
- * @param {string} abstract - Paper abstract
- * @param {string} language - Language code ('en' or 'vi')
- * @param {string} conferenceId - Conference ID
- * @param {number} maxKeywords - Maximum number of keywords (1-10)
- * @param {string} userId - Optional user ID
- * @returns {Promise<Object>} Response with keywords array
- */
 export const suggestKeywords = async (
   title,
   abstract,
   language,
   conferenceId,
-  maxKeywords = 5,
-  userId = null
+  maxKeywords = 5
 ) => {
   try {
     const response = await aiApiClient.post("/suggest-keywords", {
       title,
-      abstract,
-      language,
-      conference_id: conferenceId,
-      max_keywords: maxKeywords,
-      user_id: userId,
+      abstractText: abstract,
+      maxKeywords: maxKeywords,
+      conferenceId: conferenceId
     });
     return response.data;
   } catch (error) {
@@ -169,11 +125,15 @@ export const suggestKeywords = async (
 export const applyPolish = async (paperId, polishedAbstract, userId, conferenceId) => {
   try {
     const response = await aiApiClient.post("/apply-polish", {
-      paper_id: paperId,
-      polished_abstract: polishedAbstract,
-      user_confirmed: true,
-      user_id: userId,
-      conference_id: conferenceId,
+      paperId: paperId,
+      polishedAbstract: polishedAbstract,
+      userConfirmed: true,
+      // userId is not in DTO explicitly but controller takes it from token. 
+      // However, controller ApplyPolishRequest DTO does NOT have userId. 
+      // Controller code: Long userId = userDetails...;
+      // So no need to send userId in body unless DTO has it.
+      // My DTO ApplyPolishRequest: paperId, polishedAbstract, userConfirmed, conferenceId.
+      conferenceId: conferenceId,
     });
     return response.data;
   } catch (error) {

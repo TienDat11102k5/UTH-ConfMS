@@ -1,16 +1,19 @@
 """
 Dịch vụ Embedding
 Tạo và cache embeddings văn bản cho tính toán độ tương đồng.
+Sử dụng Google Gemini (embedding-001) thay vì OpenAI.
 """
 import hashlib
 import logging
 import numpy as np
-from typing import List, Optional, Union
+import asyncio
+from typing import List, Optional
 import redis
 from redis.exceptions import RedisError
 from core.governance.model_manager import get_model_manager
 from core.infra.config import get_settings
-import pickle
+import google.generativeai as genai
+import _pickle as pickle
 import base64
 
 logger = logging.getLogger(__name__)
@@ -19,7 +22,7 @@ logger = logging.getLogger(__name__)
 class EmbeddingService:
     """
     Dịch vụ tạo và cache embeddings văn bản.
-    Sử dụng API embeddings của OpenAI với Redis cache.
+    Sử dụng API embeddings của Gemini với Redis cache.
     """
     
     def __init__(self):
@@ -27,8 +30,16 @@ class EmbeddingService:
         self.model_manager = get_model_manager()
         self.redis_client: Optional[redis.Redis] = None
         self._init_redis()
-        self.embedding_model = "text-embedding-3-small"  # Mô hình embedding của OpenAI
-    
+        # Mô hình embedding của Gemini: 'models/embedding-001'
+        self.embedding_model = "models/embedding-001"
+        self._check_gemini_config()
+        
+    def _check_gemini_config(self):
+        if not self.settings.gemini_api_key:
+            logger.warning("Gemini API key is not set. Embedding service will fail unless updated.")
+        else:
+            genai.configure(api_key=self.settings.gemini_api_key)
+
     def _init_redis(self) -> None:
         """Khởi tạo kết nối Redis để caching."""
         try:
@@ -57,7 +68,12 @@ class EmbeddingService:
     
     def _deserialize_embedding(self, data: bytes) -> np.ndarray:
         """Phi tuần tự hóa bytes thành numpy array từ Redis."""
-        return pickle.loads(base64.b64decode(data))
+        try:
+            return pickle.loads(base64.b64decode(data))
+        except Exception:
+             # Nếu dữ liệu cũ không tương thích, trả về lỗi hoặc None? 
+             # Ở đây ta throw error để try/except bên ngoài xử lý (tính toán lại)
+             raise ValueError("Corrupt or incompatible cache data")
     
     async def generate_embedding(self, text: str) -> np.ndarray:
         """
@@ -79,30 +95,38 @@ class EmbeddingService:
                 cache_key = self._get_cache_key(text)
                 cached = self.redis_client.get(cache_key)
                 if cached:
-                    logger.debug("Truy vấn cache thành công")
-                    return self._deserialize_embedding(cached)
+                    try:
+                        emb = self._deserialize_embedding(cached)
+                        logger.debug("Truy vấn cache thành công")
+                        return emb
+                    except ValueError:
+                        pass # Dữ liệu lỗi, tính toán lại
             except RedisError as e:
                 logger.debug(f"Đọc cache thất bại: {e}")
         
-        # Tạo embedding bằng OpenAI
+        # Tạo embedding bằng Gemini
         try:
-            # Sử dụng API embeddings của OpenAI
-            from openai import AsyncOpenAI
-            client = AsyncOpenAI(api_key=self.settings.openai_api_key)
-            
-            response = await client.embeddings.create(
-                model=self.embedding_model,
-                input=text
+            # Gemini embedding call
+            # Lưu ý: genai.embed_content là synchronous, cần chạy trong executor
+            loop = asyncio.get_event_loop()
+            result = await loop.run_in_executor(
+                None,
+                lambda: genai.embed_content(
+                    model=self.embedding_model,
+                    content=text,
+                    task_type="retrieval_document" # Hoặc task_type phù hợp khác
+                )
             )
             
-            embedding = np.array(response.data[0].embedding, dtype=np.float32)
+            embedding_list = result['embedding']
+            embedding = np.array(embedding_list, dtype=np.float32)
             
             # Cache trong 7 ngày
             if self.redis_client:
                 try:
                     cache_key = self._get_cache_key(text)
                     serialized = self._serialize_embedding(embedding)
-                    self.redis_client.setex(cache_key, 7 * 24 * 3600, serialized)  # TTL 7 ngày
+                    self.redis_client.setex(cache_key, 7 * 24 * 3600, serialized)
                 except RedisError as e:
                     logger.warning(f"Không thể cache embedding: {e}")
             
@@ -137,8 +161,11 @@ class EmbeddingService:
                     cache_key = self._get_cache_key(text)
                     cached = self.redis_client.get(cache_key)
                     if cached:
-                        embeddings.append(self._deserialize_embedding(cached))
-                        continue
+                        try:
+                            embeddings.append(self._deserialize_embedding(cached))
+                            continue
+                        except ValueError:
+                            pass
                 except RedisError:
                     pass
             
@@ -150,17 +177,26 @@ class EmbeddingService:
         # Tạo embeddings cho các văn bản chưa cache
         if texts_to_generate:
             try:
-                from openai import AsyncOpenAI
-                client = AsyncOpenAI(api_key=self.settings.openai_api_key)
+                # Gemini có giới hạn batch size trong 1 request? 
+                # Hiện tại genai.embed_content nhận content là str hoặc list[str]
+                # Nhưng documentation thường khuyến nghị max 100~ items.
+                # Ta cứ gọi batch trực tiếp, nếu lỗi thì fallback loop.
                 
-                response = await client.embeddings.create(
-                    model=self.embedding_model,
-                    input=texts_to_generate
+                loop = asyncio.get_event_loop()
+                result = await loop.run_in_executor(
+                    None,
+                    lambda: genai.embed_content(
+                        model=self.embedding_model,
+                        content=texts_to_generate,
+                        task_type="retrieval_document"
+                    )
                 )
                 
+                batch_embeddings = result['embedding']
+                
                 # Điền các embeddings đã tạo
-                for idx, embedding_data in zip(indices_to_generate, response.data):
-                    embedding = np.array(embedding_data.embedding, dtype=np.float32)
+                for idx, embedding_list in zip(indices_to_generate, batch_embeddings):
+                    embedding = np.array(embedding_list, dtype=np.float32)
                     embeddings[idx] = embedding
                     
                     # Cache
@@ -215,5 +251,3 @@ def get_embedding_service() -> EmbeddingService:
     if _embedding_service is None:
         _embedding_service = EmbeddingService()
     return _embedding_service
-
-

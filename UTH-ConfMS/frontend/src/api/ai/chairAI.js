@@ -5,10 +5,10 @@
 import axios from "axios";
 import { getToken } from "../../auth";
 
-const AI_SERVICE_BASE_URL = import.meta.env.VITE_AI_SERVICE_URL || "http://localhost:8001";
+const AI_SERVICE_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 const aiApiClient = axios.create({
-  baseURL: `${AI_SERVICE_BASE_URL}/api/v1`,
+  baseURL: `${AI_SERVICE_BASE_URL}/api/ai`,
   timeout: 30000,
 });
 
@@ -33,19 +33,14 @@ export const calculateSimilarity = async (
   paperKeywords,
   reviewerIds,
   reviewerData,
-  conferenceId,
-  userId = null
+  conferenceId
 ) => {
   try {
-    const response = await aiApiClient.post("/assignment/calculate-similarity", {
-      paper_id: paperId,
-      paper_title: paperTitle,
-      paper_abstract: paperAbstract,
-      paper_keywords: paperKeywords,
-      reviewer_ids: reviewerIds,
-      reviewer_data: reviewerData,
-      conference_id: conferenceId,
-      user_id: userId,
+    const response = await aiApiClient.post("/reviewer-similarity", {
+      paperTitle: paperTitle,
+      paperKeywords: paperKeywords,
+      reviewers: reviewerData,
+      conferenceId: conferenceId
     });
     return response.data;
   } catch (error) {
@@ -58,29 +53,22 @@ export const calculateSimilarity = async (
   }
 };
 
-/**
- * Suggest reviewer-paper assignments
- */
 export const suggestAssignments = async (
   conferenceId,
   paperIds,
   paperData,
   reviewerIds,
   reviewerData,
-  constraints,
-  existingAssignments = [],
-  userId = null
+  constraints
 ) => {
   try {
-    const response = await aiApiClient.post("/assignment/suggest-assignments", {
-      conference_id: conferenceId,
-      paper_ids: paperIds,
-      paper_data: paperData,
-      reviewer_ids: reviewerIds,
-      reviewer_data: reviewerData,
-      constraints,
-      existing_assignments: existingAssignments,
-      user_id: userId,
+    const response = await aiApiClient.post("/assignments-suggestion", {
+      conferenceId: conferenceId,
+      papersMetadata: JSON.stringify(paperData),
+      reviewersMetadata: JSON.stringify(reviewerData),
+      constraints: JSON.stringify(constraints),
+      paperIds: paperIds.map(String),
+      reviewerIds: reviewerIds.map(String)
     });
     return response.data;
   } catch (error) {
@@ -93,21 +81,21 @@ export const suggestAssignments = async (
   }
 };
 
-/**
- * Draft email (accept/reject/reminder)
- */
 export const draftEmail = async (
   emailType,
   conferenceId,
-  options = {},
-  userId = null
+  options = {}
 ) => {
   try {
-    const response = await aiApiClient.post("/chairs/draft-email", {
-      email_type: emailType,
-      conference_id: conferenceId,
-      ...options,
-      user_id: userId,
+    const response = await aiApiClient.post("/draft-email", {
+      emailType: emailType,
+      conferenceId: conferenceId,
+      recipientName: options.recipientName,
+      paperTitle: options.paperTitle || options.paper_title,
+      conferenceName: options.conferenceName || options.conference_name,
+      decision: options.decision,
+      comments: options.comments,
+      language: options.language || "vi"
     });
     return response.data;
   } catch (error) {

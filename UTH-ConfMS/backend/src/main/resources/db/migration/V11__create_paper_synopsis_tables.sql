@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS paper_synopses (
     paper_id BIGINT NOT NULL UNIQUE,
     synopsis TEXT NOT NULL,
     key_themes TEXT, -- JSON array
+    claims TEXT, -- JSON array
+    datasets TEXT, -- JSON array
     methodology VARCHAR(100),
     contribution_type VARCHAR(200),
     word_count INTEGER,
@@ -42,6 +44,8 @@ CREATE INDEX IF NOT EXISTS idx_synopsis_feedback_synopsis_id ON synopsis_feedbac
 CREATE INDEX IF NOT EXISTS idx_synopsis_feedback_reviewer_id ON synopsis_feedback(reviewer_id);
 
 COMMENT ON TABLE paper_synopses IS 'Tóm tắt do AI tạo cho các bài báo';
-COMMENT ON TABLE synopsis_feedback IS 'Phản hồi từ reviewer về độ chính xác của tóm tắt';
+COMMENT ON TABLE synopsis_feedback IS 'Phản hồi từ reviewer về độ chính xác của tóm tắt';   
+
+
 
 

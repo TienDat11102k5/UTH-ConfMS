@@ -1,37 +1,34 @@
 # services/llm_client.py
 """
-LLM Client Cũ (Tương thích ngược)
-Lưu ý: Nên sử dụng core.governance.model_manager.get_model_manager() cho code mới.
+LLM Client (Tương thích ngược)
+Sử dụng ModelManager để hỗ trợ Gemini và các model local.
 """
-import os
 import time
 import logging
 from typing import Optional
-from openai import AsyncOpenAI
+from core.governance.model_manager import get_model_manager
 from core.governance.audit_logger import log_ai_usage
 
 logger = logging.getLogger(__name__)
 
-client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
 async def call_llm(
     prompt: str, 
     system_instruction: str = "", 
-    model: str = "gpt-4o-mini", 
+    model: str = None, 
     user_id: str = "system", 
     feature_name: str = "unknown",
     conference_id: Optional[str] = None
 ):
     """
-    Hàm wrapper cũ để gọi LLM với ghi log kiểm toán.
+    Hàm wrapper để gọi LLM với ghi log kiểm toán.
     
-    Lưu ý: Được duy trì để tương thích ngược.
-    Đối với code mới, hãy sử dụng core.governance.model_manager.get_model_manager()
+    Sử dụng ModelManager để hỗ trợ Gemini và Local models.
+    Model mặc định sẽ được lấy từ cấu hình (Settings).
     
     Tham số:
         prompt: Prompt người dùng
         system_instruction: Hướng dẫn hệ thống
-        model: Tên mô hình
+        model: Tên mô hình (tùy chọn, mặc định từ cấu hình)
         user_id: Mã người dùng
         feature_name: Tên tính năng để ghi log kiểm toán
         conference_id: Mã hội nghị (tùy chọn)
@@ -42,22 +39,25 @@ async def call_llm(
     start_time = time.time()
     
     try:
-        response = await client.chat.completions.create(
+        # Sử dụng ModelManager để gọi LLM
+        model_manager = get_model_manager()
+        result_content = await model_manager.call_llm(
+            prompt=prompt,
+            system_instruction=system_instruction,
             model=model,
-            messages=[
-                {"role": "system", "content": system_instruction},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.3  # Giữ nhiệt độ thấp để kết quả ổn định
+            temperature=0.3,  # Giữ nhiệt độ thấp để kết quả ổn định
+            conference_id=conference_id,
+            check_rate_limit=True
         )
         
-        result_content = response.choices[0].message.content
+        # Lấy model name thực tế được sử dụng
+        actual_model = model or model_manager.settings.model_name
         
         # Ghi log Audit (Yêu cầu quản trị AI)
         await log_ai_usage(
             user_id=user_id,
             feature=feature_name,
-            model=model,
+            model=actual_model,
             prompt=prompt,
             input_hash="",  # Will be calculated in log_ai_usage
             response=result_content,

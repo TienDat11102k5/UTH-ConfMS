@@ -140,6 +140,7 @@ def test_get_provider_info(model_manager):
     assert "model" in info
     assert "max_tokens" in info
     assert "openai_configured" in info
+    assert "gemini_configured" in info
 
 
 @pytest.mark.asyncio
@@ -171,5 +172,6 @@ async def test_retry_logic(model_manager):
     
     assert result == "Success after retry"
     assert call_count == 3
+
 
 

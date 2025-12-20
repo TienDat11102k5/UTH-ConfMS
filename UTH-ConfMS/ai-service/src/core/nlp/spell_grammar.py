@@ -1,5 +1,5 @@
 # nlp/spell_grammar.py
-from services.llm_client import call_llm
+from core.services.llm_client import call_llm
 import json
 
 async def check_grammar_and_polish(text: str, user_id: str):

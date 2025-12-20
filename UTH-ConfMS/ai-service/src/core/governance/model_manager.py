@@ -1,16 +1,15 @@
 """
 Model Manager cho Hỗ Trợ Nhiều Nhà Cung Cấp LLM
-Hỗ trợ OpenAI, Anthropic và các model local với logic thử lại và giới hạn tốc độ.
+Hiện tại tập trung hỗ trợ Gemini và các model local với logic thử lại và giới hạn tốc độ.
+Đã loại bỏ OpenAI và Anthropic theo yêu cầu.
 """
-import os
 import logging
 import time
 import asyncio
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any
 from enum import Enum
 from dataclasses import dataclass
-from openai import AsyncOpenAI
-from anthropic import AsyncAnthropic
+import google.generativeai as genai
 from core.infra.config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -18,8 +17,7 @@ logger = logging.getLogger(__name__)
 
 class AIProvider(str, Enum):
     """Các nhà cung cấp AI được hỗ trợ."""
-    OPENAI = "openai"
-    ANTHROPIC = "anthropic"
+    GEMINI = "gemini"
     LOCAL = "local"
 
 
@@ -41,8 +39,7 @@ class ModelManager:
     
     def __init__(self):
         self.settings = get_settings()
-        self.openai_client: Optional[AsyncOpenAI] = None
-        self.anthropic_client: Optional[AsyncAnthropic] = None
+        self.gemini_client: Optional[genai.GenerativeModel] = None
         self.rate_limits: Dict[str, Dict[str, Any]] = {}  # conference_id -> {count, reset_time}
         self._init_clients()
     
@@ -50,28 +47,26 @@ class ModelManager:
         """Khởi tạo các API client dựa trên cấu hình."""
         provider = self.settings.ai_provider.lower()
         
-        if provider == AIProvider.OPENAI.value:
-            api_key = self.settings.openai_api_key
+        if provider == AIProvider.GEMINI.value:
+            api_key = self.settings.gemini_api_key
             if api_key:
-                self.openai_client = AsyncOpenAI(api_key=api_key)
-                logger.info("OpenAI client initialized")
+                genai.configure(api_key=api_key)
+                # Khởi tạo model mặc định, sẽ được override trong _call_gemini nếu cần
+                model_name = self.settings.model_name or "gemini-1.5-flash"
+                self.gemini_client = genai.GenerativeModel(model_name)
+                logger.info(f"Gemini client initialized with model: {model_name}")
             else:
-                logger.warning("OpenAI API key not found")
-        
-        elif provider == AIProvider.ANTHROPIC.value:
-            api_key = self.settings.anthropic_api_key
-            if api_key:
-                self.anthropic_client = AsyncAnthropic(api_key=api_key)
-                logger.info("Anthropic client initialized")
-            else:
-                logger.warning("Anthropic API key not found")
+                logger.warning("Gemini API key not found")
         
         elif provider == AIProvider.LOCAL.value:
             logger.info("Using local model provider")
         else:
-            logger.warning(f"Unknown provider: {provider}, defaulting to OpenAI")
-            if self.settings.openai_api_key:
-                self.openai_client = AsyncOpenAI(api_key=self.settings.openai_api_key)
+            logger.warning(f"Unknown provider: {provider}, defaulting to Gemini")
+            if self.settings.gemini_api_key:
+                genai.configure(api_key=self.settings.gemini_api_key)
+                model_name = self.settings.model_name or "gemini-1.5-flash"
+                self.gemini_client = genai.GenerativeModel(model_name)
+                logger.info(f"Gemini client initialized with model: {model_name}")
     
     def _check_rate_limit(self, conference_id: str, max_calls: int = 100, window_seconds: int = 3600) -> bool:
         """
@@ -108,7 +103,7 @@ class ModelManager:
         limit_info["count"] += 1
         return True
     
-    async def _call_openai(
+    async def _call_gemini(
         self,
         prompt: str,
         system_instruction: str,
@@ -116,70 +111,43 @@ class ModelManager:
         max_tokens: int,
         temperature: float
     ) -> str:
-        """Gọi OpenAI API với logic thử lại."""
-        if not self.openai_client:
-            raise ValueError("OpenAI client not initialized")
+        """Gọi Gemini API với logic thử lại."""
+        if not self.settings.gemini_api_key:
+            raise ValueError("Gemini API key not configured")
         
         max_retries = 3
         base_delay = 1
         
         for attempt in range(max_retries):
             try:
-                response = await self.openai_client.chat.completions.create(
-                    model=model,
-                    messages=[
-                        {"role": "system", "content": system_instruction},
-                        {"role": "user", "content": prompt}
-                    ],
-                    max_tokens=max_tokens,
-                    temperature=temperature
+                # Tạo model instance với model name cụ thể
+                genai_model = genai.GenerativeModel(model)
+                
+                # Kết hợp system instruction và prompt
+                full_prompt = f"{system_instruction}\n\n{prompt}" if system_instruction else prompt
+                
+                # Gọi API (Gemini API là synchronous, nên chạy trong executor)
+                loop = asyncio.get_event_loop()
+                response = await loop.run_in_executor(
+                    None,
+                    lambda: genai_model.generate_content(
+                        full_prompt,
+                        generation_config=genai.types.GenerationConfig(
+                            max_output_tokens=max_tokens,
+                            temperature=temperature
+                        )
+                    )
                 )
-                return response.choices[0].message.content
+                
+                return response.text
                 
             except Exception as e:
                 if attempt < max_retries - 1:
                     delay = base_delay * (2 ** attempt)  # Exponential backoff
-                    logger.warning(f"Cuộc gọi OpenAI API thất bại (lần thử {attempt + 1}), thử lại sau {delay}s: {e}")
+                    logger.warning(f"Cuộc gọi Gemini API thất bại (lần thử {attempt + 1}), thử lại sau {delay}s: {e}")
                     await asyncio.sleep(delay)
                 else:
-                    logger.error(f"Cuộc gọi OpenAI API thất bại sau {max_retries} lần thử: {e}")
-                    raise
-    
-    async def _call_anthropic(
-        self,
-        prompt: str,
-        system_instruction: str,
-        model: str,
-        max_tokens: int,
-        temperature: float
-    ) -> str:
-        """Gọi Anthropic API với logic thử lại."""
-        if not self.anthropic_client:
-            raise ValueError("Anthropic client not initialized")
-        
-        max_retries = 3
-        base_delay = 1
-        
-        for attempt in range(max_retries):
-            try:
-                response = await self.anthropic_client.messages.create(
-                    model=model,
-                    max_tokens=max_tokens,
-                    temperature=temperature,
-                    system=system_instruction,
-                    messages=[
-                        {"role": "user", "content": prompt}
-                    ]
-                )
-                return response.content[0].text
-                
-            except Exception as e:
-                if attempt < max_retries - 1:
-                    delay = base_delay * (2 ** attempt)
-                    logger.warning(f"Cuộc gọi Anthropic API thất bại (lần thử {attempt + 1}), thử lại sau {delay}s: {e}")
-                    await asyncio.sleep(delay)
-                else:
-                    logger.error(f"Cuộc gọi Anthropic API thất bại sau {max_retries} lần thử: {e}")
+                    logger.error(f"Cuộc gọi Gemini API thất bại sau {max_retries} lần thử: {e}")
                     raise
     
     async def _call_local(
@@ -232,19 +200,16 @@ class ModelManager:
         provider = self.settings.ai_provider.lower()
         
         try:
-            if provider == AIProvider.OPENAI.value:
-                return await self._call_openai(prompt, system_instruction, model, max_tokens, temperature)
-            
-            elif provider == AIProvider.ANTHROPIC.value:
-                return await self._call_anthropic(prompt, system_instruction, model, max_tokens, temperature)
+            if provider == AIProvider.GEMINI.value:
+                return await self._call_gemini(prompt, system_instruction, model, max_tokens, temperature)
             
             elif provider == AIProvider.LOCAL.value:
                 return await self._call_local(prompt, system_instruction, model, max_tokens, temperature)
             
             else:
-                # Fallback về OpenAI
-                logger.warning(f"Nhà cung cấp không xác định {provider}, fallback về OpenAI")
-                return await self._call_openai(prompt, system_instruction, model, max_tokens, temperature)
+                # Fallback về Gemini
+                logger.warning(f"Nhà cung cấp không xác định {provider}, fallback về Gemini")
+                return await self._call_gemini(prompt, system_instruction, model, max_tokens, temperature)
                 
         except Exception as e:
             logger.error(f"LLM call failed: {e}")
@@ -256,8 +221,7 @@ class ModelManager:
             "provider": self.settings.ai_provider,
             "model": self.settings.model_name,
             "max_tokens": self.settings.max_tokens,
-            "openai_configured": self.openai_client is not None,
-            "anthropic_configured": self.anthropic_client is not None
+            "gemini_configured": self.gemini_client is not None and self.settings.gemini_api_key is not None
         }
 
 
@@ -271,5 +235,3 @@ def get_model_manager() -> ModelManager:
     if _model_manager is None:
         _model_manager = ModelManager()
     return _model_manager
-
-
