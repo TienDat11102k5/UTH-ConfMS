@@ -28,6 +28,9 @@ const ReviewerReviewForm = () => {
         const assignmentRes = await apiClient.get(
           `/assignments/${assignmentId}`
         );
+        console.log("Assignment data:", assignmentRes.data);
+        console.log("Paper data:", assignmentRes.data?.paper);
+        console.log("File Path:", assignmentRes.data?.paper?.filePath);
         setAssignment(assignmentRes.data);
 
         // Check if review already exists
@@ -159,24 +162,73 @@ const ReviewerReviewForm = () => {
       <div className="form-card">
         <div style={{ marginBottom: "1.5rem" }}>
           <h3>Thông tin bài báo</h3>
-          <p>
-            <strong>Tiêu đề:</strong> {assignment.paper?.title}
-          </p>
-          <p>
-            <strong>Track:</strong> {assignment.paper?.track?.name}
-          </p>
-          <p>
-            <strong>Tác giả chính:</strong>{" "}
-            {assignment.paper?.mainAuthor?.fullName}
-          </p>
-          {assignment.paper?.abstractText && (
-            <div style={{ marginTop: "1rem" }}>
-              <strong>Abstract:</strong>
-              <p style={{ marginTop: "0.5rem", color: "#666" }}>
-                {assignment.paper.abstractText}
+          <div style={{
+            backgroundColor: "#f8f9fa",
+            padding: "1.5rem",
+            borderRadius: "8px",
+            border: "1px solid #dee2e6"
+          }}>
+            <p style={{ marginBottom: "1rem" }}>
+              <strong>Tiêu đề:</strong> {assignment.paper?.title}
+            </p>
+            <p style={{ marginBottom: "1rem" }}>
+              <strong>Track:</strong> {assignment.paper?.track?.name}
+            </p>
+            <p style={{ marginBottom: "1rem" }}>
+              <strong>Tác giả chính:</strong>{" "}
+              {assignment.paper?.mainAuthor?.fullName}
+            </p>
+            <p style={{ marginBottom: "1rem" }}>
+              <strong>Email tác giả:</strong>{" "}
+              {assignment.paper?.mainAuthor?.email}
+            </p>
+            {assignment.paper?.keywords && (
+              <p style={{ marginBottom: "1rem" }}>
+                <strong>Từ khóa:</strong> {assignment.paper.keywords}
               </p>
-            </div>
-          )}
+            )}
+            {assignment.paper?.abstractText && (
+              <div style={{ marginTop: "1rem", marginBottom: "1rem" }}>
+                <strong>Abstract:</strong>
+                <p style={{ marginTop: "0.5rem", color: "#666", lineHeight: "1.6" }}>
+                  {assignment.paper.abstractText}
+                </p>
+              </div>
+            )}
+            {assignment.paper?.filePath && (
+              <div style={{
+                marginTop: "1rem",
+                padding: "1rem",
+                backgroundColor: "#fff",
+                borderRadius: "6px",
+                border: "2px solid #0066cc"
+              }}>
+                <strong style={{ display: "block", marginBottom: "0.5rem" }}>📄 File bài báo đã nộp:</strong>
+                <a
+                  href={`http://localhost:8080/uploads/submissions/${assignment.paper.filePath}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "inline-block",
+                    padding: "0.5rem 1rem",
+                    backgroundColor: "#0066cc",
+                    color: "white",
+                    textDecoration: "none",
+                    borderRadius: "4px",
+                    fontWeight: "600"
+                  }}
+                >
+                  🔗 Mở/Tải xuống file bài báo
+                </a>
+                <p style={{ marginTop: "0.5rem", fontSize: "0.875rem", color: "#666" }}>
+                  Click vào link trên để xem hoặc tải file PDF/DOC của bài báo để chấm
+                </p>
+                <p style={{ marginTop: "0.25rem", fontSize: "0.75rem", color: "#999" }}>
+                  File: {assignment.paper.filePath}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="submission-form">
