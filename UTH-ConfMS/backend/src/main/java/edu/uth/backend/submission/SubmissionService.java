@@ -1,6 +1,8 @@
 package edu.uth.backend.submission;
 
 import edu.uth.backend.common.FileStorageUtil;
+import edu.uth.backend.common.FileValidationService;
+import edu.uth.backend.exception.ResourceNotFoundException;
 import edu.uth.backend.submission.dto.CoAuthorDTO;
 import edu.uth.backend.entity.*;
 import edu.uth.backend.repository.*;
@@ -24,39 +26,29 @@ public class SubmissionService {
     @Autowired
     private FileStorageUtil fileStorageUtil;
     @Autowired
+    private FileValidationService fileValidationService;
+    @Autowired
     private PaperCoAuthorRepository coAuthorRepo;
 
-    private static final long MAX_FILE_SIZE = 25L * 1024 * 1024; // 25MB
-
-    private void validatePdf(MultipartFile file) {
-        if (file == null)
-            throw new RuntimeException("File không được để trống");
-        if (file.getSize() > MAX_FILE_SIZE)
-            throw new RuntimeException("Kích thước file vượt quá 25MB");
-        String ct = file.getContentType();
-        String name = file.getOriginalFilename() != null ? file.getOriginalFilename().toLowerCase() : "";
-        if (ct == null || (!ct.toLowerCase().contains("pdf") && !name.endsWith(".pdf"))) {
-            throw new RuntimeException("Chỉ chấp nhận file PDF");
-        }
-    }
-
     // --- 1. NỘP BÀI ---
+    @org.springframework.transaction.annotation.Transactional
     public Paper submitPaper(String title, String abstractText, Long authorId, Long trackId, MultipartFile file,
             List<CoAuthorDTO> coAuthors) {
-        if (file.isEmpty())
-            throw new RuntimeException("File nộp không được để trống!");
-        validatePdf(file);
+        // Validate file with comprehensive checks
+        fileValidationService.validatePdfFile(file);
 
         boolean isDuplicate = paperRepo.existsByMainAuthorIdAndTrackIdAndTitle(authorId, trackId, title);
         if (isDuplicate)
-            throw new RuntimeException("Lỗi: Bạn đã nộp bài báo có tiêu đề này vào Track này rồi!");
+            throw new IllegalArgumentException("Bạn đã nộp bài báo có tiêu đề này vào Track này rồi!");
 
-        User author = userRepo.findById(authorId).orElseThrow(() -> new RuntimeException("User không tồn tại"));
-        Track track = trackRepo.findById(trackId).orElseThrow(() -> new RuntimeException("Track không tồn tại"));
+        User author = userRepo.findById(authorId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", authorId));
+        Track track = trackRepo.findById(trackId)
+                .orElseThrow(() -> new ResourceNotFoundException("Track", trackId));
 
         Conference conf = track.getConference();
         if (conf.getSubmissionDeadline() != null && LocalDateTime.now().isAfter(conf.getSubmissionDeadline())) {
-            throw new RuntimeException("Đã quá hạn nộp bài cho hội nghị này!");
+            throw new IllegalArgumentException("Đã quá hạn nộp bài cho hội nghị này!");
         }
 
         String fileName = fileStorageUtil.saveFile(file, "submissions");
@@ -99,7 +91,7 @@ public class SubmissionService {
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public List<Paper> getPapersByConference(Long conferenceId) {
         Conference conference = conferenceRepo.findById(conferenceId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy hội nghị"));
+                .orElseThrow(() -> new ResourceNotFoundException("Conference", conferenceId));
         List<Track> tracks = conference.getTracks();
         java.util.List<Paper> papers = new java.util.ArrayList<>();
         for (Track track : tracks) {
@@ -112,7 +104,7 @@ public class SubmissionService {
     // --- 3. XEM CHI TIẾT 1 BÀI ---
     public Paper getPaperById(Long paperId) {
         return paperRepo.findById(paperId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài báo với ID: " + paperId));
+                .orElseThrow(() -> new ResourceNotFoundException("Paper", paperId));
     }
 
     // --- 4. SỬA BÀI (EDIT) - Đã thêm check User ---
@@ -122,16 +114,16 @@ public class SubmissionService {
 
         // Kiểm tra bảo mật: chỉ tác giả chính mới được sửa
         if (!paper.getMainAuthor().getId().equals(currentUserId)) {
-            throw new RuntimeException("Bạn không có quyền chỉnh sửa bài báo này!");
+            throw new IllegalArgumentException("Bạn không có quyền chỉnh sửa bài báo này!");
         }
 
         if (paper.getStatus() != PaperStatus.SUBMITTED) {
-            throw new RuntimeException("Không thể sửa bài khi đã vào quy trình chấm hoặc đã có kết quả!");
+            throw new IllegalArgumentException("Không thể sửa bài khi đã vào quy trình chấm hoặc đã có kết quả!");
         }
 
         Conference conf = paper.getTrack().getConference();
         if (conf.getSubmissionDeadline() != null && LocalDateTime.now().isAfter(conf.getSubmissionDeadline())) {
-            throw new RuntimeException("Đã hết hạn nộp bài, không thể chỉnh sửa!");
+            throw new IllegalArgumentException("Đã hết hạn nộp bài, không thể chỉnh sửa!");
         }
 
         if (newTitle != null && !newTitle.isBlank())
@@ -140,7 +132,7 @@ public class SubmissionService {
             paper.setAbstractText(newAbstract);
 
         if (newFile != null && !newFile.isEmpty()) {
-            validatePdf(newFile);
+            fileValidationService.validatePdfFile(newFile);
             String old = paper.getFilePath();
             String fileName = fileStorageUtil.saveFile(newFile, "submissions");
             paper.setFilePath(fileName);
@@ -159,10 +151,10 @@ public class SubmissionService {
         Paper paper = getPaperById(paperId);
 
         if (!paper.getMainAuthor().getId().equals(currentUserId)) {
-            throw new RuntimeException("Bạn không có quyền chỉnh sửa bài báo này!");
+            throw new IllegalArgumentException("Bạn không có quyền chỉnh sửa bài báo này!");
         }
         if (paper.getStatus() != PaperStatus.SUBMITTED) {
-            throw new RuntimeException("Không thể sửa bài khi đã vào quy trình chấm!");
+            throw new IllegalArgumentException("Không thể sửa bài khi đã vào quy trình chấm!");
         }
 
         paper.setAbstractText(newAbstract);
@@ -175,11 +167,11 @@ public class SubmissionService {
 
         // Security Check
         if (!paper.getMainAuthor().getId().equals(currentUserId)) {
-            throw new RuntimeException("Bạn không có quyền rút bài báo này!");
+            throw new IllegalArgumentException("Bạn không có quyền rút bài báo này!");
         }
 
         if (paper.getStatus() == PaperStatus.ACCEPTED || paper.getStatus() == PaperStatus.REJECTED) {
-            throw new RuntimeException("Bài báo đã có kết quả quyết định, không thể rút!");
+            throw new IllegalArgumentException("Bài báo đã có kết quả quyết định, không thể rút!");
         }
 
         paper.setStatus(PaperStatus.WITHDRAWN);

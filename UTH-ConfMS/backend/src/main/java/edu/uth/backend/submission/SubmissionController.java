@@ -4,13 +4,17 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.uth.backend.entity.Paper;
 import edu.uth.backend.entity.User;
+import edu.uth.backend.exception.ResourceNotFoundException;
 import edu.uth.backend.repository.UserRepository; 
 import edu.uth.backend.submission.dto.CoAuthorDTO;
 import edu.uth.backend.submission.dto.PaperResponseDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +29,8 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class SubmissionController {
 
+    private static final Logger logger = LoggerFactory.getLogger(SubmissionController.class);
+
     @Autowired
     private SubmissionService submissionService;
 
@@ -37,8 +43,9 @@ public class SubmissionController {
     private String baseUrl;
 
     // ==================== 1. NỘP BÀI ====================
+    @PreAuthorize("isAuthenticated()")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> submitPaper(
+    public ResponseEntity<PaperResponseDTO> submitPaper(
             @RequestParam String title,
             @RequestParam("abstract") String abstractText,
             @RequestParam Long trackId,
@@ -46,104 +53,103 @@ public class SubmissionController {
             @RequestParam(value = "coAuthors", required = false) String coAuthorsJson,
             Authentication authentication
     ) {
-        try {
-            // Lấy User từ Token (Sửa đoạn này)
-            User currentUser = getCurrentUser(authentication);
+        logger.info("Submission request received: title={}, trackId={}", title, trackId);
+        
+        // Lấy User từ Token
+        User currentUser = getCurrentUser(authentication);
 
-            // Parse Co-Authors
-            List<CoAuthorDTO> coAuthors = new ArrayList<>();
-            if (coAuthorsJson != null && !coAuthorsJson.isEmpty()) {
+        // Parse Co-Authors
+        List<CoAuthorDTO> coAuthors = new ArrayList<>();
+        if (coAuthorsJson != null && !coAuthorsJson.isEmpty()) {
+            try {
                 coAuthors = objectMapper.readValue(coAuthorsJson, new TypeReference<List<CoAuthorDTO>>(){});
+            } catch (Exception e) {
+                logger.error("Failed to parse coAuthors JSON: {}", e.getMessage());
+                throw new IllegalArgumentException("Dữ liệu đồng tác giả không hợp lệ");
             }
-
-            Paper paper = submissionService.submitPaper(title, abstractText, currentUser.getId(), trackId, file, coAuthors);
-            return ResponseEntity.status(HttpStatus.CREATED).body(mapToDTO(paper));
-
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Lỗi nộp bài: " + e.getMessage());
         }
+
+        Paper paper = submissionService.submitPaper(title, abstractText, currentUser.getId(), trackId, file, coAuthors);
+        logger.info("Paper submitted successfully: id={}", paper.getId());
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapToDTO(paper));
     }
 
     // ==================== 2. XEM CHI TIẾT ====================
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getSubmission(@PathVariable Long id) {
-        try {
-            Paper paper = submissionService.getPaperById(id);
-            return ResponseEntity.ok(mapToDTO(paper));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy bài báo.");
-        }
+    public ResponseEntity<PaperResponseDTO> getSubmission(@PathVariable Long id) {
+        Paper paper = submissionService.getPaperById(id);
+        return ResponseEntity.ok(mapToDTO(paper));
     }
 
     // ==================== 3. XEM LIST CỦA TÔI ====================
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
-    public ResponseEntity<?> getMySubmissions(
+    public ResponseEntity<List<PaperResponseDTO>> getMySubmissions(
             Authentication authentication,
             @RequestParam(value = "conferenceId", required = false) Long conferenceId
     ) {
-        try {
-            User currentUser = getCurrentUser(authentication);
-            List<Paper> papers = (conferenceId != null)
-                    ? submissionService.getPapersByAuthorAndConference(currentUser.getId(), conferenceId)
-                    : submissionService.getPapersByAuthor(currentUser.getId());
-            
-            List<PaperResponseDTO> dtos = papers.stream().map(this::mapToDTO).collect(Collectors.toList());
-            return ResponseEntity.ok(dtos);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Lỗi lấy danh sách: " + e.getMessage());
-        }
+        User currentUser = getCurrentUser(authentication);
+        List<Paper> papers = (conferenceId != null)
+                ? submissionService.getPapersByAuthorAndConference(currentUser.getId(), conferenceId)
+                : submissionService.getPapersByAuthor(currentUser.getId());
+        
+        List<PaperResponseDTO> dtos = papers.stream().map(this::mapToDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     // ==================== 4. SỬA BÀI (PUT) ====================
+    @PreAuthorize("isAuthenticated()")
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateSubmission(
+    public ResponseEntity<PaperResponseDTO> updateSubmission(
             @PathVariable Long id,
             @RequestParam String title,
             @RequestParam("abstract") String abstractText,
             @RequestParam(value = "file", required = false) MultipartFile file,
             Authentication authentication
     ) {
-        try {
-            User currentUser = getCurrentUser(authentication);
-            // Kiểm tra quyền sở hữu (chỉ tác giả chính được phép)
-            Paper existing = submissionService.getPaperById(id);
-            if (existing.getMainAuthor() == null || !existing.getMainAuthor().getId().equals(currentUser.getId())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không có quyền sửa bài này");
-            }
-
-            Paper updatedPaper = submissionService.updatePaper(id, title, abstractText, file, currentUser.getId());
-            return ResponseEntity.ok(mapToDTO(updatedPaper));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Lỗi cập nhật: " + e.getMessage());
+        User currentUser = getCurrentUser(authentication);
+        
+        // Kiểm tra quyền sở hữu (chỉ tác giả chính được phép)
+        Paper existing = submissionService.getPaperById(id);
+        if (existing.getMainAuthor() == null || !existing.getMainAuthor().getId().equals(currentUser.getId())) {
+            throw new IllegalArgumentException("Bạn không có quyền sửa bài này");
         }
+
+        Paper updatedPaper = submissionService.updatePaper(id, title, abstractText, file, currentUser.getId());
+        logger.info("Paper updated successfully: id={}", id);
+        
+        return ResponseEntity.ok(mapToDTO(updatedPaper));
     }
 
     // ==================== 5. RÚT BÀI ====================
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/{id}/withdraw")
-    public ResponseEntity<?> withdrawSubmission(@PathVariable Long id, Authentication authentication) {
-        try {
-            User currentUser = getCurrentUser(authentication);
-            Paper existing = submissionService.getPaperById(id);
-            if (existing.getMainAuthor() == null || !existing.getMainAuthor().getId().equals(currentUser.getId())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không có quyền rút bài này");
-            }
-            submissionService.withdrawPaper(id, currentUser.getId());
-            return ResponseEntity.ok("Đã rút bài báo thành công.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<String> withdrawSubmission(@PathVariable Long id, Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+        
+        Paper existing = submissionService.getPaperById(id);
+        if (existing.getMainAuthor() == null || !existing.getMainAuthor().getId().equals(currentUser.getId())) {
+            throw new IllegalArgumentException("Bạn không có quyền rút bài này");
         }
+        
+        submissionService.withdrawPaper(id, currentUser.getId());
+        logger.info("Paper withdrawn successfully: id={}", id);
+        
+        return ResponseEntity.ok("Đã rút bài báo thành công.");
     }
 
     // --- HELPER METHODS ---
 
-    // Sửa hàm này để dùng UserRepository
     private User getCurrentUser(Authentication authentication) {
-        if (authentication == null) throw new RuntimeException("Vui lòng đăng nhập!");
+        if (authentication == null) {
+            throw new IllegalArgumentException("Vui lòng đăng nhập!");
+        }
         String email = authentication.getName();
         
-        // Dùng userRepository tìm email
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User không tồn tại: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
     }
 
     private PaperResponseDTO mapToDTO(Paper paper) {
