@@ -193,6 +193,18 @@ const ChairAssignmentManagement = () => {
     return <span className={`badge ${badge.className}`}>{badge.text}</span>;
   };
 
+  const getPaperStatusBadge = (status) => {
+    const badges = {
+      SUBMITTED: { text: "Đã nộp", className: "badge-info" },
+      UNDER_REVIEW: { text: "Đang review", className: "badge-warning" },
+      ACCEPTED: { text: "Chấp nhận", className: "badge-success" },
+      REJECTED: { text: "Từ chối", className: "badge-danger" },
+      WITHDRAWN: { text: "Đã rút", className: "badge-secondary" },
+    };
+    const badge = badges[status] || { text: status, className: "badge-info" };
+    return <span className={`badge ${badge.className}`}>{badge.text}</span>;
+  };
+
   if (loading) {
     return (
       <DashboardLayout roleLabel="Chair" title="Quản lý Assignment">
@@ -273,15 +285,14 @@ const ChairAssignmentManagement = () => {
             Chưa có bài báo nào trong hội nghị này.
           </div>
         ) : (
-          <table className="data-table">
+          <table className="simple-table">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Tiêu đề</th>
                 <th>Track</th>
                 <th>Tác giả</th>
                 <th>Trạng thái</th>
-                <th>Reviewers đã phân công</th>
+                <th>Reviewers</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
@@ -290,25 +301,12 @@ const ChairAssignmentManagement = () => {
                 const paperAssignments = assignments[paper.id] || [];
                 return (
                   <tr key={paper.id}>
-                    <td>{paper.id}</td>
                     <td>
                       <strong>{paper.title}</strong>
                     </td>
                     <td>{paper.track?.name || "N/A"}</td>
                     <td>{paper.mainAuthor?.fullName || "N/A"}</td>
-                    <td>
-                      <span
-                        className={`badge badge-${
-                          paper.status === "ACCEPTED"
-                            ? "success"
-                            : paper.status === "REJECTED"
-                            ? "danger"
-                            : "info"
-                        }`}
-                      >
-                        {paper.status}
-                      </span>
-                    </td>
+                    <td>{getPaperStatusBadge(paper.status)}</td>
                     <td>
                       {paperAssignments.length > 0 ? (
                         <div>
@@ -334,21 +332,16 @@ const ChairAssignmentManagement = () => {
                             setSelectedPaper(paper);
                             setShowAssignModal(true);
                           }}
+                          disabled={paper.status === "WITHDRAWN"}
+                          title={
+                            paper.status === "WITHDRAWN"
+                              ? "Không thể phân công cho bài đã rút"
+                              : "Phân công reviewer"
+                          }
                         >
                           Phân công
                         </button>
-                        <button
-                          className="btn-secondary table-action"
-                          onClick={() => {
-                            // View details
-                            window.open(
-                              `/conferences/${selectedConference}`,
-                              "_blank"
-                            );
-                          }}
-                        >
-                          Chi tiết
-                        </button>
+                       
                       </div>
                     </td>
                   </tr>

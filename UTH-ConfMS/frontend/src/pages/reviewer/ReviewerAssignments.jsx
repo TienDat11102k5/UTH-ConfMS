@@ -122,10 +122,9 @@ const ReviewerAssignments = () => {
             Bạn chưa có bài nào được phân công.
           </div>
         ) : (
-          <table className="data-table">
+          <table className="simple-table">
             <thead>
               <tr>
-                <th>ID Bài</th>
                 <th>Tiêu đề</th>
                 <th>Track</th>
                 <th>Ngày phân công</th>
@@ -137,7 +136,6 @@ const ReviewerAssignments = () => {
             <tbody>
               {assignments.map((assignment) => (
                 <tr key={assignment.id}>
-                  <td>{assignment.paper?.id}</td>
                   <td>
                     <strong>{assignment.paper?.title || "N/A"}</strong>
                   </td>
@@ -180,12 +178,6 @@ const ReviewerAssignments = () => {
                           Xem review
                         </Link>
                       )}
-                      <Link
-                        to={`/conferences/${assignment.paper?.track?.conference?.id}`}
-                        className="btn-secondary table-action"
-                      >
-                        Chi tiết
-                      </Link>
                     </div>
                   </td>
                 </tr>
