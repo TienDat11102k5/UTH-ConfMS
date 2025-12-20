@@ -163,12 +163,20 @@ const ReviewerAssignments = () => {
                         </>
                       )}
                       {assignment.status === "ACCEPTED" && (
-                        <Link
-                          to={`/reviewer/review/${assignment.id}`}
-                          className="btn-primary table-action"
-                        >
-                          Chấm bài
-                        </Link>
+                        <>
+                          <Link
+                            to={`/reviewer/review/${assignment.id}`}
+                            className="btn-primary table-action"
+                          >
+                            Chấm bài
+                          </Link>
+                          <Link
+                            to={`/reviewer/discussions?paperId=${assignment.paper?.id}`}
+                            className="btn-secondary table-action"
+                          >
+                            Thảo luận
+                          </Link>
+                        </>
                       )}
                       {assignment.status === "COMPLETED" && (
                         <Link

@@ -50,7 +50,7 @@ public class SecurityConfig {
             // TEMPORARY: Allow decisions, assignments, reviews and submissions endpoints
             // for testing
             // TODO: Remove this after testing - these should require authentication
-            .requestMatchers("/api/decisions/**", "/api/assignments/**", "/api/reviews/**", "/api/submissions/**")
+            .requestMatchers("/api/decisions/**", "/api/assignments/**", "/api/reviews/**", "/api/submissions/**", "/api/discussions/**")
             .permitAll()
             // Các method khác cần xác thực (và đã có @PreAuthorize kiểm soát role)
             .anyRequest().authenticated())

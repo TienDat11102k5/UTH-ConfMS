@@ -40,9 +40,9 @@ const ReviewerDashboard = () => {
             Tham gia thảo luận private giữa các PC cho từng bài: hỏi đáp, tranh
             luận, điều chỉnh nhận xét trước khi Chair đưa ra quyết định cuối.
           </p>
-          <button className="btn-secondary" disabled>
-            Mở thread thảo luận (Sắp có)
-          </button>
+          <Link to="/reviewer/discussions" className="btn-secondary">
+            Mở thread thảo luận
+          </Link>
         </div>
 
         <div className="dash-card">

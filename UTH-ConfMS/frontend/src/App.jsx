@@ -31,6 +31,7 @@ import ReviewerDashboard from "./pages/reviewer/ReviewerDashboard.jsx";
 import ReviewerAssignments from "./pages/reviewer/ReviewerAssignments.jsx";
 import ReviewerReviewForm from "./pages/reviewer/ReviewerReviewForm.jsx";
 import ReviewerCOI from "./pages/reviewer/ReviewerCOI.jsx";
+import ReviewerDiscussions from "./pages/reviewer/ReviewerDiscussions.jsx";
 
 // --- Chair Imports ---
 import ChairDashboard from "./pages/chair/ChairDashboard.jsx";
@@ -172,6 +173,14 @@ const App = () => {
           element={
             <ProtectedRoute requiredRole={["REVIEWER", "PC"]}>
               <ReviewerCOI />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reviewer/discussions"
+          element={
+            <ProtectedRoute requiredRole={["REVIEWER", "PC"]}>
+              <ReviewerDiscussions />
             </ProtectedRoute>
           }
         />

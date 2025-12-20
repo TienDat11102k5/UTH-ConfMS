@@ -18,6 +18,9 @@ public interface ReviewAssignmentRepository extends JpaRepository<ReviewAssignme
     // 3. Kiểm tra xem ông này đã được mời chấm bài này chưa (Tránh mời trùng)
     boolean existsByPaperIdAndReviewerId(Long paperId, Long reviewerId);
 
+    // 3b. Kiểm tra theo thứ tự ngược (cho discussions)
+    boolean existsByReviewerIdAndPaperId(Long reviewerId, Long paperId);
+
     // 4. (Optional) Tìm theo trạng thái
     List<ReviewAssignment> findByPaperIdAndStatus(Long paperId, AssignmentStatus status);
 }
