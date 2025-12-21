@@ -157,7 +157,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="auth-page">
+    <div className="auth-page auth-register">
       <div className="auth-card">
         <h1 className="auth-title">Đăng ký tài khoản UTH-ConfMS</h1>
         

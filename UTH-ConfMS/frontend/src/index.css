@@ -1290,3 +1290,67 @@ button {
     justify-content: center;
   }
 }
+/* =====================================
+   REGISTER: RIGHT ALIGN + FIT SCREEN
+   ===================================== */
+
+.auth-register {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+
+  /* ⬅️ QUAN TRỌNG: nằm bên phải giống login */
+  justify-content: flex-end;
+
+  /* padding nhỏ lại để không bị scroll */
+  padding: 1.5rem 6%;
+}
+
+/* Card đăng ký gọn */
+.auth-register .auth-card {
+  max-width: 480px;
+  padding: 1.75rem 2.25rem;
+}
+
+/* Tiêu đề nhỏ hơn login một chút */
+.auth-register .auth-title {
+  font-size: 1.35rem;
+  margin-bottom: 0.3rem;
+}
+
+/* Giảm khoảng cách field */
+.auth-register .form-group {
+  margin-bottom: 0.7rem;
+}
+
+/* Input thấp lại */
+.auth-register .form-group input {
+  padding: 0.6rem 0.85rem;
+  font-size: 0.9rem;
+}
+
+/* Label gọn */
+.auth-register .form-group label {
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Hint & error nhỏ */
+.auth-register .form-hint,
+.auth-register .field-error {
+  font-size: 0.7rem;
+  margin-top: 0.2rem;
+}
+
+/* Button gọn */
+.auth-register .btn-primary {
+  margin-top: 0.6rem;
+  padding: 0.65rem;
+  font-size: 0.9rem;
+}
+
+/* Footer sát hơn */
+.auth-register .auth-footer {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+}
