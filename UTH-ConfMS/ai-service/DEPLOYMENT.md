@@ -11,7 +11,7 @@ Hướng dẫn deploy AI Service cho UTH-ConfMS với Docker và monitoring.
 - Docker và Docker Compose đã cài đặt
 - PostgreSQL 16+ đang chạy
 - Redis (optional, nhưng khuyến nghị)
-- OpenAI API key hoặc Anthropic API key
+- Google Gemini API key
 
 ### Quick Start
 
@@ -25,7 +25,7 @@ cd UTH-ConfMS/docker
 
 ```bash
 cp ai-service.env.example ../ai-service/.env
-# Edit .env và thêm OPENAI_API_KEY
+# Edit .env và thêm GEMINI_API_KEY
 ```
 
 3. **Build và start services:**
@@ -46,13 +46,13 @@ Các biến môi trường quan trọng trong `.env`:
 
 ```env
 # Required
-OPENAI_API_KEY=your_api_key_here
+GEMINI_API_KEY=your_api_key_here
 DATABASE_URL=postgresql://postgres:123456@postgres:5432/confms_db
 REDIS_URL=redis://redis:6379
 
 # Optional
-AI_PROVIDER=openai
-MODEL_NAME=gpt-4o-mini
+AI_PROVIDER=gemini
+MODEL_NAME=gemini-1.5-flash
 MAX_TOKENS=2000
 ```
 
@@ -76,7 +76,7 @@ MAX_TOKENS=2000
   "checks": {
     "database": {"status": "healthy", "message": "Database connection OK"},
     "redis": {"status": "healthy", "message": "Redis connection OK"},
-    "model_manager": {"status": "healthy", "provider": "openai"},
+    "model_manager": {"status": "healthy", "provider": "gemini"},
     "system": {"cpu_percent": 25.5, "memory_percent": 45.2}
   }
 }
@@ -152,11 +152,11 @@ spec:
         ports:
         - containerPort: 8000
         env:
-        - name: OPENAI_API_KEY
+        - name: GEMINI_API_KEY
           valueFrom:
             secretKeyRef:
               name: ai-secrets
-              key: openai-api-key
+              key: gemini-api-key
         - name: DATABASE_URL
           valueFrom:
             configMapKeyRef:
@@ -259,7 +259,7 @@ curl http://localhost:8001/health
 
 3. Verify environment variables:
 ```bash
-docker exec uth_ai env | grep OPENAI
+docker exec uth_ai env | grep GEMINI
 ```
 
 ### Database connection errors

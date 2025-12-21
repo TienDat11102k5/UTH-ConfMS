@@ -11,11 +11,11 @@ def mock_settings():
     """Cài đặt giả cho việc kiểm thử."""
     with patch('core.governance.model_manager.get_settings') as mock:
         settings = Mock()
-        settings.ai_provider = "openai"
-        settings.model_name = "gpt-4o-mini"
+        settings.ai_provider = "gemini"
+        settings.model_name = "gemini-1.5-flash"
         settings.max_tokens = 2000
         settings.temperature = 0.3
-        settings.openai_api_key = "test-key"
+        settings.gemini_api_key = "test-key"
         mock.return_value = settings
         yield settings
 
@@ -23,49 +23,45 @@ def mock_settings():
 @pytest.fixture
 def model_manager(mock_settings):
     """Tạo một instance `ModelManager` cho kiểm thử."""
-    with patch('openai.AsyncOpenAI') as mock_openai:
+    with patch('google.generativeai.GenerativeModel') as mock_gemini:
         mock_client = Mock()
-        mock_openai.return_value = mock_client
+        mock_gemini.return_value = mock_client
         manager = ModelManager()
-        manager.openai_client = mock_client
+        manager.gemini_client = mock_client
         return manager
 
 
 @pytest.mark.asyncio
-async def test_call_openai(model_manager):
-    """Kiểm thử gọi API OpenAI."""
-    # Mock OpenAI response
+async def test_call_gemini(model_manager):
+    """Kiểm thử gọi API Gemini."""
+    # Mock Gemini response
     mock_response = Mock()
-    mock_choice = Mock()
-    mock_choice.message.content = "Test response"
-    mock_response.choices = [mock_choice]
+    mock_response.text = "Test response"
     
-    model_manager.openai_client.chat.completions.create = AsyncMock(
+    model_manager.gemini_client.generate_content_async = AsyncMock(
         return_value=mock_response
     )
     
-    result = await model_manager._call_openai(
+    result = await model_manager._call_gemini(
         prompt="Test prompt",
         system_instruction="You are helpful",
-        model="gpt-4o-mini",
+        model="gemini-1.5-flash",
         max_tokens=2000,
         temperature=0.3
     )
     
     assert result == "Test response"
-    model_manager.openai_client.chat.completions.create.assert_called_once()
+    model_manager.gemini_client.generate_content_async.assert_called_once()
 
 
 @pytest.mark.asyncio
 async def test_call_llm_with_rate_limit(model_manager):
     """Kiểm thử gọi LLM với giới hạn tốc độ (rate limiting)."""
-    # Mock OpenAI response
+    # Mock Gemini response
     mock_response = Mock()
-    mock_choice = Mock()
-    mock_choice.message.content = "Test response"
-    mock_response.choices = [mock_choice]
+    mock_response.text = "Test response"
     
-    model_manager.openai_client.chat.completions.create = AsyncMock(
+    model_manager.gemini_client.generate_content_async = AsyncMock(
         return_value=mock_response
     )
     
@@ -97,13 +93,11 @@ async def test_call_llm_with_rate_limit(model_manager):
 @pytest.mark.asyncio
 async def test_call_llm_without_rate_limit(model_manager):
     """Kiểm thử gọi LLM khi không áp dụng giới hạn tốc độ."""
-    # Mock OpenAI response
+    # Mock Gemini response
     mock_response = Mock()
-    mock_choice = Mock()
-    mock_choice.message.content = "Test response"
-    mock_response.choices = [mock_choice]
+    mock_response.text = "Test response"
     
-    model_manager.openai_client.chat.completions.create = AsyncMock(
+    model_manager.gemini_client.generate_content_async = AsyncMock(
         return_value=mock_response
     )
     
@@ -139,33 +133,30 @@ def test_get_provider_info(model_manager):
     assert "provider" in info
     assert "model" in info
     assert "max_tokens" in info
-    assert "openai_configured" in info
     assert "gemini_configured" in info
 
 
 @pytest.mark.asyncio
 async def test_retry_logic(model_manager):
     """Kiểm thử logic thử lại với backoff lũy thừa."""
-    # Mock OpenAI to fail twice then succeed
+    # Mock Gemini to fail twice then succeed
     call_count = 0
     
-    async def mock_create(*args, **kwargs):
+    async def mock_generate(*args, **kwargs):
         nonlocal call_count
         call_count += 1
         if call_count < 3:
             raise Exception("Temporary error")
         mock_response = Mock()
-        mock_choice = Mock()
-        mock_choice.message.content = "Success after retry"
-        mock_response.choices = [mock_choice]
+        mock_response.text = "Success after retry"
         return mock_response
     
-    model_manager.openai_client.chat.completions.create = mock_create
+    model_manager.gemini_client.generate_content_async = mock_generate
     
-    result = await model_manager._call_openai(
+    result = await model_manager._call_gemini(
         prompt="Test prompt",
         system_instruction="You are helpful",
-        model="gpt-4o-mini",
+        model="gemini-1.5-flash",
         max_tokens=2000,
         temperature=0.3
     )

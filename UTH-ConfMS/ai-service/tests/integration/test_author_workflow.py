@@ -101,12 +101,11 @@ async def test_audit_logging_in_workflow():
             feature="spell_check",
             action="check_spelling",
             prompt="Test text",
-            model_id="gpt-4o-mini",
+            model_id="gemini-1.5-flash",
             output_summary="Found 1 error",
             accepted=None
         )
         
         assert log_id == "log-123"
         audit_logger.log_operation.assert_called_once()
-
 

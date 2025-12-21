@@ -43,7 +43,7 @@ async def test_log_operation(audit_logger):
         feature="spell_check",
         action="check_spelling",
         prompt="Test prompt",
-        model_id="gpt-4o-mini",
+        model_id="gemini-1.5-flash",
         output_summary="Fixed spelling errors"
     )
     
@@ -73,7 +73,7 @@ async def test_log_operation_with_long_output(audit_logger):
         feature="spell_check",
         action="check_spelling",
         prompt="Test prompt",
-        model_id="gpt-4o-mini",
+        model_id="gemini-1.5-flash",
         output_summary=long_output
     )
     
@@ -165,7 +165,7 @@ async def test_get_audit_logs(audit_logger):
         'feature': 'spell_check',
         'action': 'check_spelling',
         'prompt': 'Test prompt',
-        'model_id': 'gpt-4o-mini',
+        'model_id': 'gemini-1.5-flash',
         'input_hash': 'abc123',
         'output_summary': 'Fixed errors',
         'accepted': True,

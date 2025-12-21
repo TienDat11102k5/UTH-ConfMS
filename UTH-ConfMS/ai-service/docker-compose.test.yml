@@ -28,8 +28,8 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:test123@postgres-test:5432/confms_test_db
       REDIS_URL: redis://redis-test:6379
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-test_key}
-      AI_PROVIDER: openai
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-test_key}
+      AI_PROVIDER: gemini
       LOG_LEVEL: debug
     command: pytest tests/ -v
 

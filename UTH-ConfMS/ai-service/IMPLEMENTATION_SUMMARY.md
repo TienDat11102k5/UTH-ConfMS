@@ -21,7 +21,7 @@
 
 #### ✅ model_manager.py
 - **ModelManager** class với multi-provider support
-- Providers: OpenAI, Anthropic, Local (placeholder)
+- Providers: Google Gemini, Local (placeholder)
 - Retry logic với exponential backoff (3 attempts)
 - Rate limiting per conference (configurable)
 - Methods: `call_llm()`, `get_provider_info()`
@@ -89,7 +89,7 @@
 - Test input hashing
 
 #### ✅ test_model_manager.py
-- Test OpenAI API calls
+- Test Gemini API calls
 - Test rate limiting
 - Test retry logic with exponential backoff
 - Test provider info
@@ -116,7 +116,7 @@
   - `pydantic-settings` - Configuration management
   - `asyncpg` - Async PostgreSQL driver
   - `redis` - Redis client
-  - `anthropic` - Anthropic API client
+  - `google-generativeai` - Google Gemini API client
   - `pytest`, `pytest-asyncio` - Testing
   - `httpx` - HTTP client for tests
 
@@ -157,7 +157,7 @@ Tất cả các modules đã sẵn sàng để:
 2. Log all AI operations với full audit trail
 3. Track usage statistics và acceptance rates
 4. Redact PII cho double-blind review
-5. Switch between AI providers (OpenAI, Anthropic, local)
+5. Switch between AI providers (Gemini, local)
 6. Rate limit AI calls per conference
 
 

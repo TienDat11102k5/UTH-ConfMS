@@ -7,7 +7,7 @@ AI Service cho hệ thống quản lý hội nghị khoa học UTH-ConfMS, cung 
 AI Service được xây dựng bằng Python FastAPI, cung cấp:
 - **Feature Flags**: Quản lý tính năng AI theo từng hội nghị
 - **Audit Logging**: Ghi log đầy đủ cho mọi thao tác AI
-- **Model Management**: Hỗ trợ nhiều provider (OpenAI, Anthropic, local)
+- **Model Management**: Hỗ trợ Google Gemini và các model local
 - **Data Privacy**: Redaction PII cho double-blind review
 - **Rate Limiting**: Giới hạn số lượng request theo hội nghị
 
@@ -48,7 +48,7 @@ ai-service/
 - Python 3.11+
 - PostgreSQL 16+
 - Redis (optional, cho feature flag caching)
-- OpenAI API key hoặc Anthropic API key
+- Google Gemini API key
 
 ### Bước 1: Clone và cài đặt dependencies
 
@@ -69,8 +69,8 @@ Cập nhật các biến môi trường trong `.env`:
 
 ```env
 # AI Provider
-AI_PROVIDER=openai
-OPENAI_API_KEY=your_api_key_here
+AI_PROVIDER=gemini
+GEMINI_API_KEY=your_api_key_here
 
 # Database
 DATABASE_URL=postgresql://postgres:123456@localhost:5435/confms_db
@@ -135,7 +135,7 @@ await logger.log_operation(
     feature="spell_check",
     action="check_spelling",
     prompt="User input text",
-    model_id="gpt-4o-mini",
+    model_id="gemini-1.5-flash",
     output_summary="Fixed 5 spelling errors",
     accepted=True
 )
