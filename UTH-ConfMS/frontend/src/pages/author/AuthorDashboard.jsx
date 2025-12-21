@@ -39,9 +39,9 @@ const AuthorDashboard = () => {
             Sau khi có quyết định, xem kết quả Accept / Reject và các nhận xét đã
             được ẩn danh từ Reviewer, phục vụ cải thiện bài báo.
           </p>
-          <button className="btn-secondary">
+          <Link to="/author/submissions" className="btn-secondary">
             Xem kết quả bài báo
-          </button>
+          </Link>
         </div>
 
         <div className="dash-card">
@@ -51,9 +51,9 @@ const AuthorDashboard = () => {
             cùng (tác giả, affiliation, PDF) trước khi đưa vào chương trình và
             kỷ yếu.
           </p>
-          <button className="btn-secondary">
+          <Link to="/author/camera-ready" className="btn-secondary">
             Quản lý camera-ready
-          </button>
+          </Link>
         </div>
       </div>
     </DashboardLayout>
