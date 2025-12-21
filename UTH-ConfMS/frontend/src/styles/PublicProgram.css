@@ -1,0 +1,93 @@
+/* PAGE */
+.program-page {
+  background: #ecf7f8; /* nền xanh rất nhạt UTH */
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+/* HERO */
+.program-hero {
+  text-align: center;
+  padding: 4rem 1rem 3rem;
+  background: linear-gradient(
+    135deg,
+    #008689,   /* xanh ngọc UTH */
+    #006b6d    /* xanh đậm UTH */
+  );
+  color: white;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+}
+
+.program-hero h1 {
+  font-size: 2.6rem;
+  font-weight: 800;
+}
+
+.program-hero p {
+  margin-top: 0.8rem;
+  opacity: 0.9;
+}
+
+/* LIST */
+.program-list {
+  max-width: 900px;
+  margin: 3rem auto 0;
+  padding: 0 1rem;
+  display: grid;
+  gap: 1.2rem;
+}
+
+/* CARD */
+.program-card {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 1.5rem;
+
+  background: #ffffff;
+  padding: 1.4rem 1.6rem;
+  border-radius: 14px;
+
+  box-shadow: 0 6px 18px rgba(0, 134, 137, 0.15); /* shadow xanh UTH */
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.program-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 134, 137, 0.25);
+}
+
+/* TIME */
+.program-time {
+  font-weight: 700;
+  color: #008689; /* xanh ngọc */
+  font-size: 1rem;
+  text-align: right;
+}
+
+/* CONTENT */
+.program-content h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #003234; /* chữ đậm UTH */
+}
+
+.program-content span {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.95rem;
+  color: #577071; /* chữ mô tả UTH */
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .program-card {
+    grid-template-columns: 1fr;
+  }
+
+  .program-time {
+    text-align: left;
+    font-size: 0.95rem;
+  }
+}

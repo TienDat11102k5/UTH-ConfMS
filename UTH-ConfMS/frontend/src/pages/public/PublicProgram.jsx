@@ -1,5 +1,5 @@
 import React from "react";
-
+import "../../styles/PublicProgram.css";
 const PublicProgram = () => {
   const program = [
     {
@@ -30,39 +30,26 @@ const PublicProgram = () => {
   ];
 
   return (
-    <div>
-      {/* ===== Header ===== */}
-      <div className="public-header">
-        <div className="public-header-box">
-          <h1 className="public-title">📅 Conference Program</h1>
-          <p className="public-subtitle">
-            Explore the full schedule of sessions, keynotes and activities
-          </p>
-        </div>
-      </div>
+    <div className="program-page">
+      {/* HEADER */}
+      <section className="program-hero">
+        <h1>Conference Program</h1>
+        <p>Full agenda of sessions, keynotes and activities</p>
+      </section>
 
-      {/* ===== Timeline ===== */}
-      <div className="timeline-container">
-        <div className="timeline-line"></div>
-
+      {/* AGENDA */}
+      <section className="program-list">
         {program.map((item, index) => (
-          <div
-            key={index}
-            className={`timeline-item ${index % 2 === 0 ? "left" : "right"}`}
-            style={{ animationDelay: `${index * 0.25}s` }}
-          >
-            <div className="timeline-dot"></div>
+          <div key={index} className="program-card">
+            <div className="program-time">{item.time}</div>
 
-            <div className="timeline-card">
-              <p className="timeline-title">{item.title}</p>
-
-              <p className="timeline-info">🕒 {item.time}</p>
-
-              <p className="timeline-info">📍 {item.room}</p>
+            <div className="program-content">
+              <h3>{item.title}</h3>
+              <span>📍 {item.room}</span>
             </div>
           </div>
         ))}
-      </div>
+      </section>
     </div>
   );
 };
