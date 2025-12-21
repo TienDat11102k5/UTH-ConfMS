@@ -23,7 +23,10 @@ import ConferenceDetail from "./pages/author/ConferenceDetail.jsx";
 import AuthorDashboard from "./pages/author/AuthorDashboard.jsx";
 import AuthorSubmissionListPage from "./pages/author/AuthorSubmissionListPage.jsx";
 import AuthorSubmissionEditPage from "./pages/author/AuthorSubmissionEditPage.jsx";
+import AuthorSubmissionDetail from "./pages/author/AuthorSubmissionDetail.jsx";
 import AuthorPaperReviews from "./pages/author/AuthorPaperReviews.jsx";
+import AuthorCameraReadyPage from "./pages/author/AuthorCameraReadyPage.jsx";
+import AuthorCameraReadyList from "./pages/author/AuthorCameraReadyList.jsx";
 import AuthorNewSubmissionPage from "./pages/author/AuthorNewSubmissionPage.jsx";
 
 // --- Reviewer Imports ---
@@ -70,6 +73,14 @@ const App = () => {
         <Route path="/conferences/:id" element={<ConferenceDetail />} />
         <Route path="/publichome" element={<PublicHome />} />
         <Route path="/cfp" element={<PublicCfp />} />
+        <Route
+          path="/author/camera-ready"
+          element={
+            <ProtectedRoute>
+              <AuthorCameraReadyList />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/accepted-papers" element={<PublicAcceptedPapers />} />
 
         {/* Auth */}
@@ -105,7 +116,7 @@ const App = () => {
           path="/author/submissions/:id"
           element={
             <ProtectedRoute>
-              <AuthorSubmissionListPage />
+              <AuthorSubmissionDetail />
             </ProtectedRoute>
           }
         />
@@ -122,6 +133,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <AuthorPaperReviews />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/author/submissions/camera-ready"
+          element={
+            <ProtectedRoute>
+              <AuthorCameraReadyPage />
             </ProtectedRoute>
           }
         />
