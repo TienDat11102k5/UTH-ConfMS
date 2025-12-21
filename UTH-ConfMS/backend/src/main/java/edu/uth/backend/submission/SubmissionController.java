@@ -79,8 +79,8 @@ public class SubmissionController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity<PaperResponseDTO> getSubmission(@PathVariable Long id) {
-        Paper paper = submissionService.getPaperById(id);
-        return ResponseEntity.ok(mapToDTO(paper));
+        PaperResponseDTO dto = submissionService.getPaperDtoById(id);
+        return ResponseEntity.ok(dto);
     }
 
     // ==================== 3. XEM LIST CỦA TÔI ====================

@@ -4,6 +4,7 @@ import edu.uth.backend.common.FileStorageUtil;
 import edu.uth.backend.common.FileValidationService;
 import edu.uth.backend.exception.ResourceNotFoundException;
 import edu.uth.backend.submission.dto.CoAuthorDTO;
+import edu.uth.backend.submission.dto.PaperResponseDTO;
 import edu.uth.backend.entity.*;
 import edu.uth.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SubmissionService {
@@ -29,6 +31,9 @@ public class SubmissionService {
     private FileValidationService fileValidationService;
     @Autowired
     private PaperCoAuthorRepository coAuthorRepo;
+
+    @org.springframework.beans.factory.annotation.Value("${app.base.url:http://localhost:8080}")
+    private String baseUrl;
 
     // --- 1. NỘP BÀI ---
     @org.springframework.transaction.annotation.Transactional
@@ -105,6 +110,47 @@ public class SubmissionService {
     public Paper getPaperById(Long paperId) {
         return paperRepo.findById(paperId)
                 .orElseThrow(() -> new ResourceNotFoundException("Paper", paperId));
+    }
+
+    // Return DTO built inside a transaction to avoid LazyInitializationException
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public PaperResponseDTO getPaperDtoById(Long paperId) {
+        Paper paper = paperRepo.findById(paperId)
+                .orElseThrow(() -> new ResourceNotFoundException("Paper", paperId));
+
+        PaperResponseDTO response = new PaperResponseDTO();
+        response.setId(paper.getId());
+        response.setTitle(paper.getTitle());
+        response.setAbstractText(paper.getAbstractText());
+        response.setFilePath(paper.getFilePath());
+        if (paper.getStatus() != null) response.setStatus(paper.getStatus().toString());
+        response.setCreatedAt(paper.getCreatedAt());
+        response.setUpdatedAt(paper.getUpdatedAt());
+
+        if (paper.getMainAuthor() != null) {
+            response.setAuthorId(paper.getMainAuthor().getId());
+            response.setAuthorName(paper.getMainAuthor().getFullName());
+        }
+        if (paper.getTrack() != null) {
+            response.setTrackName(paper.getTrack().getName());
+            if (paper.getTrack().getConference() != null) {
+                response.setConferenceName(paper.getTrack().getConference().getName());
+            }
+        }
+        if (paper.getCoAuthors() != null && !paper.getCoAuthors().isEmpty()) {
+            List<CoAuthorDTO> ca = paper.getCoAuthors().stream().map(c -> {
+                CoAuthorDTO dto = new CoAuthorDTO();
+                dto.setName(c.getName());
+                dto.setEmail(c.getEmail());
+                dto.setAffiliation(c.getAffiliation());
+                return dto;
+            }).collect(Collectors.toList());
+            response.setCoAuthors(ca);
+        }
+        if (paper.getFilePath() != null && !paper.getFilePath().isBlank()) {
+            response.setDownloadUrl(baseUrl + "/uploads/submissions/" + paper.getFilePath());
+        }
+        return response;
     }
 
     // --- 4. SỬA BÀI (EDIT) - Đã thêm check User ---
