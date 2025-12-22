@@ -334,6 +334,31 @@ const AdminConferences = () => {
                 />
               </div>
 
+              <div className="form-grid">
+                <div className="form-group">
+                  <label className="form-label">Hạn chấm bài (Review deadline)</label>
+                  <input
+                    type="datetime-local"
+                    name="reviewDeadline"
+                    value={formData.reviewDeadline}
+                    onChange={handleChange}
+                    placeholder="Thời hạn reviewer chấm bài"
+                  />
+                  <div className="field-hint">Thời hạn để reviewer hoàn thành đánh giá</div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Hạn nộp bản cuối (Camera-ready deadline)</label>
+                  <input
+                    type="datetime-local"
+                    name="cameraReadyDeadline"
+                    value={formData.cameraReadyDeadline}
+                    onChange={handleChange}
+                    placeholder="Thời hạn nộp bản cuối"
+                  />
+                  <div className="field-hint">Thời hạn tác giả nộp bản cuối sau khi được chấp nhận</div>
+                </div>
+              </div>
+
               <div className="form-card" style={{ padding: "1rem" }}>
                 <label className="form-label">Danh sách Tracks (Chủ đề)</label>
                 {formData.tracks.map((track, index) => (
