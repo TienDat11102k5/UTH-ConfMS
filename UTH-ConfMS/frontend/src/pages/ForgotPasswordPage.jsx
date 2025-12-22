@@ -1,23 +1,24 @@
 // src/pages/ForgotPasswordPage.jsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import apiClient from "../apiClient";
 
 const ForgotPasswordPage = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setSuccessMsg("");
     setLoading(true);
 
     try {
       await apiClient.post("/auth/forgot-password", { email });
-      setSuccessMsg("Đã gửi hướng dẫn đặt lại mật khẩu (nếu email tồn tại trong hệ thống).");
+
+      // Chuyển sang trang nhập OTP
+      navigate("/verify-otp", { state: { email } });
     } catch (err) {
       const message =
         err?.response?.data?.message ||
@@ -35,7 +36,6 @@ const ForgotPasswordPage = () => {
         <h1 className="auth-title">Quên mật khẩu</h1>
 
         {error && <div className="auth-error">{error}</div>}
-        {successMsg && <div className="auth-success">{successMsg}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
@@ -52,7 +52,7 @@ const ForgotPasswordPage = () => {
           </div>
 
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? "Đang gửi..." : "Gửi yêu cầu"}
+            {loading ? "Đang gửi..." : "Gửi mã OTP"}
           </button>
         </form>
 

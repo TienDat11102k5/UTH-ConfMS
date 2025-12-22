@@ -3,6 +3,7 @@ uvicorn[standard]
 pydantic
 pydantic-settings
 
+# Google Gemini API (Note: google-generativeai is deprecated, plan migration to google-genai)
 google-generativeai
 numpy
 scikit-learn

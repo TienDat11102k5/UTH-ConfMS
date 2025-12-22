@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.*;
  * Auth REST API Controller
  * 
  * ENDPOINTS:
- * - POST /api/auth/register         : Đăng ký tài khoản LOCAL (email/password)
- * - POST /api/auth/login            : Đăng nhập LOCAL (email/password)
- * - POST /api/auth/firebase/google  : Đăng nhập Google qua Firebase (idToken)
- * - POST /api/auth/google           : Alias cho firebase/google (compatibility)
- * - POST /api/auth/forgot-password  : Yêu cầu reset mật khẩu (gửi email)
- * - POST /api/auth/reset-password   : Đặt lại mật khẩu bằng token
+ * - POST /api/auth/register : Đăng ký tài khoản LOCAL (email/password)
+ * - POST /api/auth/login : Đăng nhập LOCAL (email/password)
+ * - POST /api/auth/firebase/google : Đăng nhập Google qua Firebase (idToken)
+ * - POST /api/auth/google : Alias cho firebase/google (compatibility)
+ * - POST /api/auth/forgot-password : Yêu cầu reset mật khẩu (gửi email)
+ * - POST /api/auth/reset-password : Đặt lại mật khẩu bằng token
  * 
  * ERROR HANDLING:
  * - IllegalArgumentException -> 400 Bad Request
@@ -75,7 +75,7 @@ public class AuthController {
    * 
    * ERRORS:
    * - 400: Email/password sai, account không phải LOCAL
-  * - 401: Xác thực thất bại
+   * - 401: Xác thực thất bại
    */
   @PostMapping("/login")
   public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest req) {
@@ -100,7 +100,7 @@ public class AuthController {
    * 
    * ERRORS:
    * - 400: Token không hợp lệ, không có email
-  * - 500: Xác minh Firebase thất bại
+   * - 500: Xác minh Firebase thất bại
    */
   @PostMapping("/firebase/google")
   public ResponseEntity<AuthResponse> firebaseGoogle(@Valid @RequestBody FirebaseLoginRequest req) throws Exception {
@@ -137,8 +137,34 @@ public class AuthController {
   public ResponseEntity<MessageResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest req) {
     authService.forgotPassword(req);
     return ResponseEntity.ok(new MessageResponse(
-        "Nếu email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu sẽ được gửi đến email của bạn."
-    ));
+        "Nếu email tồn tại trong hệ thống, mã OTP sẽ được gửi đến email của bạn."));
+  }
+
+  /**
+   * Xác thực OTP - Bước giữa forgot-password và reset-password.
+   * 
+   * FLOW:
+   * 1. User nhận OTP qua email (từ /forgot-password)
+   * 2. User nhập OTP vào form
+   * 3. Frontend gửi email + OTP lên backend
+   * 4. Backend validate OTP và trả về verified token
+   * 5. Frontend dùng verified token để reset password
+   * 
+   * REQUEST BODY (VerifyOtpRequest):
+   * - email: Email đã yêu cầu reset
+   * - otp: Mã OTP 6 số
+   * 
+   * RESPONSE (VerifyOtpResponse):
+   * - verifiedToken: Token để dùng cho bước reset password
+   * 
+   * ERRORS:
+   * - 400: OTP không đúng, hết hạn, hoặc đã dùng
+   * - 400: Vượt quá 5 lần thử
+   */
+  @PostMapping("/verify-otp")
+  public ResponseEntity<VerifyOtpResponse> verifyOtp(@Valid @RequestBody VerifyOtpRequest req) {
+    VerifyOtpResponse response = authService.verifyOtp(req);
+    return ResponseEntity.ok(response);
   }
 
   /**
@@ -165,7 +191,6 @@ public class AuthController {
   public ResponseEntity<MessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest req) {
     authService.resetPassword(req);
     return ResponseEntity.ok(new MessageResponse(
-        "Đặt lại mật khẩu thành công. Bạn có thể đăng nhập bằng mật khẩu mới."
-    ));
+        "Đặt lại mật khẩu thành công. Bạn có thể đăng nhập bằng mật khẩu mới."));
   }
 }

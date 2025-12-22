@@ -57,6 +57,16 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       MAIL_FROM: ${MAIL_FROM:-UTH-ConfMS <datpham100705@gmail.com>}
 
+      # Frontend URL (for email links)
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://localhost:5173}
+
+      # Reset Password & OTP Configuration
+      RESET_PASSWORD_TTL_MINUTES: ${RESET_PASSWORD_TTL_MINUTES:-15}
+      OTP_TTL_MINUTES: ${OTP_TTL_MINUTES:-5}
+
+      # Firebase User Creation
+      CREATE_FIREBASE_USER: ${CREATE_FIREBASE_USER:-false}
+
       # AI Service
       AI_SERVICE_URL: http://ai-service:8000
       GEMINI_API_KEY: ${GEMINI_API_KEY}

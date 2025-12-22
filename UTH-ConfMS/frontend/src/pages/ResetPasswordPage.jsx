@@ -1,16 +1,16 @@
 // src/pages/ResetPasswordPage.jsx
-import React, { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import apiClient from "../apiClient";
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
 
-  // token lấy từ query: /reset-password?token=xxxx
-  const tokenFromUrl = useMemo(() => searchParams.get("token") || "", [searchParams]);
+  // Nhận verifiedToken từ VerifyOtpPage
+  const verifiedToken = location.state?.verifiedToken || "";
+  const email = location.state?.email || "";
 
-  const [token, setToken] = useState(tokenFromUrl);
   const [newPassword, setNewPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
@@ -18,20 +18,17 @@ const ResetPasswordPage = () => {
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
+  // Redirect nếu không có verified token
   useEffect(() => {
-    // đồng bộ lại token khi URL thay đổi
-    setToken(tokenFromUrl);
-  }, [tokenFromUrl]);
+    if (!verifiedToken) {
+      navigate("/forgot-password", { replace: true });
+    }
+  }, [verifiedToken, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccessMsg("");
-
-    if (!token || token.trim().length < 10) {
-      setError("Token không hợp lệ. Vui lòng mở link đặt lại mật khẩu từ email/log backend.");
-      return;
-    }
 
     if (newPassword.length < 8) {
       setError("Mật khẩu mới phải có ít nhất 8 ký tự.");
@@ -46,7 +43,7 @@ const ResetPasswordPage = () => {
     setLoading(true);
     try {
       await apiClient.post("/auth/reset-password", {
-        token: token.trim(),
+        token: verifiedToken,
         newPassword,
       });
 
@@ -70,27 +67,16 @@ const ResetPasswordPage = () => {
     <div className="auth-page">
       <div className="auth-card">
         <h1 className="auth-title">Đặt lại mật khẩu</h1>
+        {email && (
+          <p className="auth-subtitle">
+            Đặt lại mật khẩu cho: <strong>{email}</strong>
+          </p>
+        )}
 
         {error && <div className="auth-error">{error}</div>}
         {successMsg && <div className="auth-success">{successMsg}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
-          {/* Token: auto fill từ URL, vẫn cho sửa để test */}
-          <div className="form-group">
-            <label htmlFor="token">Reset Token *</label>
-            <input
-              id="token"
-              type="text"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              placeholder="Dán token từ link reset"
-              required
-            />
-            <div className="field-hint">
-              Token thường nằm trong URL: <code>/reset-password?token=...</code>
-            </div>
-          </div>
-
           <div className="form-group">
             <label htmlFor="newPassword">Mật khẩu mới *</label>
             <input

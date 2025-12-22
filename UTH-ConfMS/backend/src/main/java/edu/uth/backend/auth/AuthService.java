@@ -4,11 +4,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import edu.uth.backend.auth.dto.*;
 import edu.uth.backend.common.MailService;
+import edu.uth.backend.common.OtpUtil;
 import edu.uth.backend.common.ResetTokenUtil;
 import edu.uth.backend.common.RoleConstants;
+import edu.uth.backend.entity.PasswordResetOtp;
 import edu.uth.backend.entity.PasswordResetToken;
 import edu.uth.backend.entity.Role;
 import edu.uth.backend.entity.User;
+import edu.uth.backend.repository.PasswordResetOtpRepository;
 import edu.uth.backend.repository.PasswordResetTokenRepository;
 import edu.uth.backend.repository.RoleRepository;
 import edu.uth.backend.repository.UserRepository;
@@ -25,7 +28,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 
 /**
- * Service xử lý authentication & account flows (register/login/google/fpwd/reset).
+ * Service xử lý authentication & account flows
+ * (register/login/google/fpwd/reset).
  * Ghi chú bằng tiếng Việt để dễ hiểu chức năng từng phương thức.
  */
 @Service
@@ -34,11 +38,13 @@ public class AuthService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
+  private final PasswordResetOtpRepository passwordResetOtpRepository;
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
   private final JwtTokenProvider jwtTokenProvider;
 
-  // Service gửi email qua SMTP (MailService phải được implement trong package common)
+  // Service gửi email qua SMTP (MailService phải được implement trong package
+  // common)
   private final MailService mailService;
 
   /** Base URL frontend để tạo reset link (vd: http://localhost:5173) */
@@ -49,6 +55,10 @@ public class AuthService {
   @Value("${app.reset-password.token-ttl-minutes:30}")
   private long resetTokenTtlMinutes;
 
+  /** Thời hạn OTP (phút) */
+  @Value("${app.reset-password.otp-ttl-minutes:5}")
+  private long otpTtlMinutes;
+
   /** Tự động tạo Firebase user khi đăng ký LOCAL (true/false) */
   @Value("${app.auth.create-firebase-user:false}")
   private boolean createFirebaseUserOnRegister;
@@ -57,14 +67,15 @@ public class AuthService {
       UserRepository userRepository,
       RoleRepository roleRepository,
       PasswordResetTokenRepository passwordResetTokenRepository,
+      PasswordResetOtpRepository passwordResetOtpRepository,
       PasswordEncoder passwordEncoder,
       AuthenticationManager authenticationManager,
       JwtTokenProvider jwtTokenProvider,
-      MailService mailService
-  ) {
+      MailService mailService) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.passwordResetTokenRepository = passwordResetTokenRepository;
+    this.passwordResetOtpRepository = passwordResetOtpRepository;
     this.passwordEncoder = passwordEncoder;
     this.authenticationManager = authenticationManager;
     this.jwtTokenProvider = jwtTokenProvider;
@@ -86,7 +97,8 @@ public class AuthService {
    * - Email được chuẩn hóa (lowercase, trim)
    * - Password được mã hóa bằng BCrypt
    * - Provider = LOCAL (phân biệt với GOOGLE)
-   * - Nếu tạo Firebase user thất bại, vẫn giữ user trong DB (vì đã validate email)
+   * - Nếu tạo Firebase user thất bại, vẫn giữ user trong DB (vì đã validate
+   * email)
    */
   @Transactional
   public AuthResponse register(RegisterRequest req) {
@@ -119,7 +131,8 @@ public class AuthService {
     u.setProvider(User.AuthProvider.LOCAL);
 
     // 6. Gán roles
-    if (u.getRoles() == null) u.setRoles(new HashSet<>());
+    if (u.getRoles() == null)
+      u.setRoles(new HashSet<>());
     u.getRoles().add(authorRole);
 
     // 7. Lưu vào database
@@ -129,7 +142,7 @@ public class AuthService {
     if (createFirebaseUserOnRegister) {
       try {
         createFirebaseUser(email, req.getPassword(), req.getFullName());
-          System.out.println("✅ Đã tạo Firebase Authentication user cho: " + email);
+        System.out.println("✅ Đã tạo Firebase Authentication user cho: " + email);
       } catch (Exception e) {
         // Log lỗi nhưng KHÔNG rollback transaction (user đã được lưu vào DB)
         System.err.println("⚠️ Tạo Firebase user thất bại cho " + email + ": " + e.getMessage());
@@ -188,14 +201,12 @@ public class AuthService {
     // 3. Kiểm tra provider
     if (user.getProvider() != User.AuthProvider.LOCAL) {
       throw new IllegalArgumentException(
-          "Tài khoản này đăng nhập bằng " + user.getProvider() + ". Vui lòng sử dụng phương thức đăng nhập tương ứng."
-      );
+          "Tài khoản này đăng nhập bằng " + user.getProvider() + ". Vui lòng sử dụng phương thức đăng nhập tương ứng.");
     }
 
     // 4. Authenticate (Spring Security tự check password)
     authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(email, req.getPassword())
-    );
+        new UsernamePasswordAuthenticationToken(email, req.getPassword()));
 
     // 5. Phát hành JWT
     return buildAuthResponse(user);
@@ -208,10 +219,10 @@ public class AuthService {
    * 1. Verify Firebase ID Token bằng Firebase Admin SDK
    * 2. Extract email, uid, name, picture từ token
    * 3. Tìm user trong database theo email:
-   *    - Nếu CHƯA TỒN TẠI: tạo user mới với provider GOOGLE
-   *    - Nếu ĐÃ TỒN TẠI:
-   *      + Provider = LOCAL: merge thành GOOGLE (user có thể dùng cả 2 cách)
-   *      + Provider = GOOGLE: cập nhật thông tin mới nhất
+   * - Nếu CHƯA TỒN TẠI: tạo user mới với provider GOOGLE
+   * - Nếu ĐÃ TỒN TẠI:
+   * + Provider = LOCAL: merge thành GOOGLE (user có thể dùng cả 2 cách)
+   * + Provider = GOOGLE: cập nhật thông tin mới nhất
    * 4. Đảm bảo user có ít nhất role AUTHOR
    * 5. Phát hành JWT token
    * 
@@ -247,7 +258,7 @@ public class AuthService {
 
     // 4. Tìm hoặc tạo user
     User user = userRepository.findByEmail(email).orElse(null);
-    
+
     if (user == null) {
       // 4a. User chưa tồn tại -> tạo mới
       user = new User();
@@ -257,21 +268,22 @@ public class AuthService {
       user.setFullName(name != null && !name.isBlank() ? name : email.split("@")[0]);
       user.setAvatarUrl(picture);
 
-      if (user.getRoles() == null) user.setRoles(new HashSet<>());
+      if (user.getRoles() == null)
+        user.setRoles(new HashSet<>());
       user.getRoles().add(authorRole);
 
       user = userRepository.save(user);
       System.out.println("✅ Đã tạo người dùng GOOGLE mới: " + email);
-      
+
     } else {
       // 4b. User đã tồn tại -> cập nhật thông tin
-      
+
       // Merge account: cho phép user LOCAL đăng nhập bằng Google
       if (user.getProvider() == User.AuthProvider.LOCAL) {
         System.out.println("ℹ️ Gộp tài khoản LOCAL sang GOOGLE: " + email);
         user.setProvider(User.AuthProvider.GOOGLE);
       }
-      
+
       // Cập nhật Firebase UID (quan trọng cho các tính năng Firebase khác)
       user.setFirebaseUid(uid);
 
@@ -279,14 +291,15 @@ public class AuthService {
       if (user.getFullName() == null || user.getFullName().isBlank()) {
         user.setFullName(name != null && !name.isBlank() ? name : email.split("@")[0]);
       }
-      
+
       // Cập nhật avatar nếu chưa có
       if (user.getAvatarUrl() == null || user.getAvatarUrl().isBlank()) {
         user.setAvatarUrl(picture);
       }
 
       // Đảm bảo có role
-      if (user.getRoles() == null) user.setRoles(new HashSet<>());
+      if (user.getRoles() == null)
+        user.setRoles(new HashSet<>());
       if (user.getRoles().isEmpty()) {
         user.getRoles().add(authorRole);
       }
@@ -300,13 +313,13 @@ public class AuthService {
   }
 
   /**
-   * Quên mật khẩu (GỬI EMAIL THẬT):
+   * Quên mật khẩu (GỬI OTP QUA EMAIL):
    * - Controller luôn trả OK (chống dò email có tồn tại hay không)
    * - Nếu user tồn tại:
-   *    + Xoá token cũ của user (để chỉ còn 1 token hiệu lực)
-   *    + Tạo rawToken, hash, expiresAt
-   *    + Lưu DB (chỉ lưu hash)
-   *    + Gửi email reset link qua SMTP (sử dụng MailService)
+   * + Xoá OTP cũ của email (để chỉ còn 1 OTP hiệu lực)
+   * + Tạo OTP 6 số, hash, expiresAt
+   * + Lưu DB (chỉ lưu hash)
+   * + Gửi email chứa OTP qua SMTP
    */
   @Transactional
   public void forgotPassword(ForgotPasswordRequest req) {
@@ -318,41 +331,96 @@ public class AuthService {
       return;
     }
 
-    // Giữ 1 token active cho mỗi user (đơn giản, dễ demo)
-    passwordResetTokenRepository.deleteByUser_Id(user.getId());
+    // Xóa OTP cũ của email này
+    passwordResetOtpRepository.deleteByEmail(email);
 
-    // Tạo token thô (raw) để gửi cho user, DB chỉ lưu hash
-    String rawToken = ResetTokenUtil.generateRawToken();
-    String tokenHash = ResetTokenUtil.sha256Hex(rawToken);
+    // Tạo OTP 6 số
+    String otp = OtpUtil.generateOtp();
+    String otpHash = OtpUtil.sha256Hex(otp);
 
     Instant now = Instant.now();
-    Instant expiresAt = now.plus(resetTokenTtlMinutes, ChronoUnit.MINUTES);
+    Instant expiresAt = now.plus(otpTtlMinutes, ChronoUnit.MINUTES);
+
+    PasswordResetOtp otpEntity = PasswordResetOtp.builder()
+        .email(email)
+        .otpHash(otpHash)
+        .createdAt(now)
+        .expiresAt(expiresAt)
+        .attemptCount(0)
+        .build();
+
+    passwordResetOtpRepository.save(otpEntity);
+
+    // Gửi email chứa OTP
+    try {
+      mailService.sendOtpEmail(user.getEmail(), user.getFullName(), otp);
+      System.out.println("✅ Đã gửi OTP đặt lại mật khẩu tới: " + email);
+    } catch (Exception e) {
+      System.err.println("⚠️ Gửi OTP tới " + email + " thất bại: " + e.getMessage());
+      // Silent fail để không lộ email có tồn tại
+    }
+  }
+
+  /**
+   * Xác thực OTP:
+   * - Nhận email và OTP từ user
+   * - Hash OTP để tìm trong DB
+   * - Kiểm tra: tồn tại + chưa verify + chưa hết hạn + số lần thử < 5
+   * - Nếu OTP đúng: đánh dấu verified và tạo verified token
+   * - Trả về verified token để dùng cho bước reset password
+   */
+  @Transactional
+  public VerifyOtpResponse verifyOtp(VerifyOtpRequest req) {
+    String email = req.getEmail().trim().toLowerCase();
+    String otp = req.getOtp().trim();
+    String otpHash = OtpUtil.sha256Hex(otp);
+
+    PasswordResetOtp otpEntity = passwordResetOtpRepository
+        .findByEmailAndVerifiedAtIsNull(email)
+        .orElseThrow(() -> new IllegalArgumentException("OTP không tồn tại hoặc đã được sử dụng"));
+
+    // Kiểm tra hết hạn
+    if (otpEntity.getExpiresAt().isBefore(Instant.now())) {
+      throw new IllegalArgumentException("OTP đã hết hạn. Vui lòng yêu cầu OTP mới");
+    }
+
+    // Kiểm tra số lần thử
+    if (otpEntity.getAttemptCount() >= 5) {
+      throw new IllegalArgumentException("Đã vượt quá số lần thử. Vui lòng yêu cầu OTP mới");
+    }
+
+    // Kiểm tra OTP
+    if (!otpEntity.getOtpHash().equals(otpHash)) {
+      otpEntity.setAttemptCount(otpEntity.getAttemptCount() + 1);
+      passwordResetOtpRepository.save(otpEntity);
+      int remainingAttempts = 5 - otpEntity.getAttemptCount();
+      throw new IllegalArgumentException("OTP không đúng. Còn " + remainingAttempts + " lần thử");
+    }
+
+    // OTP đúng - đánh dấu đã verify
+    otpEntity.setVerifiedAt(Instant.now());
+    passwordResetOtpRepository.save(otpEntity);
+
+    // Tạo verified token để dùng cho bước reset password
+    String verifiedToken = ResetTokenUtil.generateRawToken();
+    String tokenHash = ResetTokenUtil.sha256Hex(verifiedToken);
+
+    // Lưu verified token vào bảng PasswordResetToken
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new IllegalArgumentException("User không tồn tại"));
+
+    passwordResetTokenRepository.deleteByUser_Id(user.getId());
 
     PasswordResetToken token = PasswordResetToken.builder()
         .user(user)
         .tokenHash(tokenHash)
-        .createdAt(now)
-        .expiresAt(expiresAt)
-        .usedAt(null)
+        .createdAt(Instant.now())
+        .expiresAt(Instant.now().plus(resetTokenTtlMinutes, ChronoUnit.MINUTES))
         .build();
 
     passwordResetTokenRepository.save(token);
 
-    // Tạo link reset cho frontend
-    String resetLink = frontendBaseUrl + "/reset-password?token=" + rawToken;
-
-    // GỬI EMAIL THẬT (SMTP) — MailService phải implement phương thức sendResetPasswordEmail
-    try {
-      mailService.sendResetPasswordEmail(user.getEmail(), user.getFullName(), resetLink);
-      System.out.println("✅ Đã gửi email hướng dẫn đặt lại mật khẩu tới: " + email);
-    } catch (Exception e) {
-      System.err.println("⚠️ Gửi email đặt lại mật khẩu tới " + email + " thất bại: " + e.getMessage());
-      // Nếu gửi email thất bại, có thể:
-      // 1. Log để admin biết
-      // 2. Xóa token (hoặc giữ lại để retry)
-      // 3. Throw exception (hoặc silent fail)
-      // Ở đây chọn silent fail để không lộ email có tồn tại
-    }
+    return new VerifyOtpResponse(verifiedToken);
   }
 
   /**
