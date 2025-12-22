@@ -14,15 +14,19 @@ public class CameraReadyController {
     @Autowired
     private CameraReadyService cameraReadyService;
 
-    // API: Nộp bản hoàn thiện
     // POST /api/camera-ready/{paperId}
-    @PostMapping(value = "/{paperId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(
+            value = "/{paperId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     public ResponseEntity<?> submitCameraReady(
             @PathVariable Long paperId,
-            @RequestParam MultipartFile file
+            @RequestParam("file") MultipartFile file
     ) {
         try {
-            return ResponseEntity.ok(cameraReadyService.submitCameraReady(paperId, file));
+            return ResponseEntity.ok(
+                    cameraReadyService.submitCameraReady(paperId, file)
+            );
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

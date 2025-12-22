@@ -2,7 +2,6 @@ package edu.uth.backend.ai;
 
 import edu.uth.backend.ai.dto.*;
 import edu.uth.backend.security.CustomUserDetails;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,11 +14,12 @@ public class AIController {
     private final AIProxyService aiProxyService;
     private final edu.uth.backend.submission.SubmissionService submissionService;
 
-    @Autowired
-    public AIController(AIProxyService aiProxyService, edu.uth.backend.submission.SubmissionService submissionService) {
+    public AIController(AIProxyService aiProxyService,
+                        edu.uth.backend.submission.SubmissionService submissionService) {
         this.aiProxyService = aiProxyService;
         this.submissionService = submissionService;
     }
+
 
     // --- Tác giả (Author) ---
     @PostMapping("/grammar-check")
