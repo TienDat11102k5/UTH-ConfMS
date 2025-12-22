@@ -215,10 +215,10 @@ const AuthorSubmissionDetail = () => {
                   </div>
                 )}
 
-                {/* Decision preview */}
-                {decision && (
-                  <div style={{ marginTop: 16, padding: 12, borderRadius: 6, background: submission.status === 'ACCEPTED' ? '#e8f5e9' : '#ffebee' }}>
-                    <h4 style={{ margin: 0 }}>{submission.status === 'ACCEPTED' ? '✅ Chấp nhận' : '❌ Từ chối'}</h4>
+                {/* Decision preview - chỉ hiển thị khi đã có quyết định cuối cùng */}
+                {decision && (decision.status === 'ACCEPTED' || decision.status === 'REJECTED') && (
+                  <div style={{ marginTop: 16, padding: 12, borderRadius: 6, background: decision.status === 'ACCEPTED' ? '#e8f5e9' : '#ffebee' }}>
+                    <h4 style={{ margin: 0 }}>{decision.status === 'ACCEPTED' ? '✅ Chấp nhận' : '❌ Từ chối'}</h4>
                     {decision.comment && <div style={{ marginTop: 6, whiteSpace: 'pre-wrap' }}>{decision.comment}</div>}
                     <div style={{ marginTop: 8, fontSize: '0.9rem', color: '#666' }}>Quyết định: {decision.decidedAt ? new Date(decision.decidedAt).toLocaleString() : 'N/A'}</div>
                   </div>

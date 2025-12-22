@@ -336,10 +336,12 @@ const ChairAssignmentManagement = () => {
                           title={
                             paper.status === "WITHDRAWN"
                               ? "Không thể phân công cho bài đã rút"
+                              : paperAssignments.length > 0
+                              ? "Thêm reviewer cho bài này"
                               : "Phân công reviewer"
                           }
                         >
-                          Phân công
+                          {paperAssignments.length > 0 ? "Thêm reviewer" : "Phân công"}
                         </button>
                        
                       </div>
@@ -360,6 +362,25 @@ const ChairAssignmentManagement = () => {
         >
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <h3>Phân công Reviewer cho: {selectedPaper.title}</h3>
+            
+            {/* Hiển thị các reviewer đã được phân công */}
+            {(() => {
+              const paperAssignments = assignments[selectedPaper.id] || [];
+              if (paperAssignments.length > 0) {
+                return (
+                  <div style={{ marginBottom: '1rem', padding: '0.75rem', background: '#f0f0f0', borderRadius: '4px' }}>
+                    <strong>Đã phân công:</strong>
+                    {paperAssignments.map((assign) => (
+                      <div key={assign.id} style={{ marginTop: '0.25rem' }}>
+                        • {assign.reviewer?.fullName} - {getStatusBadge(assign.status).props.children}
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+              return null;
+            })()}
+            
             <div className="form-group">
               <label className="form-label">Chọn Reviewer *</label>
               <select
@@ -368,12 +389,30 @@ const ChairAssignmentManagement = () => {
                 className="form-input"
               >
                 <option value="">-- Chọn Reviewer --</option>
-                {reviewers.map((reviewer) => (
-                  <option key={reviewer.id} value={reviewer.id}>
-                    {reviewer.fullName} ({reviewer.email})
-                  </option>
-                ))}
+                {reviewers
+                  .filter((reviewer) => {
+                    // Lọc ra những reviewer chưa được phân công cho bài này
+                    const paperAssignments = assignments[selectedPaper.id] || [];
+                    return !paperAssignments.some(
+                      (assign) => assign.reviewer?.id === reviewer.id
+                    );
+                  })
+                  .map((reviewer) => (
+                    <option key={reviewer.id} value={reviewer.id}>
+                      {reviewer.fullName} ({reviewer.email})
+                    </option>
+                  ))}
               </select>
+              {reviewers.filter((reviewer) => {
+                const paperAssignments = assignments[selectedPaper.id] || [];
+                return !paperAssignments.some(
+                  (assign) => assign.reviewer?.id === reviewer.id
+                );
+              }).length === 0 && (
+                <div style={{ marginTop: '0.5rem', color: '#666', fontSize: '0.9rem' }}>
+                  Tất cả reviewers đã được phân công cho bài này
+                </div>
+              )}
             </div>
             <div className="form-actions">
               <button

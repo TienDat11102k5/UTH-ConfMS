@@ -63,7 +63,7 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public Review getReviewByAssignment(Long assignmentId) {
         return reviewRepo.findByAssignmentId(assignmentId)
-                .orElseThrow(() -> new RuntimeException("Chưa có review cho assignment này!"));
+                .orElse(null); // Trả về null thay vì ném exception nếu chưa có review
     }
     
     // Lấy reviews cho Author xem (chỉ hiển thị commentForAuthor, ẩn commentForPC)
