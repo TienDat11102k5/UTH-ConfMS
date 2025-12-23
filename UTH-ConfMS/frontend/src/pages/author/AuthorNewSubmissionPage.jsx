@@ -288,7 +288,7 @@ const AuthorNewSubmissionPage = () => {
       formValues.trackId || (tracks[0]?.id ? String(tracks[0].id) : "");
 
     if (!payloadTrackId) {
-      setError("Vui lòng chọn hoặc nhập Track ID hợp lệ.");
+      setError("Vui lòng chọn Track/Chủ đề cho bài báo.");
       return;
     }
 
@@ -488,18 +488,28 @@ const AuthorNewSubmissionPage = () => {
                   {/* Track Selection */}
                   <div className="form-group">
                     <label htmlFor="trackId">Track / Chủ đề <span style={{ color: "red" }}>*</span></label>
-                    <input
+                    <select
                       id="trackId"
                       name="trackId"
-                      type="text"
                       className="text-input"
                       required
                       value={formValues.trackId}
                       onChange={handleChange}
-                      placeholder="Nhập Track ID"
-                    />
+                      disabled={!conference || tracks.length === 0}
+                    >
+                      <option value="">-- Chọn Track --</option>
+                      {tracks.map((track) => (
+                        <option key={track.id} value={track.id}>
+                          {track.name}
+                        </option>
+                      ))}
+                    </select>
                     <div className="field-hint">
-                      Nhập ID của Track/Chủ đề theo thông báo.
+                      {!conference 
+                        ? "Vui lòng chọn hội nghị trước"
+                        : tracks.length === 0 
+                        ? "Hội nghị này chưa có track nào"
+                        : "Chọn track/chủ đề phù hợp với bài báo của bạn"}
                     </div>
                   </div>
 
