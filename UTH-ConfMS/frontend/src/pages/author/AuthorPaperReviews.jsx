@@ -19,10 +19,20 @@ const AuthorPaperReviews = () => {
         setLoading(true);
         setError("");
 
-        // Load paper details
+        // Load paper details (force reload, bypass all cache)
         console.log("Loading paper:", paperId);
-        const paperRes = await apiClient.get(`/submissions/${paperId}`);
-        console.log("Paper response:", paperRes.data);
+        const paperRes = await apiClient.get(`/submissions/${paperId}`, {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          },
+          params: { _t: Date.now() }
+        });
+        console.log("=== FULL PAPER RESPONSE ===");
+        console.log("Full response:", JSON.stringify(paperRes.data, null, 2));
+        console.log("Camera ready path:", paperRes.data.cameraReadyPath);
+        console.log("Camera ready download URL:", paperRes.data.cameraReadyDownloadUrl);
+        console.log("===========================");
         setPaper(paperRes.data);
 
         // Only load reviews if paper has been reviewed (ACCEPTED or REJECTED)
@@ -32,32 +42,25 @@ const AuthorPaperReviews = () => {
         ) {
           try {
             // Load reviews (use for-author endpoint to hide internal comments)
-            console.log("Loading reviews for paper:", paperId);
             const reviewsRes = await apiClient.get(
               `/reviews/paper/${paperId}/for-author`
             );
-            console.log("Reviews response:", reviewsRes.data);
             setReviews(reviewsRes.data || []);
           } catch (err) {
-            console.error("Error loading reviews:", err);
             // Reviews might not be available yet
           }
 
           try {
             // Load decision
-            console.log("Loading decision for paper:", paperId);
             const decisionRes = await apiClient.get(
               `/decisions/paper/${paperId}`
             );
-            console.log("Decision response:", decisionRes.data);
             setDecision(decisionRes.data);
           } catch (err) {
-            console.error("Error loading decision:", err);
             // Decision might not be available yet
           }
         }
       } catch (err) {
-        console.error("Error loading paper:", err);
         setError(
           err.response?.data?.message ||
             err.message ||
@@ -69,6 +72,14 @@ const AuthorPaperReviews = () => {
     };
 
     if (paperId) loadData();
+    
+    // Reload data when navigating back from camera-ready upload
+    const handleFocus = () => {
+      if (paperId) loadData();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, [paperId]);
 
   const getStatusBadge = (status) => {
@@ -84,7 +95,8 @@ const AuthorPaperReviews = () => {
   };
 
   const getScoreBadge = (score) => {
-    if (score >= 2) return <span className="badge badge-success">+{score}</span>;
+    if (score >= 2)
+      return <span className="badge badge-success">+{score}</span>;
     if (score >= 0) return <span className="badge badge-info">{score}</span>;
     return <span className="badge badge-danger">{score}</span>;
   };
@@ -132,7 +144,13 @@ const AuthorPaperReviews = () => {
         className="form-card"
         style={{ marginBottom: "2rem", padding: "1.5rem" }}
       >
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "1rem",
+          }}
+        >
           <div>
             <strong>Hội nghị:</strong> {paper.conference?.name || "N/A"}
           </div>
@@ -164,8 +182,8 @@ const AuthorPaperReviews = () => {
         >
           <strong>📝 Bài báo đã được nộp thành công</strong>
           <p style={{ margin: "0.5rem 0 0 0" }}>
-            Bài báo của bạn đang chờ được phân công cho reviewer. Bạn sẽ nhận được
-            thông báo khi có kết quả.
+            Bài báo của bạn đang chờ được phân công cho reviewer. Bạn sẽ nhận
+            được thông báo khi có kết quả.
           </p>
         </div>
       )}
@@ -182,7 +200,8 @@ const AuthorPaperReviews = () => {
         >
           <strong>⏳ Bài báo đang được chấm</strong>
           <p style={{ margin: "0.5rem 0 0 0" }}>
-            Bài báo của bạn đang được các reviewer chấm điểm. Vui lòng chờ kết quả.
+            Bài báo của bạn đang được các reviewer chấm điểm. Vui lòng chờ kết
+            quả.
           </p>
         </div>
       )}
@@ -191,8 +210,7 @@ const AuthorPaperReviews = () => {
       {decision && (
         <div
           style={{
-            background:
-              paper.status === "ACCEPTED" ? "#e8f5e9" : "#ffebee",
+            background: paper.status === "ACCEPTED" ? "#e8f5e9" : "#ffebee",
             border:
               paper.status === "ACCEPTED"
                 ? "1px solid #4caf50"
@@ -329,17 +347,54 @@ const AuthorPaperReviews = () => {
         )}
 
       {/* Actions */}
-      <div style={{ marginTop: "2rem", display: "flex", gap: "1rem" }}>
+      <div style={{ marginTop: "2rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
         <Link to="/author/submissions" className="btn-secondary">
           Quay lại danh sách
         </Link>
+        
         {paper.status === "ACCEPTED" && (
-          <Link
-            to={`/author/submissions/${paperId}/camera-ready`}
-            className="btn-primary"
-          >
-            Upload Camera-Ready
-          </Link>
+          <>
+            {(!paper.cameraReadyPath && !paper.cameraReadyDownloadUrl) ? (
+              <Link
+                to={`/author/submissions/${paperId}/camera-ready`}
+                className="btn-primary"
+              >
+                📤 Upload Camera-Ready
+              </Link>
+            ) : (
+              <>
+                <span
+                  style={{
+                    background: "#e8f5e9",
+                    color: "#2e7d32",
+                    padding: "0.75rem 1.25rem",
+                    borderRadius: "8px",
+                    fontWeight: "600",
+                    border: "1px solid #4caf50",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
+                  ✅ Đã nộp Camera-Ready
+                </span>
+                <a
+                  href={
+                    paper.cameraReadyDownloadUrl ||
+                    (paper.cameraReadyPath
+                      ? `${import.meta.env.VITE_API_BASE_URL?.replace(/\/api$/, '') || 'http://localhost:8080'}/uploads/camera-ready/${paper.cameraReadyPath}`
+                      : "#")
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-primary"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}
+                >
+                  📥 Tải về bản cuối
+                </a>
+              </>
+            )}
+          </>
         )}
       </div>
     </DashboardLayout>

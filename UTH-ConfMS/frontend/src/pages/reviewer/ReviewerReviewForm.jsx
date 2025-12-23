@@ -38,16 +38,26 @@ const ReviewerReviewForm = () => {
           const reviewRes = await apiClient.get(
             `/reviews/assignment/${assignmentId}`
           );
-          setExistingReview(reviewRes.data);
-          // Pre-fill form if review exists
-          setFormData({
-            score: reviewRes.data.score || 0,
-            confidenceLevel: reviewRes.data.confidenceLevel || 3,
-            commentForAuthor: reviewRes.data.commentForAuthor || "",
-            commentForPC: reviewRes.data.commentForPC || "",
-          });
+          console.log("Review response:", reviewRes.data);
+
+          // Chỉ set existingReview nếu thực sự có review (không phải null hoặc empty object)
+          if (reviewRes.data && reviewRes.data.id) {
+            setExistingReview(reviewRes.data);
+            // Pre-fill form if review exists
+            setFormData({
+              score: reviewRes.data.score || 0,
+              confidenceLevel: reviewRes.data.confidenceLevel || 3,
+              commentForAuthor: reviewRes.data.commentForAuthor || "",
+              commentForPC: reviewRes.data.commentForPC || "",
+            });
+          } else {
+            console.log("No existing review found");
+            setExistingReview(null);
+          }
         } catch (err) {
+          console.log("No review yet (expected):", err.response?.status);
           // Review doesn't exist yet, that's okay
+          setExistingReview(null);
         }
       } catch (err) {
         console.error("Load error:", err);
@@ -62,9 +72,14 @@ const ReviewerReviewForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (assignment?.status !== "ACCEPTED" && assignment?.status !== "PENDING") {
+    console.log("=== SUBMIT REVIEW ===");
+    console.log("Assignment status:", assignment?.status);
+    console.log("Existing review:", existingReview);
+    console.log("Form data:", formData);
+
+    if (assignment?.status !== "ACCEPTED") {
       alert(
-        "Chỉ có thể chấm bài khi assignment ở trạng thái ACCEPTED hoặc PENDING!"
+        "Chỉ có thể chấm bài khi đã chấp nhận assignment (status = ACCEPTED)!"
       );
       return;
     }
@@ -74,21 +89,35 @@ const ReviewerReviewForm = () => {
       return;
     }
 
+    // Validate form data
+    if (!formData.commentForAuthor || !formData.commentForPC) {
+      alert("Vui lòng điền đầy đủ các nhận xét!");
+      return;
+    }
+
     setSubmitting(true);
     setError("");
 
     try {
-      await apiClient.post("/reviews", {
+      const payload = {
         assignmentId: parseInt(assignmentId),
         score: parseInt(formData.score),
         confidenceLevel: parseInt(formData.confidenceLevel),
         commentForAuthor: formData.commentForAuthor,
         commentForPC: formData.commentForPC,
-      });
+      };
+
+      console.log("Sending payload:", payload);
+
+      const response = await apiClient.post("/reviews", payload);
+
+      console.log("Response:", response.data);
 
       alert("Gửi review thành công!");
       navigate("/reviewer/assignments");
     } catch (err) {
+      console.error("Submit error:", err);
+      console.error("Error response:", err.response?.data);
       setError(
         err.response?.data?.message || err.message || "Lỗi khi gửi review"
       );
@@ -162,12 +191,15 @@ const ReviewerReviewForm = () => {
       <div className="form-card">
         <div style={{ marginBottom: "1.5rem" }}>
           <h3>Thông tin bài báo</h3>
-          <div style={{
-            backgroundColor: "#f8f9fa",
-            padding: "1.5rem",
-            borderRadius: "8px",
-            border: "1px solid #dee2e6"
-          }}>
+
+          <div
+            style={{
+              backgroundColor: "#f8f9fa",
+              padding: "1.5rem",
+              borderRadius: "8px",
+              border: "1px solid #dee2e6",
+            }}
+          >
             <p style={{ marginBottom: "1rem" }}>
               <strong>Tiêu đề:</strong> {assignment.paper?.title}
             </p>
@@ -190,20 +222,30 @@ const ReviewerReviewForm = () => {
             {assignment.paper?.abstractText && (
               <div style={{ marginTop: "1rem", marginBottom: "1rem" }}>
                 <strong>Abstract:</strong>
-                <p style={{ marginTop: "0.5rem", color: "#666", lineHeight: "1.6" }}>
+                <p
+                  style={{
+                    marginTop: "0.5rem",
+                    color: "#666",
+                    lineHeight: "1.6",
+                  }}
+                >
                   {assignment.paper.abstractText}
                 </p>
               </div>
             )}
             {assignment.paper?.filePath && (
-              <div style={{
-                marginTop: "1rem",
-                padding: "1rem",
-                backgroundColor: "#fff",
-                borderRadius: "6px",
-                border: "2px solid #0066cc"
-              }}>
-                <strong style={{ display: "block", marginBottom: "0.5rem" }}>📄 File bài báo đã nộp:</strong>
+              <div
+                style={{
+                  marginTop: "1rem",
+                  padding: "1rem",
+                  backgroundColor: "#fff",
+                  borderRadius: "6px",
+                  border: "2px solid #0066cc",
+                }}
+              >
+                <strong style={{ display: "block", marginBottom: "0.5rem" }}>
+                  📄 File bài báo đã nộp:
+                </strong>
                 <a
                   href={`http://localhost:8080/uploads/submissions/${assignment.paper.filePath}`}
                   target="_blank"
@@ -215,15 +257,28 @@ const ReviewerReviewForm = () => {
                     color: "white",
                     textDecoration: "none",
                     borderRadius: "4px",
-                    fontWeight: "600"
+                    fontWeight: "600",
                   }}
                 >
                   🔗 Mở/Tải xuống file bài báo
                 </a>
-                <p style={{ marginTop: "0.5rem", fontSize: "0.875rem", color: "#666" }}>
-                  Click vào link trên để xem hoặc tải file PDF/DOC của bài báo để chấm
+                <p
+                  style={{
+                    marginTop: "0.5rem",
+                    fontSize: "0.875rem",
+                    color: "#666",
+                  }}
+                >
+                  Click vào link trên để xem hoặc tải file PDF/DOC của bài báo
+                  để chấm
                 </p>
-                <p style={{ marginTop: "0.25rem", fontSize: "0.75rem", color: "#999" }}>
+                <p
+                  style={{
+                    marginTop: "0.25rem",
+                    fontSize: "0.75rem",
+                    color: "#999",
+                  }}
+                >
                   File: {assignment.paper.filePath}
                 </p>
               </div>
