@@ -47,6 +47,8 @@ public class SecurityConfig {
             .permitAll()
             // Public GET cho danh sách/chi tiết hội nghị
             .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/conferences/**").permitAll()
+            // Public GET cho proceedings (kỷ yếu công khai)
+            .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/proceedings/**").permitAll()
             // Tất cả các endpoint khác đều yêu cầu xác thực
             .anyRequest().authenticated())
         .headers(headers -> headers.addHeaderWriter(
