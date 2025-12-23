@@ -62,8 +62,16 @@ public class ReviewService {
     // Lấy review của một assignment cụ thể
     @Transactional(readOnly = true)
     public Review getReviewByAssignment(Long assignmentId) {
-        return reviewRepo.findByAssignmentId(assignmentId)
-                .orElse(null); // Trả về null thay vì ném exception nếu chưa có review
+        Review review = reviewRepo.findByAssignmentId(assignmentId).orElse(null);
+        
+        // Log để debug
+        if (review == null) {
+            System.out.println("No review found for assignment: " + assignmentId);
+        } else {
+            System.out.println("Found review for assignment: " + assignmentId + ", review ID: " + review.getId());
+        }
+        
+        return review; // Trả về null nếu chưa có review
     }
     
     // Lấy reviews cho Author xem (chỉ hiển thị commentForAuthor, ẩn commentForPC)

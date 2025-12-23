@@ -45,17 +45,20 @@ public class CameraReadyService {
             throw new RuntimeException("Chỉ chấp nhận file PDF");
         }
 
-        // 5. Không cho nộp lại
-        if (paper.getCameraReadyPath() != null) {
-            throw new RuntimeException("Bài báo đã nộp camera-ready rồi");
-        }
+        // 5. Cho phép nộp lại (ghi đè file cũ) - COMMENTED OUT
+        // if (paper.getCameraReadyPath() != null) {
+        //     throw new RuntimeException("Bài báo đã nộp camera-ready rồi");
+        // }
 
         // 6. Lưu file
         String filePath = fileStorageUtil.saveFile(file, "camera-ready");
+        System.out.println("Camera-ready file saved: " + filePath);
 
         // 7. Cập nhật DB
         paper.setCameraReadyPath(filePath);
+        Paper savedPaper = paperRepo.save(paper);
+        System.out.println("Paper updated with camera_ready_path: " + savedPaper.getCameraReadyPath());
 
-        return paperRepo.save(paper);
+        return savedPaper;
     }
 }

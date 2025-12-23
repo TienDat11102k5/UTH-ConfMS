@@ -1,10 +1,15 @@
 package edu.uth.backend.cameraready;
 
+import edu.uth.backend.entity.Paper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/camera-ready")
@@ -13,6 +18,9 @@ public class CameraReadyController {
 
     @Autowired
     private CameraReadyService cameraReadyService;
+
+    @Value("${app.base.url:http://localhost:8080}")
+    private String baseUrl;
 
     // POST /api/camera-ready/{paperId}
     @PostMapping(
@@ -24,9 +32,16 @@ public class CameraReadyController {
             @RequestParam("file") MultipartFile file
     ) {
         try {
-            return ResponseEntity.ok(
-                    cameraReadyService.submitCameraReady(paperId, file)
-            );
+            Paper paper = cameraReadyService.submitCameraReady(paperId, file);
+            
+            // Trả về response với đầy đủ thông tin
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", paper.getId());
+            response.put("cameraReadyPath", paper.getCameraReadyPath());
+            response.put("cameraReadyDownloadUrl", baseUrl + "/uploads/camera-ready/" + paper.getCameraReadyPath());
+            response.put("message", "Upload camera-ready thành công");
+            
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

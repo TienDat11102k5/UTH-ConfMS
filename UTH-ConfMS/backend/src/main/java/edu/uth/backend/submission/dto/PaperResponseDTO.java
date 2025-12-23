@@ -17,6 +17,8 @@ public class PaperResponseDTO {
     private String conferenceName; // Tên Hội nghị (Thêm cái này cho đầy đủ)
     private List<CoAuthorDTO> coAuthors; // Danh sách đồng tác giả
     private String downloadUrl; // URL để frontend tải file
+    private String cameraReadyPath;
+    private String cameraReadyDownloadUrl;
 
     // Thời gian tạo / cập nhật (dùng cho “Ngày nộp” và “Ngày cập nhật”)
     private LocalDateTime createdAt;
