@@ -64,4 +64,19 @@ public interface PaperRepository extends JpaRepository<Paper, Long> {
     // 6. Tìm bài theo Hội nghị (thông qua Track) và Trạng thái
     List<Paper> findByTrack_ConferenceIdAndStatus(Long conferenceId, PaperStatus status);
 
+    // 7. Lấy bài theo hội nghị và trạng thái với eager loading (cho Proceedings)
+    @Query("""
+        select distinct p
+        from Paper p
+        left join fetch p.coAuthors ca
+        left join fetch p.track t
+        left join fetch t.conference c
+        left join fetch p.mainAuthor a
+        where c.id = :conferenceId and p.status = :status
+    """)
+    List<Paper> findAllWithDetailsByConferenceIdAndStatus(
+            @Param("conferenceId") Long conferenceId,
+            @Param("status") PaperStatus status
+    );
+
 }
