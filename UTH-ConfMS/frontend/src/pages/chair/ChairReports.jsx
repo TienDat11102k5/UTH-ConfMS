@@ -62,7 +62,7 @@ const ChairReports = () => {
     }
     try {
       const res = await apiClient.get(
-        `/reports/conference/${selectedConference}/export-proceedings`
+        `/proceedings/export/${selectedConference}`
       );
       const data = JSON.stringify(res.data, null, 2);
       const blob = new Blob([data], { type: "application/json" });

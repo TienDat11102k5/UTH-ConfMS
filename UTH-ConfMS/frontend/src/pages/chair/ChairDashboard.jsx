@@ -64,6 +64,17 @@ const ChairDashboard = () => {
             Xem báo cáo
           </Link>
         </div>
+
+        <div className="dash-card">
+          <h3>Proceedings</h3>
+          <p>
+            Xem trước danh sách kỷ yếu, kiểm tra các bài báo đã được chấp nhận,
+            và export proceedings dạng JSON.
+          </p>
+          <Link to="/chair/proceedings" className="btn-secondary">
+            Xem Proceedings
+          </Link>
+        </div>
       </div>
     </DashboardLayout>
   );
