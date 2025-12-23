@@ -30,6 +30,9 @@ const PublicHomePage = () => {
           </div>
 
           <nav className="portal-nav">
+            <Link to="/proceedings" className="nav-link">
+              Proceedings
+            </Link>
             <Link to="/login" className="nav-link">
               Đăng nhập
             </Link>

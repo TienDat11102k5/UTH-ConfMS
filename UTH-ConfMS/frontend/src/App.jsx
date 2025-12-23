@@ -17,6 +17,7 @@ import PublicProgram from "./pages/public/PublicProgram";
 import PublicHome from "./pages/public/PublicHome";
 import PublicCfp from "./pages/public/PublicCfp";
 import PublicAcceptedPapers from "./pages/public/PublicAcceptedPapers";
+import PublicProceedings from "./pages/public/PublicProceedings";
 
 // --- Author Imports ---
 import ConferenceList from "./pages/author/ConferenceList.jsx";
@@ -46,6 +47,7 @@ import ChairReports from "./pages/chair/ChairReports.jsx";
 // Đã thêm 2 import bị thiếu ở đây
 import ChairConferenceManager from "./pages/chair/ChairConferenceManager.jsx";
 import ChairConferenceEdit from "./pages/chair/ChairConferenceEdit.jsx";
+import ChairProceedingsPreview from "./pages/chair/ChairProceedingsPreview.jsx";
 
 // --- Admin Imports ---
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
@@ -83,6 +85,8 @@ const App = () => {
           }
         />
         <Route path="/accepted-papers" element={<PublicAcceptedPapers />} />
+        <Route path="/proceedings" element={<PublicProceedings />} />
+        <Route path="/proceedings/:conferenceId" element={<PublicProceedings />} />
 
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
@@ -280,6 +284,14 @@ const App = () => {
           element={
             <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
               <ChairReports />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chair/proceedings"
+          element={
+            <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
+              <ChairProceedingsPreview />
             </ProtectedRoute>
           }
         />

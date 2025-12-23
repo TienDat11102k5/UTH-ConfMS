@@ -1,0 +1,367 @@
+/* ===== PAGE ===== */
+.public-proceedings-page {
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== PORTAL HEADER ===== */
+.portal-header-container {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.portal-header {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.portal-logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.portal-logo-img {
+  height: 80px;
+  width: auto;
+}
+
+.portal-logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.portal-logo-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #008080;
+  letter-spacing: 0.5px;
+}
+
+.portal-logo-subtitle {
+  font-size: 0.9rem;
+  color: #525252;
+  margin-top: 0.25rem;
+}
+
+.portal-nav {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.nav-link {
+  color: #525252;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+}
+
+.nav-link:hover {
+  color: #008080;
+  background: #e6f4f4;
+}
+
+.nav-link-primary {
+  background: #008080;
+  color: white;
+}
+
+.nav-link-primary:hover {
+  background: #006666;
+  color: white;
+}
+
+/* ===== HERO ===== */
+.proceedings-hero {
+  background: linear-gradient(135deg, #008080, #009999);
+  color: #ffffff;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+}
+
+.proceedings-hero h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.proceedings-hero p {
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  opacity: 0.95;
+}
+
+/* ===== CONTENT ===== */
+.proceedings-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+  flex: 1;
+}
+
+/* ===== FOOTER ===== */
+.portal-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #e5e7eb;
+  padding: 2rem;
+  text-align: center;
+  color: #525252;
+  font-size: 0.9rem;
+  margin-top: auto;
+}
+
+/* ===== LOADING & ERROR ===== */
+.loading-state {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.1rem;
+  color: #525252;
+}
+
+.error-message {
+  background: #ffebee;
+  border: 1px solid #d32f2f;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  color: #d32f2f;
+  text-align: center;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  font-style: italic;
+  color: #6b7280;
+  background: #f9fefe;
+  border-radius: 8px;
+}
+
+/* ===== CONTROLS ===== */
+.proceedings-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f6f8f8;
+  border-radius: 8px;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.proceedings-stats {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stat-badge {
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #525252;
+  border: 1px solid #e0e0e0;
+}
+
+.stat-badge strong {
+  font-weight: 700;
+  color: #008080;
+}
+
+.btn-toggle {
+  background: #008080;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.btn-toggle:hover {
+  background: #006666;
+  transform: translateY(-1px);
+}
+
+/* ===== TRACK SECTION ===== */
+.track-section {
+  margin-bottom: 2rem;
+}
+
+.track-title {
+  background: #e6f4f4;
+  color: #006666;
+  padding: 1rem 1.5rem;
+  margin: 0 0 1rem 0;
+  font-size: 1.3rem;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.track-count {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+/* ===== TABLE ===== */
+.proceedings-table-wrapper {
+  overflow-x: auto;
+  background: white;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.proceedings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.proceedings-table thead {
+  background-color: #e6f4f4;
+}
+
+.proceedings-table th,
+.proceedings-table td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.proceedings-table th {
+  color: #006666;
+  font-weight: 600;
+  border-bottom: 2px solid #cceaea;
+}
+
+.proceedings-table tbody tr {
+  border-bottom: 1px solid #eeeeee;
+}
+
+.proceedings-table tbody tr:hover {
+  background-color: #f9fefe;
+}
+
+.paper-title {
+  font-weight: 600;
+  color: #161616;
+}
+
+.co-authors {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.btn-download {
+  background: #008080;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.btn-download:hover {
+  background: #006666;
+  transform: translateY(-1px);
+}
+
+.no-pdf {
+  color: #a8a8a8;
+  font-style: italic;
+}
+
+/* ===== BACK BUTTON ===== */
+.proceedings-content .btn-secondary {
+  display: inline-block;
+  padding: 0.65rem 1.6rem;
+  border-radius: 6px;
+  border: 1px solid #006666;
+  color: #006666;
+  background-color: #ffffff;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.proceedings-content .btn-secondary:hover {
+  background-color: #e6f4f4;
+  transform: translateY(-1px);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .portal-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .portal-logo {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .portal-logo-img {
+    height: 60px;
+  }
+
+  .portal-logo-title {
+    font-size: 1.2rem;
+  }
+
+  .portal-logo-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .portal-nav {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .proceedings-hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .proceedings-content {
+    padding: 2rem 1rem;
+  }
+
+  .proceedings-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .proceedings-stats {
+    justify-content: center;
+  }
+
+  .proceedings-table th,
+  .proceedings-table td {
+    font-size: 0.85rem;
+    padding: 0.7rem;
+  }
+
+  .track-title {
+    font-size: 1.1rem;
+    padding: 0.8rem 1rem;
+  }
+}
