@@ -22,7 +22,12 @@ const AuthorCameraReadyPage = () => {
         const res = await apiClient.get(`/submissions/${id}`);
         if (!ignore) setSubmission(res.data || null);
       } catch (err) {
-        if (!ignore) setError(err?.response?.data?.message || err?.message || "Không thể tải submission.");
+        if (!ignore)
+          setError(
+            err?.response?.data?.message ||
+              err?.message ||
+              "Không thể tải submission."
+          );
       } finally {
         if (!ignore) setLoading(false);
       }
@@ -57,12 +62,34 @@ const AuthorCameraReadyPage = () => {
       setUploading(true);
       const formData = new FormData();
       formData.append("file", file);
-      // backend expected endpoint: POST /submissions/:id/camera-ready
-      await apiClient.post(`/submissions/${id}/camera-ready`, formData);
-      setSuccess("Tải lên camera-ready thành công.");
-      setTimeout(() => navigate(`/author/submissions/${id}`), 900);
+      // backend expected endpoint: POST /camera-ready/:id
+      const res = await apiClient.post(`/camera-ready/${id}`, formData);
+      // Update submission state so UI shows uploaded file and hides upload form
+      const camPath =
+        res?.data?.cameraReadyPath ||
+        res?.data?.cameraReady_path ||
+        res?.data?.camera_ready_path;
+      const base = (
+        import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"
+      ).replace(/\/api$/, "");
+      const camUrl =
+        res?.data?.cameraReadyDownloadUrl ||
+        (camPath ? `${base}/uploads/camera-ready/${camPath}` : null);
+      setSubmission((s) => ({
+        ...(s || {}),
+        cameraReadyPath: camPath,
+        cameraReadyDownloadUrl: camUrl,
+      }));
+      setSuccess("Tải lên camera-ready thành công! Đang chuyển về trang reviews...");
+      
+      // Redirect to reviews page after 2 seconds
+      setTimeout(() => {
+        navigate(`/author/submissions/${id}/reviews`);
+      }, 2000);
     } catch (err) {
-      setError(err?.response?.data?.message || err?.message || "Tải lên thất bại.");
+      setError(
+        err?.response?.data?.message || err?.message || "Tải lên thất bại."
+      );
     } finally {
       setUploading(false);
     }
@@ -73,12 +100,16 @@ const AuthorCameraReadyPage = () => {
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <Link to="/author/submissions" className="breadcrumb-link">Bài nộp</Link>
+            <Link to="/author/submissions" className="breadcrumb-link">
+              Bài nộp
+            </Link>
             <span className="breadcrumb-separator">/</span>
             <span className="breadcrumb-current">Camera-ready</span>
           </div>
           <h2 className="data-page-title">Camera-ready</h2>
-          <p className="data-page-subtitle">Tải lên bản PDF cuối cùng cho submission được chấp nhận.</p>
+          <p className="data-page-subtitle">
+            Tải lên bản PDF cuối cùng cho submission được chấp nhận.
+          </p>
         </div>
       </div>
 
@@ -86,8 +117,16 @@ const AuthorCameraReadyPage = () => {
         <div style={{ padding: "2rem" }}>Đang tải...</div>
       ) : (
         <div className="form-card">
-          {error && <div className="auth-error" style={{ marginBottom: "1rem" }}>{error}</div>}
-          {success && <div className="auth-success" style={{ marginBottom: "1rem" }}>{success}</div>}
+          {error && (
+            <div className="auth-error" style={{ marginBottom: "1rem" }}>
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="auth-success" style={{ marginBottom: "1rem" }}>
+              {success}
+            </div>
+          )}
 
           {submission && (
             <div style={{ marginBottom: "1rem" }}>
@@ -98,18 +137,53 @@ const AuthorCameraReadyPage = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="file">File camera-ready (PDF)</label>
-              <input id="file" type="file" accept="application/pdf" onChange={handleFileChange} />
-              <div className="field-hint">Chỉ chấp nhận PDF. Kích thước tối đa theo quy định của hội nghị.</div>
+          {submission && submission.cameraReadyDownloadUrl ? (
+            <div style={{ marginTop: 12 }}>
+              <div className="auth-success" style={{ marginBottom: 8 }}>
+                Đã nộp camera-ready.
+              </div>
+              <div>
+                <a
+                  href={submission.cameraReadyDownloadUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-primary"
+                  style={{ padding: "6px 10px" }}
+                >
+                  Tải về bản camera-ready
+                </a>
+              </div>
             </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="file">File camera-ready (PDF)</label>
+                <input
+                  id="file"
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                />
+                <div className="field-hint">
+                  Chỉ chấp nhận PDF. Kích thước tối đa theo quy định của hội
+                  nghị.
+                </div>
+              </div>
 
-            <div style={{ display: "flex", gap: 8 }}>
-              <Link to="/author/submissions" className="btn-secondary">Quay lại</Link>
-              <button type="submit" className="btn-primary" disabled={uploading}>{uploading ? "Đang tải..." : "Tải lên"}</button>
-            </div>
-          </form>
+              <div style={{ display: "flex", gap: 8 }}>
+                <Link to="/author/submissions" className="btn-secondary">
+                  Quay lại
+                </Link>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={uploading}
+                >
+                  {uploading ? "Đang tải..." : "Tải lên"}
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       )}
     </DashboardLayout>

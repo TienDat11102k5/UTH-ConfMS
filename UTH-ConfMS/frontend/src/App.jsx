@@ -147,6 +147,14 @@ const App = () => {
           }
         />
         <Route
+          path="/author/submissions/:id/camera-ready"
+          element={
+            <ProtectedRoute>
+              <AuthorCameraReadyPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/author/submissions/new"
           element={
             <ProtectedRoute>
