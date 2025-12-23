@@ -31,6 +31,8 @@ public class SubmissionService {
     private FileValidationService fileValidationService;
     @Autowired
     private PaperCoAuthorRepository coAuthorRepo;
+    @Autowired
+    private ReviewAssignmentRepository reviewAssignmentRepo;
 
     @org.springframework.beans.factory.annotation.Value("${app.base.url:http://localhost:8080}")
     private String baseUrl;
@@ -150,6 +152,13 @@ public class SubmissionService {
         if (paper.getFilePath() != null && !paper.getFilePath().isBlank()) {
             response.setDownloadUrl(baseUrl + "/uploads/submissions/" + paper.getFilePath());
         }
+        
+        // Map camera ready fields
+        if (paper.getCameraReadyPath() != null && !paper.getCameraReadyPath().isBlank()) {
+            response.setCameraReadyPath(paper.getCameraReadyPath());
+            response.setCameraReadyDownloadUrl(baseUrl + "/uploads/camera-ready/" + paper.getCameraReadyPath());
+        }
+        
         return response;
     }
 
@@ -218,6 +227,18 @@ public class SubmissionService {
 
         if (paper.getStatus() == PaperStatus.ACCEPTED || paper.getStatus() == PaperStatus.REJECTED) {
             throw new IllegalArgumentException("Bài báo đã có kết quả quyết định, không thể rút!");
+        }
+
+        // Check if any reviewer has ACCEPTED the assignment
+        List<ReviewAssignment> acceptedAssignments = reviewAssignmentRepo.findByPaperIdAndStatus(
+            paperId, 
+            AssignmentStatus.ACCEPTED
+        );
+        if (!acceptedAssignments.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Không thể rút bài vì đã có " + acceptedAssignments.size() + 
+                " reviewer chấp nhận chấm bài. Vui lòng liên hệ Chair nếu cần thiết."
+            );
         }
 
         paper.setStatus(PaperStatus.WITHDRAWN);

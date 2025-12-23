@@ -80,6 +80,14 @@ public class SubmissionController {
     @GetMapping("/{id}")
     public ResponseEntity<PaperResponseDTO> getSubmission(@PathVariable Long id) {
         PaperResponseDTO dto = submissionService.getPaperDtoById(id);
+        
+        // DEBUG: Log camera ready info
+        System.out.println("=== GET SUBMISSION DEBUG ===");
+        System.out.println("Paper ID: " + id);
+        System.out.println("Camera ready path in DTO: " + dto.getCameraReadyPath());
+        System.out.println("Camera ready download URL in DTO: " + dto.getCameraReadyDownloadUrl());
+        System.out.println("===========================");
+        
         return ResponseEntity.ok(dto);
     }
 
@@ -189,6 +197,10 @@ public class SubmissionController {
         // Cung cấp URL tải về cho frontend
         if (paper.getFilePath() != null && !paper.getFilePath().isBlank()) {
             response.setDownloadUrl(baseUrl + "/uploads/submissions/" + paper.getFilePath());
+        }
+        if (paper.getCameraReadyPath() != null && !paper.getCameraReadyPath().isBlank()) {
+            response.setCameraReadyPath(paper.getCameraReadyPath());
+            response.setCameraReadyDownloadUrl(baseUrl + "/uploads/camera-ready/" + paper.getCameraReadyPath());
         }
         return response;
     }
