@@ -1,5 +1,5 @@
 package edu.uth.backend.assignment;
-
+import lombok.extern.slf4j.Slf4j;
 import edu.uth.backend.entity.ConflictOfInterest;
 import edu.uth.backend.entity.Paper;
 import edu.uth.backend.entity.User;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-
+@Slf4j
 @RestController
 @RequestMapping("/api/conflicts")
 @CrossOrigin(origins = "*")

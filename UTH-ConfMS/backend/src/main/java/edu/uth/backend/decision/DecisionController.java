@@ -1,13 +1,13 @@
 package edu.uth.backend.decision;
 
 import edu.uth.backend.entity.PaperStatus;
-
+import lombok.extern.slf4j.Slf4j;
 import edu.uth.backend.decision.dto.DecisionRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import edu.uth.backend.submission.SubmissionService;
-
+@Slf4j
 @RestController
 @RequestMapping("/api/decisions")
 @CrossOrigin(origins = "*")

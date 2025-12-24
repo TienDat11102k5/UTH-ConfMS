@@ -2,6 +2,7 @@ package edu.uth.backend.auth;
 
 import edu.uth.backend.auth.dto.*;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
  * - Validate input bằng @Valid annotations
  * - Rate limiting nên được implement ở API Gateway
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
