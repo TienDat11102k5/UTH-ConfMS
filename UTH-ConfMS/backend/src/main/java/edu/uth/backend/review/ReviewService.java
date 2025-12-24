@@ -1,8 +1,8 @@
-
 package edu.uth.backend.review;
 
 import edu.uth.backend.entity.*;
 import edu.uth.backend.repository.*;
+import edu.uth.backend.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +16,7 @@ public class ReviewService {
 
     @Autowired private ReviewRepository reviewRepo;
     @Autowired private ReviewAssignmentRepository assignmentRepo;
+    @Autowired private EmailService emailService;
 
     // Hàm Chấm điểm (Submit Review)
     public Review submitReview(Long assignmentId, int score, int confidence, String commentAuthor, String commentPC) {
@@ -49,6 +50,14 @@ public class ReviewService {
         // 5. Cập nhật trạng thái phân công thành ĐÃ XONG (COMPLETED)
         assignment.setStatus(AssignmentStatus.COMPLETED);
         assignmentRepo.save(assignment);
+
+        // 6. Gửi email thông báo cho Chair
+        try {
+            emailService.sendReviewSubmittedNotification(savedReview);
+        } catch (Exception e) {
+            // Log error but don't fail the review submission
+            System.err.println("Failed to send review notification email: " + e.getMessage());
+        }
 
         return savedReview;
     }

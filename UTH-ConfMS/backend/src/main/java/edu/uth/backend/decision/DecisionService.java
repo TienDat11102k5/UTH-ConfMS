@@ -2,6 +2,7 @@ package edu.uth.backend.decision;
 
 import edu.uth.backend.entity.*;
 import edu.uth.backend.repository.*;
+import edu.uth.backend.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import edu.uth.backend.notification.NotificationService;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ public class DecisionService {
     @Autowired private PaperRepository paperRepo;
     @Autowired private ReviewRepository reviewRepo;
     @Autowired private NotificationService notificationService;
+    @Autowired private EmailService emailService;
 
     // 1. Hàm tính điểm trung bình (Để Chair xem trước khi quyết định)
     @Transactional(readOnly = true)
@@ -43,13 +45,22 @@ public class DecisionService {
         paper.setStatus(decision);
         // (Optional: Có thể lưu comment của Chair vào đâu đó nếu muốn mở rộng DB)
         Paper savedPaper = paperRepo.save(paper);
-        // --- GỌI NOTIFICATION SERVICE ĐỂ GỬI MAIL ---
+        
+        // --- GỌI NOTIFICATION SERVICE ĐỂ GỬI MAIL (Legacy) ---
         notificationService.sendDecisionEmail(
                 savedPaper.getMainAuthor().getEmail(),      // Email tác giả
                 savedPaper.getMainAuthor().getFullName(),   // Tên tác giả
                 savedPaper.getTitle(),                      // Tên bài báo
                 decision                                    // Kết quả
         );
+        
+        // --- GỌI EMAIL SERVICE MỚI ĐỂ GỬI EMAIL TEMPLATE ---
+        try {
+            emailService.sendDecisionNotification(savedPaper, decision.name());
+        } catch (Exception e) {
+            // Log error but don't fail the decision
+            System.err.println("Failed to send decision email: " + e.getMessage());
+        }
         // ---------------------------------------------
        
         return savedPaper;

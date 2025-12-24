@@ -1,5 +1,6 @@
 package edu.uth.backend.assignment;
 
+import edu.uth.backend.email.EmailService;
 import edu.uth.backend.entity.*;
 import edu.uth.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,8 @@ public class ReviewAssignmentService {
     @Autowired private ReviewAssignmentRepository assignmentRepo;
     @Autowired private PaperRepository paperRepo;
     @Autowired private UserRepository userRepo;
-    
-    // Để kết nối với bảng Xung đột lợi ích
-    @Autowired private ConflictOfInterestRepository coiRepo; 
+    @Autowired private ConflictOfInterestRepository coiRepo;
+    @Autowired private EmailService emailService; 
 
     // 1. Hàm Phân công (Assign) - TP4
     public ReviewAssignment assignReviewer(Long paperId, Long reviewerId) {
@@ -64,7 +64,17 @@ public class ReviewAssignmentService {
             paperRepo.save(paper);
         }
 
-        return assignmentRepo.save(assignment);
+        ReviewAssignment savedAssignment = assignmentRepo.save(assignment);
+        
+        // Send email notification
+        try {
+            emailService.sendAssignmentNotification(savedAssignment);
+        } catch (Exception e) {
+            // Log error but don't fail the assignment
+            System.err.println("Failed to send assignment email: " + e.getMessage());
+        }
+        
+        return savedAssignment;
     }
 
     // 2. Hàm lấy danh sách bài được phân công (Dành cho Reviewer xem - TP5)
