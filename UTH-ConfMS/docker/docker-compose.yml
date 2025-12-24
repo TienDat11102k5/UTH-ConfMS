@@ -71,7 +71,7 @@ services:
       AI_SERVICE_URL: http://ai-service:8000
       GEMINI_API_KEY: ${GEMINI_API_KEY}
     volumes:
-      - ../backend/uth-confms-firebase-sa.json:/run/secrets/firebase-sa.json:ro
+      - ../backend/uth-confms-firebase-sa.json/uth-confms-firebase-sa.json:/run/secrets/firebase-sa.json:ro
       - ../uploads:/app/uploads
 
   ai-service:
