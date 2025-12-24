@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả review bài báo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin: -30px -30px 20px -30px;
+        }
+        h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .info-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #d32f2f;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .info-box ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .info-box li {
+            margin: 8px 0;
+        }
+        .encouragement {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>📋 Thông báo kết quả review</h2>
+        </div>
+        
+        <p>Xin chào <strong th:text="${authorName}">Author</strong>,</p>
+        
+        <p>Cảm ơn bạn đã gửi bài báo tới hội nghị <strong th:text="${conferenceName}">Conference Name</strong>.</p>
+        
+        <div class="info-box">
+            <strong>📄 Thông tin bài báo:</strong>
+            <ul>
+                <li><strong>Tiêu đề:</strong> <span th:text="${paperTitle}">Paper Title</span></li>
+                <li><strong>Hội nghị:</strong> <span th:text="${conferenceName}">Conference Name</span></li>
+            </ul>
+        </div>
+        
+        <p>Sau quá trình review kỹ lưỡng, chúng tôi rất tiếc phải thông báo rằng bài báo của bạn <strong>chưa được chấp nhận</strong> trong lần này.</p>
+        
+        <div class="encouragement">
+            <strong>💡 Lời khuyên:</strong>
+            <ul>
+                <li>Vui lòng xem lại nhận xét của reviewer trong hệ thống</li>
+                <li>Cân nhắc cải thiện bài báo dựa trên feedback</li>
+                <li>Có thể submit lại ở các hội nghị khác hoặc kỳ tới</li>
+                <li>Đừng nản lòng - đây là quá trình bình thường trong nghiên cứu khoa học</li>
+            </ul>
+        </div>
+        
+        <p>Chúng tôi đánh giá cao nỗ lực nghiên cứu của bạn và hy vọng sẽ nhận được bài báo của bạn trong tương lai.</p>
+        
+        <div class="footer">
+            <p>Email này được gửi tự động từ hệ thống UTH-ConfMS</p>
+            <p>© 2024 UTH Conference Management System</p>
+        </div>
+    </div>
+</body>
+</html>

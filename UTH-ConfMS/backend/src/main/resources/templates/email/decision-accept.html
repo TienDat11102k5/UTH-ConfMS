@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài báo được chấp nhận</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin: -30px -30px 20px -30px;
+        }
+        h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .success-badge {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .info-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .info-box ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .info-box li {
+            margin: 8px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #2e7d32;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+        .btn:hover {
+            background-color: #1b5e20;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>🎉 Chúc mừng! Bài báo được chấp nhận</h2>
+        </div>
+        
+        <p>Xin chào <strong th:text="${authorName}">Author</strong>,</p>
+        
+        <div class="success-badge">
+            ✅ BÀI BÁO CỦA BẠN ĐÃ ĐƯỢC CHẤP NHẬN
+        </div>
+        
+        <p>Chúng tôi vui mừng thông báo rằng bài báo của bạn đã được chấp nhận tại hội nghị <strong th:text="${conferenceName}">Conference Name</strong>.</p>
+        
+        <div class="info-box">
+            <strong>📄 Thông tin bài báo:</strong>
+            <ul>
+                <li><strong>Tiêu đề:</strong> <span th:text="${paperTitle}">Paper Title</span></li>
+                <li><strong>Hội nghị:</strong> <span th:text="${conferenceName}">Conference Name</span></li>
+            </ul>
+        </div>
+        
+        <div class="info-box">
+            <strong>⚠️ Bước tiếp theo - QUAN TRỌNG:</strong>
+            <ul>
+                <li>Vui lòng upload bản <strong>camera-ready</strong> (bản cuối cùng) của bài báo</li>
+                <li><strong>Deadline:</strong> <span th:text="${cameraReadyDeadline}">Deadline</span></li>
+                <li>Bản camera-ready cần được chỉnh sửa theo nhận xét của reviewer (nếu có)</li>
+                <li>Đảm bảo format đúng theo template của hội nghị</li>
+            </ul>
+        </div>
+        
+        <a th:href="${uploadLink}" class="btn">Upload bản Camera-Ready</a>
+        
+        <p style="margin-top: 20px; font-size: 14px; color: #666;">
+            <strong>Lưu ý:</strong> Nếu không upload camera-ready trước deadline, bài báo có thể bị loại khỏi chương trình hội nghị.
+        </p>
+        
+        <div class="footer">
+            <p>Email này được gửi tự động từ hệ thống UTH-ConfMS</p>
+            <p>© 2024 UTH Conference Management System</p>
+        </div>
+    </div>
+</body>
+</html>
