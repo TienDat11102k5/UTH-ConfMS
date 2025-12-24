@@ -1,115 +1,173 @@
 package edu.uth.backend.ai;
 
+import lombok.extern.slf4j.Slf4j;
 import edu.uth.backend.ai.dto.*;
 import edu.uth.backend.security.CustomUserDetails;
+import edu.uth.backend.submission.SubmissionService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/ai")
 public class AIController {
 
     private final AIProxyService aiProxyService;
-    private final edu.uth.backend.submission.SubmissionService submissionService;
+    private final SubmissionService submissionService;
 
-    public AIController(AIProxyService aiProxyService,
-                        edu.uth.backend.submission.SubmissionService submissionService) {
+    public AIController(
+            AIProxyService aiProxyService,
+            SubmissionService submissionService
+    ) {
         this.aiProxyService = aiProxyService;
         this.submissionService = submissionService;
     }
 
+    // ================= AUTHOR =================
 
-    // --- Tác giả (Author) ---
     @PostMapping("/grammar-check")
     public ResponseEntity<GrammarCheckResponse> checkGrammar(
             @RequestBody GrammarCheckRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
         Long userId = userDetails != null ? userDetails.getUser().getId() : null;
+        log.info("POST /api/ai/grammar-check | userId={}", userId);
+
         return ResponseEntity.ok(aiProxyService.checkGrammar(request, userId));
     }
 
     @PostMapping("/polish")
     public ResponseEntity<PolishResponse> polishContent(
             @RequestBody PolishRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
         Long userId = userDetails != null ? userDetails.getUser().getId() : null;
+        log.info("POST /api/ai/polish | userId={}", userId);
+
         return ResponseEntity.ok(aiProxyService.polishContent(request, userId));
     }
 
     @PostMapping("/suggest-keywords")
     public ResponseEntity<KeywordSuggestionResponse> suggestKeywords(
             @RequestBody KeywordSuggestionRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
         Long userId = userDetails != null ? userDetails.getUser().getId() : null;
+        log.info("POST /api/ai/suggest-keywords | userId={}", userId);
+
         return ResponseEntity.ok(aiProxyService.suggestKeywords(request, userId));
     }
 
-    // --- Người phản biện / Thành viên Hội đồng (Reviewer / PC Member) ---
+    // ================= REVIEWER / PC MEMBER =================
+
     @PostMapping("/synopsis")
-    @PreAuthorize("hasAnyRole('REVIEWER', 'CHAIR', 'TRACK_CHAIR', 'AUTHOR')") // Reviewer sử dụng mục này, có thể cả
-                                                                              // Author? Yêu cầu ghi "Dành cho
-                                                                              // Reviewer/PC Member"
+    @PreAuthorize("hasAnyRole('REVIEWER', 'CHAIR', 'TRACK_CHAIR', 'AUTHOR')")
     public ResponseEntity<PaperSynopsisResponse> generatePaperSynopsis(
             @RequestBody PaperSynopsisRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
         Long userId = userDetails != null ? userDetails.getUser().getId() : null;
-        // ConferenceId bắt buộc phải có trong request
-        return ResponseEntity.ok(aiProxyService.generatePaperSynopsis(request, userId, request.getConferenceId()));
+        log.info(
+                "POST /api/ai/synopsis | userId={} | conferenceId={}",
+                userId,
+                request.getConferenceId()
+        );
+
+        return ResponseEntity.ok(
+                aiProxyService.generatePaperSynopsis(request, userId, request.getConferenceId())
+        );
     }
 
-    // --- Trưởng ban / Trưởng tiểu ban (Chair / Track Chair) ---
+    // ================= CHAIR / TRACK CHAIR =================
+
     @PostMapping("/reviewer-similarity")
     @PreAuthorize("hasAnyRole('CHAIR', 'TRACK_CHAIR')")
     public ResponseEntity<ReviewerSimilarityResponse> calculateReviewerSimilarity(
             @RequestBody ReviewerSimilarityRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
         Long userId = userDetails != null ? userDetails.getUser().getId() : null;
-        return ResponseEntity
-                .ok(aiProxyService.calculateReviewerSimilarity(request, userId, request.getConferenceId()));
+        log.info(
+                "POST /api/ai/reviewer-similarity | userId={} | conferenceId={}",
+                userId,
+                request.getConferenceId()
+        );
+
+        return ResponseEntity.ok(
+                aiProxyService.calculateReviewerSimilarity(request, userId, request.getConferenceId())
+        );
     }
 
     @PostMapping("/assignments-suggestion")
     @PreAuthorize("hasAnyRole('CHAIR', 'TRACK_CHAIR')")
     public ResponseEntity<AssignmentSuggestionResponse> suggestAssignments(
             @RequestBody AssignmentSuggestionRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
         Long userId = userDetails != null ? userDetails.getUser().getId() : null;
-        return ResponseEntity.ok(aiProxyService.suggestAssignments(request, userId, request.getConferenceId()));
+        log.info(
+                "POST /api/ai/assignments-suggestion | userId={} | conferenceId={}",
+                userId,
+                request.getConferenceId()
+        );
+
+        return ResponseEntity.ok(
+                aiProxyService.suggestAssignments(request, userId, request.getConferenceId())
+        );
     }
 
     @PostMapping("/draft-email")
     @PreAuthorize("hasAnyRole('CHAIR', 'TRACK_CHAIR')")
     public ResponseEntity<EmailDraftResponse> draftEmail(
             @RequestBody EmailDraftRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
         Long userId = userDetails != null ? userDetails.getUser().getId() : null;
-        return ResponseEntity.ok(aiProxyService.draftEmail(request, userId, request.getConferenceId()));
+        log.info(
+                "POST /api/ai/draft-email | userId={} | conferenceId={}",
+                userId,
+                request.getConferenceId()
+        );
+
+        return ResponseEntity.ok(
+                aiProxyService.draftEmail(request, userId, request.getConferenceId())
+        );
     }
 
-    // --- Cập nhật kết quả AI (Apply Changes) ---
+    // ================= APPLY AI RESULT =================
+
     @PostMapping("/apply-polish")
     public ResponseEntity<?> applyPolish(
             @RequestBody ApplyPolishRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails != null ? userDetails.getUser().getId() : null;
+        log.info(
+                "POST /api/ai/apply-polish | userId={} | paperId={}",
+                userId,
+                request.getPaperId()
+        );
+
         if (!request.isUserConfirmed()) {
+            log.warn("Apply polish rejected: user not confirmed | userId={}", userId);
             return ResponseEntity.badRequest().body("Người dùng chưa xác nhận thay đổi.");
         }
-        Long userId = userDetails != null ? userDetails.getUser().getId() : null;
+
         if (userId == null) {
+            log.warn("Apply polish unauthorized");
             return ResponseEntity.status(401).body("Unauthorized");
         }
 
-        try {
-            submissionService.updatePaperAbstract(request.getPaperId(), request.getPolishedAbstract(), userId);
+        submissionService.updatePaperAbstract(
+                request.getPaperId(),
+                request.getPolishedAbstract(),
+                userId
+        );
 
-            // Log audit hành động apply?
-            // Có thể thêm log "APPLY_POLISH" vào aiProxyService nếu cần.
-
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Lỗi cập nhật abstract: " + e.getMessage());
-        }
+        log.info("Apply polish success | userId={} | paperId={}", userId, request.getPaperId());
+        return ResponseEntity.ok().build();
     }
 }
