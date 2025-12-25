@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { formatDate, formatDateTime } from "../../utils/dateUtils";
 
 const AuthorPaperReviews = () => {
   const { paperId } = useParams();
@@ -152,19 +153,16 @@ const AuthorPaperReviews = () => {
           }}
         >
           <div>
-            <strong>Hội nghị:</strong> {paper.conference?.name || "N/A"}
+            <strong>Hội nghị:</strong> {paper.conferenceName || "N/A"}
           </div>
           <div>
-            <strong>Track:</strong> {paper.track?.name || "N/A"}
+            <strong>Track:</strong> {paper.trackName || "N/A"}
           </div>
           <div>
             <strong>Trạng thái:</strong> {getStatusBadge(paper.status)}
           </div>
           <div>
-            <strong>Ngày nộp:</strong>{" "}
-            {paper.submittedAt
-              ? new Date(paper.submittedAt).toLocaleDateString()
-              : "N/A"}
+            <strong>Ngày nộp:</strong> {formatDate(paper.createdAt)}
           </div>
         </div>
       </div>
@@ -232,10 +230,7 @@ const AuthorPaperReviews = () => {
             </div>
           )}
           <div style={{ marginTop: "1rem", fontSize: "0.9em", color: "#666" }}>
-            Quyết định vào:{" "}
-            {decision.decidedAt
-              ? new Date(decision.decidedAt).toLocaleString()
-              : "N/A"}
+            Quyết định vào: {formatDateTime(decision.decidedAt)}
           </div>
         </div>
       )}
@@ -298,10 +293,7 @@ const AuthorPaperReviews = () => {
                     color: "#666",
                   }}
                 >
-                  Ngày chấm:{" "}
-                  {review.submittedAt
-                    ? new Date(review.submittedAt).toLocaleString()
-                    : "N/A"}
+                  Ngày chấm: {formatDateTime(review.submittedAt)}
                 </div>
               </div>
             ))}

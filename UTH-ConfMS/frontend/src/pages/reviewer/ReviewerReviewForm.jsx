@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
+import { getToken } from "../../auth";  // ✅ IMPORT getToken
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 
 const ReviewerReviewForm = () => {
@@ -126,6 +127,69 @@ const ReviewerReviewForm = () => {
     }
   };
 
+  const handleDownloadPaper = async () => {
+    try {
+      const token = getToken();  // ✅ SỬA: Dùng getToken() thay vì localStorage.getItem("token")
+      console.log("=== DOWNLOAD PAPER DEBUG ===");
+      console.log("Token exists:", !!token);
+      console.log("Token length:", token ? token.length : 0);
+      console.log("Paper ID:", assignment.paper.id);
+      
+      if (!token) {
+        alert("Vui lòng đăng nhập lại");
+        return;
+      }
+
+      console.log("Fetching PDF from:", `http://localhost:8080/api/submissions/${assignment.paper.id}/download`);
+      
+      const response = await fetch(
+        `http://localhost:8080/api/submissions/${assignment.paper.id}/download`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
+
+      if (!response.ok) {
+        if (response.status === 403) {
+          alert("Bạn không có quyền xem file này");
+        } else if (response.status === 404) {
+          alert("Không tìm thấy file");
+        } else {
+          const errorText = await response.text();
+          console.error("Error response:", errorText);
+          alert("Lỗi khi tải file: " + response.statusText);
+        }
+        return;
+      }
+
+      console.log("Creating blob...");
+      // Open PDF in new tab instead of downloading
+      const blob = await response.blob();
+      console.log("Blob size:", blob.size);
+      console.log("Blob type:", blob.type);
+      
+      const url = window.URL.createObjectURL(blob);
+      console.log("Opening PDF in new tab...");
+      
+      // Open in new tab
+      window.open(url, '_blank');
+      
+      // Clean up after a delay (to allow browser to load the PDF)
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 1000);
+    } catch (err) {
+      console.error("Download error:", err);
+      alert("Lỗi khi mở file: " + err.message);
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout roleLabel="Reviewer / PC" title="Form Review">
@@ -233,7 +297,7 @@ const ReviewerReviewForm = () => {
                 </p>
               </div>
             )}
-            {assignment.paper?.filePath && (
+            {assignment.paper?.id && (
               <div
                 style={{
                   marginTop: "1rem",
@@ -246,10 +310,9 @@ const ReviewerReviewForm = () => {
                 <strong style={{ display: "block", marginBottom: "0.5rem" }}>
                   📄 File bài báo đã nộp:
                 </strong>
-                <a
-                  href={`http://localhost:8080/uploads/submissions/${assignment.paper.filePath}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={handleDownloadPaper}
+                  type="button"
                   style={{
                     display: "inline-block",
                     padding: "0.5rem 1rem",
@@ -258,10 +321,12 @@ const ReviewerReviewForm = () => {
                     textDecoration: "none",
                     borderRadius: "4px",
                     fontWeight: "600",
+                    border: "none",
+                    cursor: "pointer",
                   }}
                 >
-                  🔗 Mở/Tải xuống file bài báo
-                </a>
+                  � XemT file bài báo
+                </button>
                 <p
                   style={{
                     marginTop: "0.5rem",
