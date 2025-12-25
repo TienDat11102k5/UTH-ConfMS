@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
+import AdminLayout from "../../components/Layout/AdminLayout";
 import {
   getFeatureFlags,
   enableFeature,
@@ -99,8 +99,7 @@ const AiGovernancePage = () => {
   };
 
   return (
-    <DashboardLayout
-      roleLabel="Site Administrator"
+    <AdminLayout
       title="AI Governance"
       subtitle="Bật/tắt tính năng AI và theo dõi lịch sử sử dụng (demo)."
     >
@@ -215,7 +214,7 @@ const AiGovernancePage = () => {
           )}
         </div>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 };
 

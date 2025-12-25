@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
+import AdminLayout from "../../components/Layout/AdminLayout";
 
 const SmtpConfigPage = () => {
   const [form, setForm] = useState({
@@ -25,9 +25,7 @@ const SmtpConfigPage = () => {
   };
 
   return (
-    <DashboardLayout
-      roleLabel="Site Administrator"
-      title="Cấu hình SMTP"
+    <AdminLayout title="Cấu hình SMTP"
       subtitle="Thiết lập máy chủ gửi mail, tài khoản và bảo mật TLS."
     >
       <div className="data-page-header">
@@ -115,7 +113,7 @@ const SmtpConfigPage = () => {
           </button>
         </div>
       </form>
-    </DashboardLayout>
+    </AdminLayout>
   );
 };
 

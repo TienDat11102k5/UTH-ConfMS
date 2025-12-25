@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
+import AdminLayout from "../../components/Layout/AdminLayout";
 import apiClient from "../../apiClient";
 
 const roles = ["ADMIN", "CHAIR", "REVIEWER", "AUTHOR"];
@@ -118,9 +118,7 @@ const AdminUserCreate = () => {
   };
 
   return (
-    <DashboardLayout
-      roleLabel="Site Administrator"
-      title="Tạo tài khoản"
+    <AdminLayout title="Tạo tài khoản"
       subtitle="Dùng lại API đăng ký để tạo tài khoản LOCAL, sau đó phân quyền theo lựa chọn."
     >
       <div className="data-page-header">
@@ -258,7 +256,7 @@ const AdminUserCreate = () => {
           </div>
         </form>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 };
 

@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
+import AdminLayout from "../../components/Layout/AdminLayout";
+import Pagination from '../../components/Pagination';
+import { usePagination } from '../../hooks/usePagination';
 
 const AdminConferences = () => {
   const [conferences, setConferences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Pagination
+  const { currentPage, setCurrentPage, totalPages, paginatedItems} =
+    usePagination(conferences, 20);
 
   // State cho Modal tạo mới
   const [showModal, setShowModal] = useState(false);
@@ -136,9 +142,7 @@ const AdminConferences = () => {
   };
 
   return (
-    <DashboardLayout
-      roleLabel="Site Administrator"
-      title="Quản lý Hội nghị"
+    <AdminLayout title="Quản lý Hội nghị"
       subtitle="Tạo và quản lý các hội nghị khoa học."
     >
       <div className="data-page-header">
@@ -212,7 +216,7 @@ const AdminConferences = () => {
                 </td>
               </tr>
             ) : (
-              conferences.map((c) => (
+              paginatedItems.map((c) => (
                 <tr key={c.id}>
                   <td>{c.id}</td>
                   <td>
@@ -268,6 +272,18 @@ const AdminConferences = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {!loading && conferences.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={conferences.length}
+          itemsPerPage={20}
+          onPageChange={setCurrentPage}
+          itemName="hội nghị"
+        />
+      )}
 
       {/* --- MODAL FORM TẠO MỚI --- */}
       {showModal && (
@@ -408,7 +424,7 @@ const AdminConferences = () => {
           </div>
         </div>
       )}
-    </DashboardLayout>
+    </AdminLayout>
   );
 };
 

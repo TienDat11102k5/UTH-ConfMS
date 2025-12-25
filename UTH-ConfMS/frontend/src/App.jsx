@@ -51,7 +51,7 @@ import ChairConferenceEdit from "./pages/chair/ChairConferenceEdit.jsx";
 import ChairProceedingsPreview from "./pages/chair/ChairProceedingsPreview.jsx";
 
 // --- Admin Imports ---
-import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
+import AdminDashboardOverview from "./pages/admin/AdminDashboardOverview.jsx";
 import AdminConferences from "./pages/admin/AdminConferences.jsx";
 import AdminConferenceEdit from "./pages/admin/AdminConferenceEdit.jsx";
 import AdminUserEdit from "./pages/admin/AdminUserEdit.jsx";
@@ -305,7 +305,15 @@ const App = () => {
           path="/admin"
           element={
             <ProtectedRoute requiredRole={"ADMIN"}>
-              <AdminDashboard />
+              <AdminDashboardOverview />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute requiredRole={"ADMIN"}>
+              <AdminDashboardOverview />
             </ProtectedRoute>
           }
         />

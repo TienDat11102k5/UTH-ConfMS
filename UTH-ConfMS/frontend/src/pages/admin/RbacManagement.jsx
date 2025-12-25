@@ -1,5 +1,7 @@
 import React from "react";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
+import AdminLayout from "../../components/Layout/AdminLayout";
+import Pagination from '../../components/Pagination';
+import { usePagination } from '../../hooks/usePagination';
 
 const roles = [
   {
@@ -21,10 +23,11 @@ const roles = [
 ];
 
 const RbacManagement = () => {
+  const { currentPage, setCurrentPage, totalPages, paginatedItems } =
+    usePagination(roles, 20);
+
   return (
-    <DashboardLayout
-      roleLabel="Site Administrator"
-      title="Quản lý RBAC"
+    <AdminLayout title="Quản lý RBAC"
       subtitle="Xem nhanh vai trò và quyền mặc định (dữ liệu minh họa)."
     >
       <div className="data-page-header">
@@ -49,7 +52,7 @@ const RbacManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {roles.map((role) => (
+            {paginatedItems.map((role) => (
               <tr key={role.name}>
                 <td>{role.name}</td>
                 <td>
@@ -76,11 +79,21 @@ const RbacManagement = () => {
           </tbody>
         </table>
       </div>
-    </DashboardLayout>
+
+      {roles.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={roles.length}
+          itemsPerPage={20}
+          onPageChange={setCurrentPage}
+          itemName="vai trò"
+        />
+      )}
+    </AdminLayout>
   );
 };
 
 export default RbacManagement;
-
 
 

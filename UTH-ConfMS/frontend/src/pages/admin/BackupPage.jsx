@@ -1,5 +1,7 @@
 import React from "react";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
+import AdminLayout from "../../components/Layout/AdminLayout";
+import Pagination from '../../components/Pagination';
+import { usePagination } from '../../hooks/usePagination';
 
 const backups = [
   {
@@ -17,10 +19,11 @@ const backups = [
 ];
 
 const BackupPage = () => {
+  const { currentPage, setCurrentPage, totalPages, paginatedItems } =
+    usePagination(backups, 20);
+
   return (
-    <DashboardLayout
-      roleLabel="Site Administrator"
-      title="Backup & Restore"
+    <AdminLayout title="Backup & Restore"
       subtitle="Tạo bản sao lưu định kỳ và khôi phục khi cần (dữ liệu demo)."
     >
       <div className="data-page-header">
@@ -81,7 +84,7 @@ const BackupPage = () => {
             </tr>
           </thead>
           <tbody>
-            {backups.map((b) => (
+            {paginatedItems.map((b) => (
               <tr key={b.id}>
                 <td>{b.id}</td>
                 <td>{b.name}</td>
@@ -102,12 +105,22 @@ const BackupPage = () => {
           </tbody>
         </table>
       </div>
-    </DashboardLayout>
+
+      {backups.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={backups.length}
+          itemsPerPage={20}
+          onPageChange={setCurrentPage}
+          itemName="bản sao lưu"
+        />
+      )}
+    </AdminLayout>
   );
 };
 
 export default BackupPage;
-
 
 
 

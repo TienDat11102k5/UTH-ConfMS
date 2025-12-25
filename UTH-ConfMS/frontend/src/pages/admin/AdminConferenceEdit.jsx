@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import apiClient from "../../apiClient";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
+import AdminLayout from "../../components/Layout/AdminLayout";
 
 const AdminConferenceEdit = () => {
   const { id } = useParams();
@@ -128,15 +128,13 @@ const AdminConferenceEdit = () => {
 
   if (loading)
     return (
-      <DashboardLayout title="Đang tải..." roleLabel="Admin">
+      <AdminLayout title="Đang tải...">
         <div className="form-card">Đang tải dữ liệu...</div>
-      </DashboardLayout>
+      </AdminLayout>
     );
 
   return (
-    <DashboardLayout
-      roleLabel="Site Administrator"
-      title={`Sửa Hội Nghị #${id}`}
+    <AdminLayout title={`Sửa Hội Nghị #${id}`}
       subtitle="Cập nhật thông tin chi tiết và danh sách tracks."
     >
       <div className="data-page-header">
@@ -273,7 +271,7 @@ const AdminConferenceEdit = () => {
           </button>
         </div>
       </form>
-    </DashboardLayout>
+    </AdminLayout>
   );
 };
 

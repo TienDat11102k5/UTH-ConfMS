@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import HistoryItem from '../components/HistoryItem';
 import * as historyApi from '../api/historyApi';
+import Pagination from '../components/Pagination';
+import { usePagination } from '../hooks/usePagination';
 import './HistoryPage.css';
 
 const HistoryPage = () => {
@@ -11,6 +13,10 @@ const HistoryPage = () => {
     const [filter, setFilter] = useState('all'); // all, paper, review, system
     const [timeRange, setTimeRange] = useState('all'); // all, today, week, month
     const [stats, setStats] = useState(null);
+
+    // Pagination
+    const { currentPage, setCurrentPage, totalPages, paginatedItems } =
+        usePagination(activities, 20);
 
     // Load stats on mount
     useEffect(() => {
@@ -221,11 +227,22 @@ const HistoryPage = () => {
                     )}
 
                     {!loading && !error && activities.length > 0 && (
-                        <div className="timeline-list">
-                            {activities.map((activity) => (
-                                <HistoryItem key={activity.id} activity={activity} />
-                            ))}
-                        </div>
+                        <>
+                            <div className="timeline-list">
+                                {paginatedItems.map((activity) => (
+                                    <HistoryItem key={activity.id} activity={activity} />
+                                ))}
+                            </div>
+
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                totalItems={activities.length}
+                                itemsPerPage={20}
+                                onPageChange={setCurrentPage}
+                                itemName="hoạt động"
+                            />
+                        </>
                     )}
                 </div>
             </div>

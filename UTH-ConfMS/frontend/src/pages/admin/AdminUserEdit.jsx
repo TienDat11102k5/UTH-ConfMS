@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
+import AdminLayout from "../../components/Layout/AdminLayout";
 import apiClient from "../../apiClient";
 
 const AdminUserEdit = () => {
@@ -101,16 +101,14 @@ const AdminUserEdit = () => {
 
 	if (loading) {
 		return (
-			<DashboardLayout title="Đang tải..." roleLabel="Site Administrator">
+			<AdminLayout title="Đang tải...">
 				<div className="form-card">Đang tải dữ liệu...</div>
-			</DashboardLayout>
+			</AdminLayout>
 		);
 	}
 
 	return (
-		<DashboardLayout
-			roleLabel="Site Administrator"
-			title={`Sửa người dùng #${id}`}
+		<AdminLayout title={`Sửa người dùng #${id}`}
 			subtitle="Trang sửa đơn giản (dùng lại API sẵn có)."
 		>
 			<div className="data-page-header">
@@ -209,7 +207,7 @@ const AdminUserEdit = () => {
 					</button>
 				</div>
 			</div>
-		</DashboardLayout>
+		</AdminLayout>
 	);
 };
 

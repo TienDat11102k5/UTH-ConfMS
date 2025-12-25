@@ -1,5 +1,7 @@
 import React from "react";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
+import AdminLayout from "../../components/Layout/AdminLayout";
+import Pagination from '../../components/Pagination';
+import { usePagination } from '../../hooks/usePagination';
 
 const sampleLogs = [
   {
@@ -26,10 +28,11 @@ const sampleLogs = [
 ];
 
 const AuditLogPage = () => {
+  const { currentPage, setCurrentPage, totalPages, paginatedItems } =
+    usePagination(sampleLogs, 20);
+
   return (
-    <DashboardLayout
-      roleLabel="Site Administrator"
-      title="Audit Logs"
+    <AdminLayout title="Audit Logs"
       subtitle="Theo dõi các thao tác quan trọng để phục vụ kiểm toán (dữ liệu demo)."
     >
       <div className="data-page-header">
@@ -56,7 +59,7 @@ const AuditLogPage = () => {
             </tr>
           </thead>
           <tbody>
-            {sampleLogs.map((log) => (
+            {paginatedItems.map((log) => (
               <tr key={log.id}>
                 <td>{log.id}</td>
                 <td>{log.actor}</td>
@@ -68,12 +71,22 @@ const AuditLogPage = () => {
           </tbody>
         </table>
       </div>
-    </DashboardLayout>
+
+      {sampleLogs.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={sampleLogs.length}
+          itemsPerPage={20}
+          onPageChange={setCurrentPage}
+          itemName="nhật ký"
+        />
+      )}
+    </AdminLayout>
   );
 };
 
 export default AuditLogPage;
-
 
 
 

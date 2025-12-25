@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
+import AdminLayout from "../../components/Layout/AdminLayout";
+import Pagination from '../../components/Pagination';
+import { usePagination } from '../../hooks/usePagination';
 import apiClient from "../../apiClient";
 
 const TenantManagement = () => {
@@ -8,6 +10,8 @@ const TenantManagement = () => {
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const USERS_PER_PAGE = 20;
   const navigate = useNavigate();
 
   const fetchUsers = async () => {
@@ -27,15 +31,26 @@ const TenantManagement = () => {
     fetchUsers();
   }, []);
 
+  // Filter users based on keyword
   const filtered = users.filter(
     (u) =>
       u.name?.toLowerCase().includes(keyword.toLowerCase()) ||
       u.email?.toLowerCase().includes(keyword.toLowerCase())
   );
 
+  // Pagination logic
+  const totalPages = Math.ceil(filtered.length / USERS_PER_PAGE);
+  const startIndex = (currentPage - 1) * USERS_PER_PAGE;
+  const endIndex = startIndex + USERS_PER_PAGE;
+  const paginatedUsers = filtered.slice(startIndex, endIndex);
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [keyword]);
+
   return (
-    <DashboardLayout
-      roleLabel="Site Administrator"
+    <AdminLayout
       title="Quản lý người dùng"
       subtitle="Tìm kiếm, xem nhanh vai trò và trạng thái người dùng trong hệ thống (dữ liệu demo)."
     >
@@ -92,14 +107,14 @@ const TenantManagement = () => {
                   Đang tải...
                 </td>
               </tr>
-            ) : filtered.length === 0 ? (
+            ) : paginatedUsers.length === 0 ? (
               <tr>
                 <td colSpan={6} className="table-empty">
                   Không tìm thấy tài khoản phù hợp.
                 </td>
               </tr>
             ) : (
-              filtered.map((u) => (
+              paginatedUsers.map((u) => (
                 <tr key={u.id}>
                   <td>{u.id}</td>
                   <td>{u.name}</td>
@@ -168,10 +183,73 @@ const TenantManagement = () => {
           </tbody>
         </table>
       </div>
-    </DashboardLayout>
+
+      {/* Pagination Controls */}
+      {!loading && filtered.length > 0 && (
+        <div className="pagination-wrapper">
+          <div className="pagination-info">
+            Hiển thị {startIndex + 1}-{Math.min(endIndex, filtered.length)} trong tổng số {filtered.length} người dùng
+          </div>
+          <div className="pagination-controls">
+            <button
+              className="pagination-btn"
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+            >
+              Đầu
+            </button>
+            <button
+              className="pagination-btn"
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Trước
+            </button>
+
+            {/* Page numbers */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(page => {
+                // Show first page, last page, current page, and 2 pages around current
+                return page === 1 ||
+                  page === totalPages ||
+                  Math.abs(page - currentPage) <= 2;
+              })
+              .map((page, index, array) => {
+                // Add ellipsis if there's a gap
+                const showEllipsisBefore = index > 0 && page - array[index - 1] > 1;
+                return (
+                  <React.Fragment key={page}>
+                    {showEllipsisBefore && <span className="pagination-ellipsis">...</span>}
+                    <button
+                      className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </button>
+                  </React.Fragment>
+                );
+              })}
+
+            <button
+              className="pagination-btn"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Sau
+            </button>
+            <button
+              className="pagination-btn"
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+            >
+              Cuối
+            </button>
+          </div>
+        </div>
+      )}
+    </AdminLayout>
   );
 };
 
 export default TenantManagement;
-
 
