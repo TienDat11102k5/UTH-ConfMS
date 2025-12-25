@@ -15,11 +15,10 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
-    // API: Gửi bài chấm
-    // POST /api/reviews
-    @PreAuthorize("hasAnyAuthority('ROLE_REVIEWER','ROLE_PC')")
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_REVIEWER','ROLE_PC')")
     public ResponseEntity<?> submitReview(@RequestBody ReviewRequestDTO req) {
+        log.info("Submit review - assignmentId={}", req.getAssignmentId());
         try {
             return ResponseEntity.ok(reviewService.submitReview(
                 req.getAssignmentId(),
@@ -29,31 +28,26 @@ public class ReviewController {
                 req.getCommentForPC()
             ));
         } catch (RuntimeException e) {
+            log.error("Submit review failed - assignmentId={}", req.getAssignmentId(), e);
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // API: Lấy tất cả reviews của một paper (Chair xem)
-    // GET /api/reviews/paper/{paperId}
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
     @GetMapping("/paper/{paperId}")
     public ResponseEntity<?> getReviewsByPaper(@PathVariable Long paperId) {
+        log.info("Get reviews by paper - paperId={}", paperId);
         return ResponseEntity.ok(reviewService.getReviewsByPaper(paperId));
     }
 
-    // API: Lấy review của một assignment cụ thể
-    // GET /api/reviews/assignment/{assignmentId}
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR','ROLE_REVIEWER','ROLE_PC')")
     @GetMapping("/assignment/{assignmentId}")
     public ResponseEntity<?> getReviewByAssignment(@PathVariable Long assignmentId) {
+        log.info("Get review by assignment - assignmentId={}", assignmentId);
         return ResponseEntity.ok(reviewService.getReviewByAssignment(assignmentId));
     }
-    
-    // API: Lấy reviews của paper (cho Author xem - chỉ hiển thị commentForAuthor)
-    // GET /api/reviews/paper/{paperId}/for-author
-    @PreAuthorize("isAuthenticated()")
+
     @GetMapping("/paper/{paperId}/for-author")
     public ResponseEntity<?> getReviewsForAuthor(@PathVariable Long paperId) {
+        log.info("Get reviews for author - paperId={}", paperId);
         return ResponseEntity.ok(reviewService.getReviewsForAuthor(paperId));
     }
 }

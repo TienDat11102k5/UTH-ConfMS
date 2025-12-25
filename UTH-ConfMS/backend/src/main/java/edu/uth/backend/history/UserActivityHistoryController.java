@@ -6,6 +6,7 @@ import edu.uth.backend.entity.UserActivityHistory;
 import edu.uth.backend.exception.ResourceNotFoundException;
 import edu.uth.backend.repository.UserRepository;
 import edu.uth.backend.history.dto.UserActivityHistoryDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 /**
  * REST API Controller cho lịch sử hoạt động người dùng
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/history")
 @CrossOrigin(origins = "*")
@@ -40,15 +42,15 @@ public class UserActivityHistoryController {
             Authentication authentication,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
+
         Long userId = getCurrentUserId(authentication);
+        log.info("Get my activities - userId={}, page={}, size={}", userId, page, size);
 
         if (page != null && size != null) {
-            // Với phân trang
             Page<UserActivityHistory> historyPage = historyService.getUserHistory(userId, page, size);
             Page<UserActivityHistoryDTO> dtoPage = historyPage.map(this::convertToDTO);
             return ResponseEntity.ok(dtoPage);
         } else {
-            // Không phân trang
             List<UserActivityHistory> histories = historyService.getUserHistory(userId);
             List<UserActivityHistoryDTO> dtos = histories.stream()
                     .map(this::convertToDTO)
@@ -59,13 +61,15 @@ public class UserActivityHistoryController {
 
     /**
      * Lọc theo loại hoạt động
-     * GET /api/history/my-activities/by-type?type=SUBMIT_PAPER
      */
     @GetMapping("/my-activities/by-type")
     public ResponseEntity<?> getMyActivitiesByType(
             Authentication authentication,
             @RequestParam ActivityType type) {
+
         Long userId = getCurrentUserId(authentication);
+        log.info("Get activities by type - userId={}, type={}", userId, type);
+
         List<UserActivityHistory> histories = historyService.getUserHistoryByType(userId, type);
         List<UserActivityHistoryDTO> dtos = histories.stream()
                 .map(this::convertToDTO)
@@ -74,14 +78,16 @@ public class UserActivityHistoryController {
     }
 
     /**
-     * Lọc theo nhóm hoạt động (paper, review, auth)
-     * GET /api/history/my-activities/by-group?group=paper
+     * Lọc theo nhóm hoạt động
      */
     @GetMapping("/my-activities/by-group")
     public ResponseEntity<?> getMyActivitiesByGroup(
             Authentication authentication,
             @RequestParam String group) {
+
         Long userId = getCurrentUserId(authentication);
+        log.info("Get activities by group - userId={}, group={}", userId, group);
+
         List<UserActivityHistory> histories;
 
         switch (group.toLowerCase()) {
@@ -96,6 +102,7 @@ public class UserActivityHistoryController {
                 histories = historyService.getAuthActivities(userId);
                 break;
             default:
+                log.warn("Invalid activity group - userId={}, group={}", userId, group);
                 return ResponseEntity.badRequest().body("Invalid group: " + group);
         }
 
@@ -107,8 +114,6 @@ public class UserActivityHistoryController {
 
     /**
      * Lọc theo khoảng thời gian
-     * GET
-     * /api/history/my-activities/by-date?from=2025-01-01T00:00:00&to=2025-12-31T23:59:59
      */
     @GetMapping("/my-activities/by-date")
     public ResponseEntity<?> getMyActivitiesByDateRange(
@@ -117,15 +122,18 @@ public class UserActivityHistoryController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
+
         Long userId = getCurrentUserId(authentication);
+        log.info("Get activities by date range - userId={}, from={}, to={}", userId, from, to);
 
         if (page != null && size != null) {
-            Page<UserActivityHistory> historyPage = historyService.getUserHistoryByDateRange(
-                    userId, from, to, page, size);
+            Page<UserActivityHistory> historyPage =
+                    historyService.getUserHistoryByDateRange(userId, from, to, page, size);
             Page<UserActivityHistoryDTO> dtoPage = historyPage.map(this::convertToDTO);
             return ResponseEntity.ok(dtoPage);
         } else {
-            List<UserActivityHistory> histories = historyService.getUserHistoryByDateRange(userId, from, to);
+            List<UserActivityHistory> histories =
+                    historyService.getUserHistoryByDateRange(userId, from, to);
             List<UserActivityHistoryDTO> dtos = histories.stream()
                     .map(this::convertToDTO)
                     .collect(Collectors.toList());
@@ -134,14 +142,16 @@ public class UserActivityHistoryController {
     }
 
     /**
-     * Lấy lịch sử theo preset time range (today, week, month)
-     * GET /api/history/my-activities/recent?range=today
+     * Preset time range
      */
     @GetMapping("/my-activities/recent")
     public ResponseEntity<?> getRecentActivities(
             Authentication authentication,
             @RequestParam(defaultValue = "week") String range) {
+
         Long userId = getCurrentUserId(authentication);
+        log.info("Get recent activities - userId={}, range={}", userId, range);
+
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime;
 
@@ -156,11 +166,12 @@ public class UserActivityHistoryController {
                 startTime = now.minusMonths(1);
                 break;
             default:
+                log.warn("Invalid recent range - userId={}, range={}", userId, range);
                 return ResponseEntity.badRequest().body("Invalid range: " + range);
         }
 
-        List<UserActivityHistory> histories = historyService.getUserHistoryByDateRange(
-                userId, startTime, now);
+        List<UserActivityHistory> histories =
+                historyService.getUserHistoryByDateRange(userId, startTime, now);
         List<UserActivityHistoryDTO> dtos = histories.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -168,15 +179,18 @@ public class UserActivityHistoryController {
     }
 
     /**
-     * Lấy lịch sử liên quan đến một entity cụ thể (ví dụ: paper)
-     * GET /api/history/my-activities/by-entity?entityId=123
+     * Theo entity
      */
     @GetMapping("/my-activities/by-entity")
     public ResponseEntity<?> getMyActivitiesByEntity(
             Authentication authentication,
             @RequestParam Long entityId) {
+
         Long userId = getCurrentUserId(authentication);
-        List<UserActivityHistory> histories = historyService.getUserHistoryByEntity(userId, entityId);
+        log.info("Get activities by entity - userId={}, entityId={}", userId, entityId);
+
+        List<UserActivityHistory> histories =
+                historyService.getUserHistoryByEntity(userId, entityId);
         List<UserActivityHistoryDTO> dtos = histories.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -184,27 +198,32 @@ public class UserActivityHistoryController {
     }
 
     /**
-     * Lấy thống kê số lượng hoạt động
-     * GET /api/history/my-activities/stats
+     * Thống kê
      */
     @GetMapping("/my-activities/stats")
     public ResponseEntity<?> getActivityStats(Authentication authentication) {
+
         Long userId = getCurrentUserId(authentication);
+        log.info("Get activity stats - userId={}", userId);
 
         long totalActivities = historyService.countUserActivities(userId);
-        long paperActivities = historyService.countUserActivitiesByType(userId, ActivityType.SUBMIT_PAPER)
-                + historyService.countUserActivitiesByType(userId, ActivityType.EDIT_PAPER)
-                + historyService.countUserActivitiesByType(userId, ActivityType.WITHDRAW_PAPER)
-                + historyService.countUserActivitiesByType(userId, ActivityType.UPLOAD_CAMERA_READY);
-        long reviewActivities = historyService.countUserActivitiesByType(userId, ActivityType.VIEW_REVIEW)
-                + historyService.countUserActivitiesByType(userId, ActivityType.SUBMIT_REVIEW)
-                + historyService.countUserActivitiesByType(userId, ActivityType.UPDATE_REVIEW);
-        long loginCount = historyService.countUserActivitiesByType(userId, ActivityType.LOGIN);
+        long paperActivities =
+                historyService.countUserActivitiesByType(userId, ActivityType.SUBMIT_PAPER)
+                        + historyService.countUserActivitiesByType(userId, ActivityType.EDIT_PAPER)
+                        + historyService.countUserActivitiesByType(userId, ActivityType.WITHDRAW_PAPER)
+                        + historyService.countUserActivitiesByType(userId, ActivityType.UPLOAD_CAMERA_READY);
+        long reviewActivities =
+                historyService.countUserActivitiesByType(userId, ActivityType.VIEW_REVIEW)
+                        + historyService.countUserActivitiesByType(userId, ActivityType.SUBMIT_REVIEW)
+                        + historyService.countUserActivitiesByType(userId, ActivityType.UPDATE_REVIEW);
+        long loginCount =
+                historyService.countUserActivitiesByType(userId, ActivityType.LOGIN);
 
-        return ResponseEntity.ok(new ActivityStats(totalActivities, paperActivities, reviewActivities, loginCount));
+        return ResponseEntity.ok(
+                new ActivityStats(totalActivities, paperActivities, reviewActivities, loginCount));
     }
 
-    // Helper methods
+    // ================= Helper =================
 
     private Long getCurrentUserId(Authentication authentication) {
         if (authentication == null) {
@@ -237,7 +256,6 @@ public class UserActivityHistoryController {
                 .build();
     }
 
-    // Inner class for stats response
     @lombok.Data
     @lombok.AllArgsConstructor
     static class ActivityStats {

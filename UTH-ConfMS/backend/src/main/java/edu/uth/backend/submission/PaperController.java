@@ -21,7 +21,9 @@ public class PaperController {
     // GET /api/papers
     @GetMapping
     public ResponseEntity<List<Paper>> getAllPapers() {
+        log.info("Get all papers");
         List<Paper> papers = paperRepository.findAll();
+        log.info("Found {} papers", papers.size());
         return ResponseEntity.ok(papers);
     }
 
@@ -29,16 +31,25 @@ public class PaperController {
     // GET /api/papers/{id}
     @GetMapping("/{id}")
     public ResponseEntity<?> getPaperById(@PathVariable Long id) {
+        log.info("Get paper by id={}", id);
         return paperRepository.findById(id)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+            .map(paper -> {
+                log.info("Paper found - paperId={}", paper.getId());
+                return ResponseEntity.ok(paper);
+            })
+            .orElseGet(() -> {
+                log.warn("Paper not found - paperId={}", id);
+                return ResponseEntity.notFound().build();
+            });
     }
 
     // API: Lấy papers theo track
     // GET /api/papers/track/{trackId}
     @GetMapping("/track/{trackId}")
     public ResponseEntity<List<Paper>> getPapersByTrack(@PathVariable Long trackId) {
+        log.info("Get papers by trackId={}", trackId);
         List<Paper> papers = paperRepository.findByTrackId(trackId);
+        log.info("Found {} papers for trackId={}", papers.size(), trackId);
         return ResponseEntity.ok(papers);
     }
 }

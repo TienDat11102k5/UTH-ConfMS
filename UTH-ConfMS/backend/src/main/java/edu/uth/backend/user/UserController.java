@@ -41,10 +41,14 @@ public class UserController {
     @Value("${app.base.url:http://localhost:8080}")
     private String baseUrl;
 
+    // ==================== GET PROFILE ====================
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(Authentication auth) {
+        log.info("Get profile request");
+
         if (auth == null || auth.getPrincipal() == null) {
+            log.warn("Get profile failed - unauthenticated");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Không được phép");
         }
 
@@ -52,19 +56,25 @@ public class UserController {
         User user = userRepository.findByEmail(email).orElse(null);
 
         if (user == null) {
+            log.warn("Get profile failed - user not found, email={}", email);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng");
         }
 
+        log.info("Get profile success - userId={}", user.getId());
         return ResponseEntity.ok(new UserProfileResponse(user));
     }
 
+    // ==================== UPDATE PROFILE ====================
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(
             @Valid @RequestBody UpdateProfileRequest request,
             Authentication auth
     ) {
+        log.info("Update profile request");
+
         if (auth == null || auth.getPrincipal() == null) {
+            log.warn("Update profile failed - unauthenticated");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Không được phép");
         }
 
@@ -72,18 +82,11 @@ public class UserController {
         User user = userRepository.findByEmail(email).orElse(null);
 
         if (user == null) {
+            log.warn("Update profile failed - user not found, email={}", email);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng");
         }
 
-        System.out.println("Đang cập nhật hồ sơ cho người dùng: " + email);
-        System.out.println("Dữ liệu yêu cầu: fullName=" + request.getFullName() + 
-                 ", phone=" + request.getPhone() + 
-                 ", gender=" + request.getGender() +
-                 ", address=" + request.getAddress() +
-                 ", dateOfBirth=" + request.getDateOfBirth() +
-                 ", affiliation=" + request.getAffiliation());
-
-        // Cập nhật hồ sơ người dùng
+        // Update fields
         if (request.getFullName() != null && !request.getFullName().isEmpty()) {
             user.setFullName(request.getFullName());
         }
@@ -107,18 +110,22 @@ public class UserController {
         }
 
         userRepository.save(user);
-        System.out.println("Cập nhật hồ sơ thành công cho người dùng: " + email);
+        log.info("Update profile success - userId={}", user.getId());
 
         return ResponseEntity.ok(new UserProfileResponse(user));
     }
 
+    // ==================== UPLOAD AVATAR ====================
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/upload-avatar")
     public ResponseEntity<?> uploadAvatar(
             @RequestParam("avatar") MultipartFile file,
             Authentication auth
     ) {
+        log.info("Upload avatar request");
+
         if (auth == null || auth.getPrincipal() == null) {
+            log.warn("Upload avatar failed - unauthenticated");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Không được phép");
         }
 
@@ -126,95 +133,102 @@ public class UserController {
         User user = userRepository.findByEmail(email).orElse(null);
 
         if (user == null) {
+            log.warn("Upload avatar failed - user not found, email={}", email);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng");
         }
 
         if (file.isEmpty()) {
+            log.warn("Upload avatar failed - empty file, userId={}", user.getId());
             return ResponseEntity.badRequest().body(Map.of("message", "File trống"));
         }
 
-        // Kiểm tra kích thước file (tối đa 5MB)
         if (file.getSize() > 5 * 1024 * 1024) {
+            log.warn("Upload avatar failed - file too large, userId={}", user.getId());
             return ResponseEntity.badRequest().body(Map.of("message", "Kích thước file vượt quá 5MB"));
         }
 
-        // Kiểm tra loại file
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
+            log.warn("Upload avatar failed - invalid content type, userId={}", user.getId());
             return ResponseEntity.badRequest().body(Map.of("message", "Chỉ chấp nhận file ảnh"));
         }
 
         try {
-            // Tạo thư mục tải lên nếu chưa tồn tại
             Path uploadPath = Path.of(uploadDir, "avatars");
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
 
-            // Tạo tên file duy nhất
             String originalFilename = file.getOriginalFilename();
             String extension = "";
             if (originalFilename != null && originalFilename.contains(".")) {
                 extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             }
-            String filename = UUID.randomUUID().toString() + extension;
 
-            // Lưu file
+            String filename = UUID.randomUUID().toString() + extension;
             Path filePath = uploadPath.resolve(filename);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // Cập nhật URL avatar của người dùng
             String avatarUrl = baseUrl + "/uploads/avatars/" + filename;
             user.setAvatarUrl(avatarUrl);
             userRepository.save(user);
 
+            log.info("Upload avatar success - userId={}", user.getId());
             return ResponseEntity.ok(new UserProfileResponse(user));
 
         } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            log.error("Upload avatar error - userId={}, error={}", user.getId(), e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Tải file thất bại: " + e.getMessage()));
         }
     }
 
+    // ==================== CHANGE PASSWORD ====================
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(
             @RequestBody ChangePasswordRequest request,
             Authentication auth
     ) {
+        log.info("Change password request");
+
         if (auth == null || auth.getPrincipal() == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Không được phép"));
+            log.warn("Change password failed - unauthenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Không được phép"));
         }
 
         String email = auth.getName();
         User user = userRepository.findByEmail(email).orElse(null);
 
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Không tìm thấy người dùng"));
+            log.warn("Change password failed - user not found, email={}", email);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Không tìm thấy người dùng"));
         }
 
-        // Kiểm tra xem người dùng sử dụng xác thực LOCAL
         if (user.getProvider() != User.AuthProvider.LOCAL) {
+            log.warn("Change password failed - non local account, userId={}", user.getId());
             return ResponseEntity.badRequest()
                     .body(Map.of("message", "Không thể đổi mật khẩu cho tài khoản đăng nhập bằng Google"));
         }
 
-        // Xác minh mật khẩu hiện tại
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
+            log.warn("Change password failed - wrong current password, userId={}", user.getId());
             return ResponseEntity.badRequest()
                     .body(Map.of("message", "Mật khẩu hiện tại không đúng"));
         }
 
-        // Kiểm tra mật khẩu mới
         if (request.getNewPassword() == null || request.getNewPassword().length() < 6) {
+            log.warn("Change password failed - new password invalid, userId={}", user.getId());
             return ResponseEntity.badRequest()
                     .body(Map.of("message", "Mật khẩu mới phải có ít nhất 6 ký tự"));
         }
 
-        // Cập nhật mật khẩu
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
 
+        log.info("Change password success - userId={}", user.getId());
         return ResponseEntity.ok(Map.of("message", "Đổi mật khẩu thành công"));
     }
 }
