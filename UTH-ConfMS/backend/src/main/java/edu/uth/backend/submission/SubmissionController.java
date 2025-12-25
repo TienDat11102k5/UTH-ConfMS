@@ -19,7 +19,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,11 +42,17 @@ public class SubmissionController {
 
     @Autowired
     private UserRepository userRepository; // <--- SỬA: Inject Repository trực tiếp
+    
+    @Autowired
+    private edu.uth.backend.repository.ReviewAssignmentRepository reviewAssignmentRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${app.base.url:http://localhost:8080}")
     private String baseUrl;
+
+    @Value("${app.upload.dir:uploads}")
+    private String uploadDir;
 
     // ==================== 1. NỘP BÀI ====================
     @PreAuthorize("isAuthenticated()")
@@ -149,7 +160,113 @@ public class SubmissionController {
         return ResponseEntity.ok("Đã rút bài báo thành công.");
     }
 
+    // ==================== 6. TẢI XUỐNG FILE BÀI BÁO ====================
+    /**
+     * Download paper file - accessible by:
+     * - Paper author (main author)
+     * - Reviewers assigned to this paper
+     * - Chairs and Admins
+     */
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/{id}/download")
+    public ResponseEntity<?> downloadPaper(@PathVariable Long id, Authentication authentication) {
+        try {
+            logger.info("Download request for paper ID: {} by user: {}", id, authentication.getName());
+            
+            // Get paper
+            Paper paper = submissionService.getPaperById(id);
+            
+            // Get current user
+            User currentUser = getCurrentUser(authentication);
+            
+            // Check access permission
+            boolean hasAccess = checkDownloadAccess(paper, currentUser);
+            
+            if (!hasAccess) {
+                logger.warn("User {} denied access to download paper {}", currentUser.getEmail(), id);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Bạn không có quyền tải xuống file này");
+            }
+            
+            // Get file path
+            String filePath = paper.getFilePath();
+            if (filePath == null || filePath.isEmpty()) {
+                logger.error("No file path found for paper {}", id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Không tìm thấy file cho bài báo này");
+            }
+            
+            // Build full path
+            Path path = Paths.get(uploadDir).resolve("submissions").resolve(filePath).normalize();
+            logger.info("Attempting to load file from: {}", path.toAbsolutePath());
+            
+            Resource resource = new UrlResource(path.toUri());
+            
+            if (resource.exists() && resource.isReadable()) {
+                logger.info("File found and readable: {}", resource.getFilename());
+                
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .header(HttpHeaders.CONTENT_DISPOSITION, 
+                                "inline; filename=\"" + resource.getFilename() + "\"")
+                        .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition")
+                        .body(resource);
+            } else {
+                logger.error("File not found or not readable at path: {}", path.toAbsolutePath());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("File không tồn tại hoặc không thể đọc được");
+            }
+            
+        } catch (Exception e) {
+            logger.error("Error downloading paper {}: {}", id, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi khi tải xuống file: " + e.getMessage());
+        }
+    }
+
     // --- HELPER METHODS ---
+    
+    /**
+     * Check if user has permission to download paper file
+     * Access granted to:
+     * - Paper author (main author)
+     * - Reviewers assigned to this paper
+     * - Users with ADMIN, CHAIR, or TRACK_CHAIR role
+     */
+    private boolean checkDownloadAccess(Paper paper, User user) {
+        // 1. Check if user is the main author
+        if (paper.getMainAuthor() != null && paper.getMainAuthor().getId().equals(user.getId())) {
+            logger.info("Access granted: User is main author");
+            return true;
+        }
+        
+        // 2. Check if user has admin/chair role
+        boolean isAdminOrChair = user.getRoles().stream()
+                .anyMatch(role -> {
+                    String roleName = role.getName();
+                    return "ROLE_ADMIN".equals(roleName) || 
+                           "ROLE_CHAIR".equals(roleName) || 
+                           "ROLE_TRACK_CHAIR".equals(roleName);
+                });
+        
+        if (isAdminOrChair) {
+            logger.info("Access granted: User has admin/chair role");
+            return true;
+        }
+        
+        // 3. Check if user is assigned as reviewer for this paper
+        // Query ReviewAssignment table directly
+        boolean isAssignedReviewer = reviewAssignmentRepository
+                .existsByPaperIdAndReviewerId(paper.getId(), user.getId());
+        
+        if (isAssignedReviewer) {
+            logger.info("Access granted: User is assigned reviewer for paper {}", paper.getId());
+            return true;
+        }
+        
+        logger.info("Access denied: User {} has no permission to access paper {}", user.getEmail(), paper.getId());
+        return false;
+    }
 
     private User getCurrentUser(Authentication authentication) {
         if (authentication == null) {
