@@ -3,13 +3,13 @@ package edu.uth.backend.review;
 import edu.uth.backend.review.dto.ReviewRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/reviews")
-@CrossOrigin(origins = "*")
 public class ReviewController {
 
     @Autowired
@@ -17,6 +17,7 @@ public class ReviewController {
 
     // API: Gửi bài chấm
     // POST /api/reviews
+    @PreAuthorize("hasAnyAuthority('ROLE_REVIEWER','ROLE_PC')")
     @PostMapping
     public ResponseEntity<?> submitReview(@RequestBody ReviewRequestDTO req) {
         try {
@@ -34,6 +35,7 @@ public class ReviewController {
 
     // API: Lấy tất cả reviews của một paper (Chair xem)
     // GET /api/reviews/paper/{paperId}
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
     @GetMapping("/paper/{paperId}")
     public ResponseEntity<?> getReviewsByPaper(@PathVariable Long paperId) {
         return ResponseEntity.ok(reviewService.getReviewsByPaper(paperId));
@@ -41,6 +43,7 @@ public class ReviewController {
 
     // API: Lấy review của một assignment cụ thể
     // GET /api/reviews/assignment/{assignmentId}
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR','ROLE_REVIEWER','ROLE_PC')")
     @GetMapping("/assignment/{assignmentId}")
     public ResponseEntity<?> getReviewByAssignment(@PathVariable Long assignmentId) {
         return ResponseEntity.ok(reviewService.getReviewByAssignment(assignmentId));
@@ -48,6 +51,7 @@ public class ReviewController {
     
     // API: Lấy reviews của paper (cho Author xem - chỉ hiển thị commentForAuthor)
     // GET /api/reviews/paper/{paperId}/for-author
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/paper/{paperId}/for-author")
     public ResponseEntity<?> getReviewsForAuthor(@PathVariable Long paperId) {
         return ResponseEntity.ok(reviewService.getReviewsForAuthor(paperId));

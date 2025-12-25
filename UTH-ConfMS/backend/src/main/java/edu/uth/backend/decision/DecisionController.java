@@ -10,7 +10,6 @@ import edu.uth.backend.submission.SubmissionService;
 @Slf4j
 @RestController
 @RequestMapping("/api/decisions")
-@CrossOrigin(origins = "*")
 public class DecisionController {
 
     @Autowired
@@ -21,6 +20,7 @@ public class DecisionController {
 
     // API: Xem điểm trung bình của bài báo (Chair tham khảo)
     // GET /api/decisions/score/{paperId}
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
     @GetMapping("/score/{paperId}")
     public ResponseEntity<?> getAverageScore(@PathVariable Long paperId) {
         return ResponseEntity.ok(decisionService.calculateAverageScore(paperId));
@@ -79,6 +79,7 @@ public class DecisionController {
     
     // API: Lấy decision của một paper (cho Author xem)
     // GET /api/decisions/paper/{paperId}
+    @org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
     @GetMapping("/paper/{paperId}")
     public ResponseEntity<?> getDecisionByPaper(@PathVariable Long paperId) {
         try {
