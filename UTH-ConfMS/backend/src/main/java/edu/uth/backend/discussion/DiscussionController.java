@@ -19,9 +19,13 @@ public class DiscussionController {
     // POST /api/discussions
     @PostMapping
     public ResponseEntity<?> createDiscussion(@RequestBody DiscussionRequestDTO request) {
+        log.info("Create discussion request - paperId={}", request.getPaperId());
         try {
-            return ResponseEntity.ok(discussionService.createDiscussion(request));
+            var result = discussionService.createDiscussion(request);
+            log.info("Create discussion success - discussionId={}", result.getId());
+            return ResponseEntity.ok(result);
         } catch (RuntimeException e) {
+            log.error("Create discussion failed - reason={}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -30,6 +34,7 @@ public class DiscussionController {
     // GET /api/discussions/paper/{paperId}
     @GetMapping("/paper/{paperId}")
     public ResponseEntity<?> getDiscussionsByPaper(@PathVariable Long paperId) {
+        log.info("Get discussions by paper - paperId={}", paperId);
         return ResponseEntity.ok(discussionService.getDiscussionsByPaper(paperId));
     }
 
@@ -37,6 +42,7 @@ public class DiscussionController {
     // GET /api/discussions/paper/{paperId}/root
     @GetMapping("/paper/{paperId}/root")
     public ResponseEntity<?> getRootDiscussions(@PathVariable Long paperId) {
+        log.info("Get root discussions - paperId={}", paperId);
         return ResponseEntity.ok(discussionService.getRootDiscussionsByPaper(paperId));
     }
 
@@ -44,6 +50,7 @@ public class DiscussionController {
     // GET /api/discussions/{parentId}/replies
     @GetMapping("/{parentId}/replies")
     public ResponseEntity<?> getReplies(@PathVariable Long parentId) {
+        log.info("Get replies - parentDiscussionId={}", parentId);
         return ResponseEntity.ok(discussionService.getReplies(parentId));
     }
 
@@ -51,10 +58,13 @@ public class DiscussionController {
     // DELETE /api/discussions/{discussionId}
     @DeleteMapping("/{discussionId}")
     public ResponseEntity<?> deleteDiscussion(@PathVariable Long discussionId) {
+        log.info("Delete discussion request - discussionId={}", discussionId);
         try {
             discussionService.deleteDiscussion(discussionId);
+            log.info("Delete discussion success - discussionId={}", discussionId);
             return ResponseEntity.ok("Discussion đã được ẩn");
         } catch (RuntimeException e) {
+            log.error("Delete discussion failed - discussionId={}, reason={}", discussionId, e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
