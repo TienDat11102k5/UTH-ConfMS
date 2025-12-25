@@ -33,6 +33,8 @@ public class SubmissionService {
     private PaperCoAuthorRepository coAuthorRepo;
     @Autowired
     private ReviewAssignmentRepository reviewAssignmentRepo;
+    @Autowired
+    private edu.uth.backend.history.UserActivityHistoryService activityHistoryService;
 
     @org.springframework.beans.factory.annotation.Value("${app.base.url:http://localhost:8080}")
     private String baseUrl;
@@ -80,6 +82,22 @@ public class SubmissionService {
                 coAuthorRepo.save(coAuthor);
             }
         }
+
+        // Log activity
+        try {
+            activityHistoryService.logActivity(
+                    authorId,
+                    ActivityType.SUBMIT_PAPER,
+                    EntityType.PAPER,
+                    savedPaper.getId(),
+                    "Nộp bài mới: " + title,
+                    activityHistoryService.createPaperMetadata(title, conf.getName(), conf.getId()),
+                    null);
+        } catch (Exception e) {
+            // Don't fail the submission if logging fails
+            System.err.println("Failed to log activity: " + e.getMessage());
+        }
+
         return savedPaper;
     }
 
@@ -125,7 +143,8 @@ public class SubmissionService {
         response.setTitle(paper.getTitle());
         response.setAbstractText(paper.getAbstractText());
         response.setFilePath(paper.getFilePath());
-        if (paper.getStatus() != null) response.setStatus(paper.getStatus().toString());
+        if (paper.getStatus() != null)
+            response.setStatus(paper.getStatus().toString());
         response.setCreatedAt(paper.getCreatedAt());
         response.setUpdatedAt(paper.getUpdatedAt());
 
@@ -152,13 +171,13 @@ public class SubmissionService {
         if (paper.getFilePath() != null && !paper.getFilePath().isBlank()) {
             response.setDownloadUrl(baseUrl + "/uploads/submissions/" + paper.getFilePath());
         }
-        
+
         // Map camera ready fields
         if (paper.getCameraReadyPath() != null && !paper.getCameraReadyPath().isBlank()) {
             response.setCameraReadyPath(paper.getCameraReadyPath());
             response.setCameraReadyDownloadUrl(baseUrl + "/uploads/camera-ready/" + paper.getCameraReadyPath());
         }
-        
+
         return response;
     }
 
@@ -198,7 +217,25 @@ public class SubmissionService {
             }
         }
 
-        return paperRepo.save(paper);
+        Paper updatedPaper = paperRepo.save(paper);
+
+        // Log activity
+        try {
+            Conference confForLog = paper.getTrack().getConference();
+            activityHistoryService.logActivity(
+                    currentUserId,
+                    ActivityType.EDIT_PAPER,
+                    EntityType.PAPER,
+                    paperId,
+                    "Chỉnh sửa bài: " + paper.getTitle(),
+                    activityHistoryService.createPaperMetadata(paper.getTitle(), confForLog.getName(),
+                            confForLog.getId()),
+                    null);
+        } catch (Exception e) {
+            System.err.println("Failed to log activity: " + e.getMessage());
+        }
+
+        return updatedPaper;
     }
 
     // Tách hàm cập nhật Abstract riêng cho AI apply
@@ -231,18 +268,34 @@ public class SubmissionService {
 
         // Check if any reviewer has ACCEPTED the assignment
         List<ReviewAssignment> acceptedAssignments = reviewAssignmentRepo.findByPaperIdAndStatus(
-            paperId, 
-            AssignmentStatus.ACCEPTED
-        );
+                paperId,
+                AssignmentStatus.ACCEPTED);
         if (!acceptedAssignments.isEmpty()) {
             throw new IllegalArgumentException(
-                "Không thể rút bài vì đã có " + acceptedAssignments.size() + 
-                " reviewer chấp nhận chấm bài. Vui lòng liên hệ Chair nếu cần thiết."
-            );
+                    "Không thể rút bài vì đã có " + acceptedAssignments.size() +
+                            " reviewer chấp nhận chấm bài. Vui lòng liên hệ Chair nếu cần thiết.");
         }
 
         paper.setStatus(PaperStatus.WITHDRAWN);
-        return paperRepo.save(paper);
+        Paper withdrawnPaper = paperRepo.save(paper);
+
+        // Log activity
+        try {
+            Conference confForLog = paper.getTrack().getConference();
+            activityHistoryService.logActivity(
+                    currentUserId,
+                    ActivityType.WITHDRAW_PAPER,
+                    EntityType.PAPER,
+                    paperId,
+                    "Rút bài: " + paper.getTitle(),
+                    activityHistoryService.createPaperMetadata(paper.getTitle(), confForLog.getName(),
+                            confForLog.getId()),
+                    null);
+        } catch (Exception e) {
+            System.err.println("Failed to log activity: " + e.getMessage());
+        }
+
+        return withdrawnPaper;
     }
 
     // --- 6. LẤY DANH SÁCH REVIEWER (Dành cho Chair phân công) ---
