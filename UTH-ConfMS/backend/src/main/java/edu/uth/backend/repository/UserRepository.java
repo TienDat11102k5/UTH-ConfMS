@@ -8,8 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends JpaRepository<User, Long> {
   Optional<User> findByEmail(String email);
+
   boolean existsByEmail(String email);
-  
+
   // Tìm users có role REVIEWER hoặc PC
   @Query("SELECT DISTINCT u FROM User u JOIN u.roles r WHERE r.name IN ('ROLE_REVIEWER', 'ROLE_PC')")
   List<User> findAllReviewers();

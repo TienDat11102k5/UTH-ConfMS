@@ -8,12 +8,11 @@ export const usePagination = (items, itemsPerPage = 20) => {
     const endIndex = startIndex + itemsPerPage;
     const paginatedItems = items.slice(startIndex, endIndex);
 
-    // Reset to page 1 when items change, but only if current page is out of bounds
+    // Reset to page 1 when items change
     useEffect(() => {
-        if (currentPage > totalPages && totalPages > 0) {
-            setCurrentPage(1);
-        }
-    }, [items.length, currentPage, totalPages]);
+        setCurrentPage(1);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [items.length]);
 
     return {
         currentPage,

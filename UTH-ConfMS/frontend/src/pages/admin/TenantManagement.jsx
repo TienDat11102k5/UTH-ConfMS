@@ -9,9 +9,6 @@ const TenantManagement = () => {
   const [users, setUsers] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const USERS_PER_PAGE = 20;
   const navigate = useNavigate();
 
   const fetchUsers = async () => {
@@ -21,7 +18,6 @@ const TenantManagement = () => {
       setUsers(res.data || []);
     } catch (err) {
       console.error(err);
-      setError("Không thể tải danh sách người dùng.");
     } finally {
       setLoading(false);
     }
@@ -38,16 +34,9 @@ const TenantManagement = () => {
       u.email?.toLowerCase().includes(keyword.toLowerCase())
   );
 
-  // Pagination logic
-  const totalPages = Math.ceil(filtered.length / USERS_PER_PAGE);
-  const startIndex = (currentPage - 1) * USERS_PER_PAGE;
-  const endIndex = startIndex + USERS_PER_PAGE;
-  const paginatedUsers = filtered.slice(startIndex, endIndex);
-
-  // Reset to page 1 when search changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [keyword]);
+  // Pagination using hook
+  const { currentPage, setCurrentPage, totalPages, paginatedItems: paginatedUsers } =
+    usePagination(filtered, 20);
 
   return (
     <AdminLayout
@@ -184,72 +173,19 @@ const TenantManagement = () => {
         </table>
       </div>
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       {!loading && filtered.length > 0 && (
-        <div className="pagination-wrapper">
-          <div className="pagination-info">
-            Hiển thị {startIndex + 1}-{Math.min(endIndex, filtered.length)} trong tổng số {filtered.length} người dùng
-          </div>
-          <div className="pagination-controls">
-            <button
-              className="pagination-btn"
-              onClick={() => setCurrentPage(1)}
-              disabled={currentPage === 1}
-            >
-              Đầu
-            </button>
-            <button
-              className="pagination-btn"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Trước
-            </button>
-
-            {/* Page numbers */}
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter(page => {
-                // Show first page, last page, current page, and 2 pages around current
-                return page === 1 ||
-                  page === totalPages ||
-                  Math.abs(page - currentPage) <= 2;
-              })
-              .map((page, index, array) => {
-                // Add ellipsis if there's a gap
-                const showEllipsisBefore = index > 0 && page - array[index - 1] > 1;
-                return (
-                  <React.Fragment key={page}>
-                    {showEllipsisBefore && <span className="pagination-ellipsis">...</span>}
-                    <button
-                      className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
-                      onClick={() => setCurrentPage(page)}
-                    >
-                      {page}
-                    </button>
-                  </React.Fragment>
-                );
-              })}
-
-            <button
-              className="pagination-btn"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Sau
-            </button>
-            <button
-              className="pagination-btn"
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
-            >
-              Cuối
-            </button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filtered.length}
+          itemsPerPage={20}
+          onPageChange={setCurrentPage}
+          itemName="người dùng"
+        />
       )}
     </AdminLayout>
   );
 };
 
 export default TenantManagement;
-
