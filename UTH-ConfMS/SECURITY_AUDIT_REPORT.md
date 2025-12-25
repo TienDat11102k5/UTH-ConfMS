@@ -106,3 +106,98 @@ This security audit reviews all API endpoints in the UTH-ConfMS backend to ensur
 
 ---
 
+### 3. ConferenceController ⚠️
+
+**File:** `backend/src/main/java/edu/uth/backend/conference/ConferenceController.java`  
+**Base Path:** `/api/conferences`
+
+| Endpoint | Method | Current Security | Required Security | Status |
+|----------|--------|------------------|-------------------|--------|
+| `/` | GET | ❌ No annotation | Public (anyone can view) | ⚠️ OK but should document |
+| `/{id}` | GET | ❌ No annotation | Public (anyone can view) | ⚠️ OK but should document |
+| `/` | POST | ✅ `@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR')")` | Admin/Chair only | ✅ OK |
+| `/{id}` | PUT | ✅ `@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR')")` | Admin/Chair only | ✅ OK |
+| `/{id}` | DELETE | ✅ `@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR')")` | Admin/Chair only | ✅ OK |
+
+**Current Implementation:**
+- ✅ Write operations (POST, PUT, DELETE) are protected with `@PreAuthorize`
+- ✅ Only ADMIN and CHAIR can create/update/delete conferences
+- ⚠️ Read operations (GET) are public - anyone can view
+- ⚠️ `@CrossOrigin(origins = "*")` - allows all origins (potential security risk)
+
+**Security Features:**
+- ✅ Role-based access control for modifications
+- ✅ Proper use of `@PreAuthorize` annotations
+- ❌ CORS wide open to all origins
+
+**Security Issues:**
+- ⚠️ **CORS misconfiguration** - `@CrossOrigin(origins = "*")` should be restricted
+- ⚠️ GET endpoints are public (this might be intentional for conference listings)
+- ❌ No rate limiting mentioned
+
+**Required Changes:**
+```java
+// Remove or restrict CORS:
+@CrossOrigin(origins = "${cors.allowed.origins}") // Use config
+
+// OR add explicit public annotation to document intent:
+@PreAuthorize("permitAll()")
+@GetMapping
+public ResponseEntity<List<Conference>> getAllConferences() { ... }
+```
+
+**Recommendations:**
+- ❌ Remove `@CrossOrigin(origins = "*")` or restrict to specific origins
+- ✅ Add explicit `@PreAuthorize("permitAll()")` to GET endpoints to document intent
+- ✅ Consider adding pagination for getAllConferences
+- ✅ Consider if conference details should require authentication
+
+**Overall Status:** ⚠️ **NEEDS CORS FIX**
+
+---
+
+### 4. SubmissionController ⚠️
+
+**File:** `backend/src/main/java/edu/uth/backend/submission/SubmissionController.java`  
+**Base Path:** `/api/submissions`
+
+| Endpoint | Method | Current Security | Required Security | Status |
+|----------|--------|------------------|-------------------|--------|
+| `/` | POST | ✅ `@PreAuthorize("isAuthenticated()")` | Authenticated users | ✅ OK |
+| `/{id}` | GET | ✅ `@PreAuthorize("isAuthenticated()")` | Authenticated users | ✅ OK |
+| `/` | GET | ✅ `@PreAuthorize("isAuthenticated()")` | Authenticated users | ✅ OK |
+| `/{id}` | PUT | ✅ `@PreAuthorize("isAuthenticated()")` | Authenticated + ownership check | ✅ OK |
+| `/{id}/withdraw` | POST | ✅ `@PreAuthorize("isAuthenticated()")` | Authenticated + ownership check | ✅ OK |
+
+**Current Implementation:**
+- ✅ All endpoints require authentication with `@PreAuthorize("isAuthenticated()")`
+- ✅ Ownership validation: Only paper author can update/withdraw their submission
+- ✅ Proper authorization checks in business logic
+- ⚠️ `@CrossOrigin(origins = "*")` - allows all origins
+
+**Security Features:**
+- ✅ Authentication required for all operations
+- ✅ Authorization check: `if (!existing.getMainAuthor().getId().equals(currentUser.getId()))`
+- ✅ Input validation for file uploads
+- ✅ User context from Authentication object
+
+**Security Issues:**
+- ⚠️ **CORS misconfiguration** - `@CrossOrigin(origins = "*")` should be restricted
+- ✅ No public endpoints (all require authentication)
+
+**Required Changes:**
+```java
+// Remove or restrict CORS:
+@CrossOrigin(origins = "${cors.allowed.origins}")
+```
+
+**Recommendations:**
+- ❌ Fix CORS configuration
+- ✅ Security implementation is solid
+- ✅ Consider adding file size/type validation at controller level
+- ✅ Consider rate limiting for file uploads
+
+**Overall Status:** ⚠️ **NEEDS CORS FIX** (Security logic is good)
+
+---
+

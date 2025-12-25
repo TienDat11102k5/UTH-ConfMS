@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/submissions")
-@CrossOrigin(origins = "*")
 public class SubmissionController {
 
     private static final Logger logger = LoggerFactory.getLogger(SubmissionController.class);

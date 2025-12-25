@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,7 @@ public class UserController {
     @Value("${app.base.url:http://localhost:8080}")
     private String baseUrl;
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(Authentication auth) {
         if (auth == null || auth.getPrincipal() == null) {
@@ -56,6 +58,7 @@ public class UserController {
         return ResponseEntity.ok(new UserProfileResponse(user));
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(
             @Valid @RequestBody UpdateProfileRequest request,
@@ -109,6 +112,7 @@ public class UserController {
         return ResponseEntity.ok(new UserProfileResponse(user));
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/upload-avatar")
     public ResponseEntity<?> uploadAvatar(
             @RequestParam("avatar") MultipartFile file,
@@ -172,6 +176,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(
             @RequestBody ChangePasswordRequest request,

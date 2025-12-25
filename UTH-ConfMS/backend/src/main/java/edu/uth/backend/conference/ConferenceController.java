@@ -9,7 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @Slf4j
 @RestController
 @RequestMapping("/api/conferences")
-@CrossOrigin(origins = "*")
 public class ConferenceController {
 
     @Autowired
