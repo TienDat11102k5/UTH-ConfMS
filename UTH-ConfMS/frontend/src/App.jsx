@@ -10,6 +10,7 @@ import VerifyOtpPage from "./pages/VerifyOtpPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import UserProfilePage from "./pages/UserProfilePage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
+import HistoryPage from "./pages/HistoryPage.jsx";
 import NotFoundPage from "./pages/NotFound.jsx";
 import UnauthorizedPage from "./pages/Unauthorized.jsx";
 import PublicHomePage from "./pages/public/PublicHomePage.jsx";
@@ -99,6 +100,7 @@ const App = () => {
         {/* User Profile */}
         <Route path="/profile" element={<UserProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/history" element={<HistoryPage />} />
 
         {/* Author */}
         <Route path="/author" element={<ConferenceList />} />
