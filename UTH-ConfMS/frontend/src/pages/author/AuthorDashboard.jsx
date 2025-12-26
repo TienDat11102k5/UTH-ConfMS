@@ -51,7 +51,7 @@ const AuthorDashboard = () => {
   return (
     <DashboardLayout
       roleLabel="Author"
-      title="Bảng điều khiển Tác giả"
+      title="Cổng thông tin Tác giả"
       subtitle="Quản lý bài nộp, theo dõi trạng thái phản biện và tải lên bản camera-ready cho hội nghị hiện tại."
     >
       <div className="dash-grid">
