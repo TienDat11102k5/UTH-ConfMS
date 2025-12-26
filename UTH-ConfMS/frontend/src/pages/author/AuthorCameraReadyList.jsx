@@ -103,7 +103,7 @@ const AuthorCameraReadyList = () => {
                     <tr key={s.id}>
                       <td>{s.id}</td>
                       <td>{s.title}</td>
-                      <td>{s.conferenceName || (s.conferenceId ? `Hội nghị #${s.conferenceId}` : "-")}</td>
+                      <td>{s.conferenceName || s.conferenceId}</td>
                       <td>{s.status}</td>
                       <td style={{ display: "flex", gap: 8 }}>
                         <Link
