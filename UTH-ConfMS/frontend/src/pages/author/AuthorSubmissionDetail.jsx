@@ -13,6 +13,16 @@ const formatDate = (value) => {
   }
 };
 
+const getStatusClass = (status) => {
+  if (!status) return "secondary";
+  const s = status.toUpperCase();
+  if (s === "ACCEPTED") return "success";
+  if (s === "REJECTED") return "danger";
+  if (s === "UNDER_REVIEW") return "info";
+  if (s === "WITHDRAWN") return "warning";
+  return "secondary";
+};
+
 const AuthorSubmissionDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -188,218 +198,196 @@ const AuthorSubmissionDetail = () => {
               </p>
             </div>
             <div className="data-page-header-right">
-              <div style={{ textAlign: "right" }}>
-                <div style={{ marginBottom: 6 }}>
-                  <strong>Trạng thái: </strong>
-                  <span>{submission.status || submission.reviewStatus}</span>
-                </div>
-                <div style={{ fontSize: "0.9rem", color: "#666" }}>
+              <div className="status-badge-wrapper">
+                <span className={`badge badge-${getStatusClass(submission.status || submission.reviewStatus)}`}>
+                  {submission.status || submission.reviewStatus}
+                </span>
+                <div className="status-date">
                   Cập nhật: {formatDate(submission.updatedAt)}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="form-card" style={{ marginTop: "1rem" }}>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "2fr 1fr",
-                gap: 16,
-              }}
-            >
-              <div>
-                <div style={{ marginBottom: "1rem" }}>
-                  <strong>Abstract</strong>
-                  <p style={{ whiteSpace: "pre-wrap" }}>
+          <div className="detail-grid">
+            {/* Main Content */}
+            <div className="detail-main">
+              <div className="detail-card">
+                <div className="detail-card-header">
+                  <h3>Abstract</h3>
+                </div>
+                <div className="detail-card-body">
+                  <p className="abstract-text">
                     {submission.abstractText || submission.abstract}
                   </p>
                 </div>
+              </div>
 
-                {submission.downloadUrl && (
-                  <div style={{ marginBottom: "1rem" }}>
+              {submission.downloadUrl && (
+                <div className="detail-card">
+                  <div className="detail-card-header">
+                    <h3>File bài báo</h3>
+                  </div>
+                  <div className="detail-card-body">
                     <a
                       href={submission.downloadUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="btn-secondary"
+                      className="btn-primary"
                     >
                       Tải file bài báo
                     </a>
                   </div>
-                )}
+                </div>
+              )}
 
-                {/* Reviews preview */}
-                {reviews && reviews.length > 0 && (
-                  <div style={{ marginTop: 12 }}>
-                    <h4>Kết quả chấm ({reviews.length})</h4>
+              {/* Reviews preview */}
+              {reviews && reviews.length > 0 && (
+                <div className="detail-card">
+                  <div className="detail-card-header">
+                    <h3>Kết quả chấm ({reviews.length})</h3>
+                  </div>
+                  <div className="detail-card-body">
                     {reviews.slice(0, 3).map((r, idx) => (
-                      <div
-                        key={r.id || idx}
-                        style={{
-                          padding: "10px",
-                          background: "#f8fafc",
-                          borderRadius: 6,
-                          marginBottom: 8,
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                          }}
-                        >
+                      <div key={r.id || idx} className="review-preview">
+                        <div className="review-preview-header">
                           <strong>Review #{idx + 1}</strong>
-                          <span style={{ color: "#444" }}>
+                          <span className="review-score">
                             Score: {r.score}
                           </span>
                         </div>
                         {r.commentForAuthor && (
-                          <div style={{ marginTop: 6, whiteSpace: "pre-wrap" }}>
+                          <div className="review-preview-comment">
                             {r.commentForAuthor}
                           </div>
                         )}
                       </div>
                     ))}
                     {reviews.length > 3 && (
-                      <div style={{ marginTop: 6 }}>
-                        <button
-                          className="btn-secondary"
-                          onClick={() =>
-                            navigate(
-                              `/author/submissions/${submission.id}/reviews`
-                            )
-                          }
-                        >
-                          Xem tất cả reviews
-                        </button>
-                      </div>
+                      <button
+                        className="btn-secondary"
+                        onClick={() =>
+                          navigate(
+                            `/author/submissions/${submission.id}/reviews`
+                          )
+                        }
+                      >
+                        Xem tất cả reviews
+                      </button>
                     )}
                   </div>
-                )}
+                </div>
+              )}
 
-                {/* Decision preview - chỉ hiển thị khi đã có quyết định cuối cùng */}
-                {decision &&
-                  (decision.status === "ACCEPTED" ||
-                    decision.status === "REJECTED") && (
-                    <div
-                      style={{
-                        marginTop: 16,
-                        padding: 12,
-                        borderRadius: 6,
-                        background:
-                          decision.status === "ACCEPTED"
-                            ? "#e8f5e9"
-                            : "#ffebee",
-                      }}
-                    >
-                      <h4 style={{ margin: 0 }}>
+              {/* Decision preview */}
+              {decision &&
+                (decision.status === "ACCEPTED" ||
+                  decision.status === "REJECTED") && (
+                  <div className={`detail-card decision-card decision-${decision.status.toLowerCase()}`}>
+                    <div className="detail-card-header">
+                      <h3>
                         {decision.status === "ACCEPTED"
-                          ? "✅ Chấp nhận"
-                          : "❌ Từ chối"}
-                      </h4>
+                          ? "Chấp nhận"
+                          : "Từ chối"}
+                      </h3>
+                    </div>
+                    <div className="detail-card-body">
                       {decision.comment && (
-                        <div style={{ marginTop: 6, whiteSpace: "pre-wrap" }}>
+                        <div className="decision-comment">
                           {decision.comment}
                         </div>
                       )}
-                      <div
-                        style={{
-                          marginTop: 8,
-                          fontSize: "0.9rem",
-                          color: "#666",
-                        }}
-                      >
+                      <div className="decision-date">
                         Quyết định:{" "}
                         {decision.decidedAt
                           ? new Date(decision.decidedAt).toLocaleString()
                           : "N/A"}
                       </div>
                     </div>
-                  )}
-              </div>
+                  </div>
+                )}
+            </div>
 
-              <div>
-                <div
-                  style={{
-                    marginBottom: 12,
-                    padding: 10,
-                    background: "#fafafa",
-                    borderRadius: 6,
-                  }}
-                >
-                  <div style={{ fontWeight: 600, marginBottom: 6 }}>
-                    Thông tin
+            {/* Sidebar */}
+            <div className="detail-sidebar">
+              <div className="detail-card">
+                <div className="detail-card-header">
+                  <h3>Thông tin</h3>
+                </div>
+                <div className="detail-card-body">
+                  <div className="info-item">
+                    <span className="info-label">Hội nghị:</span>
+                    <span className="info-value">
+                      {submission.conferenceName || (submission.conferenceId ? `Hội nghị #${submission.conferenceId}` : "N/A")}
+                    </span>
                   </div>
-                  <div>
-                    <strong>Hội nghị:</strong>{" "}
-                    {submission.conferenceName ||
-                      submission.conferenceId ||
-                      "N/A"}
+                  <div className="info-item">
+                    <span className="info-label">Track:</span>
+                    <span className="info-value">
+                      {submission.trackName || submission.trackId || "N/A"}
+                    </span>
                   </div>
-                  <div>
-                    <strong>Track:</strong>{" "}
-                    {submission.trackName || submission.trackId || "N/A"}
+                  <div className="info-item">
+                    <span className="info-label">Trạng thái:</span>
+                    <span className="info-value">
+                      {submission.status || submission.reviewStatus || "-"}
+                    </span>
                   </div>
-                  <div>
-                    <strong>Trạng thái:</strong>{" "}
-                    {submission.status || submission.reviewStatus || "-"}
+                  <div className="info-item">
+                    <span className="info-label">Ngày nộp:</span>
+                    <span className="info-value">
+                      {formatDate(submission.submittedAt || submission.createdAt)}
+                    </span>
                   </div>
-                  <div>
-                    <strong>Ngày nộp:</strong>{" "}
-                    {formatDate(submission.submittedAt || submission.createdAt)}
-                  </div>
-                  <div>
-                    <strong>Cập nhật:</strong>{" "}
-                    {formatDate(submission.updatedAt)}
+                  <div className="info-item">
+                    <span className="info-label">Cập nhật:</span>
+                    <span className="info-value">
+                      {formatDate(submission.updatedAt)}
+                    </span>
                   </div>
                 </div>
+              </div>
 
-                <div
-                  style={{
-                    marginBottom: 12,
-                    padding: 10,
-                    background: "#fafafa",
-                    borderRadius: 6,
-                  }}
-                >
-                  <div style={{ fontWeight: 600, marginBottom: 6 }}>
-                    Tác giả
-                  </div>
-                  <div>
-                    <strong>
-                      {submission.authorName || submission.ownerName || "Bạn"}
-                    </strong>
+              <div className="detail-card">
+                <div className="detail-card-header">
+                  <h3>Tác giả</h3>
+                </div>
+                <div className="detail-card-body">
+                  <div className="author-main">
+                    {submission.authorName || submission.ownerName || "Bạn"}
                   </div>
                   {submission.coAuthors && submission.coAuthors.length > 0 && (
-                    <div style={{ marginTop: 8 }}>
-                      <div style={{ fontWeight: 500 }}>Đồng tác giả:</div>
-                      <ul style={{ margin: "6px 0 0 18px" }}>
+                    <div className="coauthors-section">
+                      <div className="coauthors-label">Đồng tác giả:</div>
+                      <ul className="coauthors-list">
                         {submission.coAuthors.map((c, i) => (
-                          <li key={i}>
-                            {c.name || c.fullName}{" "}
-                            {c.email ? `— ${c.email}` : ""}
-                            {c.affiliation ? ` (${c.affiliation})` : ""}
+                          <li key={i} className="coauthor-item">
+                            <div className="coauthor-name">
+                              {c.name || c.fullName}
+                            </div>
+                            {c.email && (
+                              <div className="coauthor-email">{c.email}</div>
+                            )}
+                            {c.affiliation && (
+                              <div className="coauthor-affiliation">
+                                {c.affiliation}
+                              </div>
+                            )}
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
                 </div>
+              </div>
 
-                {submission.keywords && (
-                  <div
-                    style={{
-                      padding: 10,
-                      background: "#fafafa",
-                      borderRadius: 6,
-                    }}
-                  >
-                    <div style={{ fontWeight: 600, marginBottom: 6 }}>
-                      Từ khóa
-                    </div>
-                    <div>
+              {submission.keywords && (
+                <div className="detail-card">
+                  <div className="detail-card-header">
+                    <h3>Từ khóa</h3>
+                  </div>
+                  <div className="detail-card-body">
+                    <div className="keywords-list">
                       {(submission.keywords || "")
                         .toString()
                         .split(/[;,]+/)
@@ -407,99 +395,88 @@ const AuthorSubmissionDetail = () => {
                         .filter(Boolean)
                         .slice(0, 10)
                         .map((k, i) => (
-                          <span
-                            key={i}
-                            style={{
-                              display: "inline-block",
-                              background: "#eef2ff",
-                              color: "#1e3a8a",
-                              padding: "4px 8px",
-                              borderRadius: 4,
-                              marginRight: 6,
-                              marginBottom: 6,
-                            }}
-                          >
+                          <span key={i} className="keyword-tag">
                             {k}
                           </span>
                         ))}
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
+          </div>
 
-            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-              {submission.status === "SUBMITTED" && (
-                <button
-                  className="btn-secondary"
-                  onClick={() =>
-                    navigate(`/author/submissions/${submission.id}/edit`)
-                  }
-                >
-                  Sửa
-                </button>
-              )}
+          <div className="detail-actions">
+            {submission.status === "SUBMITTED" && (
+              <button
+                className="btn-secondary"
+                onClick={() =>
+                  navigate(`/author/submissions/${submission.id}/edit`)
+                }
+              >
+                Sửa
+              </button>
+            )}
 
-              {(submission.status === "SUBMITTED" ||
-                submission.status === "UNDER_REVIEW") && (
-                <button
-                  className="btn-secondary"
-                  disabled={withdrawing}
-                  onClick={handleWithdraw}
-                >
-                  {withdrawing ? "Đang rút..." : "Rút bài"}
-                </button>
-              )}
+            {(submission.status === "SUBMITTED" ||
+              submission.status === "UNDER_REVIEW") && (
+              <button
+                className="btn-secondary btn-danger"
+                disabled={withdrawing}
+                onClick={handleWithdraw}
+              >
+                {withdrawing ? "Đang rút..." : "Rút bài"}
+              </button>
+            )}
 
-              {(submission.status === "ACCEPTED" ||
-                submission.status === "REJECTED") && (
+            {(submission.status === "ACCEPTED" ||
+              submission.status === "REJECTED") && (
+              <button
+                className="btn-primary"
+                onClick={() =>
+                  navigate(`/author/submissions/${submission.id}/reviews`)
+                }
+              >
+                Xem Reviews
+              </button>
+            )}
+
+            {submission.status === "ACCEPTED" &&
+              !submission.cameraReadyPath &&
+              !submission.cameraReadyDownloadUrl && (
                 <button
                   className="btn-primary"
                   onClick={() =>
-                    navigate(`/author/submissions/${submission.id}/reviews`)
+                    navigate(
+                      `/author/submissions/${submission.id}/camera-ready`
+                    )
                   }
                 >
-                  Xem Reviews
+                  Upload Camera-Ready
                 </button>
               )}
 
-              {submission.status === "ACCEPTED" &&
-                !submission.cameraReadyPath &&
-                !submission.cameraReadyDownloadUrl && (
-                  <button
-                    className="btn-primary"
-                    onClick={() =>
-                      navigate(
-                        `/author/submissions/${submission.id}/camera-ready`
-                      )
-                    }
-                  >
-                    Upload Camera-Ready
-                  </button>
-                )}
+            {submission.status === "ACCEPTED" &&
+              (submission.cameraReadyPath ||
+                submission.cameraReadyDownloadUrl) && (
+                <a
+                  href={
+                    submission.cameraReadyDownloadUrl ||
+                    (submission.cameraReadyPath
+                      ? `/uploads/camera-ready/${submission.cameraReadyPath}`
+                      : "#")
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary"
+                >
+                  Đã nộp camera-ready — Tải về
+                </a>
+              )}
 
-              {submission.status === "ACCEPTED" &&
-                (submission.cameraReadyPath ||
-                  submission.cameraReadyDownloadUrl) && (
-                  <a
-                    href={
-                      submission.cameraReadyDownloadUrl ||
-                      (submission.cameraReadyPath
-                        ? `/uploads/camera-ready/${submission.cameraReadyPath}`
-                        : "#")
-                    }
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn-secondary"
-                  >
-                    Đã nộp camera-ready — Tải về
-                  </a>
-                )}
-
-              <button className="btn-secondary" onClick={() => navigate(-1)}>
-                Quay lại
-              </button>
-            </div>
+            <button className="btn-secondary" onClick={() => navigate(-1)}>
+              Quay lại
+            </button>
           </div>
         </section>
       </main>

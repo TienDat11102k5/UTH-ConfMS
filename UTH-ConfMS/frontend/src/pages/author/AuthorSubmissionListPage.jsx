@@ -150,6 +150,16 @@ const AuthorSubmissionListPage = () => {
     }
   };
 
+  const getStatusClass = (status) => {
+    if (!status) return "secondary";
+    const s = status.toUpperCase();
+    if (s === "ACCEPTED") return "success";
+    if (s === "REJECTED") return "danger";
+    if (s === "UNDER_REVIEW") return "info";
+    if (s === "WITHDRAWN") return "warning";
+    return "secondary";
+  };
+
   return (
     <div className="dash-page">
       <PortalHeader ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
@@ -169,7 +179,7 @@ const AuthorSubmissionListPage = () => {
               <h1 className="data-page-title">Bài nộp của tôi</h1>
               <p className="data-page-subtitle">
                 {confId
-                  ? `Đang lọc theo hội nghị ID #${confId}`
+                  ? `Đang lọc theo hội nghị: ${conferences.find(c => c.id === parseInt(confId))?.name || `ID #${confId}`}`
                   : "Xem danh sách bài nộp, trạng thái review và quyết định."}
               </p>
             </div>
@@ -185,23 +195,10 @@ const AuthorSubmissionListPage = () => {
           </div>
 
           {/* Bộ lọc theo hội nghị */}
-          <div
-            style={{
-              marginBottom: "1rem",
-              padding: "10px 12px",
-              border: "1px solid #e5e7eb",
-              borderRadius: "10px",
-              background: "#fafafa",
-              display: "flex",
-              gap: "12px",
-              alignItems: "center",
-              flexWrap: "wrap",
-            }}
-          >
-            <div style={{ fontWeight: 500 }}>Lọc theo hội nghị:</div>
+          <div className="filter-section">
+            <div className="filter-label">Lọc theo hội nghị:</div>
             <select
-              className="select-input"
-              style={{ minWidth: 240, maxWidth: 360 }}
+              className="select-input filter-select"
               value={confId || ""}
               onChange={(e) => {
                 const value = e.target.value;
@@ -215,20 +212,20 @@ const AuthorSubmissionListPage = () => {
               <option value="">Tất cả hội nghị</option>
               {conferences.map((conf) => (
                 <option key={conf.id} value={conf.id}>
-                  {conf.name || `Conference #${conf.id}`}
+                  {conf.name || conf.shortName || `Hội nghị #${conf.id}`}
                 </option>
               ))}
             </select>
 
             {loadingConfs && (
-              <span style={{ fontSize: "0.9rem", color: "#6b7280" }}>
+              <span className="filter-status">
                 Đang tải danh sách hội nghị...
               </span>
             )}
 
             {confId && (
-              <span style={{ fontSize: "0.9rem", color: "#374151" }}>
-                Đang hiển thị submission cho hội nghị ID #{confId}.
+              <span className="filter-status filter-active">
+                Đang hiển thị submission cho: {conferences.find(c => c.id === parseInt(confId))?.name || `Hội nghị #${confId}`}
               </span>
             )}
           </div>
@@ -285,15 +282,27 @@ const AuthorSubmissionListPage = () => {
 
                 {submissions.map((s) => (
                   <tr key={s.id}>
-                    <td>{s.id}</td>
-                    <td>{s.title}</td>
-                    <td>{s.conferenceName || s.conferenceId || "-"}</td>
-                    <td>{s.trackName || s.trackCode || s.trackId}</td>
-                    <td>{s.status || s.reviewStatus}</td>
-                    <td>{formatDate(s.submittedAt || s.createdAt)}</td>
-                    <td>{formatDate(s.updatedAt)}</td>
                     <td>
-                      <div style={{ display: "flex", gap: 8 }}>
+                      <span className="table-id">#{s.id}</span>
+                    </td>
+                    <td>
+                      <strong className="table-title">{s.title}</strong>
+                    </td>
+                    <td>{s.conferenceName || (s.conferenceId ? `Hội nghị #${s.conferenceId}` : "-")}</td>
+                    <td>
+                      <span className="table-track">
+                        {s.trackName || s.trackCode || s.trackId}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`badge badge-${getStatusClass(s.status || s.reviewStatus)}`}>
+                        {s.status || s.reviewStatus}
+                      </span>
+                    </td>
+                    <td className="table-date">{formatDate(s.submittedAt || s.createdAt)}</td>
+                    <td className="table-date">{formatDate(s.updatedAt)}</td>
+                    <td>
+                      <div className="table-actions">
                         <button
                           type="button"
                           className="btn-secondary table-action"
@@ -328,7 +337,7 @@ const AuthorSubmissionListPage = () => {
                         {(s.status === "SUBMITTED" || s.status === "UNDER_REVIEW") && (
                           <button
                             type="button"
-                            className="btn-secondary table-action"
+                            className="btn-secondary table-action btn-danger"
                             disabled={withdrawingId === s.id}
                             onClick={() => handleWithdraw(s.id)}
                           >
