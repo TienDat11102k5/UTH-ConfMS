@@ -143,11 +143,11 @@ const AuthorSubmissionEditPage = () => {
                   Author submissions
                 </Link>
                 <span className="breadcrumb-separator">/</span>
-                <span className="breadcrumb-current">Sửa submission #{id}</span>
+                <span className="breadcrumb-current">Sửa bài báo #{id}</span>
               </div>
-              <h1 className="data-page-title">Sửa submission</h1>
+              <h1 className="data-page-title">Sửa bài báo</h1>
               <p className="data-page-subtitle">
-                Chỉ cho phép sửa tiêu đề, tóm tắt và file trước deadline / khi
+                Chỉ cho phép sửa tiêu đề, tóm tắt và file trước deadline khi
                 trạng thái còn SUBMITTED.
               </p>
             </div>

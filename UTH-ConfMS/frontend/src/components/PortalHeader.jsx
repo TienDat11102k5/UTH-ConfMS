@@ -9,7 +9,7 @@ import logoUTH from "../assets/logoUTH.jpg";
  */
 const PortalHeader = ({
   ctaHref = "/author/dashboard",
-  ctaText = "Vào Dashboard Tác Giả",
+  ctaText = "Cổng thông tin Tác giả",
 }) => {
   return (
     <header

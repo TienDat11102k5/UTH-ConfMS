@@ -166,14 +166,12 @@ const ConferenceDetail = () => {
             >
               {isPastDeadline ? "Đã quá hạn nộp bài" : "Nộp bài ngay"}
             </Link>
-            <Link to="/author/dashboard" className="btn-secondary">
-              Vào dashboard tác giả
-            </Link>
+       
             <Link
               to={`/author/submissions?confId=${conf.id}`}
               className="btn-secondary"
             >
-              Bài đã nộp cho hội nghị này
+              Bài nộp của tôi
             </Link>
           </div>
         </div>

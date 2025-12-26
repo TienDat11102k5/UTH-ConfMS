@@ -163,7 +163,7 @@ const AuthorSubmissionListPage = () => {
 
   return (
     <div className="dash-page">
-      <PortalHeader ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
+      <PortalHeader ctaHref="/author/dashboard" ctaText="Cổng thông tin Tác giả" />
 
       <main className="dash-main">
         <section className="dash-section">
