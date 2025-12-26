@@ -1,0 +1,299 @@
+/* Reviewer Dashboard Styles */
+
+.reviewer-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.reviewer-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid #e5e7eb;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.reviewer-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.reviewer-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  border-radius: 20px;
+  z-index: 1;
+}
+
+.reviewer-card:hover::before {
+  opacity: 1;
+}
+
+.reviewer-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Card color variations */
+.reviewer-card-teal::before {
+  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+}
+
+.reviewer-card-blue::before {
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+}
+
+.reviewer-card-cyan::before {
+  background: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%);
+}
+
+.reviewer-card-amber::before {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+}
+
+.reviewer-card-icon-wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+.reviewer-card-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.reviewer-card:hover .reviewer-card-icon {
+  transform: rotate(5deg) scale(1.1);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.reviewer-card-icon svg {
+  width: 32px;
+  height: 32px;
+  color: white;
+}
+
+.reviewer-card-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reviewer-card-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.reviewer-card-description {
+  color: #64748b;
+  line-height: 1.7;
+  margin: 0;
+  font-size: 0.95rem;
+  flex-grow: 1;
+}
+
+.reviewer-card-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  background: #f1f5f9;
+  color: #0f172a;
+  text-decoration: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  align-self: flex-start;
+}
+
+.reviewer-card-button:hover {
+  background: #e2e8f0;
+  transform: translateX(4px);
+  border-color: #cbd5e1;
+}
+
+.reviewer-card-button.primary {
+  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+}
+
+.reviewer-card-button.primary:hover {
+  background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+  box-shadow: 0 6px 16px rgba(13, 148, 136, 0.4);
+  border-color: transparent;
+}
+
+.reviewer-button-icon {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.3s ease;
+}
+
+.reviewer-card-button:hover .reviewer-button-icon {
+  transform: translateX(4px);
+}
+
+/* Button colors based on card */
+.reviewer-card-teal .reviewer-card-button:not(.primary) {
+  color: #0d9488;
+}
+
+.reviewer-card-teal .reviewer-card-button:not(.primary):hover {
+  background: #ccfbf1;
+  border-color: #5eead4;
+}
+
+.reviewer-card-blue .reviewer-card-button:not(.primary) {
+  color: #0ea5e9;
+}
+
+.reviewer-card-blue .reviewer-card-button:not(.primary):hover {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+}
+
+.reviewer-card-cyan .reviewer-card-button:not(.primary) {
+  color: #0891b2;
+}
+
+.reviewer-card-cyan .reviewer-card-button:not(.primary):hover {
+  background: #cffafe;
+  border-color: #67e8f9;
+}
+
+.reviewer-card-amber .reviewer-card-button:not(.primary) {
+  color: #f59e0b;
+}
+
+.reviewer-card-amber .reviewer-card-button:not(.primary):hover {
+  background: #fef3c7;
+  border-color: #fcd34d;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .reviewer-dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .reviewer-dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .reviewer-card {
+    padding: 1.5rem;
+    gap: 1.25rem;
+  }
+
+  .reviewer-card-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .reviewer-card-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .reviewer-card-title {
+    font-size: 1.2rem;
+  }
+
+  .reviewer-card-description {
+    font-size: 0.9rem;
+  }
+
+  .reviewer-card-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Animation on load */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reviewer-card {
+  animation: slideInFromBottom 0.6s ease-out backwards;
+}
+
+.reviewer-card:nth-child(1) { animation-delay: 0.1s; }
+.reviewer-card:nth-child(2) { animation-delay: 0.2s; }
+.reviewer-card:nth-child(3) { animation-delay: 0.3s; }
+.reviewer-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* Special highlight for primary card */
+.reviewer-card:first-child {
+  grid-column: span 1;
+}
+
+@media (min-width: 1024px) {
+  .reviewer-card:first-child {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .reviewer-card:first-child .reviewer-card-content {
+    flex-direction: row;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .reviewer-card:first-child .reviewer-card-description {
+    flex-grow: 0;
+    flex-basis: 60%;
+  }
+
+  .reviewer-card:first-child .reviewer-card-button {
+    align-self: center;
+    white-space: nowrap;
+  }
+}
