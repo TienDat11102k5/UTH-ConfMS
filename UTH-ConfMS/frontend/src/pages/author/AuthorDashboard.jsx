@@ -11,7 +11,13 @@ const AuthorDashboard = () => {
       subtitle="Quản lý bài nộp, theo dõi trạng thái phản biện và tải lên bản camera-ready cho hội nghị hiện tại."
     >
       <div className="dash-grid">
-        <div className="dash-card">
+        <div className="dash-card dash-card-primary">
+          <div className="dash-card-header">
+            <div className="dash-card-icon">
+              <span className="card-number">01</span>
+            </div>
+            <div className="dash-card-badge">Submission</div>
+          </div>
           <h3>Nộp bài mới</h3>
           <p>
             Tạo submission mới: nhập tiêu đề, tóm tắt, từ khóa, chọn track/topic và
@@ -22,7 +28,13 @@ const AuthorDashboard = () => {
           </Link>
         </div>
 
-        <div className="dash-card">
+        <div className="dash-card dash-card-secondary">
+          <div className="dash-card-header">
+            <div className="dash-card-icon">
+              <span className="card-number">02</span>
+            </div>
+            <div className="dash-card-badge">Management</div>
+          </div>
           <h3>Danh sách bài đã nộp</h3>
           <p>
             Xem tất cả submission mà bạn là tác giả hoặc đồng tác giả; theo dõi
@@ -33,7 +45,13 @@ const AuthorDashboard = () => {
           </Link>
         </div>
 
-        <div className="dash-card">
+        <div className="dash-card dash-card-tertiary">
+          <div className="dash-card-header">
+            <div className="dash-card-icon">
+              <span className="card-number">03</span>
+            </div>
+            <div className="dash-card-badge">Results</div>
+          </div>
           <h3>Kết quả &amp; review ẩn danh</h3>
           <p>
             Sau khi có quyết định, xem kết quả Accept / Reject và các nhận xét đã
@@ -44,7 +62,13 @@ const AuthorDashboard = () => {
           </Link>
         </div>
 
-        <div className="dash-card">
+        <div className="dash-card dash-card-accent">
+          <div className="dash-card-header">
+            <div className="dash-card-icon">
+              <span className="card-number">04</span>
+            </div>
+            <div className="dash-card-badge">Final Version</div>
+          </div>
           <h3>Camera-ready &amp; bản cuối</h3>
           <p>
             Với bài được Accept, tải lên bản camera-ready, cập nhật metadata cuối
