@@ -3,6 +3,17 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { 
+  FiFileText, 
+  FiClock, 
+  FiCheckCircle, 
+  FiXCircle,
+  FiMessageSquare,
+  FiEye,
+  FiCalendar,
+  FiTag
+} from "react-icons/fi";
+import "../../styles/ReviewerAssignments.css";
 
 const ReviewerAssignments = () => {
   const [assignments, setAssignments] = useState([]);
@@ -72,13 +83,34 @@ const ReviewerAssignments = () => {
 
   const getStatusBadge = (status) => {
     const badges = {
-      PENDING: { text: "Chờ xác nhận", className: "badge-warning" },
-      ACCEPTED: { text: "Đã chấp nhận", className: "badge-success" },
-      DECLINED: { text: "Đã từ chối", className: "badge-danger" },
-      COMPLETED: { text: "Đã hoàn thành", className: "badge-info" },
+      PENDING: { 
+        text: "Chờ xác nhận", 
+        className: "status-badge status-pending",
+        icon: <FiClock />
+      },
+      ACCEPTED: { 
+        text: "Đã chấp nhận", 
+        className: "status-badge status-accepted",
+        icon: <FiCheckCircle />
+      },
+      DECLINED: { 
+        text: "Đã từ chối", 
+        className: "status-badge status-declined",
+        icon: <FiXCircle />
+      },
+      COMPLETED: { 
+        text: "Đã hoàn thành", 
+        className: "status-badge status-completed",
+        icon: <FiCheckCircle />
+      },
     };
     const badge = badges[status] || badges.PENDING;
-    return <span className={`badge ${badge.className}`}>{badge.text}</span>;
+    return (
+      <span className={badge.className}>
+        {badge.icon}
+        {badge.text}
+      </span>
+    );
   };
 
   if (loading) {
@@ -103,95 +135,149 @@ const ReviewerAssignments = () => {
       title="Bài được phân công"
       subtitle="Danh sách các bài báo bạn được phân công phản biện"
     >
-      <div className="data-page-header">
-        <div className="data-page-header-left">
-          <div className="breadcrumb">
-            <span className="breadcrumb-current">Reviewer</span>
+      <div className="assignments-header">
+        <div className="assignments-header-content">
+          <div className="assignments-breadcrumb">
+            <span className="breadcrumb-item">Reviewer</span>
           </div>
-          <h2 className="data-page-title">Bài được phân công</h2>
-          <p className="data-page-subtitle">
+          <h2 className="assignments-title">Bài được phân công</h2>
+          <p className="assignments-subtitle">
             Xem và quản lý các bài báo bạn được phân công phản biện. Chấp nhận
             hoặc từ chối assignment, sau đó tiến hành review.
           </p>
         </div>
+        
+        <div className="assignments-stats">
+          <div className="stat-item">
+            <span className="stat-number">{assignments.length}</span>
+            <span className="stat-label">Tổng số bài</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">
+              {assignments.filter(a => a.status === 'PENDING').length}
+            </span>
+            <span className="stat-label">Chờ xác nhận</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">
+              {assignments.filter(a => a.status === 'ACCEPTED').length}
+            </span>
+            <span className="stat-label">Đang review</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">
+              {assignments.filter(a => a.status === 'COMPLETED').length}
+            </span>
+            <span className="stat-label">Hoàn thành</span>
+          </div>
+        </div>
       </div>
 
-      <div className="table-wrapper">
+      <div className="assignments-content">
         {assignments.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "3rem", color: "#666" }}>
-            Bạn chưa có bài nào được phân công.
+          <div className="assignments-empty">
+            <FiFileText className="empty-icon" />
+            <h3>Chưa có bài phân công</h3>
+            <p>Bạn chưa có bài nào được phân công phản biện.</p>
           </div>
         ) : (
-          <table className="simple-table">
-            <thead>
-              <tr>
-                <th>Tiêu đề</th>
-                <th>Track</th>
-                <th>Ngày phân công</th>
-                <th>Hạn chấm</th>
-                <th>Trạng thái</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {assignments.map((assignment) => (
-                <tr key={assignment.id}>
-                  <td>
-                    <strong>{assignment.paper?.title || "N/A"}</strong>
-                  </td>
-                  <td>{assignment.paper?.track?.name || "N/A"}</td>
-                  <td>{formatDate(assignment.assignedDate)}</td>
-                  <td>{formatDate(assignment.dueDate)}</td>
-                  <td>{getStatusBadge(assignment.status)}</td>
-                  <td>
-                    <div className="inline-actions">
-                      {assignment.status === "PENDING" && (
-                        <>
-                          <button
-                            className="btn-primary table-action"
-                            onClick={() => handleAccept(assignment.id)}
-                          >
-                            Chấp nhận
-                          </button>
-                          <button
-                            className="btn-secondary table-action"
-                            style={{ color: "#d32f2f" }}
-                            onClick={() => handleDecline(assignment.id)}
-                          >
-                            Từ chối
-                          </button>
-                        </>
-                      )}
-                      {assignment.status === "ACCEPTED" && (
-                        <>
-                          <Link
-                            to={`/reviewer/review/${assignment.id}`}
-                            className="btn-primary table-action"
-                          >
-                            Chấm bài
-                          </Link>
-                          <Link
-                            to={`/reviewer/discussions?paperId=${assignment.paper?.id}`}
-                            className="btn-secondary table-action"
-                          >
-                            Thảo luận
-                          </Link>
-                        </>
-                      )}
-                      {assignment.status === "COMPLETED" && (
-                        <Link
-                          to={`/reviewer/review/${assignment.id}`}
-                          className="btn-secondary table-action"
-                        >
-                          Xem review
-                        </Link>
-                      )}
+          <div className="assignments-grid">
+            {assignments.map((assignment) => (
+              <div key={assignment.id} className="assignment-card">
+                <div className="assignment-card-header">
+                  <div className="assignment-icon">
+                    <FiFileText />
+                  </div>
+                  <div className="assignment-header-content">
+                    <h3 className="assignment-title">
+                      {assignment.paper?.title || "N/A"}
+                    </h3>
+                    <div className="assignment-meta">
+                      <span className="meta-item">
+                        <FiTag />
+                        {assignment.paper?.track?.name || "N/A"}
+                      </span>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                </div>
+
+                <div className="assignment-card-body">
+                  <div className="assignment-dates">
+                    <div className="date-item">
+                      <FiCalendar className="date-icon" />
+                      <div className="date-content">
+                        <span className="date-label">Ngày phân công</span>
+                        <span className="date-value">
+                          {formatDate(assignment.assignedDate)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="date-item">
+                      <FiClock className="date-icon deadline" />
+                      <div className="date-content">
+                        <span className="date-label">Hạn chấm</span>
+                        <span className="date-value deadline">
+                          {formatDate(assignment.dueDate)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="assignment-status-row">
+                    {getStatusBadge(assignment.status)}
+                  </div>
+                </div>
+
+                <div className="assignment-card-footer">
+                  {assignment.status === "PENDING" && (
+                    <>
+                      <button
+                        className="assignment-btn btn-accept"
+                        onClick={() => handleAccept(assignment.id)}
+                      >
+                        <FiCheckCircle />
+                        Chấp nhận
+                      </button>
+                      <button
+                        className="assignment-btn btn-decline"
+                        onClick={() => handleDecline(assignment.id)}
+                      >
+                        <FiXCircle />
+                        Từ chối
+                      </button>
+                    </>
+                  )}
+                  {assignment.status === "ACCEPTED" && (
+                    <>
+                      <Link
+                        to={`/reviewer/review/${assignment.id}`}
+                        className="assignment-btn btn-primary"
+                      >
+                        <FiFileText />
+                        Chấm bài
+                      </Link>
+                      <Link
+                        to={`/reviewer/discussions?paperId=${assignment.paper?.id}`}
+                        className="assignment-btn btn-discussion"
+                      >
+                        <FiMessageSquare />
+                        Thảo luận
+                      </Link>
+                    </>
+                  )}
+                  {assignment.status === "COMPLETED" && (
+                    <Link
+                      to={`/reviewer/review/${assignment.id}`}
+                      className="assignment-btn btn-view"
+                    >
+                      <FiEye />
+                      Xem review
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </DashboardLayout>
