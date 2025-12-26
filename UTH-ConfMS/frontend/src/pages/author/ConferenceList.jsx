@@ -5,6 +5,7 @@ import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
 import logoUTH from "../../assets/logoUTH.jpg";
 import "../../styles/ConferenceList.css";
+import "../../styles/AuthorPages.css";
 const ConferenceList = () => {
   const [conferences, setConferences] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -145,21 +146,27 @@ const ConferenceList = () => {
           <div className="conf-grid">
             {conferences.map((conf) => (
               <div key={conf.id} className="conf-card">
-                <div>
+                <div className="conf-card-header">
                   <span className="conf-date">
                     {formatDate(conf.startDate)}
                   </span>
+                  {conf.status && (
+                    <span className={`status-badge ${conf.status.toLowerCase()}`}>
+                      {conf.status}
+                    </span>
+                  )}
                 </div>
 
                 <h3 className="conf-card-title">{conf.name}</h3>
 
                 <p className="conf-card-desc">
                   {conf.description ||
-                    "Hội nghị chuyên sâu về các xu hướng công nghệ mới nhất..."}
+                    "Hội nghị chuyên sâu về các xu hướng công nghệ mới nhất, kết nối các nhà nghiên cứu và chuyên gia hàng đầu trong lĩnh vực."}
                 </p>
 
                 <div className="conf-stats">
-                  <span>{conf.tracks?.length || 0} Chủ đề </span>
+                  <span>{conf.tracks?.length || 0} Chủ đề</span>
+                  {conf.location && <span>• {conf.location}</span>}
                 </div>
 
                 <div className="conf-actions">

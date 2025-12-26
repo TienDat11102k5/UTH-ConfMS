@@ -117,7 +117,7 @@ const ConferenceDetail = () => {
               flexWrap: "wrap",
             }}
           >
-            <div className="badge-soft">Hội nghị · ID #{conf.id}</div>
+            <div className="badge-soft">{conf.name}</div>
             {blindReview && (
               <span className="blind-review-badge" title="Blind Review">
                 Ẩn danh
