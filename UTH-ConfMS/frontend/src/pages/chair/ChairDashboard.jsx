@@ -1,80 +1,106 @@
 // src/pages/chair/ChairDashboard.jsx
 import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/Layout/DashboardLayout.jsx";
+import { 
+  FiSettings, 
+  FiUserCheck, 
+  FiCheckCircle, 
+  FiBarChart2, 
+  FiFileText, 
+  FiBook,
+  FiArrowRight 
+} from "react-icons/fi";
+import "../../styles/ChairDashboard.css";
 
 const ChairDashboard = () => {
+  const dashboardCards = [
+    {
+      id: 1,
+      icon: <FiSettings />,
+      title: "Conference & CFP setup",
+      description: "Quản lý thông tin hội nghị, tạo Call for Papers, cấu hình tracks / topics, deadlines và các mẫu email (invitation, reminder, decision).",
+      link: "/chair/conferences",
+      buttonText: "Cấu hình CFP & tracks",
+      color: "purple",
+      gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+    },
+    {
+      id: 2,
+      icon: <FiUserCheck />,
+      title: "Assignment & tiến độ review",
+      description: "Thực hiện assign Reviewer/PC cho từng bài (thủ công hoặc dựa trên gợi ý), theo dõi tiến độ review, SLA và các bài bị trễ hạn.",
+      link: "/chair/assignments",
+      buttonText: "Quản lý assignment",
+      color: "blue",
+      gradient: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)"
+    },
+    {
+      id: 3,
+      icon: <FiCheckCircle />,
+      title: "Decision & thông báo",
+      description: "Tổng hợp điểm và nhận xét, ghi quyết định Accept / Reject, xử lý borderline, gửi email thông báo hàng loạt với phần feedback ẩn danh.",
+      link: "/chair/decisions",
+      buttonText: "Màn hình quyết định",
+      color: "green",
+      gradient: "linear-gradient(135deg, #059669 0%, #10b981 100%)"
+    },
+    {
+      id: 4,
+      icon: <FiBarChart2 />,
+      title: "Theo dõi tiến độ",
+      description: "Xem tổng quan tiến độ review, số lượng assignment đã hoàn thành, đang chờ và các thống kê khác.",
+      link: "/chair/progress",
+      buttonText: "Xem tiến độ review",
+      color: "orange",
+      gradient: "linear-gradient(135deg, #ea580c 0%, #f97316 100%)"
+    },
+    {
+      id: 5,
+      icon: <FiFileText />,
+      title: "Báo cáo & Export",
+      description: "Xem báo cáo tổng hợp, thống kê theo track, export dữ liệu cho chương trình & kỷ yếu (program / proceedings).",
+      link: "/chair/reports",
+      buttonText: "Xem báo cáo",
+      color: "teal",
+      gradient: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)"
+    },
+    {
+      id: 6,
+      icon: <FiBook />,
+      title: "Proceedings",
+      description: "Xem trước danh sách kỷ yếu, kiểm tra các bài báo đã được chấp nhận, và export proceedings dạng JSON.",
+      link: "/chair/proceedings",
+      buttonText: "Xem Proceedings",
+      color: "indigo",
+      gradient: "linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)"
+    }
+  ];
+
   return (
     <DashboardLayout
       roleLabel="Program / Track Chair"
       title="Bảng điều khiển Program / Track Chair"
-      subtitle="Cấu hình conference &amp; CFP, phân công bài, theo dõi tiến độ review và đưa ra quyết định cuối cùng."
+      subtitle="Cấu hình conference & CFP, phân công bài, theo dõi tiến độ review và đưa ra quyết định cuối cùng."
     >
-      <div className="dash-grid">
-        <div className="dash-card">
-          <h3>Conference &amp; CFP setup</h3>
-          <p>
-            Quản lý thông tin hội nghị, tạo Call for Papers, cấu hình tracks /
-            topics, deadlines và các mẫu email (invitation, reminder, decision).
-          </p>
-          <Link to="/chair/conferences" className="btn-primary">
-            Cấu hình CFP &amp; tracks
-          </Link>
-        </div>
-
-        <div className="dash-card">
-          <h3>Assignment &amp; tiến độ review</h3>
-          <p>
-            Thực hiện assign Reviewer/PC cho từng bài (thủ công hoặc dựa trên
-            gợi ý), theo dõi tiến độ review, SLA và các bài bị trễ hạn.
-          </p>
-          <Link to="/chair/assignments" className="btn-secondary">
-            Quản lý assignment
-          </Link>
-        </div>
-
-        <div className="dash-card">
-          <h3>Decision &amp; thông báo</h3>
-          <p>
-            Tổng hợp điểm và nhận xét, ghi quyết định Accept / Reject, xử lý
-            borderline, gửi email thông báo hàng loạt với phần feedback ẩn danh.
-          </p>
-          <Link to="/chair/decisions" className="btn-secondary">
-            Màn hình quyết định
-          </Link>
-        </div>
-
-        <div className="dash-card">
-          <h3>Theo dõi tiến độ</h3>
-          <p>
-            Xem tổng quan tiến độ review, số lượng assignment đã hoàn thành,
-            đang chờ và các thống kê khác.
-          </p>
-          <Link to="/chair/progress" className="btn-secondary">
-            Xem tiến độ review
-          </Link>
-        </div>
-
-        <div className="dash-card">
-          <h3>Báo cáo &amp; Export</h3>
-          <p>
-            Xem báo cáo tổng hợp, thống kê theo track, export dữ liệu cho chương
-            trình &amp; kỷ yếu (program / proceedings).
-          </p>
-          <Link to="/chair/reports" className="btn-secondary">
-            Xem báo cáo
-          </Link>
-        </div>
-
-        <div className="dash-card">
-          <h3>Proceedings</h3>
-          <p>
-            Xem trước danh sách kỷ yếu, kiểm tra các bài báo đã được chấp nhận,
-            và export proceedings dạng JSON.
-          </p>
-          <Link to="/chair/proceedings" className="btn-secondary">
-            Xem Proceedings
-          </Link>
-        </div>
+      <div className="chair-dashboard-grid">
+        {dashboardCards.map((card) => (
+          <div key={card.id} className={`chair-card chair-card-${card.color}`}>
+            <div className="chair-card-header">
+              <div 
+                className="chair-card-icon"
+                style={{ background: card.gradient }}
+              >
+                {card.icon}
+              </div>
+              <h3 className="chair-card-title">{card.title}</h3>
+            </div>
+            <p className="chair-card-description">{card.description}</p>
+            <Link to={card.link} className="chair-card-button">
+              {card.buttonText}
+              <FiArrowRight className="chair-button-icon" />
+            </Link>
+          </div>
+        ))}
       </div>
     </DashboardLayout>
   );

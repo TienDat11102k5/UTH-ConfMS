@@ -1,0 +1,265 @@
+/* Chair Dashboard Styles */
+
+.chair-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.chair-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.chair-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.chair-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.chair-card:hover::before {
+  opacity: 1;
+}
+
+/* Card Colors */
+.chair-card-purple::before {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.chair-card-blue::before {
+  background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+}
+
+.chair-card-green::before {
+  background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+}
+
+.chair-card-orange::before {
+  background: linear-gradient(90deg, #ea580c 0%, #f97316 100%);
+}
+
+.chair-card-teal::before {
+  background: linear-gradient(90deg, #0d9488 0%, #14b8a6 100%);
+}
+
+.chair-card-indigo::before {
+  background: linear-gradient(90deg, #4f46e5 0%, #6366f1 100%);
+}
+
+.chair-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.chair-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.chair-card-icon svg {
+  width: 28px;
+  height: 28px;
+  color: white;
+}
+
+.chair-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.chair-card-description {
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+.chair-card-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.chair-card-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.chair-card-button:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.chair-card-button:hover::before {
+  opacity: 1;
+}
+
+.chair-card-button span,
+.chair-card-button svg {
+  position: relative;
+  z-index: 1;
+}
+
+.chair-button-icon {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.3s ease;
+}
+
+.chair-card-button:hover .chair-button-icon {
+  transform: translateX(4px);
+}
+
+/* Color variants for buttons */
+.chair-card-purple .chair-card-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.chair-card-purple .chair-card-button:hover {
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.chair-card-blue .chair-card-button {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+}
+
+.chair-card-blue .chair-card-button:hover {
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.chair-card-green .chair-card-button {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+}
+
+.chair-card-green .chair-card-button:hover {
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.chair-card-orange .chair-card-button {
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+}
+
+.chair-card-orange .chair-card-button:hover {
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+}
+
+.chair-card-teal .chair-card-button {
+  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+}
+
+.chair-card-teal .chair-card-button:hover {
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
+}
+
+.chair-card-indigo .chair-card-button {
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+}
+
+.chair-card-indigo .chair-card-button:hover {
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .chair-dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .chair-dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .chair-card {
+    padding: 1.5rem;
+  }
+
+  .chair-card-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .chair-card-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .chair-card-title {
+    font-size: 1.1rem;
+  }
+
+  .chair-card-description {
+    font-size: 0.9rem;
+  }
+}
+
+/* Animation on load */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chair-card {
+  animation: fadeInUp 0.5s ease-out backwards;
+}
+
+.chair-card:nth-child(1) { animation-delay: 0.1s; }
+.chair-card:nth-child(2) { animation-delay: 0.2s; }
+.chair-card:nth-child(3) { animation-delay: 0.3s; }
+.chair-card:nth-child(4) { animation-delay: 0.4s; }
+.chair-card:nth-child(5) { animation-delay: 0.5s; }
+.chair-card:nth-child(6) { animation-delay: 0.6s; }
