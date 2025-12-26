@@ -153,7 +153,7 @@ const AuthorPaperReviews = () => {
           }}
         >
           <div>
-            <strong>Hội nghị:</strong> {paper.conferenceName || "N/A"}
+            <strong>Hội nghị:</strong> {paper.conferenceName || (paper.conferenceId ? `Hội nghị #${paper.conferenceId}` : "N/A")}
           </div>
           <div>
             <strong>Track:</strong> {paper.trackName || "N/A"}
@@ -169,17 +169,9 @@ const AuthorPaperReviews = () => {
 
       {/* Status Messages */}
       {paper.status === "SUBMITTED" && (
-        <div
-          style={{
-            background: "#e3f2fd",
-            border: "1px solid #2196f3",
-            padding: "1rem",
-            borderRadius: "8px",
-            marginBottom: "2rem",
-          }}
-        >
-          <strong>📝 Bài báo đã được nộp thành công</strong>
-          <p style={{ margin: "0.5rem 0 0 0" }}>
+        <div className="status-message status-message-info">
+          <div className="status-message-title">Bài báo đã được nộp thành công</div>
+          <p className="status-message-text">
             Bài báo của bạn đang chờ được phân công cho reviewer. Bạn sẽ nhận
             được thông báo khi có kết quả.
           </p>
@@ -187,17 +179,9 @@ const AuthorPaperReviews = () => {
       )}
 
       {paper.status === "UNDER_REVIEW" && (
-        <div
-          style={{
-            background: "#fff3e0",
-            border: "1px solid #ff9800",
-            padding: "1rem",
-            borderRadius: "8px",
-            marginBottom: "2rem",
-          }}
-        >
-          <strong>⏳ Bài báo đang được chấm</strong>
-          <p style={{ margin: "0.5rem 0 0 0" }}>
+        <div className="status-message status-message-warning">
+          <div className="status-message-title">Bài báo đang được chấm</div>
+          <p className="status-message-text">
             Bài báo của bạn đang được các reviewer chấm điểm. Vui lòng chờ kết
             quả.
           </p>
@@ -206,93 +190,53 @@ const AuthorPaperReviews = () => {
 
       {/* Decision */}
       {decision && (
-        <div
-          style={{
-            background: paper.status === "ACCEPTED" ? "#e8f5e9" : "#ffebee",
-            border:
-              paper.status === "ACCEPTED"
-                ? "1px solid #4caf50"
-                : "1px solid #f44336",
-            padding: "1.5rem",
-            borderRadius: "8px",
-            marginBottom: "2rem",
-          }}
-        >
-          <h3 style={{ marginTop: 0 }}>
-            {paper.status === "ACCEPTED" ? "✅ Chấp nhận" : "❌ Từ chối"}
-          </h3>
-          {decision.comment && (
-            <div>
-              <strong>Nhận xét từ Chair:</strong>
-              <p style={{ marginTop: "0.5rem", whiteSpace: "pre-wrap" }}>
-                {decision.comment}
-              </p>
+        <div className={`decision-card-full decision-${paper.status.toLowerCase()}`}>
+          <div className="decision-card-header">
+            <h3>
+              {paper.status === "ACCEPTED" ? "Chấp nhận" : "Từ chối"}
+            </h3>
+          </div>
+          <div className="decision-card-body">
+            {decision.comment && (
+              <div className="decision-comment-full">
+                <strong>Nhận xét từ Chair:</strong>
+                <p>{decision.comment}</p>
+              </div>
+            )}
+            <div className="decision-date-full">
+              Quyết định vào: {formatDateTime(decision.decidedAt)}
             </div>
-          )}
-          <div style={{ marginTop: "1rem", fontSize: "0.9em", color: "#666" }}>
-            Quyết định vào: {formatDateTime(decision.decidedAt)}
           </div>
         </div>
       )}
 
       {/* Reviews */}
       {reviews.length > 0 && (
-        <div>
-          <h3>Kết quả chấm bài ({reviews.length} reviews)</h3>
-          <div style={{ display: "grid", gap: "1rem", marginTop: "1rem" }}>
+        <div className="reviews-section">
+          <h3 className="reviews-title">Kết quả chấm bài ({reviews.length} reviews)</h3>
+          <div className="reviews-grid">
             {reviews.map((review, index) => (
-              <div
-                key={review.id}
-                className="form-card"
-                style={{ padding: "1.5rem" }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  <h4 style={{ margin: 0 }}>Review #{index + 1}</h4>
-                  <div>
+              <div key={review.id} className="review-card">
+                <div className="review-card-header">
+                  <h4>Review #{index + 1}</h4>
+                  <div className="review-meta">
                     {getScoreBadge(review.score)}
-                    <span
-                      style={{
-                        marginLeft: "0.5rem",
-                        fontSize: "0.9em",
-                        color: "#666",
-                      }}
-                    >
+                    <span className="review-confidence">
                       Confidence: {review.confidenceLevel}/5
                     </span>
                   </div>
                 </div>
 
                 {review.commentForAuthor && (
-                  <div>
+                  <div className="review-comment-section">
                     <strong>Nhận xét:</strong>
-                    <p
-                      style={{
-                        marginTop: "0.5rem",
-                        padding: "1rem",
-                        background: "#f5f5f5",
-                        borderRadius: "4px",
-                        whiteSpace: "pre-wrap",
-                      }}
-                    >
+                    <div className="review-comment-text">
                       {review.commentForAuthor}
-                    </p>
+                    </div>
                   </div>
                 )}
 
-                <div
-                  style={{
-                    marginTop: "1rem",
-                    fontSize: "0.85em",
-                    color: "#666",
-                  }}
-                >
+                <div className="review-date">
                   Ngày chấm: {formatDateTime(review.submittedAt)}
                 </div>
               </div>
@@ -300,17 +244,9 @@ const AuthorPaperReviews = () => {
           </div>
 
           {/* Average Score */}
-          <div
-            style={{
-              marginTop: "2rem",
-              padding: "1rem",
-              background: "#f5f5f5",
-              borderRadius: "8px",
-              textAlign: "center",
-            }}
-          >
+          <div className="average-score-card">
             <strong>Điểm trung bình:</strong>{" "}
-            <span style={{ fontSize: "1.5em", fontWeight: "bold" }}>
+            <span className="average-score-value">
               {(
                 reviews.reduce((sum, r) => sum + r.score, 0) / reviews.length
               ).toFixed(2)}
@@ -322,24 +258,16 @@ const AuthorPaperReviews = () => {
       {/* No Reviews Yet */}
       {reviews.length === 0 &&
         (paper.status === "ACCEPTED" || paper.status === "REJECTED") && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "3rem",
-              color: "#666",
-              background: "#f5f5f5",
-              borderRadius: "8px",
-            }}
-          >
+          <div className="no-reviews-message">
             <p>Chưa có reviews hiển thị.</p>
-            <p style={{ fontSize: "0.9em" }}>
+            <p className="no-reviews-note">
               Reviews có thể được ẩn theo chính sách của hội nghị.
             </p>
           </div>
         )}
 
       {/* Actions */}
-      <div style={{ marginTop: "2rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+      <div className="detail-actions">
         <Link to="/author/submissions" className="btn-secondary">
           Quay lại danh sách
         </Link>
@@ -351,24 +279,12 @@ const AuthorPaperReviews = () => {
                 to={`/author/submissions/${paperId}/camera-ready`}
                 className="btn-primary"
               >
-                📤 Upload Camera-Ready
+                Upload Camera-Ready
               </Link>
             ) : (
               <>
-                <span
-                  style={{
-                    background: "#e8f5e9",
-                    color: "#2e7d32",
-                    padding: "0.75rem 1.25rem",
-                    borderRadius: "8px",
-                    fontWeight: "600",
-                    border: "1px solid #4caf50",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                  }}
-                >
-                  ✅ Đã nộp Camera-Ready
+                <span className="camera-ready-badge">
+                  Đã nộp Camera-Ready
                 </span>
                 <a
                   href={
@@ -380,9 +296,8 @@ const AuthorPaperReviews = () => {
                   target="_blank"
                   rel="noreferrer"
                   className="btn-primary"
-                  style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}
                 >
-                  📥 Tải về bản cuối
+                  Tải về bản cuối
                 </a>
               </>
             )}
