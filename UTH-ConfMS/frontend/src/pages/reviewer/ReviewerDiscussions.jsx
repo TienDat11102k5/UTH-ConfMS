@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { FiMessageSquare, FiSend, FiX, FiCornerDownRight, FiClock } from 'react-icons/fi';
 
 const ReviewerDiscussions = () => {
   const [searchParams] = useSearchParams();
@@ -182,44 +183,37 @@ const ReviewerDiscussions = () => {
           <div className="breadcrumb">
             <span className="breadcrumb-current">Reviewer</span>
           </div>
-          <h2 className="data-page-title">Thảo luận nội bộ PC</h2>
+          <h2 className="data-page-title">
+            <FiMessageSquare style={{ marginRight: "0.5rem", verticalAlign: "middle" }} />
+            Thảo luận nội bộ PC
+          </h2>
           <p className="data-page-subtitle">
-            Trao đổi ý kiến về bài báo với các PC members khác trước khi Chair
-            đưa ra quyết định cuối.
+            Trao đổi ý kiến về bài báo với các PC members khác trước khi Chair đưa ra quyết định cuối.
           </p>
         </div>
         <div className="data-page-header-right">
-          <button
-            className="btn-secondary"
-            onClick={() => navigate(-1)}
-          >
+          <button className="btn-secondary" onClick={() => navigate(-1)}>
             ← Quay lại
           </button>
         </div>
       </div>
 
       {error && (
-        <div
-          style={{
-            background: "#ffebee",
-            border: "1px solid #d32f2f",
-            padding: "1rem",
-            borderRadius: "8px",
-            marginBottom: "1.5rem",
-            color: "#d32f2f",
-          }}
-        >
+        <div className="alert-error">
           {error}
         </div>
       )}
 
-      <div className="form-card" style={{ marginBottom: "2rem" }}>
-        <div className="form-group">
-          <label className="form-label">Chọn bài báo để xem thảo luận:</label>
+      <div className="discussion-card">
+        <div className="discussion-card-header">
+          <FiMessageSquare size={20} />
+          <span>Chọn bài báo để thảo luận</span>
+        </div>
+        <div className="discussion-card-body">
           <select
             value={selectedPaperId}
             onChange={(e) => setSelectedPaperId(e.target.value)}
-            className="form-input"
+            className="paper-select"
           >
             <option value="">-- Chọn bài báo --</option>
             {papers.map((paper) => (
@@ -233,130 +227,252 @@ const ReviewerDiscussions = () => {
 
       {selectedPaperId && (
         <>
-          <div className="form-card" style={{ marginBottom: "2rem" }}>
-            <h3>Thêm bình luận mới</h3>
-            <form onSubmit={handleSubmitComment} className="submission-form">
-              <div className="form-group">
+          <div className="discussion-card">
+            <div className="discussion-card-header">
+              <FiSend size={20} />
+              <span>Thêm bình luận mới</span>
+            </div>
+            <div className="discussion-card-body">
+              <form onSubmit={handleSubmitComment} className="comment-form">
                 <textarea
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   rows={4}
-                  className="textarea-input"
+                  className="comment-textarea"
                   placeholder="Nhập bình luận của bạn về bài báo này..."
                   disabled={submitting}
                   maxLength={10000}
                 />
-                <div style={{ textAlign: "right", fontSize: "0.85rem", color: "#666", marginTop: "0.25rem" }}>
-                  {newComment.length}/10000 ký tự
+                <div className="textarea-footer">
+                  <span className="char-count">{newComment.length}/10000 ký tự</span>
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    disabled={submitting || !newComment.trim()}
+                  >
+                    <FiSend size={16} style={{ marginRight: "0.5rem" }} />
+                    {submitting ? "Đang gửi..." : "Gửi bình luận"}
+                  </button>
                 </div>
-              </div>
-              <button
-                type="submit"
-                className="btn-primary"
-                disabled={submitting || !newComment.trim()}
-              >
-                {submitting ? "Đang gửi..." : "Gửi bình luận"}
-              </button>
-            </form>
+              </form>
+            </div>
           </div>
 
-          <div className="form-card">
-            <h3>Danh sách thảo luận</h3>
-            {loading ? (
-              <div style={{ textAlign: "center", padding: "2rem" }}>
-                Đang tải...
-              </div>
-            ) : organizedDiscussions.length === 0 ? (
-              <div
-                style={{ textAlign: "center", padding: "2rem", color: "#666" }}
-              >
-                Chưa có thảo luận nào cho bài này. Hãy là người đầu tiên!
-              </div>
-            ) : (
-              <div className="discussions-list">
-                {organizedDiscussions.map((discussion) => (
-                  <div key={discussion.id} className="discussion-item">
-                    <div className="discussion-header">
-                      <strong>{discussion.authorName}</strong>
-                      <span className="discussion-date">
-                        {formatDate(discussion.createdAt)}
-                      </span>
-                    </div>
-                    <div className="discussion-content">
-                      {discussion.content}
-                    </div>
-                    <div className="discussion-actions">
-                      <button
-                        className="btn-link"
-                        onClick={() => setReplyTo(discussion.id)}
-                      >
-                        Trả lời
-                      </button>
-                    </div>
-
-                    {/* Replies */}
-                    {discussion.replies && discussion.replies.length > 0 && (
-                      <div className="discussion-replies">
-                        {discussion.replies.map((reply) => (
-                          <div key={reply.id} className="discussion-reply">
-                            <div className="discussion-header">
-                              <strong>{reply.authorName}</strong>
-                              <span className="discussion-date">
-                                {formatDate(reply.createdAt)}
-                              </span>
-                            </div>
-                            <div className="discussion-content">
-                              {reply.content}
+          <div className="discussion-card">
+            <div className="discussion-card-header">
+              <FiMessageSquare size={20} />
+              <span>Danh sách thảo luận ({organizedDiscussions.length})</span>
+            </div>
+            <div className="discussion-card-body">
+              {loading ? (
+                <div className="empty-state">
+                  <FiClock size={48} style={{ color: "#cbd5e1" }} />
+                  <p>Đang tải...</p>
+                </div>
+              ) : organizedDiscussions.length === 0 ? (
+                <div className="empty-state">
+                  <FiMessageSquare size={48} style={{ color: "#cbd5e1" }} />
+                  <p>Chưa có thảo luận nào cho bài này.</p>
+                  <p style={{ fontSize: "0.9rem", color: "#94a3b8" }}>Hãy là người đầu tiên!</p>
+                </div>
+              ) : (
+                <div className="discussions-list">
+                  {organizedDiscussions.map((discussion) => (
+                    <div key={discussion.id} className="discussion-item">
+                      <div className="discussion-header">
+                        <div className="author-info">
+                          <div className="author-avatar">{discussion.authorName?.charAt(0)?.toUpperCase() || 'U'}</div>
+                          <div>
+                            <div className="author-name">{discussion.authorName}</div>
+                            <div className="discussion-time">
+                              <FiClock size={14} />
+                              {formatDate(discussion.createdAt)}
                             </div>
                           </div>
-                        ))}
+                        </div>
                       </div>
-                    )}
+                      <div className="discussion-content">{discussion.content}</div>
+                      <div className="discussion-actions">
+                        <button
+                          className="reply-btn"
+                          onClick={() => setReplyTo(discussion.id)}
+                        >
+                          <FiCornerDownRight size={16} />
+                          Trả lời
+                        </button>
+                      </div>
 
-                    {/* Reply form */}
-                    {replyTo === discussion.id && (
-                      <div className="reply-form">
-                        <textarea
-                          value={replyContent}
-                          onChange={(e) => setReplyContent(e.target.value)}
-                          rows={3}
-                          className="textarea-input"
-                          placeholder="Nhập câu trả lời..."
-                          disabled={submitting}
-                          maxLength={10000}
-                        />
-                        <div style={{ textAlign: "right", fontSize: "0.85rem", color: "#666", marginTop: "0.25rem" }}>
-                          {replyContent.length}/10000 ký tự
+                      {discussion.replies && discussion.replies.length > 0 && (
+                        <div className="discussion-replies">
+                          {discussion.replies.map((reply) => (
+                            <div key={reply.id} className="discussion-reply">
+                              <div className="reply-indicator">
+                                <FiCornerDownRight size={16} />
+                              </div>
+                              <div className="reply-content-wrapper">
+                                <div className="discussion-header">
+                                  <div className="author-info">
+                                    <div className="author-avatar small">{reply.authorName?.charAt(0)?.toUpperCase() || 'U'}</div>
+                                    <div>
+                                      <div className="author-name">{reply.authorName}</div>
+                                      <div className="discussion-time">
+                                        <FiClock size={12} />
+                                        {formatDate(reply.createdAt)}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="discussion-content">{reply.content}</div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                        <div className="form-actions">
-                          <button
-                            className="btn-primary"
-                            onClick={() => handleSubmitReply(discussion.id)}
-                            disabled={submitting || !replyContent.trim()}
-                          >
-                            {submitting ? "Đang gửi..." : "Gửi trả lời"}
-                          </button>
-                          <button
-                            className="btn-secondary"
-                            onClick={() => {
-                              setReplyTo(null);
-                              setReplyContent("");
-                            }}
-                          >
-                            Hủy
-                          </button>
+                      )}
+
+                      {replyTo === discussion.id && (
+                        <div className="reply-form">
+                          <div className="reply-form-header">
+                            <FiCornerDownRight size={16} />
+                            <span>Trả lời {discussion.authorName}</span>
+                          </div>
+                          <textarea
+                            value={replyContent}
+                            onChange={(e) => setReplyContent(e.target.value)}
+                            rows={3}
+                            className="comment-textarea"
+                            placeholder="Nhập câu trả lời..."
+                            disabled={submitting}
+                            maxLength={10000}
+                          />
+                          <div className="textarea-footer">
+                            <span className="char-count">{replyContent.length}/10000 ký tự</span>
+                            <div className="form-actions">
+                              <button
+                                className="btn-secondary"
+                                onClick={() => {
+                                  setReplyTo(null);
+                                  setReplyContent("");
+                                }}
+                              >
+                                <FiX size={16} style={{ marginRight: "0.5rem" }} />
+                                Hủy
+                              </button>
+                              <button
+                                className="btn-primary"
+                                onClick={() => handleSubmitReply(discussion.id)}
+                                disabled={submitting || !replyContent.trim()}
+                              >
+                                <FiSend size={16} style={{ marginRight: "0.5rem" }} />
+                                {submitting ? "Đang gửi..." : "Gửi"}
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}
 
       <style dangerouslySetInnerHTML={{__html: `
+        .alert-error {
+          background: #fee;
+          border: 1px solid #f5c6cb;
+          padding: 1rem;
+          border-radius: 8px;
+          margin-bottom: 1.5rem;
+          color: #721c24;
+        }
+
+        .discussion-card {
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+          margin-bottom: 1.5rem;
+          overflow: hidden;
+        }
+
+        .discussion-card-header {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 1.25rem 1.5rem;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          font-weight: 600;
+          font-size: 1rem;
+        }
+
+        .discussion-card-body {
+          padding: 1.5rem;
+        }
+
+        .paper-select {
+          width: 100%;
+          padding: 0.875rem;
+          border: 2px solid #e2e8f0;
+          border-radius: 8px;
+          font-size: 1rem;
+          transition: all 0.2s;
+          background: white;
+        }
+
+        .paper-select:focus {
+          outline: none;
+          border-color: #667eea;
+          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .comment-form {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .comment-textarea {
+          width: 100%;
+          padding: 1rem;
+          border: 2px solid #e2e8f0;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          font-family: inherit;
+          resize: vertical;
+          transition: all 0.2s;
+        }
+
+        .comment-textarea:focus {
+          outline: none;
+          border-color: #667eea;
+          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .textarea-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .char-count {
+          font-size: 0.85rem;
+          color: #94a3b8;
+        }
+
+        .empty-state {
+          text-align: center;
+          padding: 3rem 1rem;
+          color: #64748b;
+        }
+
+        .empty-state p {
+          margin-top: 1rem;
+          font-size: 1rem;
+        }
+
         .discussions-list {
           display: flex;
           flex-direction: column;
@@ -364,29 +480,70 @@ const ReviewerDiscussions = () => {
         }
 
         .discussion-item {
-          border: 1px solid #e0e0e0;
-          border-radius: 8px;
-          padding: 1rem;
-          background: #fafafa;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 1.5rem;
+          background: #fafbfc;
+          transition: all 0.2s;
+        }
+
+        .discussion-item:hover {
+          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
         .discussion-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 0.75rem;
+          margin-bottom: 1rem;
         }
 
-        .discussion-date {
-          font-size: 0.85rem;
-          color: #666;
+        .author-info {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .author-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          font-size: 1rem;
+        }
+
+        .author-avatar.small {
+          width: 32px;
+          height: 32px;
+          font-size: 0.875rem;
+        }
+
+        .author-name {
+          font-weight: 600;
+          color: #1e293b;
+          font-size: 0.95rem;
+        }
+
+        .discussion-time {
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+          font-size: 0.8rem;
+          color: #64748b;
+          margin-top: 0.15rem;
         }
 
         .discussion-content {
-          margin-bottom: 0.75rem;
-          line-height: 1.6;
-          color: #333;
+          color: #334155;
+          line-height: 1.7;
           white-space: pre-wrap;
+          word-wrap: break-word;
+          margin-bottom: 1rem;
         }
 
         .discussion-actions {
@@ -394,46 +551,80 @@ const ReviewerDiscussions = () => {
           gap: 1rem;
         }
 
-        .btn-link {
-          background: none;
+        .reply-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: transparent;
           border: none;
-          color: #0066cc;
+          color: #667eea;
           cursor: pointer;
           font-size: 0.9rem;
-          padding: 0;
+          font-weight: 500;
+          padding: 0.35rem 0.75rem;
+          border-radius: 6px;
+          transition: all 0.2s;
         }
 
-        .btn-link:hover {
-          text-decoration: underline;
+        .reply-btn:hover {
+          background: #f1f5f9;
+          color: #764ba2;
         }
 
         .discussion-replies {
-          margin-top: 1rem;
-          margin-left: 2rem;
+          margin-top: 1.25rem;
           display: flex;
           flex-direction: column;
           gap: 1rem;
         }
 
         .discussion-reply {
-          border-left: 3px solid #0066cc;
+          display: flex;
+          gap: 0.75rem;
           padding-left: 1rem;
-          background: #fff;
-          padding: 0.75rem;
-          border-radius: 4px;
+        }
+
+        .reply-indicator {
+          color: #667eea;
+          flex-shrink: 0;
+          padding-top: 0.25rem;
+        }
+
+        .reply-content-wrapper {
+          flex: 1;
+          background: white;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 1rem;
+        }
+
+        .reply-content-wrapper .discussion-header {
+          margin-bottom: 0.75rem;
+        }
+
+        .reply-content-wrapper .discussion-content {
+          margin-bottom: 0;
         }
 
         .reply-form {
-          margin-top: 1rem;
-          margin-left: 2rem;
-          padding: 1rem;
-          background: #fff;
+          margin-top: 1.25rem;
+          padding: 1.25rem;
+          background: white;
           border-radius: 8px;
-          border: 1px solid #e0e0e0;
+          border: 2px solid #e2e8f0;
         }
 
-        .reply-form .form-actions {
-          margin-top: 0.75rem;
+        .reply-form-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: #667eea;
+          font-weight: 600;
+          margin-bottom: 0.75rem;
+          font-size: 0.9rem;
+        }
+
+        .form-actions {
           display: flex;
           gap: 0.5rem;
         }
