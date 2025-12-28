@@ -151,14 +151,14 @@ const AuthorSubmissionListPage = () => {
 
   const getStatusBadge = (status) => {
     const statusMap = {
-      SUBMITTED: { class: "submitted", label: "Đã nộp" },
-      UNDER_REVIEW: { class: "under-review", label: "Đang review" },
-      ACCEPTED: { class: "accepted", label: "Chấp nhận" },
-      REJECTED: { class: "rejected", label: "Từ chối" },
-      WITHDRAWN: { class: "withdrawn", label: "Đã rút" },
+      SUBMITTED: { class: "submitted", label: "ĐÃ NỘP" },
+      UNDER_REVIEW: { class: "under-review", label: "ĐANG REVIEW" },
+      ACCEPTED: { class: "accepted", label: "CHẤP NHẬN" },
+      REJECTED: { class: "rejected", label: "TỪ CHỐI" },
+      WITHDRAWN: { class: "withdrawn", label: "ĐÃ RÚT" },
     };
     const statusInfo = statusMap[status] || { class: "submitted", label: status };
-    return <span className={`status-badge ${statusInfo.class}`}>{statusInfo.label}</span>;
+    return <span className={`status-badge-compact ${statusInfo.class}`}>{statusInfo.label}</span>;
   };
 
   return (

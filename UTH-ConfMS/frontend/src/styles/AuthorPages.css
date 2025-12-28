@@ -269,22 +269,26 @@
 .stat-value {
   font-size: 2.5rem;
   font-weight: 800;
-  color: var(--primary-color);
+  color: #0f62fe;
   line-height: 1;
   margin-bottom: 0.5rem;
 }
 
 .stat-card-warning .stat-value {
-  color: #f59e0b;
+  color: #d97706;
 }
 
 .stat-card-success .stat-value {
-  color: #10b981;
+  color: #059669;
+}
+
+.stat-card-primary .stat-value {
+  color: #0f62fe;
 }
 
 .stat-label {
   font-size: 0.9rem;
-  color: var(--text-muted);
+  color: #6b7280;
   font-weight: 500;
 }
 
@@ -339,7 +343,47 @@
   font-size: 0.95rem;
 }
 
-/* Status Badges */
+/* Status Badges - Compact Version (Small Badge in Top Right) */
+.status-badge-compact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge-compact.submitted {
+  background: #3b82f6;
+  color: white;
+}
+
+.status-badge-compact.under-review {
+  background: #f59e0b;
+  color: white;
+}
+
+.status-badge-compact.accepted {
+  background: #10b981;
+  color: white;
+}
+
+.status-badge-compact.rejected {
+  background: #ef4444;
+  color: white;
+}
+
+.status-badge-compact.withdrawn {
+  background: #6b7280;
+  color: white;
+}
+
+/* Old Status Badges - Keep for backward compatibility */
 .status-badge {
   display: inline-flex;
   align-items: center;
