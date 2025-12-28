@@ -52,6 +52,12 @@ public class Conference extends BaseEntity {
         this.isBlindReview = blindReview;
     }
 
+    @Column(name = "is_hidden")
+    private Boolean isHidden = false;
+
+    @Column(name = "is_locked")
+    private Boolean isLocked = false;
+
     // Một hội nghị có nhiều Tracks
     @OneToMany(mappedBy = "conference", cascade = CascadeType.ALL)
     private List<Track> tracks;
