@@ -190,7 +190,7 @@ const AuthorCameraReadyList = () => {
               <div key={s.id} className="camera-ready-card">
                 <div className="camera-ready-header">
                   <span className="submission-id">#{s.id}</span>
-                  <span className="status-badge accepted">Chấp nhận</span>
+                  <span className="status-badge-compact accepted">CHẤP NHẬN</span>
                 </div>
 
                 <h3 className="camera-ready-title">{s.title}</h3>
