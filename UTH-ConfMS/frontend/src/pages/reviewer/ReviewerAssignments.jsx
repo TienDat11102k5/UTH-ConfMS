@@ -11,7 +11,9 @@ import {
   FiMessageSquare,
   FiEye,
   FiCalendar,
-  FiTag
+  FiTag,
+  FiFilter,
+  FiTrendingUp
 } from "react-icons/fi";
 import "../../styles/ReviewerAssignments.css";
 
@@ -19,6 +21,8 @@ const ReviewerAssignments = () => {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [filterStatus, setFilterStatus] = useState("ALL");
+  const [sortBy, setSortBy] = useState("NEWEST");
 
   useEffect(() => {
     const loadAssignments = async () => {
@@ -113,6 +117,30 @@ const ReviewerAssignments = () => {
     );
   };
 
+  // Filter và Sort logic
+  const getFilteredAndSortedAssignments = () => {
+    let filtered = assignments;
+    
+    // Filter theo status
+    if (filterStatus !== "ALL") {
+      filtered = filtered.filter(a => a.status === filterStatus);
+    }
+    
+    // Sort
+    const sorted = [...filtered].sort((a, b) => {
+      if (sortBy === "NEWEST") {
+        return new Date(b.assignedDate) - new Date(a.assignedDate);
+      } else if (sortBy === "DEADLINE") {
+        return new Date(a.dueDate) - new Date(b.dueDate);
+      }
+      return 0;
+    });
+    
+    return sorted;
+  };
+
+  const filteredAssignments = getFilteredAndSortedAssignments();
+
   if (loading) {
     return (
       <DashboardLayout roleLabel="Reviewer / PC" title="Bài được phân công">
@@ -173,16 +201,78 @@ const ReviewerAssignments = () => {
         </div>
       </div>
 
+      {/* Filter và Sort Controls */}
+      <div className="filter-sort-controls">
+        <div className="filter-section">
+          <div className="filter-label">
+            <FiFilter />
+            <span>Lọc:</span>
+          </div>
+          <div className="filter-buttons">
+            <button 
+              className={`filter-btn ${filterStatus === 'ALL' ? 'active' : ''}`}
+              onClick={() => setFilterStatus('ALL')}
+            >
+              Tất cả
+              <span className="filter-count">{assignments.length}</span>
+            </button>
+            <button 
+              className={`filter-btn ${filterStatus === 'PENDING' ? 'active' : ''}`}
+              onClick={() => setFilterStatus('PENDING')}
+            >
+              Chờ xác nhận
+              <span className="filter-count">{assignments.filter(a => a.status === 'PENDING').length}</span>
+            </button>
+            <button 
+              className={`filter-btn ${filterStatus === 'ACCEPTED' ? 'active' : ''}`}
+              onClick={() => setFilterStatus('ACCEPTED')}
+            >
+              Đang review
+              <span className="filter-count">{assignments.filter(a => a.status === 'ACCEPTED').length}</span>
+            </button>
+            <button 
+              className={`filter-btn ${filterStatus === 'COMPLETED' ? 'active' : ''}`}
+              onClick={() => setFilterStatus('COMPLETED')}
+            >
+              Hoàn thành
+              <span className="filter-count">{assignments.filter(a => a.status === 'COMPLETED').length}</span>
+            </button>
+            <button 
+              className={`filter-btn ${filterStatus === 'DECLINED' ? 'active' : ''}`}
+              onClick={() => setFilterStatus('DECLINED')}
+            >
+              Đã từ chối
+              <span className="filter-count">{assignments.filter(a => a.status === 'DECLINED').length}</span>
+            </button>
+          </div>
+        </div>
+        
+        <div className="sort-section">
+          <div className="sort-label">
+            <FiTrendingUp />
+            <span>Sắp xếp:</span>
+          </div>
+          <select 
+            className="sort-select"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value="NEWEST">Mới phân công nhất</option>
+            <option value="DEADLINE">Deadline gần nhất</option>
+          </select>
+        </div>
+      </div>
+
       <div className="assignments-content">
-        {assignments.length === 0 ? (
+        {filteredAssignments.length === 0 ? (
           <div className="assignments-empty">
             <FiFileText className="empty-icon" />
-            <h3>Chưa có bài phân công</h3>
-            <p>Bạn chưa có bài nào được phân công phản biện.</p>
+            <h3>{assignments.length === 0 ? 'Chưa có bài phân công' : 'Không có kết quả phù hợp'}</h3>
+            <p>{assignments.length === 0 ? 'Bạn chưa có bài nào được phân công phản biện.' : 'Thử thay đổi bộ lọc để xem thêm.'}</p>
           </div>
         ) : (
           <div className="assignments-grid">
-            {assignments.map((assignment) => (
+            {filteredAssignments.map((assignment) => (
               <div key={assignment.id} className="assignment-card">
                 <div className="assignment-card-header">
                   <div className="assignment-icon">
@@ -236,14 +326,14 @@ const ReviewerAssignments = () => {
                         onClick={() => handleAccept(assignment.id)}
                       >
                         <FiCheckCircle />
-                        Chấp nhận
+                        <span>Chấp nhận</span>
                       </button>
                       <button
                         className="assignment-btn btn-decline"
                         onClick={() => handleDecline(assignment.id)}
                       >
                         <FiXCircle />
-                        Từ chối
+                        <span>Từ chối</span>
                       </button>
                     </>
                   )}
@@ -254,14 +344,14 @@ const ReviewerAssignments = () => {
                         className="assignment-btn btn-primary"
                       >
                         <FiFileText />
-                        Chấm bài
+                        <span>Chấm bài</span>
                       </Link>
                       <Link
                         to={`/reviewer/discussions?paperId=${assignment.paper?.id}`}
                         className="assignment-btn btn-discussion"
                       >
                         <FiMessageSquare />
-                        Thảo luận
+                        <span>Thảo luận</span>
                       </Link>
                     </>
                   )}
@@ -271,7 +361,7 @@ const ReviewerAssignments = () => {
                       className="assignment-btn btn-view"
                     >
                       <FiEye />
-                      Xem review
+                      <span>Xem review</span>
                     </Link>
                   )}
                 </div>
