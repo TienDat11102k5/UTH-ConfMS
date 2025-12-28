@@ -20,6 +20,9 @@ public class AdminUserController {
 
     @Autowired
     private AdminService adminService;
+    
+    @Autowired
+    private edu.uth.backend.security.AuditLogger auditLogger;
 
     @GetMapping
     public ResponseEntity<List<AdminUserResponse>> getAllUsers() {
@@ -30,10 +33,41 @@ public class AdminUserController {
     @PutMapping("/{id}/role")
     public ResponseEntity<?> updateRole(
             @PathVariable Long id,
-            @Validated @RequestBody UpdateRoleRequest request
+            @Validated @RequestBody UpdateRoleRequest request,
+            org.springframework.security.core.Authentication authentication
     ) {
         log.info("PUT /api/admin/users/{}/role - Update role to {}", id, request.getRole());
-        return ResponseEntity.ok(adminService.updateUserRole(id, request.getRole()));
+        
+        // Get old role before update
+        var allUsers = adminService.getAllUsers();
+        var userBefore = allUsers.stream()
+            .filter(u -> u.getId().equals(id))
+            .findFirst()
+            .orElse(null);
+        String oldRole = userBefore != null ? userBefore.getRole() : "UNKNOWN";
+        
+        var result = adminService.updateUserRole(id, request.getRole());
+        
+        // Audit log
+        String adminUser = authentication != null ? authentication.getName() : "unknown";
+        auditLogger.logRoleChange(result.getEmail(), oldRole, result.getRole(), adminUser, getClientIp());
+        
+        return ResponseEntity.ok(result);
+    }
+    
+    private String getClientIp() {
+        try {
+            jakarta.servlet.http.HttpServletRequest request = 
+                ((org.springframework.web.context.request.ServletRequestAttributes) 
+                org.springframework.web.context.request.RequestContextHolder.getRequestAttributes()).getRequest();
+            String xForwardedFor = request.getHeader("X-Forwarded-For");
+            if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+                return xForwardedFor.split(",")[0].trim();
+            }
+            return request.getRemoteAddr();
+        } catch (Exception e) {
+            return "unknown";
+        }
     }
 
     @PutMapping("/{id}/status")

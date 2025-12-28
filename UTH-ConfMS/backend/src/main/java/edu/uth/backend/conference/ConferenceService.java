@@ -3,14 +3,51 @@ package edu.uth.backend.conference;
 import edu.uth.backend.entity.Conference;
 import edu.uth.backend.entity.Track;
 import edu.uth.backend.repository.ConferenceRepository;
+import edu.uth.backend.security.AuditLogger;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import java.util.List;
 
 @Service
 public class ConferenceService {
     @Autowired private ConferenceRepository confRepo;
+    @Autowired private AuditLogger auditLogger;
+    
+    private String getClientIp() {
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+                String xForwardedFor = request.getHeader("X-Forwarded-For");
+                if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+                    return xForwardedFor.split(",")[0].trim();
+                }
+                return request.getRemoteAddr();
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return "unknown";
+    }
+    
+    private String getCurrentUsername() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated()) {
+                return auth.getName();
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return "system";
+    }
 
     // Thêm Transactional để giữ kết nối DB
     @Transactional(readOnly = true)
@@ -46,7 +83,12 @@ public class ConferenceService {
     public Conference createConference(Conference conf) {
         validateConference(conf);
         attachTracks(conf);
-        return confRepo.save(conf);
+        Conference saved = confRepo.save(conf);
+        
+        // Audit log
+        auditLogger.logConferenceCreation(saved.getName(), getCurrentUsername(), getClientIp());
+        
+        return saved;
     }
 
     @Transactional
@@ -86,6 +128,9 @@ public class ConferenceService {
         if (existing.getIsLocked() != null && existing.getIsLocked()) {
             throw new RuntimeException("Hội nghị đã bị khóa, không thể xóa");
         }
+        
+        // Audit log before delete
+        auditLogger.logConferenceDeletion(existing.getName(), getCurrentUsername(), getClientIp());
         
         confRepo.deleteById(id);
     }

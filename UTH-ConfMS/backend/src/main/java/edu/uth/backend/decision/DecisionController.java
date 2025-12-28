@@ -18,6 +18,9 @@ public class DecisionController {
 
     @Autowired
     private SubmissionService submissionService;
+    
+    @Autowired
+    private edu.uth.backend.security.AuditLogger auditLogger;
 
     // API: Xem điểm trung bình của bài báo
     @GetMapping("/score/{paperId}")
@@ -32,7 +35,8 @@ public class DecisionController {
     @PostMapping
     @org.springframework.security.access.prepost.PreAuthorize(
             "hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
-    public ResponseEntity<?> makeDecision(@RequestBody DecisionRequestDTO req) {
+    public ResponseEntity<?> makeDecision(@RequestBody DecisionRequestDTO req,
+            org.springframework.security.core.Authentication authentication) {
         log.info("Make decision - paperId={}, status={}",
                 req.getPaperId(), req.getStatus());
         try {
@@ -43,11 +47,31 @@ public class DecisionController {
             );
             log.info("Make decision success - paperId={}, status={}",
                     req.getPaperId(), req.getStatus());
+            
+            // Audit log
+            String chair = authentication != null ? authentication.getName() : "unknown";
+            auditLogger.logDecision(req.getPaperId(), req.getStatus().toString(), chair, getClientIp());
+            
             return ResponseEntity.ok(result);
         } catch (RuntimeException e) {
             log.error("Make decision failed - paperId={}, error={}",
                     req.getPaperId(), e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+    private String getClientIp() {
+        try {
+            jakarta.servlet.http.HttpServletRequest request = 
+                ((org.springframework.web.context.request.ServletRequestAttributes) 
+                org.springframework.web.context.request.RequestContextHolder.getRequestAttributes()).getRequest();
+            String xForwardedFor = request.getHeader("X-Forwarded-For");
+            if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+                return xForwardedFor.split(",")[0].trim();
+            }
+            return request.getRemoteAddr();
+        } catch (Exception e) {
+            return "unknown";
         }
     }
 

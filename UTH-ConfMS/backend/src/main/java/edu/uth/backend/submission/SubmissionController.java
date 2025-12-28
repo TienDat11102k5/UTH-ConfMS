@@ -45,6 +45,9 @@ public class SubmissionController {
     
     @Autowired
     private edu.uth.backend.repository.ReviewAssignmentRepository reviewAssignmentRepository;
+    
+    @Autowired
+    private edu.uth.backend.security.AuditLogger auditLogger;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -84,7 +87,25 @@ public class SubmissionController {
         Paper paper = submissionService.submitPaper(title, abstractText, currentUser.getId(), trackId, file, coAuthors);
         logger.info("Paper submitted successfully: id={}", paper.getId());
         
+        // Audit log
+        auditLogger.logPaperSubmission(paper.getId(), paper.getTitle(), currentUser.getEmail(), getClientIp());
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(mapToDTO(paper));
+    }
+    
+    private String getClientIp() {
+        try {
+            jakarta.servlet.http.HttpServletRequest request = 
+                ((org.springframework.web.context.request.ServletRequestAttributes) 
+                org.springframework.web.context.request.RequestContextHolder.getRequestAttributes()).getRequest();
+            String xForwardedFor = request.getHeader("X-Forwarded-For");
+            if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+                return xForwardedFor.split(",")[0].trim();
+            }
+            return request.getRemoteAddr();
+        } catch (Exception e) {
+            return "unknown";
+        }
     }
 
     // ==================== 2. XEM CHI TIẾT ====================

@@ -15,13 +15,17 @@ import edu.uth.backend.repository.PasswordResetOtpRepository;
 import edu.uth.backend.repository.PasswordResetTokenRepository;
 import edu.uth.backend.repository.RoleRepository;
 import edu.uth.backend.repository.UserRepository;
+import edu.uth.backend.security.AuditLogger;
 import edu.uth.backend.security.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -42,6 +46,7 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
   private final JwtTokenProvider jwtTokenProvider;
+  private final AuditLogger auditLogger;
 
   // Service gửi email qua SMTP (MailService phải được implement trong package
   // common)
@@ -71,7 +76,8 @@ public class AuthService {
       PasswordEncoder passwordEncoder,
       AuthenticationManager authenticationManager,
       JwtTokenProvider jwtTokenProvider,
-      MailService mailService) {
+      MailService mailService,
+      AuditLogger auditLogger) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.passwordResetTokenRepository = passwordResetTokenRepository;
@@ -80,6 +86,27 @@ public class AuthService {
     this.authenticationManager = authenticationManager;
     this.jwtTokenProvider = jwtTokenProvider;
     this.mailService = mailService;
+    this.auditLogger = auditLogger;
+  }
+  
+  /**
+   * Get client IP address from request
+   */
+  private String getClientIp() {
+    try {
+      ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+      if (attributes != null) {
+        HttpServletRequest request = attributes.getRequest();
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+          return xForwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
+      }
+    } catch (Exception e) {
+      // Ignore
+    }
+    return "unknown";
   }
 
   /**
@@ -137,6 +164,9 @@ public class AuthService {
 
     // 7. Lưu vào database
     User saved = userRepository.save(u);
+    
+    // 7.1 Audit log registration
+    auditLogger.logRegistration(email, getClientIp());
 
     // 8. [TUỲ CHỌN] Tạo Firebase Authentication user (nếu config bật)
     if (createFirebaseUserOnRegister) {
@@ -205,8 +235,17 @@ public class AuthService {
     }
 
     // 4. Authenticate (Spring Security tự check password)
-    authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(email, req.getPassword()));
+    try {
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(email, req.getPassword()));
+      
+      // 4.1 Audit log successful login
+      auditLogger.logLoginSuccess(email, getClientIp());
+    } catch (Exception e) {
+      // 4.2 Audit log failed login
+      auditLogger.logLoginFailure(email, getClientIp(), e.getMessage());
+      throw e;
+    }
 
     // 5. Phát hành JWT
     return buildAuthResponse(user);

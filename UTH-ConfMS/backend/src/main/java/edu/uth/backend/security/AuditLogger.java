@@ -1,5 +1,7 @@
 package edu.uth.backend.security;
 
+import edu.uth.backend.audit.AuditLogService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -16,14 +18,19 @@ import java.time.format.DateTimeFormatter;
  * - Password changes
  * - Sensitive data access
  * 
+ * Logs are written to both file (via SLF4J) and database for compliance.
+ * 
  * @author Security Team
  * @since 1.0.0
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class AuditLogger {
 
     private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    
+    private final AuditLogService auditLogService;
 
     /**
      * Log successful login
@@ -31,6 +38,7 @@ public class AuditLogger {
     public void logLoginSuccess(String email, String ipAddress) {
         log.info("[AUDIT] LOGIN_SUCCESS | User: {} | IP: {} | Time: {}", 
             email, ipAddress, getCurrentTimestamp());
+        auditLogService.log(email, "LOGIN_SUCCESS", null, ipAddress, null, null);
     }
 
     /**
@@ -39,6 +47,7 @@ public class AuditLogger {
     public void logLoginFailure(String email, String ipAddress, String reason) {
         log.warn("[AUDIT] LOGIN_FAILURE | User: {} | IP: {} | Reason: {} | Time: {}", 
             email, ipAddress, reason, getCurrentTimestamp());
+        auditLogService.log(email, "LOGIN_FAILURE", null, ipAddress, reason, null);
     }
 
     /**
@@ -47,6 +56,7 @@ public class AuditLogger {
     public void logRegistration(String email, String ipAddress) {
         log.info("[AUDIT] REGISTRATION | User: {} | IP: {} | Time: {}", 
             email, ipAddress, getCurrentTimestamp());
+        auditLogService.log(email, "REGISTRATION", null, ipAddress, null, null);
     }
 
     /**
@@ -55,6 +65,7 @@ public class AuditLogger {
     public void logPasswordChange(String email, String ipAddress) {
         log.info("[AUDIT] PASSWORD_CHANGE | User: {} | IP: {} | Time: {}", 
             email, ipAddress, getCurrentTimestamp());
+        auditLogService.log(email, "PASSWORD_CHANGE", null, ipAddress, null, null);
     }
 
     /**
@@ -63,6 +74,7 @@ public class AuditLogger {
     public void logPasswordResetRequest(String email, String ipAddress) {
         log.info("[AUDIT] PASSWORD_RESET_REQUEST | User: {} | IP: {} | Time: {}", 
             email, ipAddress, getCurrentTimestamp());
+        auditLogService.log(email, "PASSWORD_RESET_REQUEST", null, ipAddress, null, null);
     }
 
     /**
@@ -71,6 +83,7 @@ public class AuditLogger {
     public void logPasswordResetComplete(String email, String ipAddress) {
         log.info("[AUDIT] PASSWORD_RESET_COMPLETE | User: {} | IP: {} | Time: {}", 
             email, ipAddress, getCurrentTimestamp());
+        auditLogService.log(email, "PASSWORD_RESET_COMPLETE", null, ipAddress, null, null);
     }
 
     /**
@@ -79,6 +92,8 @@ public class AuditLogger {
     public void logRoleChange(String targetUser, String oldRole, String newRole, String adminUser, String ipAddress) {
         log.info("[AUDIT] ROLE_CHANGE | Target: {} | OldRole: {} | NewRole: {} | Admin: {} | IP: {} | Time: {}", 
             targetUser, oldRole, newRole, adminUser, ipAddress, getCurrentTimestamp());
+        String details = String.format("OldRole: %s, NewRole: %s, Admin: %s", oldRole, newRole, adminUser);
+        auditLogService.log(targetUser, "ROLE_CHANGE", null, ipAddress, details, null);
     }
 
     /**
@@ -87,6 +102,8 @@ public class AuditLogger {
     public void logAuthorizationFailure(String email, String endpoint, String requiredRole, String ipAddress) {
         log.warn("[AUDIT] AUTHORIZATION_FAILURE | User: {} | Endpoint: {} | RequiredRole: {} | IP: {} | Time: {}", 
             email, endpoint, requiredRole, ipAddress, getCurrentTimestamp());
+        String details = String.format("Endpoint: %s, RequiredRole: %s", endpoint, requiredRole);
+        auditLogService.log(email, "AUTHORIZATION_FAILURE", endpoint, ipAddress, details, null);
     }
 
     /**
@@ -95,6 +112,7 @@ public class AuditLogger {
     public void logConferenceCreation(String conferenceName, String createdBy, String ipAddress) {
         log.info("[AUDIT] CONFERENCE_CREATE | Name: {} | CreatedBy: {} | IP: {} | Time: {}", 
             conferenceName, createdBy, ipAddress, getCurrentTimestamp());
+        auditLogService.log(createdBy, "CONFERENCE_CREATE", conferenceName, ipAddress, null, null);
     }
 
     /**
@@ -103,6 +121,7 @@ public class AuditLogger {
     public void logConferenceDeletion(String conferenceName, String deletedBy, String ipAddress) {
         log.warn("[AUDIT] CONFERENCE_DELETE | Name: {} | DeletedBy: {} | IP: {} | Time: {}", 
             conferenceName, deletedBy, ipAddress, getCurrentTimestamp());
+        auditLogService.log(deletedBy, "CONFERENCE_DELETE", conferenceName, ipAddress, null, null);
     }
 
     /**
@@ -111,6 +130,8 @@ public class AuditLogger {
     public void logPaperSubmission(Long paperId, String paperTitle, String author, String ipAddress) {
         log.info("[AUDIT] PAPER_SUBMIT | ID: {} | Title: {} | Author: {} | IP: {} | Time: {}", 
             paperId, paperTitle, author, ipAddress, getCurrentTimestamp());
+        String target = String.format("Paper #%d: %s", paperId, paperTitle);
+        auditLogService.log(author, "PAPER_SUBMIT", target, ipAddress, null, null);
     }
 
     /**
@@ -119,6 +140,8 @@ public class AuditLogger {
     public void logReviewSubmission(Long reviewId, Long paperId, String reviewer, String ipAddress) {
         log.info("[AUDIT] REVIEW_SUBMIT | ReviewID: {} | PaperID: {} | Reviewer: {} | IP: {} | Time: {}", 
             reviewId, paperId, reviewer, ipAddress, getCurrentTimestamp());
+        String target = String.format("Review #%d for Paper #%d", reviewId, paperId);
+        auditLogService.log(reviewer, "REVIEW_SUBMIT", target, ipAddress, null, null);
     }
 
     /**
@@ -127,6 +150,8 @@ public class AuditLogger {
     public void logDecision(Long paperId, String decision, String chair, String ipAddress) {
         log.info("[AUDIT] DECISION | PaperID: {} | Decision: {} | Chair: {} | IP: {} | Time: {}", 
             paperId, decision, chair, ipAddress, getCurrentTimestamp());
+        String target = String.format("Paper #%d", paperId);
+        auditLogService.log(chair, "DECISION", target, ipAddress, "Decision: " + decision, null);
     }
 
     /**

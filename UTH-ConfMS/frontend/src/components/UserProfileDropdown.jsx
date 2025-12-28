@@ -43,31 +43,22 @@ const UserProfileDropdown = () => {
   const userAvatar = user.photoURL || user.avatarUrl || user.avatar || null;
   const userRole = user.role || user.primaryRole || "";
 
-  // Debug: Log user info
-  console.log("UserProfileDropdown - User:", user);
-  console.log("UserProfileDropdown - Role:", userRole);
-
   // Xác định dashboard path dựa trên role
   const getDashboardPath = () => {
-    // Check multiple possible role formats
+    if (!userRole) return "/author/dashboard";
+    
     const role = userRole.toUpperCase();
     
-    console.log("getDashboardPath - Checking role:", role);
-    
     if (role.includes("ADMIN")) {
-      console.log("Redirecting to admin dashboard");
       return "/admin/dashboard";
     }
     if (role.includes("CHAIR")) {
-      console.log("Redirecting to chair dashboard");
       return "/chair";
     }
     if (role.includes("REVIEWER") || role.includes("PC")) {
-      console.log("Redirecting to reviewer dashboard");
       return "/reviewer";
     }
     
-    console.log("Redirecting to author dashboard (default)");
     return "/author/dashboard"; // Default for AUTHOR or other roles
   };
 
