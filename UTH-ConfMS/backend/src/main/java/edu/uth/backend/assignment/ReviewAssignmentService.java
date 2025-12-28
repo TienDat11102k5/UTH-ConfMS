@@ -58,6 +58,13 @@ public class ReviewAssignmentService {
         assignment.setReviewer(reviewer);
         assignment.setStatus(AssignmentStatus.PENDING); // Trạng thái ban đầu là Chờ xác nhận
         assignment.setAssignedDate(LocalDateTime.now());
+        
+        // Set dueDate from conference reviewDeadline (via track)
+        if (paper.getTrack() != null && paper.getTrack().getConference() != null 
+            && paper.getTrack().getConference().getReviewDeadline() != null) {
+            assignment.setDueDate(paper.getTrack().getConference().getReviewDeadline());
+        }
+        
         // (Optional) Cập nhật trạng thái bài báo sang UNDER_REVIEW
         if (paper.getStatus() == PaperStatus.SUBMITTED) {
             paper.setStatus(PaperStatus.UNDER_REVIEW);
