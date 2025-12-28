@@ -36,6 +36,14 @@ public class DecisionService {
         Paper paper = paperRepo.findById(paperId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy bài báo"));
 
+        // Check if conference is locked
+        if (paper.getTrack() != null && paper.getTrack().getConference() != null) {
+            Conference conference = paper.getTrack().getConference();
+            if (conference.getIsLocked() != null && conference.getIsLocked()) {
+                throw new RuntimeException("Hội nghị đã bị khóa, không thể ra quyết định!");
+            }
+        }
+
         // Chỉ cho phép ACCEPTED hoặc REJECTED
         if (decision != PaperStatus.ACCEPTED && decision != PaperStatus.REJECTED) {
             throw new RuntimeException("Quyết định không hợp lệ! Chỉ chấp nhận ACCEPTED hoặc REJECTED.");

@@ -24,6 +24,15 @@ public class ReviewService {
         ReviewAssignment assignment = assignmentRepo.findById(assignmentId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phân công này!"));
 
+        // Check if conference is locked
+        if (assignment.getPaper() != null && assignment.getPaper().getTrack() != null 
+            && assignment.getPaper().getTrack().getConference() != null) {
+            Conference conference = assignment.getPaper().getTrack().getConference();
+            if (conference.getIsLocked() != null && conference.getIsLocked()) {
+                throw new RuntimeException("Hội nghị đã bị khóa, không thể nộp đánh giá!");
+            }
+        }
+
         // 2. Kiểm tra trạng thái
         // Phải đồng ý chấm (ACCEPTED) hoặc đang chờ (PENDING) mới được chấm.
         // Nếu đã chấm rồi (COMPLETED) thì chặn hoặc cho sửa (tùy logic, ở đây mình chặn cho đơn giản)

@@ -24,6 +24,14 @@ public class ReviewAssignmentService {
         Paper paper = paperRepo.findById(paperId)
                 .orElseThrow(() -> new RuntimeException("Lỗi: Bài báo không tồn tại!"));
 
+        // Check if conference is locked
+        if (paper.getTrack() != null && paper.getTrack().getConference() != null) {
+            Conference conference = paper.getTrack().getConference();
+            if (conference.getIsLocked() != null && conference.getIsLocked()) {
+                throw new RuntimeException("Hội nghị đã bị khóa, không thể phân công reviewer!");
+            }
+        }
+
         // b. Kiểm tra người chấm có tồn tại không
         User reviewer = userRepo.findById(reviewerId)
                 .orElseThrow(() -> new RuntimeException("Lỗi: Reviewer không tồn tại!"));

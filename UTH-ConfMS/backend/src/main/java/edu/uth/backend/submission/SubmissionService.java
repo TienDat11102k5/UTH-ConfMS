@@ -56,6 +56,12 @@ public class SubmissionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Track", trackId));
 
         Conference conf = track.getConference();
+        
+        // Check if conference is locked
+        if (conf.getIsLocked() != null && conf.getIsLocked()) {
+            throw new IllegalArgumentException("Hội nghị đã bị khóa, không thể nộp bài!");
+        }
+        
         if (conf.getSubmissionDeadline() != null && LocalDateTime.now().isAfter(conf.getSubmissionDeadline())) {
             throw new IllegalArgumentException("Đã quá hạn nộp bài cho hội nghị này!");
         }

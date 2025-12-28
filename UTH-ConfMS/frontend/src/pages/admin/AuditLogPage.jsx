@@ -7,7 +7,7 @@ const AuditLogPage = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1); 
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
   const itemsPerPage = 20;
@@ -25,11 +25,13 @@ const AuditLogPage = () => {
       setLoading(true);
       setError("");
       
-      let url = `/audit-logs?page=${currentPage}&size=${itemsPerPage}`;
+      // Convert UI page (1-based) to API page (0-based)
+      const apiPage = currentPage - 1;
+      let url = `/audit-logs?page=${apiPage}&size=${itemsPerPage}`;
       
       // Use search endpoint if filters are applied
       if (actorFilter || actionFilter) {
-        url = `/audit-logs/search?page=${currentPage}&size=${itemsPerPage}`;
+        url = `/audit-logs/search?page=${apiPage}&size=${itemsPerPage}`;
         if (actorFilter) url += `&actor=${encodeURIComponent(actorFilter)}`;
         if (actionFilter) url += `&action=${encodeURIComponent(actionFilter)}`;
       }
@@ -47,7 +49,7 @@ const AuditLogPage = () => {
   };
 
   const handleFilterChange = () => {
-    setCurrentPage(0); // Reset to first page when filters change
+    setCurrentPage(1); // Reset to first page when filters change
     fetchLogs();
   };
 
@@ -139,7 +141,7 @@ const AuditLogPage = () => {
               onClick={() => {
                 setActorFilter("");
                 setActionFilter("");
-                setCurrentPage(0);
+                setCurrentPage(1);
               }}
             >
               Xóa bộ lọc
