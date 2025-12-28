@@ -161,7 +161,6 @@ const ReviewerAssignments = () => {
     <DashboardLayout
       roleLabel="Reviewer / PC"
       title="Bài được phân công"
-      subtitle="Danh sách các bài báo bạn được phân công phản biện"
     >
       <div className="assignments-header">
         <div className="assignments-header-content">
@@ -169,10 +168,6 @@ const ReviewerAssignments = () => {
             <span className="breadcrumb-item">Reviewer</span>
           </div>
           <h2 className="assignments-title">Bài được phân công</h2>
-          <p className="assignments-subtitle">
-            Xem và quản lý các bài báo bạn được phân công phản biện. Chấp nhận
-            hoặc từ chối assignment, sau đó tiến hành review.
-          </p>
         </div>
         
         <div className="assignments-stats">
@@ -282,12 +277,6 @@ const ReviewerAssignments = () => {
                     <h3 className="assignment-title">
                       {assignment.paper?.title || "N/A"}
                     </h3>
-                    <div className="assignment-meta">
-                      <span className="meta-item">
-                        <FiTag />
-                        {assignment.paper?.track?.name || "N/A"}
-                      </span>
-                    </div>
                   </div>
                 </div>
 
