@@ -132,21 +132,21 @@ const ChairAssignmentManagement = () => {
         [selectedPaper.id]: assignRes.data || [],
       });
     } catch (err) {
-      // Log chi tiết lỗi để debug
       console.error("Assignment error:", err);
-      if (err.response) {
-        console.error("Response data:", err.response.data);
-        console.error("Status:", err.response.status);
-        console.error("Headers:", err.response.headers);
-      }
       
-      let errorMsg = "Lỗi không xác định";
-      if (err.response?.status === 403) {
-        errorMsg = "Bạn không có quyền thực hiện thao tác này. Hãy đảm bảo bạn đã đăng nhập với tài khoản CHAIR hoặc ADMIN.";
-      } else if (err.response?.status === 401) {
-        errorMsg = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
-      } else if (err.response?.data?.message) {
-        errorMsg = err.response.data.message;
+      let errorMsg = "Phân công thất bại";
+      
+      if (err.response) {
+        // Backend trả về error message trực tiếp trong response.data (string)
+        if (typeof err.response.data === 'string') {
+          errorMsg = err.response.data;
+        } else if (err.response.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.response.status === 403) {
+          errorMsg = "Bạn không có quyền thực hiện thao tác này.";
+        } else if (err.response.status === 401) {
+          errorMsg = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+        }
       } else if (err.message) {
         errorMsg = err.message;
       }

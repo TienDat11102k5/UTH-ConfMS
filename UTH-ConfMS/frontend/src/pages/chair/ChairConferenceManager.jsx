@@ -2,11 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import Pagination from '../../components/Pagination';
+import { usePagination } from '../../hooks/usePagination';
 
-const AdminConferences = () => {
+const ChairConferenceManager = () => {
   const [conferences, setConferences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Pagination
+  const { currentPage, setCurrentPage, totalPages, paginatedItems} =
+    usePagination(conferences, 20);
 
   // State cho Modal tạo mới
   const [showModal, setShowModal] = useState(false);
@@ -108,7 +114,7 @@ const AdminConferences = () => {
   const handleDelete = async (id) => {
     if (
       !confirm(
-        "CẢNH BÁO: Xoá hội nghị sẽ xoá toàn bộ bài báo liên quan.\nXác nhận xoá?"
+        "CẢNH BÁO: Chỉ xóa được hội nghị chưa có bài nộp, nếu có hãy ẩn hội nghị?"
       )
     )
       return;
@@ -117,7 +123,25 @@ const AdminConferences = () => {
       setConferences((s) => s.filter((c) => c.id !== id));
     } catch (err) {
       console.error(err);
-      alert("Xoá thất bại. Có thể do ràng buộc dữ liệu.");
+      const errorMsg = err.response?.data || "Xoá thất bại. Có thể do ràng buộc dữ liệu.";
+      alert(errorMsg);
+    }
+  };
+
+  const handleToggleHidden = async (id, currentStatus) => {
+    const action = currentStatus ? "hiện" : "ẩn";
+    if (!confirm(`Bạn có chắc muốn ${action} hội nghị này?`)) return;
+    
+    try {
+      const res = await apiClient.put(`/conferences/${id}/toggle-hidden`);
+      setConferences((prev) =>
+        prev.map((c) => (c.id === id ? res.data : c))
+      );
+      alert(`Đã ${action} hội nghị thành công!`);
+    } catch (err) {
+      console.error(err);
+      const errorMsg = err.response?.data || `Không thể ${action} hội nghị. Vui lòng thử lại.`;
+      alert(errorMsg);
     }
   };
 
@@ -137,7 +161,7 @@ const AdminConferences = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Site Administrator"
+      roleLabel="Chủ tịch Chương trình / Chủ tịch Chuyên đề"
       title="Quản lý Hội nghị"
       subtitle="Tạo và quản lý các hội nghị khoa học."
     >
@@ -147,10 +171,7 @@ const AdminConferences = () => {
             <span className="breadcrumb-current">Hội nghị</span>
           </div>
           <h2 className="data-page-title">Danh sách hội nghị</h2>
-          <p className="data-page-subtitle">
-            Tạo mới, chỉnh sửa và theo dõi tất cả hội nghị đang quản lý trên hệ
-            thống.
-          </p>
+          
         </div>
 
         <div className="data-page-header-right">
@@ -178,29 +199,26 @@ const AdminConferences = () => {
               <th>Tên Hội nghị</th>
               <th>Thời gian diễn ra</th>
               <th>Hạn nộp bài</th>
-              <th style={{ width: "220px" }}>Thao tác</th>
+              <th style={{ width: "100px" }}>Trạng thái</th>
+              <th style={{ width: "300px" }}>Thao tác</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="table-empty">
+                <td colSpan={6} className="table-empty">
                   Đang tải dữ liệu...
                 </td>
               </tr>
             ) : error ? (
               <tr>
-                <td
-                  colSpan={5}
-                  className="table-empty"
-                  style={{ color: "#d72d2d" }}
-                >
+                <td colSpan={6} className="table-empty" style={{ color: "#d72d2d" }}>
                   {error}
                 </td>
               </tr>
             ) : conferences.length === 0 ? (
               <tr>
-                <td colSpan={5} className="table-empty">
+                <td colSpan={6} className="table-empty">
                   Chưa có hội nghị nào. Nhấn{" "}
                   <button
                     type="button"
@@ -211,33 +229,26 @@ const AdminConferences = () => {
                     }}
                     style={{ background: "none", border: "none", padding: 0 }}
                   >
-                    “Tạo hội nghị”
+                    "Tạo hội nghị"
                   </button>{" "}
                   để thêm mới.
                 </td>
               </tr>
             ) : (
-              conferences.map((c) => (
-                <tr key={c.id}>
+              paginatedItems.map((c) => (
+                <tr key={c.id} style={{ opacity: c.isHidden ? 0.6 : 1 }}>
                   <td>{c.id}</td>
                   <td>
                     <strong>{c.name}</strong>
                     <div style={{ fontSize: "0.85em", color: "#666" }}>
                       {c.tracks && c.tracks.length > 0
-                        ? `${c.tracks.length} track${
-                            c.tracks.length > 1 ? "s" : ""
-                          }`
+                        ? `${c.tracks.length} track${c.tracks.length > 1 ? "s" : ""}`
                         : "Chưa có track"}
                     </div>
                   </td>
                   <td>
-                    {c.startDate
-                      ? new Date(c.startDate).toLocaleDateString()
-                      : "..."}{" "}
-                    -{" "}
-                    {c.endDate
-                      ? new Date(c.endDate).toLocaleDateString()
-                      : "..."}
+                    {c.startDate ? new Date(c.startDate).toLocaleDateString() : "..."} -{" "}
+                    {c.endDate ? new Date(c.endDate).toLocaleDateString() : "..."}
                   </td>
                   <td>
                     {c.submissionDeadline ? (
@@ -245,8 +256,18 @@ const AdminConferences = () => {
                         {new Date(c.submissionDeadline).toLocaleDateString()}
                       </span>
                     ) : (
-                      <span style={{ color: "var(--text-light)" }}>
-                        Chưa đặt
+                      <span style={{ color: "var(--text-light)" }}>Chưa đặt</span>
+                    )}
+                  </td>
+                  <td>
+                    {c.isHidden ? (
+                      <span className="badge-danger">Đã ẩn</span>
+                    ) : (
+                      <span className="badge-success">Hiển thị</span>
+                    )}
+                    {c.isLocked && (
+                      <span className="badge-secondary" style={{ marginLeft: "0.25rem" }}>
+                        🔒 Khóa
                       </span>
                     )}
                   </td>
@@ -255,24 +276,45 @@ const AdminConferences = () => {
                       <button
                         className="btn-secondary table-action"
                         type="button"
-                        onClick={() => navigate(`/conferences/${c.id}`)}
+                        onClick={() => navigate(`/chair/conferences/${c.id}/submissions`)}
                       >
-                        Chi tiết
+                        Bài nộp
                       </button>
                       <button
                         className="btn-primary table-action"
                         type="button"
-                        onClick={() =>
-                          navigate(`/admin/conferences/${c.id}/edit`)
-                        }
+                        onClick={() => navigate(`/chair/conferences/${c.id}/edit`)}
+                        disabled={c.isLocked}
+                        title={c.isLocked ? "Hội nghị đã bị khóa bởi Admin" : ""}
+                        style={{ opacity: c.isLocked ? 0.5 : 1, cursor: c.isLocked ? "not-allowed" : "pointer" }}
                       >
                         Sửa
                       </button>
                       <button
                         className="btn-secondary table-action"
                         type="button"
-                        style={{ color: "#d72d2d" }}
+                        style={{ 
+                          color: c.isHidden ? "#059669" : "#f59e0b",
+                          opacity: c.isLocked ? 0.5 : 1,
+                          cursor: c.isLocked ? "not-allowed" : "pointer"
+                        }}
+                        onClick={() => handleToggleHidden(c.id, c.isHidden)}
+                        disabled={c.isLocked}
+                        title={c.isLocked ? "Hội nghị đã bị khóa bởi Admin" : ""}
+                      >
+                        {c.isHidden ? "Hiện" : "Ẩn"}
+                      </button>
+                      <button
+                        className="btn-secondary table-action"
+                        type="button"
+                        style={{ 
+                          color: "#d72d2d",
+                          opacity: c.isLocked ? 0.5 : 1,
+                          cursor: c.isLocked ? "not-allowed" : "pointer"
+                        }}
                         onClick={() => handleDelete(c.id)}
+                        disabled={c.isLocked}
+                        title={c.isLocked ? "Hội nghị đã bị khóa bởi Admin" : ""}
                       >
                         Xoá
                       </button>
@@ -284,6 +326,18 @@ const AdminConferences = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {!loading && conferences.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={conferences.length}
+          itemsPerPage={20}
+          onPageChange={setCurrentPage}
+          itemName="hội nghị"
+        />
+      )}
 
       {/* --- MODAL FORM TẠO MỚI --- */}
       {showModal && (
@@ -350,19 +404,38 @@ const AdminConferences = () => {
                 />
               </div>
 
+              <div className="form-grid">
+                <div className="form-group">
+                  <label className="form-label">Hạn chấm bài (Review deadline)</label>
+                  <input
+                    type="datetime-local"
+                    name="reviewDeadline"
+                    value={formData.reviewDeadline}
+                    onChange={handleChange}
+                    placeholder="Thời hạn reviewer chấm bài"
+                  />
+                  <div className="field-hint">Thời hạn để reviewer hoàn thành đánh giá</div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Hạn nộp bản cuối (Camera-ready deadline)</label>
+                  <input
+                    type="datetime-local"
+                    name="cameraReadyDeadline"
+                    value={formData.cameraReadyDeadline}
+                    onChange={handleChange}
+                    placeholder="Thời hạn nộp bản cuối"
+                  />
+                  <div className="field-hint">Thời hạn tác giả nộp bản cuối sau khi được chấp nhận</div>
+                </div>
+              </div>
+
               <div className="form-card" style={{ padding: "1rem" }}>
                 <label className="form-label">Danh sách Tracks (Chủ đề)</label>
                 {formData.tracks.map((track, index) => (
-                  <div
-                    key={index}
-                    className="inline-actions"
-                    style={{ width: "100%" }}
-                  >
+                  <div key={index} className="inline-actions" style={{ width: "100%" }}>
                     <input
                       style={{ flex: 1, minWidth: 0 }}
-                      placeholder={`Tên track ${
-                        index + 1
-                      } (VD: AI, Security...)`}
+                      placeholder={`Tên track ${index + 1} (VD: AI, Security...)`}
                       value={track.name}
                       onChange={(e) => handleTrackChange(index, e.target.value)}
                     />
@@ -378,11 +451,7 @@ const AdminConferences = () => {
                     )}
                   </div>
                 ))}
-                <button
-                  type="button"
-                  className="btn-secondary table-action"
-                  onClick={addTrack}
-                >
+                <button type="button" className="btn-secondary table-action" onClick={addTrack}>
                   + Thêm Track
                 </button>
               </div>
@@ -398,18 +467,10 @@ const AdminConferences = () => {
               </label>
 
               <div className="modal-actions">
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
+                <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>
                   Hủy
                 </button>
-                <button
-                  type="submit"
-                  className="btn-primary"
-                  disabled={submitting}
-                >
+                <button type="submit" className="btn-primary" disabled={submitting}>
                   {submitting ? "Đang xử lý..." : "Tạo Hội Nghị"}
                 </button>
               </div>
@@ -421,4 +482,4 @@ const AdminConferences = () => {
   );
 };
 
-export default AdminConferences;
+export default ChairConferenceManager;
