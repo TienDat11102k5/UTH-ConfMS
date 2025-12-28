@@ -114,7 +114,7 @@ const AdminConferences = () => {
   const handleDelete = async (id) => {
     if (
       !confirm(
-        "CẢNH BÁO: Xoá hội nghị sẽ xoá toàn bộ bài báo liên quan.\nXác nhận xoá?"
+        "CẢNH BÁO: Chỉ xóa được hội nghị chưa có bài nộp, nếu có vui lòng ẩn hội nghị"
       )
     )
       return;
@@ -124,6 +124,38 @@ const AdminConferences = () => {
     } catch (err) {
       console.error(err);
       alert("Xoá thất bại. Có thể do ràng buộc dữ liệu.");
+    }
+  };
+
+  const handleToggleHidden = async (id, currentStatus) => {
+    const action = currentStatus ? "hiện" : "ẩn";
+    if (!confirm(`Bạn có chắc muốn ${action} hội nghị này?`)) return;
+    
+    try {
+      const res = await apiClient.put(`/conferences/${id}/toggle-hidden`);
+      setConferences((prev) =>
+        prev.map((c) => (c.id === id ? res.data : c))
+      );
+      alert(`Đã ${action} hội nghị thành công!`);
+    } catch (err) {
+      console.error(err);
+      alert(`Không thể ${action} hội nghị. Vui lòng thử lại.`);
+    }
+  };
+
+  const handleToggleLocked = async (id, currentStatus) => {
+    const action = currentStatus ? "mở khóa" : "khóa";
+    if (!confirm(`Bạn có chắc muốn ${action} hội nghị này?\n${currentStatus ? '' : 'Khi khóa, Chair sẽ không thể chỉnh sửa hoặc xóa hội nghị.'}`)) return;
+    
+    try {
+      const res = await apiClient.put(`/conferences/${id}/toggle-locked`);
+      setConferences((prev) =>
+        prev.map((c) => (c.id === id ? res.data : c))
+      );
+      alert(`Đã ${action} hội nghị thành công!`);
+    } catch (err) {
+      console.error(err);
+      alert(`Không thể ${action} hội nghị. Vui lòng thử lại.`);
     }
   };
 
@@ -151,9 +183,7 @@ const AdminConferences = () => {
             <span className="breadcrumb-current">Hội nghị</span>
           </div>
           <h2 className="data-page-title">Danh sách hội nghị</h2>
-          <p className="data-page-subtitle">
-            Tạo mới, chỉnh sửa và theo dõi tất cả hội nghị đang quản lý trên hệ thống.
-          </p>
+          
         </div>
 
         <div className="data-page-header-right">
@@ -181,25 +211,26 @@ const AdminConferences = () => {
               <th>Tên Hội nghị</th>
               <th>Thời gian diễn ra</th>
               <th>Hạn nộp bài</th>
-              <th style={{ width: "220px" }}>Thao tác</th>
+              <th style={{ width: "100px" }}>Trạng thái</th>
+              <th style={{ width: "360px" }}>Thao tác</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="table-empty">
+                <td colSpan={6} className="table-empty">
                   Đang tải dữ liệu...
                 </td>
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan={5} className="table-empty" style={{ color: "#d72d2d" }}>
+                <td colSpan={6} className="table-empty" style={{ color: "#d72d2d" }}>
                   {error}
                 </td>
               </tr>
             ) : conferences.length === 0 ? (
               <tr>
-                <td colSpan={5} className="table-empty">
+                <td colSpan={6} className="table-empty">
                   Chưa có hội nghị nào. Nhấn{" "}
                   <button
                     type="button"
@@ -217,7 +248,7 @@ const AdminConferences = () => {
               </tr>
             ) : (
               paginatedItems.map((c) => (
-                <tr key={c.id}>
+                <tr key={c.id} style={{ opacity: c.isHidden ? 0.6 : 1 }}>
                   <td>{c.id}</td>
                   <td>
                     <strong>{c.name}</strong>
@@ -241,13 +272,25 @@ const AdminConferences = () => {
                     )}
                   </td>
                   <td>
+                    {c.isHidden ? (
+                      <span className="badge-danger">Đã ẩn</span>
+                    ) : (
+                      <span className="badge-success">Hiển thị</span>
+                    )}
+                    {c.isLocked && (
+                      <span className="badge-secondary" style={{ marginLeft: "0.25rem" }}>
+                        🔒 Khóa
+                      </span>
+                    )}
+                  </td>
+                  <td>
                     <div className="inline-actions">
                       <button
                         className="btn-secondary table-action"
                         type="button"
-                        onClick={() => navigate(`/conferences/${c.id}`)}
+                        onClick={() => navigate(`/admin/conferences/${c.id}/submissions`)}
                       >
-                        Chi tiết
+                        Bài nộp
                       </button>
                       <button
                         className="btn-primary table-action"
@@ -255,6 +298,22 @@ const AdminConferences = () => {
                         onClick={() => navigate(`/admin/conferences/${c.id}/edit`)}
                       >
                         Sửa
+                      </button>
+                      <button
+                        className="btn-secondary table-action"
+                        type="button"
+                        style={{ color: c.isHidden ? "#059669" : "#f59e0b" }}
+                        onClick={() => handleToggleHidden(c.id, c.isHidden)}
+                      >
+                        {c.isHidden ? "Hiện" : "Ẩn"}
+                      </button>
+                      <button
+                        className="btn-secondary table-action"
+                        type="button"
+                        style={{ color: c.isLocked ? "#059669" : "#7c3aed" }}
+                        onClick={() => handleToggleLocked(c.id, c.isLocked)}
+                      >
+                        {c.isLocked ? "Mở khóa" : "Khóa"}
                       </button>
                       <button
                         className="btn-secondary table-action"

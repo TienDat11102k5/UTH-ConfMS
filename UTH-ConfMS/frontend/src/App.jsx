@@ -48,12 +48,14 @@ import ChairReports from "./pages/chair/ChairReports.jsx";
 // Đã thêm 2 import bị thiếu ở đây
 import ChairConferenceManager from "./pages/chair/ChairConferenceManager.jsx";
 import ChairConferenceEdit from "./pages/chair/ChairConferenceEdit.jsx";
+import ChairConferenceSubmissions from "./pages/chair/ChairConferenceSubmissions.jsx";
 import ChairProceedingsPreview from "./pages/chair/ChairProceedingsPreview.jsx";
 
 // --- Admin Imports ---
 import AdminDashboardOverview from "./pages/admin/AdminDashboardOverview.jsx";
 import AdminConferences from "./pages/admin/AdminConferences.jsx";
 import AdminConferenceEdit from "./pages/admin/AdminConferenceEdit.jsx";
+import AdminConferenceSubmissions from "./pages/admin/AdminConferenceSubmissions.jsx";
 import AdminUserEdit from "./pages/admin/AdminUserEdit.jsx";
 import AdminUserCreate from "./pages/admin/AdminUserCreate.jsx";
 import TenantManagement from "./pages/admin/TenantManagement.jsx";
@@ -255,6 +257,14 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/chair/conferences/:conferenceId/submissions"
+          element={
+            <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
+              <ChairConferenceSubmissions />
+            </ProtectedRoute>
+          }
+        />
         {/* ----------------------------------------------------------- */}
 
         <Route
@@ -332,6 +342,14 @@ const App = () => {
           element={
             <ProtectedRoute requiredRole={["ADMIN", "CHAIR", "TRACK_CHAIR"]}>
               <AdminConferenceEdit />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/conferences/:conferenceId/submissions"
+          element={
+            <ProtectedRoute requiredRole={"ADMIN"}>
+              <AdminConferenceSubmissions />
             </ProtectedRoute>
           }
         />

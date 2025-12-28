@@ -1182,6 +1182,11 @@ button {
   padding: 0.75rem 1rem;
   text-align: left;
   border-bottom: 1px solid #e5e7eb;
+  position: relative;
+}
+
+.simple-table td:last-child {
+  overflow: visible;
 }
 
 .simple-table th {
@@ -1963,3 +1968,4 @@ button {
     justify-content: center;
   }
 }
+
