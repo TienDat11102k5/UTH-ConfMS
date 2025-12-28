@@ -14,6 +14,8 @@
 .conf-detail-title {
   font-size: 2rem;
   margin: 0.5rem 0 0.75rem;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
 }
 
 .blind-review-badge {
@@ -32,6 +34,8 @@
   color: #4b5563;
   margin: 0 0 1rem 0;
   line-height: 1.6;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
 }
 
 .conf-detail-meta {
@@ -46,18 +50,29 @@
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .meta-label {
   display: block;
   font-size: 0.9rem;
   color: #6b7280;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  white-space: normal;
+  line-height: 1.4;
 }
 
 .meta-value {
   font-weight: 700;
   color: #0f172a;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  white-space: normal;
+  line-height: 1.3;
 }
 
 .conf-detail-cta {
@@ -110,6 +125,8 @@
   color: #4b5563;
   font-size: 1rem;
   letter-spacing: 0.01em;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
 }
 
 .conf-description p {
