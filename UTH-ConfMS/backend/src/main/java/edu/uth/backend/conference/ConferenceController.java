@@ -18,11 +18,26 @@ public class ConferenceController {
 
     // GET /api/conferences
     @GetMapping
-    public ResponseEntity<List<Conference>> getAllConferences() {
+    public ResponseEntity<List<Conference>> getAllConferences(
+            org.springframework.security.core.Authentication authentication) {
         log.info("GET /api/conferences");
 
         List<Conference> conferences = conferenceService.getAllConferences();
-        log.info("Fetched conferences | count={}", conferences.size());
+        
+        // Filter hidden conferences for non-admin/non-chair users
+        boolean isAdminOrChair = authentication != null && 
+            authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") 
+                    || a.getAuthority().equals("ROLE_CHAIR")
+                    || a.getAuthority().equals("ROLE_TRACK_CHAIR"));
+        
+        if (!isAdminOrChair) {
+            conferences = conferences.stream()
+                .filter(c -> c.getIsHidden() == null || !c.getIsHidden())
+                .collect(java.util.stream.Collectors.toList());
+        }
+        
+        log.info("Fetched conferences | count={} | isAdminOrChair={}", conferences.size(), isAdminOrChair);
 
         return ResponseEntity.ok(conferences);
     }
@@ -89,6 +104,38 @@ public class ConferenceController {
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
             log.error("Error deleting conference | id={}", id, e);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // PUT /api/conferences/{id}/toggle-hidden
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
+    @PutMapping("/{id}/toggle-hidden")
+    public ResponseEntity<?> toggleHidden(@PathVariable Long id) {
+        log.info("PUT /api/conferences/{}/toggle-hidden", id);
+
+        try {
+            Conference updated = conferenceService.toggleHidden(id);
+            log.info("Conference hidden status toggled | id={} | isHidden={}", id, updated.getIsHidden());
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            log.error("Error toggling conference hidden status | id={}", id, e);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // PUT /api/conferences/{id}/toggle-locked (ADMIN only)
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PutMapping("/{id}/toggle-locked")
+    public ResponseEntity<?> toggleLocked(@PathVariable Long id) {
+        log.info("PUT /api/conferences/{}/toggle-locked", id);
+
+        try {
+            Conference updated = conferenceService.toggleLocked(id);
+            log.info("Conference locked status toggled | id={} | isLocked={}", id, updated.getIsLocked());
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            log.error("Error toggling conference locked status | id={}", id, e);
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

@@ -43,6 +43,34 @@ const UserProfileDropdown = () => {
   const userAvatar = user.photoURL || user.avatarUrl || user.avatar || null;
   const userRole = user.role || user.primaryRole || "";
 
+  // Debug: Log user info
+  console.log("UserProfileDropdown - User:", user);
+  console.log("UserProfileDropdown - Role:", userRole);
+
+  // Xác định dashboard path dựa trên role
+  const getDashboardPath = () => {
+    // Check multiple possible role formats
+    const role = userRole.toUpperCase();
+    
+    console.log("getDashboardPath - Checking role:", role);
+    
+    if (role.includes("ADMIN")) {
+      console.log("Redirecting to admin dashboard");
+      return "/admin/dashboard";
+    }
+    if (role.includes("CHAIR")) {
+      console.log("Redirecting to chair dashboard");
+      return "/chair";
+    }
+    if (role.includes("REVIEWER") || role.includes("PC")) {
+      console.log("Redirecting to reviewer dashboard");
+      return "/reviewer";
+    }
+    
+    console.log("Redirecting to author dashboard (default)");
+    return "/author/dashboard"; // Default for AUTHOR or other roles
+  };
+
   // Tạo avatar initials nếu không có ảnh
   const getInitials = (name) => {
     if (!name) return "U";
@@ -113,6 +141,20 @@ const UserProfileDropdown = () => {
           </div>
 
           <div className="dropdown-divider"></div>
+
+          <Link
+            to={getDashboardPath()}
+            className="dropdown-item"
+            onClick={() => setIsOpen(false)}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M6.5 14.5V9.5H9.5V14.5H13V8H15.5L8 1L0.5 8H3V14.5H6.5Z"
+                fill="currentColor"
+              />
+            </svg>
+            Trang quản lý
+          </Link>
 
           <Link
             to="/profile"

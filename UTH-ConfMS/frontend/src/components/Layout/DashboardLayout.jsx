@@ -33,7 +33,7 @@ const DashboardLayout = ({
           </div>
 
           <nav className="dash-header-right">
-            <Link to="/" className="nav-link">
+            <Link to="/conferences" className="nav-link">
               Cổng thông tin
             </Link>
             <UserProfileDropdown />

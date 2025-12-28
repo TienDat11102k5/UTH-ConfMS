@@ -117,7 +117,7 @@ const AuthorDashboard = () => {
           <div className="stats-grid">
             <div className="stat-card stat-card-warning">
               <div className="stat-value">{stats.underReview}</div>
-              <div className="stat-label">Bài đang trong quá trình phản biện</div>
+              <div className="stat-label">Bài đang chấm </div>
             </div>
             <div className="stat-card stat-card-success">
               <div className="stat-value">{stats.accepted}</div>

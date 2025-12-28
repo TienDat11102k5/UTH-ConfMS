@@ -24,6 +24,8 @@ public class ConferenceService {
                 }
             }
         }
+        // Filter out hidden conferences for non-admin users
+        // Note: Filtering is done in controller based on user role
         return list;
     }
 
@@ -52,6 +54,11 @@ public class ConferenceService {
         Conference existing = confRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hội nghị"));
 
+        // Check if conference is locked (only admin can edit locked conferences)
+        if (existing.getIsLocked() != null && existing.getIsLocked()) {
+            throw new RuntimeException("Hội nghị đã bị khóa, không thể chỉnh sửa");
+        }
+
         // Áp dụng các trường được phép cập nhật
         existing.setName(incoming.getName());
         existing.setDescription(incoming.getDescription());
@@ -72,10 +79,54 @@ public class ConferenceService {
 
     @Transactional
     public void deleteConference(Long id) {
-        if (!confRepo.existsById(id)) {
-            throw new RuntimeException("Không tìm thấy hội nghị");
+        Conference existing = confRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hội nghị"));
+        
+        // Check if conference is locked
+        if (existing.getIsLocked() != null && existing.getIsLocked()) {
+            throw new RuntimeException("Hội nghị đã bị khóa, không thể xóa");
         }
+        
         confRepo.deleteById(id);
+    }
+
+    @Transactional
+    public Conference toggleHidden(Long id) {
+        Conference conf = confRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hội nghị"));
+        
+        // Check if conference is locked
+        if (conf.getIsLocked() != null && conf.getIsLocked()) {
+            throw new RuntimeException("Hội nghị đã bị khóa, không thể thay đổi trạng thái hiển thị");
+        }
+        
+        // Eager load tracks to avoid LazyInitializationException
+        if (conf.getTracks() != null) {
+            conf.getTracks().size();
+        }
+        
+        // Toggle hidden status
+        Boolean currentStatus = conf.getIsHidden();
+        conf.setIsHidden(currentStatus == null || !currentStatus);
+        
+        return confRepo.save(conf);
+    }
+
+    @Transactional
+    public Conference toggleLocked(Long id) {
+        Conference conf = confRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hội nghị"));
+        
+        // Eager load tracks to avoid LazyInitializationException
+        if (conf.getTracks() != null) {
+            conf.getTracks().size();
+        }
+        
+        // Toggle locked status
+        Boolean currentStatus = conf.getIsLocked();
+        conf.setIsLocked(currentStatus == null || !currentStatus);
+        
+        return confRepo.save(conf);
     }
 
     private void validateConference(Conference conf) {
