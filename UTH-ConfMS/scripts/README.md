@@ -4,8 +4,43 @@ Các script để backup và restore database PostgreSQL cho hệ thống UTH-Co
 
 ## 📋 Danh sách Scripts
 
-### 1. backup-database.sh
-Script tự động backup database và nén file backup.
+### 1. backup-docker.ps1 ⭐ (Recommended for Windows)
+Script backup database sử dụng Docker container (không cần cài PostgreSQL client).
+
+**Tính năng:**
+- Backup database qua Docker container
+- Không cần cài đặt PostgreSQL client tools
+- Tự động nén file backup (.zip)
+- Tự động xóa backup cũ (> 7 ngày)
+- Hoạt động trên Windows/Linux/Mac
+
+**Sử dụng:**
+```powershell
+cd uth-confms
+.\scripts\backup-docker.ps1
+```
+
+### 2. backup-database.ps1 (Windows - Requires PostgreSQL)
+Script backup database trực tiếp (yêu cầu cài PostgreSQL client tools).
+
+**Tính năng:**
+- Backup database PostgreSQL dạng custom format
+- Tự động nén file backup (.zip)
+- Tự động xóa backup cũ (> 7 ngày)
+- Hỗ trợ environment variables
+
+**Yêu cầu:**
+- PostgreSQL client tools (pg_dump)
+- Download: https://www.postgresql.org/download/
+
+**Sử dụng:**
+```powershell
+cd uth-confms
+.\scripts\backup-database.ps1
+```
+
+### 3. backup-database.sh (Linux/Mac)
+Script backup database cho Linux/Mac.
 
 **Tính năng:**
 - Backup database PostgreSQL dạng custom format
@@ -13,7 +48,28 @@ Script tự động backup database và nén file backup.
 - Tự động xóa backup cũ (> 7 ngày)
 - Hỗ trợ environment variables
 
-### 2. restore-database.sh
+**Sử dụng:**
+```bash
+cd uth-confms
+./scripts/backup-database.sh
+```
+
+### 4. restore-database.ps1 (Windows)
+Script restore database từ file backup cho Windows.
+
+**Tính năng:**
+- Restore database từ file backup
+- Hỗ trợ file đã nén (.zip)
+- Có confirmation trước khi restore
+- Tự động drop và recreate database
+
+**Sử dụng:**
+```powershell
+cd uth-confms
+.\scripts\restore-database.ps1 .\backups\uth_confms_backup_20251229_001738.sql.zip
+```
+
+### 5. restore-database.sh (Linux/Mac)
 Script restore database từ file backup.
 
 **Tính năng:**
