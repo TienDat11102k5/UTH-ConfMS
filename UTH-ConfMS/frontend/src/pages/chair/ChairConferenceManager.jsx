@@ -4,6 +4,7 @@ import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from '../../components/Pagination';
 import { usePagination } from '../../hooks/usePagination';
+import { FiFileText, FiEdit, FiEye, FiEyeOff, FiTrash2 } from 'react-icons/fi';
 
 const ChairConferenceManager = () => {
   const [conferences, setConferences] = useState([]);
@@ -200,7 +201,7 @@ const ChairConferenceManager = () => {
               <th>Thời gian diễn ra</th>
               <th>Hạn nộp bài</th>
               <th style={{ width: "100px" }}>Trạng thái</th>
-              <th style={{ width: "300px" }}>Thao tác</th>
+              <th style={{ width: "220px", textAlign: "center" }}>Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -271,52 +272,126 @@ const ChairConferenceManager = () => {
                       </span>
                     )}
                   </td>
-                  <td>
-                    <div className="inline-actions">
+                  <td style={{ textAlign: "center" }}>
+                    <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center", alignItems: "center" }}>
                       <button
-                        className="btn-secondary table-action"
                         type="button"
+                        title="Xem bài nộp"
                         onClick={() => navigate(`/chair/conferences/${c.id}/submissions`)}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: "0.4rem",
+                          borderRadius: "4px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          color: "#14b8a6",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "#f0fdfa";
+                          e.currentTarget.style.transform = "scale(1.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.transform = "scale(1)";
+                        }}
                       >
-                        Bài nộp
+                        <FiFileText size={17} />
                       </button>
+                      
                       <button
-                        className="btn-primary table-action"
                         type="button"
+                        title={c.isLocked ? "Hội nghị đã bị khóa bởi Admin" : "Sửa"}
                         onClick={() => navigate(`/chair/conferences/${c.id}/edit`)}
                         disabled={c.isLocked}
-                        title={c.isLocked ? "Hội nghị đã bị khóa bởi Admin" : ""}
-                        style={{ opacity: c.isLocked ? 0.5 : 1, cursor: c.isLocked ? "not-allowed" : "pointer" }}
-                      >
-                        Sửa
-                      </button>
-                      <button
-                        className="btn-secondary table-action"
-                        type="button"
-                        style={{ 
-                          color: c.isHidden ? "#059669" : "#f59e0b",
-                          opacity: c.isLocked ? 0.5 : 1,
-                          cursor: c.isLocked ? "not-allowed" : "pointer"
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: c.isLocked ? "not-allowed" : "pointer",
+                          padding: "0.4rem",
+                          borderRadius: "4px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          color: "#3b82f6",
+                          opacity: c.isLocked ? 0.4 : 1,
+                          transition: "all 0.2s"
                         }}
+                        onMouseEnter={(e) => {
+                          if (!c.isLocked) {
+                            e.currentTarget.style.background = "#eff6ff";
+                            e.currentTarget.style.transform = "scale(1.1)";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.transform = "scale(1)";
+                        }}
+                      >
+                        <FiEdit size={17} />
+                      </button>
+                      
+                      <button
+                        type="button"
+                        title={c.isLocked ? "Hội nghị đã bị khóa bởi Admin" : (c.isHidden ? "Hiện" : "Ẩn")}
                         onClick={() => handleToggleHidden(c.id, c.isHidden)}
                         disabled={c.isLocked}
-                        title={c.isLocked ? "Hội nghị đã bị khóa bởi Admin" : ""}
-                      >
-                        {c.isHidden ? "Hiện" : "Ẩn"}
-                      </button>
-                      <button
-                        className="btn-secondary table-action"
-                        type="button"
-                        style={{ 
-                          color: "#d72d2d",
-                          opacity: c.isLocked ? 0.5 : 1,
-                          cursor: c.isLocked ? "not-allowed" : "pointer"
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: c.isLocked ? "not-allowed" : "pointer",
+                          padding: "0.4rem",
+                          borderRadius: "4px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          color: c.isHidden ? "#059669" : "#f59e0b",
+                          opacity: c.isLocked ? 0.4 : 1,
+                          transition: "all 0.2s"
                         }}
+                        onMouseEnter={(e) => {
+                          if (!c.isLocked) {
+                            e.currentTarget.style.background = c.isHidden ? "#ecfdf5" : "#fffbeb";
+                            e.currentTarget.style.transform = "scale(1.1)";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.transform = "scale(1)";
+                        }}
+                      >
+                        {c.isHidden ? <FiEye size={17} /> : <FiEyeOff size={17} />}
+                      </button>
+                      
+                      <button
+                        type="button"
+                        title={c.isLocked ? "Hội nghị đã bị khóa bởi Admin" : "Xóa"}
                         onClick={() => handleDelete(c.id)}
                         disabled={c.isLocked}
-                        title={c.isLocked ? "Hội nghị đã bị khóa bởi Admin" : ""}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: c.isLocked ? "not-allowed" : "pointer",
+                          padding: "0.4rem",
+                          borderRadius: "4px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          color: "#ef4444",
+                          opacity: c.isLocked ? 0.4 : 1,
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!c.isLocked) {
+                            e.currentTarget.style.background = "#fef2f2";
+                            e.currentTarget.style.transform = "scale(1.1)";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.transform = "scale(1)";
+                        }}
                       >
-                        Xoá
+                        <FiTrash2 size={17} />
                       </button>
                     </div>
                   </td>
