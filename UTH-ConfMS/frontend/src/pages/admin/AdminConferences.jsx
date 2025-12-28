@@ -4,6 +4,7 @@ import apiClient from "../../apiClient";
 import AdminLayout from "../../components/Layout/AdminLayout";
 import Pagination from '../../components/Pagination';
 import { usePagination } from '../../hooks/usePagination';
+import { FiEdit, FiEye, FiEyeOff, FiLock, FiUnlock, FiTrash2, FiFileText } from 'react-icons/fi';
 
 const AdminConferences = () => {
   const [conferences, setConferences] = useState([]);
@@ -212,7 +213,7 @@ const AdminConferences = () => {
               <th>Thời gian diễn ra</th>
               <th>Hạn nộp bài</th>
               <th style={{ width: "100px" }}>Trạng thái</th>
-              <th style={{ width: "360px" }}>Thao tác</th>
+              <th style={{ width: "200px", textAlign: "center" }}>Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -283,45 +284,141 @@ const AdminConferences = () => {
                       </span>
                     )}
                   </td>
-                  <td>
-                    <div className="inline-actions">
+                  <td style={{ textAlign: "center" }}>
+                    <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center", alignItems: "center" }}>
                       <button
-                        className="btn-secondary table-action"
                         type="button"
+                        title="Xem bài nộp"
                         onClick={() => navigate(`/admin/conferences/${c.id}/submissions`)}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: "0.4rem",
+                          borderRadius: "4px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          color: "#14b8a6",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "#f0fdfa";
+                          e.currentTarget.style.transform = "scale(1.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.transform = "scale(1)";
+                        }}
                       >
-                        Bài nộp
+                        <FiFileText size={17} />
                       </button>
+                      
                       <button
-                        className="btn-primary table-action"
                         type="button"
+                        title="Sửa"
                         onClick={() => navigate(`/admin/conferences/${c.id}/edit`)}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: "0.4rem",
+                          borderRadius: "4px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          color: "#3b82f6",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "#eff6ff";
+                          e.currentTarget.style.transform = "scale(1.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.transform = "scale(1)";
+                        }}
                       >
-                        Sửa
+                        <FiEdit size={17} />
                       </button>
+                      
                       <button
-                        className="btn-secondary table-action"
                         type="button"
-                        style={{ color: c.isHidden ? "#059669" : "#f59e0b" }}
+                        title={c.isHidden ? "Hiện" : "Ẩn"}
                         onClick={() => handleToggleHidden(c.id, c.isHidden)}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: "0.4rem",
+                          borderRadius: "4px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          color: "#f59e0b",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "#fffbeb";
+                          e.currentTarget.style.transform = "scale(1.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.transform = "scale(1)";
+                        }}
                       >
-                        {c.isHidden ? "Hiện" : "Ẩn"}
+                        {c.isHidden ? <FiEye size={17} /> : <FiEyeOff size={17} />}
                       </button>
+                      
                       <button
-                        className="btn-secondary table-action"
                         type="button"
-                        style={{ color: c.isLocked ? "#059669" : "#7c3aed" }}
+                        title={c.isLocked ? "Mở khóa" : "Khóa"}
                         onClick={() => handleToggleLocked(c.id, c.isLocked)}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: "0.4rem",
+                          borderRadius: "4px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          color: "#8b5cf6",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "#f5f3ff";
+                          e.currentTarget.style.transform = "scale(1.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.transform = "scale(1)";
+                        }}
                       >
-                        {c.isLocked ? "Mở khóa" : "Khóa"}
+                        {c.isLocked ? <FiUnlock size={17} /> : <FiLock size={17} />}
                       </button>
+                      
                       <button
-                        className="btn-secondary table-action"
                         type="button"
-                        style={{ color: "#d72d2d" }}
+                        title="Xóa"
                         onClick={() => handleDelete(c.id)}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: "0.4rem",
+                          borderRadius: "4px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          color: "#ef4444",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "#fef2f2";
+                          e.currentTarget.style.transform = "scale(1.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.transform = "scale(1)";
+                        }}
                       >
-                        Xoá
+                        <FiTrash2 size={17} />
                       </button>
                     </div>
                   </td>

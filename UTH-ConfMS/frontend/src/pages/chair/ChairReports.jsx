@@ -91,8 +91,7 @@ const ChairReports = () => {
     <DashboardLayout
       roleLabel="Program / Track Chair"
       title="Báo cáo &amp; Thống kê"
-      subtitle="Xem báo cáo tổng hợp và export dữ liệu"
-    >
+      subtitle="Xem báo cáo tổng hợp và export dữ liệu"      showChairNav={true}    >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">

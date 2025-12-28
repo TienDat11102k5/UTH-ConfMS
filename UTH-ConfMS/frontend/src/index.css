@@ -1163,7 +1163,7 @@ button {
   box-shadow: var(--shadow-sm);
   border: 1px solid rgba(0, 0, 0, 0.04);
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -1177,15 +1177,19 @@ button {
   background-color: #f9fafb;
 }
 
+.simple-table tbody {
+  position: relative;
+}
+
 .simple-table th,
 .simple-table td {
   padding: 0.75rem 1rem;
   text-align: left;
   border-bottom: 1px solid #e5e7eb;
-  position: relative;
 }
 
 .simple-table td:last-child {
+  position: relative;
   overflow: visible;
 }
 

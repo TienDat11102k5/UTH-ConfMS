@@ -81,6 +81,7 @@ const ChairDashboard = () => {
       roleLabel="Chủ tịch Chương trình / Chủ tịch Chuyên đề"
       title="Hệ thống Quản lý Hội nghị Khoa học"
       subtitle="Cấu hình hội nghị và Call for Papers, phân công phản biện, theo dõi tiến độ đánh giá và đưa ra quyết định học thuật."
+      showChairNav={true}
     >
       <div className="chair-dashboard-grid">
         {dashboardCards.map((card) => (

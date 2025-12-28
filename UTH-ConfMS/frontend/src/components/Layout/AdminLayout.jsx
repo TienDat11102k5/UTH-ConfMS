@@ -14,6 +14,7 @@ const AdminLayout = ({ title, subtitle, children }) => {
             subtitle={subtitle}
             showSidebar={true}
             sidebarContent={<AdminSidebar />}
+            showAdminNav={true}
         >
             {children}
         </DashboardLayout>
