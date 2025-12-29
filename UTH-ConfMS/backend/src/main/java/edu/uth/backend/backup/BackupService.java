@@ -151,7 +151,9 @@ public class BackupService {
         try (FileInputStream fis = new FileInputStream(filepath.toFile());
              GZIPInputStream gzis = new GZIPInputStream(fis);
              InputStreamReader reader = new InputStreamReader(gzis)) {
-            backupData = objectMapper.readValue(reader, Map.class);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> temp = (Map<String, Object>) objectMapper.readValue(reader, Map.class);
+            backupData = temp;
         }
         
         @SuppressWarnings("unchecked")
