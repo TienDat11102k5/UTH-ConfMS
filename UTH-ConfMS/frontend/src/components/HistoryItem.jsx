@@ -1,6 +1,8 @@
 // src/components/HistoryItem.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FiFileText, FiMessageSquare, FiLock, FiActivity } from 'react-icons/fi';
+import { formatRelativeTime } from '../utils/dateUtils';
 import './HistoryItem.css';
 
 /**
@@ -12,32 +14,14 @@ const HistoryItem = ({ activity }) => {
         const type = activityType?.toUpperCase();
 
         if (type?.includes('PAPER') || type?.includes('CAMERA')) {
-            return { icon: '📄', color: '#3b82f6', bgColor: '#eff6ff' }; // Blue
+            return { icon: FiFileText, color: '#3b82f6', bgColor: '#eff6ff' }; // Blue
         } else if (type?.includes('REVIEW')) {
-            return { icon: '📝', color: '#f97316', bgColor: '#fff7ed' }; // Orange
+            return { icon: FiMessageSquare, color: '#f97316', bgColor: '#fff7ed' }; // Orange
         } else if (type?.includes('LOGIN') || type?.includes('LOGOUT') || type?.includes('PROFILE') || type?.includes('PASSWORD')) {
-            return { icon: '🔐', color: '#6b7280', bgColor: '#f9fafb' }; // Gray
+            return { icon: FiLock, color: '#6b7280', bgColor: '#f9fafb' }; // Gray
         } else {
-            return { icon: '📋', color: '#8b5cf6', bgColor: '#faf5ff' }; // Purple
+            return { icon: FiActivity, color: '#8b5cf6', bgColor: '#faf5ff' }; // Purple
         }
-    };
-
-    // Helper function to format relative time
-    const getRelativeTime = (timestamp) => {
-        const now = new Date();
-        const activityTime = new Date(timestamp);
-        const diffMs = now - activityTime;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
-
-        if (diffMins < 1) return 'Vừa xong';
-        if (diffMins < 60) return `${diffMins} phút trước`;
-        if (diffHours < 24) return `${diffHours} giờ trước`;
-        if (diffDays < 7) return `${diffDays} ngày trước`;
-        if (diffDays < 30) return `${Math.floor(diffDays / 7)} tuần trước`;
-        if (diffDays < 365) return `${Math.floor(diffDays / 30)} tháng trước`;
-        return `${Math.floor(diffDays / 365)} năm trước`;
     };
 
     // Parse metadata if it's a JSON string
@@ -62,15 +46,15 @@ const HistoryItem = ({ activity }) => {
         return null;
     };
 
-    const { icon, color, bgColor } = getActivityIcon(activity.activityType);
+    const { icon: IconComponent, color, bgColor } = getActivityIcon(activity.activityType);
     const metadata = getMetadata();
     const entityLink = getEntityLink();
-    const relativeTime = getRelativeTime(activity.timestamp);
+    const relativeTime = formatRelativeTime(activity.timestamp);
 
     return (
         <div className="history-item">
             <div className="history-item-icon" style={{ backgroundColor: bgColor }}>
-                <span style={{ color }}>{icon}</span>
+                <IconComponent size={24} color={color} />
             </div>
 
             <div className="history-item-content">

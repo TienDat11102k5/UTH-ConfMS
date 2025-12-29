@@ -71,12 +71,6 @@ const AdminSidebar = () => {
             label: "Audit Logs",
             title: "Nhật ký Hệ thống",
         },
-        {
-            path: "/history",
-            icon: <FiClock />,
-            label: "Lịch sử",
-            title: "Lịch sử Hoạt động",
-        },
     ];
 
     const isActive = (path) => {

@@ -1,29 +1,46 @@
-// src/pages/HistoryPage.jsx
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../auth';
+import { FiActivity, FiFileText, FiMessageSquare, FiLock } from 'react-icons/fi';
+import DashboardLayout from '../components/Layout/DashboardLayout';
 import HistoryItem from '../components/HistoryItem';
 import * as historyApi from '../api/historyApi';
 import Pagination from '../components/Pagination';
 import { usePagination } from '../hooks/usePagination';
-import './HistoryPage.css';
 
 const HistoryPage = () => {
+    const { user } = useAuth();
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [filter, setFilter] = useState('all'); // all, paper, review, system
-    const [timeRange, setTimeRange] = useState('all'); // all, today, week, month
+    const [filter, setFilter] = useState('all');
+    const [timeRange, setTimeRange] = useState('all');
     const [stats, setStats] = useState(null);
 
-    // Pagination
     const { currentPage, setCurrentPage, totalPages, paginatedItems } =
         usePagination(activities, 20);
 
-    // Load stats on mount
+    // Determine which filters to show based on role
+    const getAvailableFilters = () => {
+        const roles = user?.roles || [];
+        const filters = ['all'];
+        
+        if (roles.includes('ROLE_AUTHOR')) {
+            filters.push('paper');
+        }
+        if (roles.includes('ROLE_REVIEWER')) {
+            filters.push('review');
+        }
+        filters.push('system');
+        
+        return filters;
+    };
+
+    const availableFilters = getAvailableFilters();
+
     useEffect(() => {
         loadStats();
     }, []);
 
-    // Helper to filter activities by group on client side
     const filterByGroup = useCallback((activities, group) => {
         if (!Array.isArray(activities)) return [];
 
@@ -44,20 +61,14 @@ const HistoryPage = () => {
 
             let data;
 
-            // Apply filters
             if (timeRange !== 'all' && filter === 'all') {
-                // Time range only
                 data = await historyApi.getRecentActivities(timeRange);
             } else if (filter !== 'all' && timeRange === 'all') {
-                // Group filter only
                 data = await historyApi.getActivitiesByGroup(filter);
             } else if (filter !== 'all' && timeRange !== 'all') {
-                // Both filters - get by time first, then filter by group on client side
                 const allData = await historyApi.getRecentActivities(timeRange);
-                // Filter by group on client side
                 data = filterByGroup(allData, filter);
             } else {
-                // No filters
                 data = await historyApi.getMyActivities();
             }
 
@@ -70,7 +81,6 @@ const HistoryPage = () => {
         }
     }, [filter, timeRange, filterByGroup]);
 
-    // Load activities on mount and when filters change
     useEffect(() => {
         loadActivities();
     }, [loadActivities]);
@@ -78,175 +88,322 @@ const HistoryPage = () => {
     const loadStats = async () => {
         try {
             const statsData = await historyApi.getActivityStats();
+            console.log('Stats data received:', statsData);
             setStats(statsData);
         } catch (err) {
             console.error('Error loading stats:', err);
         }
     };
 
-    const handleFilterChange = (newFilter) => {
-        setFilter(newFilter);
-    };
+    const renderStatCards = () => {
+        if (!stats) return null;
 
-    const handleTimeRangeChange = (newRange) => {
-        setTimeRange(newRange);
+        const roles = user?.roles || [];
+        const cards = [];
+
+        // Always show total
+        cards.push(
+            <div key="total" className="stat-card" style={{
+                background: 'white',
+                padding: '1.25rem',
+                borderRadius: '12px',
+                border: '1px solid #e5e7eb',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem'
+            }}>
+                <div style={{ 
+                    width: '48px', 
+                    height: '48px', 
+                    borderRadius: '12px', 
+                    background: '#dbeafe', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center' 
+                }}>
+                    <FiActivity size={24} color="#2563eb" />
+                </div>
+                <div>
+                    <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1f2937' }}>{stats.totalActivities}</div>
+                    <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Tổng hoạt động</div>
+                </div>
+            </div>
+        );
+
+        // Show paper activities for authors
+        if (roles.includes('ROLE_AUTHOR')) {
+            cards.push(
+                <div key="paper" className="stat-card" style={{
+                    background: 'white',
+                    padding: '1.25rem',
+                    borderRadius: '12px',
+                    border: '1px solid #e5e7eb',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1rem'
+                }}>
+                    <div style={{ 
+                        width: '48px', 
+                        height: '48px', 
+                        borderRadius: '12px', 
+                        background: '#dcfce7', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center' 
+                    }}>
+                        <FiFileText size={24} color="#16a34a" />
+                    </div>
+                    <div>
+                        <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1f2937' }}>{stats.paperActivities}</div>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Hoạt động bài viết</div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Show review activities for reviewers
+        if (roles.includes('ROLE_REVIEWER')) {
+            cards.push(
+                <div key="review" className="stat-card" style={{
+                    background: 'white',
+                    padding: '1.25rem',
+                    borderRadius: '12px',
+                    border: '1px solid #e5e7eb',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1rem'
+                }}>
+                    <div style={{ 
+                        width: '48px', 
+                        height: '48px', 
+                        borderRadius: '12px', 
+                        background: '#fef3c7', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center' 
+                    }}>
+                        <FiMessageSquare size={24} color="#d97706" />
+                    </div>
+                    <div>
+                        <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1f2937' }}>{stats.reviewActivities}</div>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Hoạt động review</div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Always show login count
+        cards.push(
+            <div key="login" className="stat-card" style={{
+                background: 'white',
+                padding: '1.25rem',
+                borderRadius: '12px',
+                border: '1px solid #e5e7eb',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem'
+            }}>
+                <div style={{ 
+                    width: '48px', 
+                    height: '48px', 
+                    borderRadius: '12px', 
+                    background: '#f3e8ff', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center' 
+                }}>
+                    <FiLock size={24} color="#9333ea" />
+                </div>
+                <div>
+                    <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1f2937' }}>{stats.loginCount}</div>
+                    <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Lần đăng nhập</div>
+                </div>
+            </div>
+        );
+
+        return cards;
     };
 
     return (
-        <div className="history-page">
-            <div className="history-container">
-                {/* Header */}
-                <div className="history-header">
-                    <h1>Lịch Sử Hoạt Động</h1>
-                    <p className="history-subtitle">
+        <DashboardLayout>
+            <div className="data-page-header">
+                <div className="data-page-header-left">
+                    <div className="breadcrumb">
+                        <span className="breadcrumb-current">Lịch sử</span>
+                    </div>
+                    <h2 className="data-page-title">Lịch Sử Hoạt Động</h2>
+                    <p className="data-page-subtitle">
                         Theo dõi tất cả các hoạt động của bạn trong hệ thống
                     </p>
                 </div>
+            </div>
 
-                {/* Stats Cards */}
-                {stats && (
-                    <div className="stats-grid">
-                        <div className="stat-card">
-                            <div className="stat-icon">📊</div>
-                            <div className="stat-content">
-                                <div className="stat-value">{stats.totalActivities}</div>
-                                <div className="stat-label">Tổng hoạt động</div>
-                            </div>
-                        </div>
-                        <div className="stat-card">
-                            <div className="stat-icon">📄</div>
-                            <div className="stat-content">
-                                <div className="stat-value">{stats.paperActivities}</div>
-                                <div className="stat-label">Hoạt động bài viết</div>
-                            </div>
-                        </div>
-                        <div className="stat-card">
-                            <div className="stat-icon">📝</div>
-                            <div className="stat-content">
-                                <div className="stat-value">{stats.reviewActivities}</div>
-                                <div className="stat-label">Hoạt động review</div>
-                            </div>
-                        </div>
-                        <div className="stat-card">
-                            <div className="stat-icon">🔐</div>
-                            <div className="stat-content">
-                                <div className="stat-value">{stats.loginCount}</div>
-                                <div className="stat-label">Lần đăng nhập</div>
-                            </div>
-                        </div>
+            {/* Stats Cards */}
+            {stats && (
+                <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
+                    gap: '1rem', 
+                    marginBottom: '1.5rem' 
+                }}>
+                    {renderStatCards()}
+                </div>
+            )}
+
+            {/* Filters */}
+            <div style={{ 
+                background: 'white', 
+                padding: '1.25rem', 
+                borderRadius: '12px', 
+                border: '1px solid #e5e7eb',
+                marginBottom: '1.5rem'
+            }}>
+                <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#374151', marginBottom: '0.5rem' }}>
+                        Loại hoạt động:
+                    </label>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        {availableFilters.includes('all') && (
+                            <button
+                                className={filter === 'all' ? 'btn-primary' : 'btn-secondary'}
+                                onClick={() => setFilter('all')}
+                                style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                            >
+                                Tất cả
+                            </button>
+                        )}
+                        {availableFilters.includes('paper') && (
+                            <button
+                                className={filter === 'paper' ? 'btn-primary' : 'btn-secondary'}
+                                onClick={() => setFilter('paper')}
+                                style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                            >
+                                <FiFileText size={16} />
+                                Bài viết
+                            </button>
+                        )}
+                        {availableFilters.includes('review') && (
+                            <button
+                                className={filter === 'review' ? 'btn-primary' : 'btn-secondary'}
+                                onClick={() => setFilter('review')}
+                                style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                            >
+                                <FiMessageSquare size={16} />
+                                Review
+                            </button>
+                        )}
+                        {availableFilters.includes('system') && (
+                            <button
+                                className={filter === 'system' ? 'btn-primary' : 'btn-secondary'}
+                                onClick={() => setFilter('system')}
+                                style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                            >
+                                <FiLock size={16} />
+                                Hệ thống
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                <div>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#374151', marginBottom: '0.5rem' }}>
+                        Thời gian:
+                    </label>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <button
+                            className={timeRange === 'all' ? 'btn-primary' : 'btn-secondary'}
+                            onClick={() => setTimeRange('all')}
+                            style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                        >
+                            Tất cả
+                        </button>
+                        <button
+                            className={timeRange === 'today' ? 'btn-primary' : 'btn-secondary'}
+                            onClick={() => setTimeRange('today')}
+                            style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                        >
+                            Hôm nay
+                        </button>
+                        <button
+                            className={timeRange === 'week' ? 'btn-primary' : 'btn-secondary'}
+                            onClick={() => setTimeRange('week')}
+                            style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                        >
+                            7 ngày
+                        </button>
+                        <button
+                            className={timeRange === 'month' ? 'btn-primary' : 'btn-secondary'}
+                            onClick={() => setTimeRange('month')}
+                            style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                        >
+                            30 ngày
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Timeline */}
+            <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                {loading && (
+                    <div style={{ textAlign: 'center', padding: '3rem' }}>
+                        <p style={{ color: '#6b7280' }}>Đang tải lịch sử...</p>
                     </div>
                 )}
 
-                {/* Filters */}
-                <div className="history-filters">
-                    <div className="filter-group">
-                        <label>Loại hoạt động:</label>
-                        <div className="filter-buttons">
-                            <button
-                                className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('all')}
-                            >
-                                Tất cả
-                            </button>
-                            <button
-                                className={`filter-btn ${filter === 'paper' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('paper')}
-                            >
-                                📄 Bài viết
-                            </button>
-                            <button
-                                className={`filter-btn ${filter === 'review' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('review')}
-                            >
-                                📝 Review
-                            </button>
-                            <button
-                                className={`filter-btn ${filter === 'system' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('system')}
-                            >
-                                🔐 Hệ thống
-                            </button>
-                        </div>
+                {error && (
+                    <div style={{ textAlign: 'center', padding: '3rem' }}>
+                        <p style={{ color: '#ef4444', marginBottom: '1rem' }}>{error}</p>
+                        <button onClick={loadActivities} className="btn-primary">
+                            Thử lại
+                        </button>
                     </div>
+                )}
 
-                    <div className="filter-group">
-                        <label>Thời gian:</label>
-                        <div className="filter-buttons">
-                            <button
-                                className={`filter-btn ${timeRange === 'all' ? 'active' : ''}`}
-                                onClick={() => handleTimeRangeChange('all')}
-                            >
-                                Tất cả
-                            </button>
-                            <button
-                                className={`filter-btn ${timeRange === 'today' ? 'active' : ''}`}
-                                onClick={() => handleTimeRangeChange('today')}
-                            >
-                                Hôm nay
-                            </button>
-                            <button
-                                className={`filter-btn ${timeRange === 'week' ? 'active' : ''}`}
-                                onClick={() => handleTimeRangeChange('week')}
-                            >
-                                7 ngày
-                            </button>
-                            <button
-                                className={`filter-btn ${timeRange === 'month' ? 'active' : ''}`}
-                                onClick={() => handleTimeRangeChange('month')}
-                            >
-                                30 ngày
-                            </button>
+                {!loading && !error && activities.length === 0 && (
+                    <div style={{ textAlign: 'center', padding: '3rem' }}>
+                        <div style={{ 
+                            width: '80px', 
+                            height: '80px', 
+                            margin: '0 auto 1.5rem', 
+                            borderRadius: '50%', 
+                            background: '#f3f4f6', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center' 
+                        }}>
+                            <FiActivity size={40} color="#9ca3af" />
                         </div>
+                        <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1f2937', marginBottom: '0.5rem' }}>
+                            Chưa có hoạt động nào
+                        </h3>
+                        <p style={{ color: '#6b7280' }}>Lịch sử hoạt động của bạn sẽ hiển thị ở đây</p>
                     </div>
-                </div>
+                )}
 
-                {/* Timeline */}
-                <div className="history-timeline">
-                    {loading && (
-                        <div className="loading-state">
-                            <div className="spinner"></div>
-                            <p>Đang tải lịch sử...</p>
+                {!loading && !error && activities.length > 0 && (
+                    <>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                            {paginatedItems.map((activity) => (
+                                <HistoryItem key={activity.id} activity={activity} />
+                            ))}
                         </div>
-                    )}
 
-                    {error && (
-                        <div className="error-state">
-                            <p>{error}</p>
-                            <button onClick={loadActivities} className="retry-btn">
-                                Thử lại
-                            </button>
-                        </div>
-                    )}
-
-                    {!loading && !error && activities.length === 0 && (
-                        <div className="empty-state">
-                            <div className="empty-icon">📭</div>
-                            <h3>Chưa có hoạt động nào</h3>
-                            <p>Lịch sử hoạt động của bạn sẽ hiển thị ở đây</p>
-                        </div>
-                    )}
-
-                    {!loading && !error && activities.length > 0 && (
-                        <>
-                            <div className="timeline-list">
-                                {paginatedItems.map((activity) => (
-                                    <HistoryItem key={activity.id} activity={activity} />
-                                ))}
+                        {activities.length > 20 && (
+                            <div style={{ marginTop: '1.5rem' }}>
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    totalItems={activities.length}
+                                    itemsPerPage={20}
+                                    onPageChange={setCurrentPage}
+                                    itemName="hoạt động"
+                                />
                             </div>
-
-                            <Pagination
-                                currentPage={currentPage}
-                                totalPages={totalPages}
-                                totalItems={activities.length}
-                                itemsPerPage={20}
-                                onPageChange={setCurrentPage}
-                                itemName="hoạt động"
-                            />
-                        </>
-                    )}
-                </div>
+                        )}
+                    </>
+                )}
             </div>
-        </div>
+        </DashboardLayout>
     );
 };
 

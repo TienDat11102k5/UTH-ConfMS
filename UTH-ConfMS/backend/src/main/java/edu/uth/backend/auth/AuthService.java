@@ -11,6 +11,7 @@ import edu.uth.backend.entity.PasswordResetOtp;
 import edu.uth.backend.entity.PasswordResetToken;
 import edu.uth.backend.entity.Role;
 import edu.uth.backend.entity.User;
+import edu.uth.backend.history.UserActivityHistoryService;
 import edu.uth.backend.repository.PasswordResetOtpRepository;
 import edu.uth.backend.repository.PasswordResetTokenRepository;
 import edu.uth.backend.repository.RoleRepository;
@@ -47,6 +48,7 @@ public class AuthService {
   private final AuthenticationManager authenticationManager;
   private final JwtTokenProvider jwtTokenProvider;
   private final AuditLogger auditLogger;
+  private final UserActivityHistoryService activityHistoryService;
 
   // Service gửi email qua SMTP (MailService phải được implement trong package
   // common)
@@ -77,7 +79,8 @@ public class AuthService {
       AuthenticationManager authenticationManager,
       JwtTokenProvider jwtTokenProvider,
       MailService mailService,
-      AuditLogger auditLogger) {
+      AuditLogger auditLogger,
+      UserActivityHistoryService activityHistoryService) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.passwordResetTokenRepository = passwordResetTokenRepository;
@@ -87,6 +90,7 @@ public class AuthService {
     this.jwtTokenProvider = jwtTokenProvider;
     this.mailService = mailService;
     this.auditLogger = auditLogger;
+    this.activityHistoryService = activityHistoryService;
   }
   
   /**
@@ -241,8 +245,19 @@ public class AuthService {
       
       // 4.1 Audit log successful login
       auditLogger.logLoginSuccess(email, getClientIp());
+      
+      // 4.2 Log to user activity history
+      activityHistoryService.logActivity(
+          user.getId(),
+          edu.uth.backend.entity.ActivityType.LOGIN,
+          edu.uth.backend.entity.EntityType.USER,
+          user.getId(),
+          "Đăng nhập thành công",
+          activityHistoryService.createLoginMetadata(null, null),
+          getClientIp()
+      );
     } catch (Exception e) {
-      // 4.2 Audit log failed login
+      // 4.3 Audit log failed login
       auditLogger.logLoginFailure(email, getClientIp(), e.getMessage());
       throw e;
     }
@@ -313,6 +328,17 @@ public class AuthService {
 
       user = userRepository.save(user);
       System.out.println("✅ Đã tạo người dùng GOOGLE mới: " + email);
+      
+      // Log login activity for new user
+      activityHistoryService.logActivity(
+          user.getId(),
+          edu.uth.backend.entity.ActivityType.LOGIN,
+          edu.uth.backend.entity.EntityType.USER,
+          user.getId(),
+          "Đăng nhập lần đầu qua Google",
+          activityHistoryService.createLoginMetadata(null, null),
+          getClientIp()
+      );
 
     } else {
       // 4b. User đã tồn tại -> cập nhật thông tin
@@ -345,6 +371,17 @@ public class AuthService {
 
       user = userRepository.save(user);
       System.out.println("✅ Đã cập nhật người dùng GOOGLE: " + email);
+      
+      // Log login activity
+      activityHistoryService.logActivity(
+          user.getId(),
+          edu.uth.backend.entity.ActivityType.LOGIN,
+          edu.uth.backend.entity.EntityType.USER,
+          user.getId(),
+          "Đăng nhập qua Google",
+          activityHistoryService.createLoginMetadata(null, null),
+          getClientIp()
+      );
     }
 
     // 5. Phát hành JWT
