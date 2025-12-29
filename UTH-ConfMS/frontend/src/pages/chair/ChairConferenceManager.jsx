@@ -4,7 +4,7 @@ import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from '../../components/Pagination';
 import { usePagination } from '../../hooks/usePagination';
-import { FiFileText, FiEdit, FiEye, FiEyeOff, FiTrash2 } from 'react-icons/fi';
+import { FiFileText, FiEdit, FiEye, FiEyeOff, FiTrash2, FiLock } from 'react-icons/fi';
 
 const ChairConferenceManager = () => {
   const [conferences, setConferences] = useState([]);
@@ -200,6 +200,7 @@ const ChairConferenceManager = () => {
               <th>Tên Hội nghị</th>
               <th>Thời gian diễn ra</th>
               <th>Hạn nộp bài</th>
+              <th>Hạn nộp bản cuối</th>
               <th style={{ width: "100px" }}>Trạng thái</th>
               <th style={{ width: "220px", textAlign: "center" }}>Thao tác</th>
             </tr>
@@ -207,19 +208,19 @@ const ChairConferenceManager = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="table-empty">
+                <td colSpan={7} className="table-empty">
                   Đang tải dữ liệu...
                 </td>
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan={6} className="table-empty" style={{ color: "#d72d2d" }}>
+                <td colSpan={7} className="table-empty" style={{ color: "#d72d2d" }}>
                   {error}
                 </td>
               </tr>
             ) : conferences.length === 0 ? (
               <tr>
-                <td colSpan={6} className="table-empty">
+                <td colSpan={7} className="table-empty">
                   Chưa có hội nghị nào. Nhấn{" "}
                   <button
                     type="button"
@@ -261,16 +262,25 @@ const ChairConferenceManager = () => {
                     )}
                   </td>
                   <td>
-                    {c.isHidden ? (
-                      <span className="badge-danger">Đã ẩn</span>
-                    ) : (
-                      <span className="badge-success">Hiển thị</span>
-                    )}
-                    {c.isLocked && (
-                      <span className="badge-secondary" style={{ marginLeft: "0.25rem" }}>
-                        🔒 Khóa
+                    {c.cameraReadyDeadline ? (
+                      <span className="badge-soft" style={{ background: "#fef3c7", color: "#92400e" }}>
+                        {new Date(c.cameraReadyDeadline).toLocaleDateString()}
                       </span>
+                    ) : (
+                      <span style={{ color: "var(--text-light)" }}>Chưa đặt</span>
                     )}
+                  </td>
+                  <td>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", whiteSpace: "nowrap" }}>
+                      {c.isHidden ? (
+                        <span className="badge-danger">Đã ẩn</span>
+                      ) : (
+                        <span className="badge-success">Hiển thị</span>
+                      )}
+                      {c.isLocked && (
+                        <FiLock size={16} color="#ef4444" title="Hội nghị đã bị khóa" />
+                      )}
+                    </div>
                   </td>
                   <td style={{ textAlign: "center" }}>
                     <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center", alignItems: "center" }}>
