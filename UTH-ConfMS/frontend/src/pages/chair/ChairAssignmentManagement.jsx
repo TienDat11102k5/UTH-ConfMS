@@ -78,7 +78,7 @@ const ChairAssignmentManagement = () => {
           console.error("Không thể tải danh sách reviewers:", uErr);
           setError(
             "Không thể tải danh sách reviewers: " +
-              (uErr.response?.data || uErr.message)
+            (uErr.response?.data || uErr.message)
           );
         }
 
@@ -133,9 +133,9 @@ const ChairAssignmentManagement = () => {
       });
     } catch (err) {
       console.error("Assignment error:", err);
-      
+
       let errorMsg = "Phân công thất bại";
-      
+
       if (err.response) {
         // Backend trả về error message trực tiếp trong response.data (string)
         if (typeof err.response.data === 'string') {
@@ -150,7 +150,7 @@ const ChairAssignmentManagement = () => {
       } else if (err.message) {
         errorMsg = err.message;
       }
-      
+
       alert(errorMsg);
     } finally {
       setSubmitting(false);
@@ -313,9 +313,16 @@ const ChairAssignmentManagement = () => {
                           {paperAssignments.map((assign) => (
                             <div
                               key={assign.id}
-                              style={{ marginBottom: "0.25rem" }}
+                              style={{
+                                marginBottom: "0.25rem",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.5rem"
+                              }}
                             >
-                              {assign.reviewer?.fullName}{" "}
+                              <span style={{ minWidth: "120px" }}>
+                                {assign.reviewer?.fullName}
+                              </span>
                               {getStatusBadge(assign.status)}
                             </div>
                           ))}
@@ -337,13 +344,13 @@ const ChairAssignmentManagement = () => {
                             paper.status === "WITHDRAWN"
                               ? "Không thể phân công cho bài đã rút"
                               : paperAssignments.length > 0
-                              ? "Thêm reviewer cho bài này"
-                              : "Phân công reviewer"
+                                ? "Thêm reviewer cho bài này"
+                                : "Phân công reviewer"
                           }
                         >
                           {paperAssignments.length > 0 ? "Thêm reviewer" : "Phân công"}
                         </button>
-                       
+
                       </div>
                     </td>
                   </tr>
@@ -362,7 +369,7 @@ const ChairAssignmentManagement = () => {
         >
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <h3>Phân công Reviewer cho: {selectedPaper.title}</h3>
-            
+
             {/* Hiển thị các reviewer đã được phân công */}
             {(() => {
               const paperAssignments = assignments[selectedPaper.id] || [];
@@ -380,7 +387,7 @@ const ChairAssignmentManagement = () => {
               }
               return null;
             })()}
-            
+
             <div className="form-group">
               <label className="form-label">Chọn Reviewer *</label>
               <select
@@ -409,10 +416,10 @@ const ChairAssignmentManagement = () => {
                   (assign) => assign.reviewer?.id === reviewer.id
                 );
               }).length === 0 && (
-                <div style={{ marginTop: '0.5rem', color: '#666', fontSize: '0.9rem' }}>
-                  Tất cả reviewers đã được phân công cho bài này
-                </div>
-              )}
+                  <div style={{ marginTop: '0.5rem', color: '#666', fontSize: '0.9rem' }}>
+                    Tất cả reviewers đã được phân công cho bài này
+                  </div>
+                )}
             </div>
             <div className="form-actions">
               <button
