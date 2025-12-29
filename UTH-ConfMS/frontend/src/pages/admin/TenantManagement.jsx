@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import AdminLayout from "../../components/Layout/AdminLayout";
 import Pagination from '../../components/Pagination';
 import { usePagination } from '../../hooks/usePagination';
@@ -86,7 +87,7 @@ const TenantManagement = () => {
               <th>Email</th>
               <th>Vai trò</th>
               <th>Trạng thái</th>
-              <th style={{ width: "180px" }}></th>
+              <th style={{ width: "120px" }}>Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -115,41 +116,34 @@ const TenantManagement = () => {
                     </span>
                   </td>
                   <td>
-                    <div className="inline-actions">
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                       <button
-                        className="btn-secondary table-action"
-                        type="button"
-                        onClick={async () => {
-                          const newRole = window.prompt(
-                            `Gán vai trò cho ${u.email} (ví dụ: AUTHOR, REVIEWER, CHAIR, ADMIN)`,
-                            u.role
-                          );
-                          if (!newRole) return;
-                          try {
-                            await apiClient.put(`/admin/users/${u.id}/role`, {
-                              role: newRole,
-                            });
-                            fetchUsers();
-                          } catch (err) {
-                            console.error(err);
-                            alert("Cập nhật vai trò thất bại");
-                          }
-                        }}
-                      >
-                        Phân quyền
-                      </button>
-
-                      <button
-                        className="btn-primary table-action"
-                        type="button"
                         onClick={() => navigate(`/admin/users/${u.id}/edit`)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: '0.4rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: '6px',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#dbeafe';
+                          e.currentTarget.style.transform = 'scale(1.1)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'none';
+                          e.currentTarget.style.transform = 'scale(1)';
+                        }}
+                        title="Sửa"
                       >
-                        Sửa
+                        <FiEdit2 size={18} color="#2563eb" />
                       </button>
 
                       <button
-                        className="btn-danger table-action"
-                        type="button"
                         onClick={async () => {
                           if (!window.confirm("Xác nhận xoá tài khoản này?"))
                             return;
@@ -161,8 +155,28 @@ const TenantManagement = () => {
                             alert("Xoá thất bại");
                           }
                         }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: '0.4rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: '6px',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#fee2e2';
+                          e.currentTarget.style.transform = 'scale(1.1)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'none';
+                          e.currentTarget.style.transform = 'scale(1)';
+                        }}
+                        title="Xóa"
                       >
-                        Xoá
+                        <FiTrash2 size={18} color="#dc2626" />
                       </button>
                     </div>
                   </td>

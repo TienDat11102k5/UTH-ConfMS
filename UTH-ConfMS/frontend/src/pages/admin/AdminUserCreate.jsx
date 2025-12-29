@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/Layout/AdminLayout";
 import apiClient from "../../apiClient";
@@ -68,10 +68,8 @@ const AdminUserCreate = () => {
         password,
       };
 
-      // Use public register endpoint to create local account
       const res = await apiClient.post("/auth/register", payload, { skipAuth: true });
 
-      // If admin selected a role other than default, update via admin API
       const newUserId = res?.data?.user?.id;
       const desiredRole = String(role || "AUTHOR").toUpperCase();
       if (newUserId && desiredRole && desiredRole !== "AUTHOR") {
@@ -118,59 +116,56 @@ const AdminUserCreate = () => {
   };
 
   return (
-    <AdminLayout title="Tạo tài khoản"
-      subtitle="Dùng lại API đăng ký để tạo tài khoản LOCAL, sau đó phân quyền theo lựa chọn."
-    >
+    <AdminLayout title="Tạo tài khoản" subtitle="Tạo tài khoản mới và phân quyền.">
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <Link to="/admin/users" className="breadcrumb-link">
-              Người dùng
-            </Link>
+            <Link to="/admin/users" className="breadcrumb-link">Người dùng</Link>
             <span className="breadcrumb-separator">/</span>
             <span className="breadcrumb-current">Tạo tài khoản</span>
           </div>
-          <h2 className="data-page-title">Tạo tài khoản mới</h2>
-          <p className="data-page-subtitle">
-            Sau khi tạo, bạn có thể dùng nút “Phân quyền” để đổi vai trò.
+          <h2 className="data-page-title" style={{ marginBottom: '0.25rem' }}>Tạo tài khoản mới</h2>
+          <p className="data-page-subtitle" style={{ fontSize: '0.85rem', marginTop: '0.25rem' }}>
+            Sau khi tạo, bạn có thể dùng nút "Phân quyền" để đổi vai trò.
           </p>
         </div>
       </div>
 
-      <div className="form-card" style={{ maxWidth: 720 }}>
-        <h3>Thông tin tài khoản</h3>
+      <div className="form-card" style={{ padding: '1.25rem' }}>
+        <h3 style={{ fontSize: '1rem', marginBottom: '1rem' }}>Thông tin tài khoản</h3>
 
         {successMsg && (
-          <div className="auth-success" style={{ marginBottom: "0.75rem" }}>
+          <div className="auth-success" style={{ marginBottom: "0.6rem", padding: '0.6rem', fontSize: '0.85rem' }}>
             {successMsg}
           </div>
         )}
 
         {error && (
-          <div className="auth-error" style={{ marginBottom: "0.75rem" }}>
+          <div className="auth-error" style={{ marginBottom: "0.6rem", padding: '0.6rem', fontSize: '0.85rem' }}>
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Họ tên</label>
-            <input
-              value={fullName}
-              onChange={(e) => {
-                setFullName(e.target.value);
-                if (fieldErrors.fullName) setFieldErrors((prev) => ({ ...prev, fullName: undefined }));
-              }}
-              placeholder="Nguyễn Văn A"
-              disabled={loading}
-              className={fieldErrors.fullName ? "error" : ""}
-            />
-            {fieldErrors.fullName && <span className="field-error">{fieldErrors.fullName}</span>}
-          </div>
-
-          <div className="form-grid">
+          <div className="form-grid" style={{ gap: '0.75rem', gridTemplateColumns: '1fr 1fr' }}>
             <div className="form-group">
-              <label className="form-label">Email</label>
+              <label className="form-label" style={{ fontSize: '0.85rem', marginBottom: '0.35rem' }}>Họ tên</label>
+              <input
+                value={fullName}
+                onChange={(e) => {
+                  setFullName(e.target.value);
+                  if (fieldErrors.fullName) setFieldErrors((prev) => ({ ...prev, fullName: undefined }));
+                }}
+                placeholder="Nguyễn Văn A"
+                disabled={loading}
+                className={fieldErrors.fullName ? "error" : ""}
+                style={{ padding: '0.5rem 0.75rem', fontSize: '0.9rem' }}
+              />
+              {fieldErrors.fullName && <span className="field-error" style={{ fontSize: '0.8rem' }}>{fieldErrors.fullName}</span>}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" style={{ fontSize: '0.85rem', marginBottom: '0.35rem' }}>Email</label>
               <input
                 value={email}
                 onChange={(e) => {
@@ -180,32 +175,15 @@ const AdminUserCreate = () => {
                 placeholder="you@example.com"
                 disabled={loading}
                 className={fieldErrors.email ? "error" : ""}
+                style={{ padding: '0.5rem 0.75rem', fontSize: '0.9rem' }}
               />
-              {fieldErrors.email && <span className="field-error">{fieldErrors.email}</span>}
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Vai trò</label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                disabled={loading}
-              >
-                {roles.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-              <small className="form-hint">
-                Nếu chọn khác AUTHOR, hệ thống sẽ gọi API admin để phân quyền sau khi tạo.
-              </small>
+              {fieldErrors.email && <span className="field-error" style={{ fontSize: '0.8rem' }}>{fieldErrors.email}</span>}
             </div>
           </div>
 
-          <div className="form-grid">
+          <div className="form-grid" style={{ gap: '0.75rem', marginTop: '0.75rem', gridTemplateColumns: '1fr 1fr' }}>
             <div className="form-group">
-              <label className="form-label">Mật khẩu</label>
+              <label className="form-label" style={{ fontSize: '0.85rem', marginBottom: '0.35rem' }}>Mật khẩu</label>
               <input
                 type="password"
                 value={password}
@@ -216,12 +194,13 @@ const AdminUserCreate = () => {
                 placeholder="••••••••"
                 disabled={loading}
                 className={fieldErrors.password ? "error" : ""}
+                style={{ padding: '0.5rem 0.75rem', fontSize: '0.9rem' }}
               />
-              {fieldErrors.password && <span className="field-error">{fieldErrors.password}</span>}
+              {fieldErrors.password && <span className="field-error" style={{ fontSize: '0.8rem' }}>{fieldErrors.password}</span>}
             </div>
 
             <div className="form-group">
-              <label className="form-label">Xác nhận mật khẩu</label>
+              <label className="form-label" style={{ fontSize: '0.85rem', marginBottom: '0.35rem' }}>Xác nhận mật khẩu</label>
               <input
                 type="password"
                 value={passwordConfirm}
@@ -234,15 +213,33 @@ const AdminUserCreate = () => {
                 placeholder="••••••••"
                 disabled={loading}
                 className={fieldErrors.passwordConfirm ? "error" : ""}
+                style={{ padding: '0.5rem 0.75rem', fontSize: '0.9rem' }}
               />
               {fieldErrors.passwordConfirm && (
-                <span className="field-error">{fieldErrors.passwordConfirm}</span>
+                <span className="field-error" style={{ fontSize: '0.8rem' }}>{fieldErrors.passwordConfirm}</span>
               )}
             </div>
           </div>
 
-          <div className="form-actions">
-            <button type="submit" className="btn-primary" disabled={loading}>
+          <div className="form-group" style={{ marginTop: '0.75rem' }}>
+            <label className="form-label" style={{ fontSize: '0.85rem', marginBottom: '0.35rem' }}>Vai trò</label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              disabled={loading}
+              style={{ padding: '0.5rem 0.75rem', fontSize: '0.9rem', width: '100%' }}
+            >
+              {roles.map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+            <small className="form-hint" style={{ fontSize: '0.75rem', marginTop: '0.25rem' }}>
+              Nếu chọn khác AUTHOR, hệ thống sẽ gọi API admin để phân quyền sau khi tạo.
+            </small>
+          </div>
+
+          <div className="form-actions" style={{ marginTop: '1rem', gap: '0.5rem' }}>
+            <button type="submit" className="btn-primary" disabled={loading} style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
               {loading ? "Đang tạo..." : "Tạo tài khoản"}
             </button>
             <button
@@ -250,6 +247,7 @@ const AdminUserCreate = () => {
               className="btn-secondary"
               onClick={() => navigate("/admin/users")}
               disabled={loading}
+              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
             >
               Quay lại danh sách
             </button>

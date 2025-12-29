@@ -109,7 +109,7 @@ const AdminUserEdit = () => {
 
 	return (
 		<AdminLayout title={`Sửa người dùng #${id}`}
-			subtitle="Trang sửa đơn giản (dùng lại API sẵn có)."
+			subtitle="Cập nhật thông tin tài khoản."
 		>
 			<div className="data-page-header">
 				<div className="data-page-header-left">
@@ -120,31 +120,31 @@ const AdminUserEdit = () => {
 						<span className="breadcrumb-separator">/</span>
 						<span className="breadcrumb-current">Chỉnh sửa #{id}</span>
 					</div>
-					<h2 className="data-page-title">Cập nhật tài khoản</h2>
-					<p className="data-page-subtitle">
+					<h2 className="data-page-title" style={{ marginBottom: '0.25rem' }}>Cập nhật tài khoản</h2>
+					<p className="data-page-subtitle" style={{ fontSize: '0.85rem', marginTop: '0.25rem' }}>
 						Bạn có thể cập nhật vai trò và trạng thái tài khoản tại đây; chỉnh sửa họ tên cần backend endpoint riêng.
 					</p>
 				</div>
 			</div>
 
-			<div className="form-card" style={{ maxWidth: 720 }}>
-				<h3>Thông tin tài khoản</h3>
+			<div className="form-card" style={{ padding: '1.25rem' }}>
+				<h3 style={{ fontSize: '1rem', marginBottom: '1rem' }}>Thông tin tài khoản</h3>
 
 				{successMsg && (
-					<div className="auth-success" style={{ marginBottom: "0.75rem" }}>
+					<div className="auth-success" style={{ marginBottom: "0.6rem", padding: '0.6rem', fontSize: '0.85rem' }}>
 						{successMsg}
 					</div>
 				)}
 
 				{error && (
-					<div className="auth-error" style={{ marginBottom: "0.75rem" }}>
+					<div className="auth-error" style={{ marginBottom: "0.6rem", padding: '0.6rem', fontSize: '0.85rem' }}>
 						{error}
 					</div>
 				)}
 
-				<div className="form-grid">
+				<div className="form-grid" style={{ gap: '0.75rem' }}>
 					<div className="form-group">
-						<label className="form-label">Họ tên</label>
+						<label className="form-label" style={{ fontSize: '0.85rem', marginBottom: '0.35rem' }}>Họ tên</label>
 						<input
 							value={nameDraft}
 							onChange={(e) => {
@@ -153,17 +153,18 @@ const AdminUserEdit = () => {
 							}}
 							disabled={!user || saving}
 							placeholder="Nguyễn Văn A"
+							style={{ padding: '0.5rem 0.75rem', fontSize: '0.9rem' }}
 						/>
 					</div>
 					<div className="form-group">
-						<label className="form-label">Email</label>
-						<input value={user?.email || ""} disabled />
+						<label className="form-label" style={{ fontSize: '0.85rem', marginBottom: '0.35rem' }}>Email</label>
+						<input value={user?.email || ""} disabled style={{ padding: '0.5rem 0.75rem', fontSize: '0.9rem' }} />
 					</div>
 				</div>
 
-				<div className="form-grid">
+				<div className="form-grid" style={{ gap: '0.75rem', marginTop: '0.75rem' }}>
 					<div className="form-group">
-						<label className="form-label">Vai trò</label>
+						<label className="form-label" style={{ fontSize: '0.85rem', marginBottom: '0.35rem' }}>Vai trò</label>
 						<select
 							value={roleDraft}
 							onChange={(e) => {
@@ -171,6 +172,7 @@ const AdminUserEdit = () => {
 								if (successMsg) setSuccessMsg("");
 							}}
 							disabled={!user || saving}
+							style={{ padding: '0.5rem 0.75rem', fontSize: '0.9rem' }}
 						>
 							{roleDraft && !roleOptions.includes(String(roleDraft).toUpperCase()) && (
 								<option value={roleDraft}>{String(roleDraft).toUpperCase()} (hiện tại)</option>
@@ -183,7 +185,7 @@ const AdminUserEdit = () => {
 						</select>
 					</div>
 					<div className="form-group">
-						<label className="form-label">Trạng thái</label>
+						<label className="form-label" style={{ fontSize: '0.85rem', marginBottom: '0.35rem' }}>Trạng thái</label>
 						<select
 							value={statusDraft}
 							onChange={(e) => {
@@ -191,6 +193,7 @@ const AdminUserEdit = () => {
 								if (successMsg) setSuccessMsg("");
 							}}
 							disabled={!user || saving}
+							style={{ padding: '0.5rem 0.75rem', fontSize: '0.9rem' }}
 						>
 							<option value="Active">Hoạt động</option>
 							<option value="Disabled">Tạm khóa</option>
@@ -198,11 +201,11 @@ const AdminUserEdit = () => {
 					</div>
 				</div>
 
-				<div className="form-actions">
-					<button type="button" className="btn-secondary" onClick={handleSave} disabled={!user || saving}>
+				<div className="form-actions" style={{ marginTop: '1rem', gap: '0.5rem' }}>
+					<button type="button" className="btn-secondary" onClick={handleSave} disabled={!user || saving} style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
 						{saving ? "Đang cập nhật..." : "Lưu thay đổi"}
 					</button>
-					<button type="button" className="btn-secondary" onClick={() => navigate("/admin/users")}>
+					<button type="button" className="btn-secondary" onClick={() => navigate("/admin/users")} style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
 						Quay lại danh sách
 					</button>
 				</div>
