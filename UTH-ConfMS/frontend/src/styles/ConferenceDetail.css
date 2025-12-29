@@ -11,9 +11,17 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
+.conf-title-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
 .conf-detail-title {
   font-size: 2rem;
-  margin: 0.5rem 0 0.75rem;
+  margin: 0;
   writing-mode: horizontal-tb !important;
   text-orientation: mixed !important;
 }
@@ -42,7 +50,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 0.75rem;
-  margin: 1rem 0 1.25rem;
+  margin: 1.25rem 0 1.25rem;
 }
 
 .conf-detail-meta .meta-item {
@@ -80,6 +88,14 @@
   gap: 0.75rem;
   flex-wrap: wrap;
   margin-top: 1rem;
+  align-items: center;
+}
+
+.conf-detail-cta .btn-primary,
+.conf-detail-cta .btn-secondary {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
 }
 
 .conf-detail-card {

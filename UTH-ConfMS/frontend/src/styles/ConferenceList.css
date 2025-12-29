@@ -140,7 +140,7 @@
 }
 
 /* Small minimalist badge */
-.badge-soft {
+.conf-hero .badge-soft {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -154,7 +154,29 @@
   margin-bottom: 2rem;
 }
 
-.badge-soft::before {
+.conf-hero .badge-soft::before {
+  content: "";
+  width: 40px;
+  height: 2px;
+  background: var(--primary-color);
+  display: inline-block;
+}
+
+.conf-detail-header .badge-soft {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--primary-color);
+  padding: 0;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 0.5rem;
+}
+
+.conf-detail-header .badge-soft::before {
   content: "";
   width: 40px;
   height: 2px;

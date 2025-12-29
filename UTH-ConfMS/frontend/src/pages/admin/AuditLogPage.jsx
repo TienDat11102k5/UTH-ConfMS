@@ -132,8 +132,12 @@ const AuditLogPage = () => {
               <option value="DECISION">Ra quyết định</option>
             </select>
           </div>
-          <div style={{ display: "flex", gap: "0.75rem" }}>
-            <button className="btn-primary" onClick={handleFilterChange}>
+          <div style={{ display: "flex", gap: "0.75rem", alignItems: "stretch" }}>
+            <button 
+              className="btn-primary" 
+              onClick={handleFilterChange}
+              style={{ minWidth: "120px" }}
+            >
               Lọc
             </button>
             <button 
@@ -143,6 +147,7 @@ const AuditLogPage = () => {
                 setActionFilter("");
                 setCurrentPage(1);
               }}
+              style={{ minWidth: "120px" }}
             >
               Xóa bộ lọc
             </button>

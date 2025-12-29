@@ -122,7 +122,7 @@ const AiGovernancePage = () => {
         </div>
       )}
 
-      <div className="dash-grid">
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
         <div className="dash-card">
           <h3>Cấu hình Feature Flags</h3>
           <p>Danh sách các tính năng AI hiện có cho hội nghị ID {storedConferenceId}.</p>

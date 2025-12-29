@@ -891,12 +891,19 @@ button {
   display: flex;
   gap: 1.5rem;
   margin-bottom: 2.5rem;
+  flex-wrap: wrap;
 }
 
 .portal-actions .btn-primary,
 .portal-actions .btn-secondary {
   padding: 1rem 2rem;
   font-size: 1rem;
+  width: 220px;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 .portal-note {
@@ -2133,13 +2140,24 @@ button {
   padding: 40px;
 }
 
-/* FIX NÚT ĐĂNG NHẬP */
-.btn-primary {
+/* FIX NÚT ĐĂNG NHẬP - Only for auth forms */
+.auth-form .btn-primary {
   width: 100%;
   height: 52px;
   border-radius: 10px;
   font-size: 16px;
   font-weight: 600;
+}
+
+/* Prevent table buttons from being full width */
+table .btn-primary,
+table .btn-secondary,
+.data-table .btn-primary,
+.data-table .btn-secondary {
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
 }
 
 /* =========================

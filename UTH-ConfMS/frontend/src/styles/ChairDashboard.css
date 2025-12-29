@@ -16,6 +16,8 @@
   border: 2px solid transparent;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .chair-card::before {
@@ -101,11 +103,13 @@
   line-height: 1.6;
   margin: 0 0 1.5rem 0;
   font-size: 0.95rem;
+  flex-grow: 1;
 }
 
 .chair-card-button {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -117,6 +121,8 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  width: 100%;
+  white-space: nowrap;
 }
 
 .chair-card-button::before {
@@ -132,7 +138,7 @@
 }
 
 .chair-card-button:hover {
-  transform: translateX(4px);
+  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 

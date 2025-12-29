@@ -109,22 +109,15 @@ const ConferenceDetail = () => {
       <main className="conf-detail">
         {/* ===== HEADER ===== */}
         <div className="conf-detail-header">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.75rem",
-              flexWrap: "wrap",
-            }}
-          >
-            <div className="badge-soft">{conf.name}</div>
+          <div className="badge-soft">{conf.name}</div>
+          <div className="conf-title-row">
+            <h1 className="conf-detail-title">{conf.name}</h1>
             {blindReview && (
               <span className="blind-review-badge" title="Blind Review">
                 Ẩn danh
               </span>
             )}
           </div>
-          <h1 className="conf-detail-title">{conf.name}</h1>
 
           <div className="conf-detail-meta">
             <div className="meta-item">
