@@ -2,6 +2,127 @@
    AUTHOR PAGES - MODERN DESIGN
    =================================== */
 
+/* Author Greeting Section */
+.author-greeting {
+  background: transparent;
+  padding: 0;
+  margin: 0 0 2rem 0;
+  position: relative;
+  animation: slideIn 0.6s ease-out;
+}
+
+.greeting-content {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg, rgba(0, 134, 137, 0.1) 0%, rgba(0, 102, 105, 0.15) 100%);
+  border: 2px solid rgba(0, 134, 137, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    0 4px 20px rgba(0, 134, 137, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.greeting-title {
+  color: #006669;
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.greeting-name {
+  color: #008689;
+  background: linear-gradient(135deg, #008689 0%, #00a8ac 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 900;
+}
+
+.greeting-subtitle {
+  color: #4b5563;
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 500;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(-20px, -20px) scale(1.1);
+  }
+}
+
+@keyframes pulse-icon {
+
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.15;
+    transform: scale(1.05);
+  }
+}
+
+/* Responsive for greeting section */
+@media (max-width: 768px) {
+  .author-greeting {
+    padding: 1.5rem 1.25rem;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .greeting-title {
+    font-size: 1.35rem;
+  }
+
+  .greeting-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .author-greeting::after {
+    font-size: 4rem;
+    bottom: 0.5rem;
+    right: 1rem;
+  }
+}
+
+
 /* Welcome Message */
 .welcome-message {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -475,9 +596,12 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
   }
+
   50% {
     box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
   }
@@ -619,9 +743,12 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -648,16 +775,16 @@
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .filter-row {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .ai-button-group {
     flex-direction: column;
   }
-  
+
   .btn-ai {
     width: 100%;
     justify-content: center;
@@ -814,7 +941,7 @@
   .submission-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .submission-actions {
     flex-wrap: wrap;
   }
@@ -933,11 +1060,11 @@
   .camera-ready-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .camera-ready-actions {
     flex-wrap: wrap;
   }
-  
+
   .camera-ready-actions .btn-sm {
     min-width: 120px;
   }
@@ -1351,11 +1478,11 @@
   .detail-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .detail-sidebar {
     order: -1;
   }
-  
+
   .actions-card {
     position: static;
   }

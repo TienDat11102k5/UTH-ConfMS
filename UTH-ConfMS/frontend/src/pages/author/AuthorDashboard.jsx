@@ -20,15 +20,15 @@ const AuthorDashboard = () => {
         setLoading(true);
         const res = await apiClient.get("/submissions");
         const submissions = Array.isArray(res.data) ? res.data : [];
-        
+
         const underReview = submissions.filter(
           s => s.status === "SUBMITTED" || s.status === "UNDER_REVIEW"
         ).length;
-        
+
         const accepted = submissions.filter(
           s => s.status === "ACCEPTED"
         ).length;
-        
+
         setStats({
           underReview,
           accepted,
@@ -53,6 +53,7 @@ const AuthorDashboard = () => {
       roleLabel="Tác giả"
       title="Cổng thông tin Tác giả"
       subtitle="Quản lý bài nộp khoa học, theo dõi quá trình phản biện và nộp bản hoàn chỉnh cho hội nghị."
+      showGreeting={true}
     >
       <div className="dash-grid">
         <div className="dash-card author-card-primary">

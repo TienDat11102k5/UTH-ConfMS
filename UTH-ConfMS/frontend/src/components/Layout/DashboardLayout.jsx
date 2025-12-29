@@ -1,9 +1,10 @@
 // src/components/Layout/DashboardLayout.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import UserProfileDropdown from "../UserProfileDropdown";
 import NavDropdown from "../NavDropdown";
 import logoUTH from "../../assets/logoUTH.jpg";
+import { getCurrentUser } from "../../auth";
 
 const DashboardLayout = ({
   roleLabel,
@@ -13,8 +14,16 @@ const DashboardLayout = ({
   showSidebar = false,
   sidebarContent = null,
   showAdminNav = false,
-  showChairNav = false
+  showChairNav = false,
+  showGreeting = false
 }) => {
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const user = getCurrentUser();
+    setCurrentUser(user);
+  }, []);
+
   const adminMenuItems = [
     { icon: "FiUsers", text: "Quản lý người dùng", link: "/admin/users" },
     { icon: "FiSettings", text: "Quản lý hội nghị", link: "/admin/conferences" },
@@ -54,18 +63,32 @@ const DashboardLayout = ({
             <Link to="/conferences" className="nav-link">
               Cổng thông tin
             </Link>
-            
+
             {showAdminNav && (
               <NavDropdown label="Admin" items={adminMenuItems} />
             )}
-            
+
             {showChairNav && (
               <NavDropdown label="Hội nghị" items={chairMenuItems} />
             )}
-            
+
             <UserProfileDropdown />
           </nav>
         </header>
+
+        {/* GREETING SECTION - Only show for Author pages */}
+        {showGreeting && currentUser && (
+          <section className="author-greeting">
+            <div className="greeting-content">
+              <h2 className="greeting-title">
+                Chào bạn, <span className="greeting-name">{currentUser.fullName || currentUser.name || currentUser.email}</span>! 👋
+              </h2>
+              <p className="greeting-subtitle">
+                Chúc bạn một ngày làm việc hiệu quả và tràn đầy cảm hứng nghiên cứu
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* MAIN */}
         <main className="dash-main">
