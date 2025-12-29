@@ -25,40 +25,150 @@
 }
 
 /* Hero Section */
+.conf-card {
+  background-color: var(--bg-surface);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 134, 137, 0.15);
+  padding: 2.5rem;
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 3px solid transparent;
+  background-image: linear-gradient(white, white),
+    linear-gradient(135deg, #e0f7f8, #7ee8ea, #00d4d8);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glowing gradient top bar */
+.conf-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #008689, #00d4d8, #7ee8ea, #00d4d8, #008689);
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Multiple glowing effects on hover */
+.conf-card::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 212, 216, 0.3) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 0.6s ease;
+}
+
+.conf-card:hover {
+  transform: translateY(-15px) scale(1.03);
+  box-shadow: 0 25px 50px rgba(0, 134, 137, 0.3),
+    0 15px 30px rgba(0, 212, 216, 0.2),
+    0 0 40px rgba(126, 232, 234, 0.3);
+  background-image: linear-gradient(white, white),
+    linear-gradient(135deg, #008689, #00d4d8, #7ee8ea);
+}
+
+.conf-card:hover::after {
+  width: 300px;
+  height: 300px;
+  opacity: 1;
+}
+
+/* Hero Section - MODERN ASYMMETRIC DESIGN */
 .conf-hero {
-  padding: 5rem 2rem;
-  background: linear-gradient(135deg, #eaf2ff 0%, #f9fbff 50%, #e6f0ff 100%);
-  border-bottom: 1px solid rgba(15, 98, 254, 0.1);
+  padding: 4rem 2rem 8rem;
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Minimal gradient accent on left */
+.conf-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(135deg, #e0f7f8 0%, #ffffff 100%);
+  z-index: 0;
+}
+
+/* Geometric circle decoration */
+.conf-hero::after {
+  content: "";
+  position: absolute;
+  top: -15%;
+  right: 5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 134, 137, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
 }
 
 .conf-hero-content {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2.5rem;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 4rem;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
+/* Small minimalist badge */
 .badge-soft {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(15, 98, 254, 0.08);
+  gap: 6px;
+  background: transparent;
   color: var(--primary-color);
-  padding: 0.5rem 0.9rem;
-  border-radius: 999px;
+  padding: 0;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 2rem;
+}
+
+.badge-soft::before {
+  content: "";
+  width: 40px;
+  height: 2px;
+  background: var(--primary-color);
+  display: inline-block;
 }
 
 .conf-title {
-  font-size: clamp(2.5rem, 5vw, 3.25rem);
-  font-weight: 800;
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight: 900;
   color: var(--text-main);
-  margin: 1rem 0 0.75rem;
-  letter-spacing: -1px;
-  line-height: 1.15;
+  margin: 0 0 1.5rem;
+  letter-spacing: -3px;
+  line-height: 0.95;
   writing-mode: horizontal-tb !important;
   text-orientation: mixed !important;
 }
@@ -66,78 +176,149 @@
 .conf-title span {
   color: var(--primary-color);
   position: relative;
-  display: inline-block;
+  display: block;
+  margin-top: 0.5rem;
 }
 
+/* Minimal underline accent */
 .conf-title span::after {
   content: "";
   position: absolute;
-  bottom: 6px;
+  bottom: -10px;
   left: 0;
-  width: 100%;
-  height: 9px;
-  background-color: var(--accent-color);
-  opacity: 0.3;
-  z-index: -1;
+  width: 120px;
+  height: 4px;
+  background: var(--primary-color);
+  border-radius: 2px;
 }
 
 .conf-desc {
-  font-size: 1.05rem;
+  font-size: 1.125rem;
   color: var(--text-muted);
-  max-width: 640px;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
+  max-width: 540px;
+  line-height: 1.7;
+  margin-bottom: 3rem;
+  font-weight: 400;
   writing-mode: horizontal-tb !important;
   text-orientation: mixed !important;
 }
 
 .conf-cta {
   display: flex;
-  gap: 12px;
+  gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 1.75rem;
+  margin-bottom: 4rem;
+}
+
+.conf-cta .btn-primary {
+  padding: 1.125rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0;
+  background: var(--primary-color);
+  box-shadow: none;
+  transition: all 0.3s ease;
+}
+
+.conf-cta .btn-primary:hover {
+  transform: translateX(5px);
+  box-shadow: -8px 8px 0 rgba(0, 134, 137, 0.15);
+}
+
+.conf-cta .btn-secondary {
+  padding: 1.125rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0;
+  background: transparent;
+  border: 2px solid var(--text-main);
+  color: var(--text-main);
+  box-shadow: none;
+}
+
+.conf-cta .btn-secondary:hover {
+  background: var(--text-main);
+  color: white;
 }
 
 .conf-meta {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-left: 2px solid var(--primary-color);
+  padding-left: 2rem;
 }
 
 .meta-item {
-  background: white;
-  padding: 1.25rem 1.5rem;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  background: transparent;
+  padding: 0 2rem 0 0;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.25rem;
+  transition: all 0.3s ease;
+}
+
+.meta-item:not(:last-child) {
+  border-right: 1px solid rgba(0, 134, 137, 0.2);
+}
+
+.meta-item:hover {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .meta-number {
   display: block;
-  font-weight: 800;
-  font-size: 1.5rem;
+  font-weight: 900;
+  font-size: 2.5rem;
   color: var(--primary-color);
   line-height: 1;
+  margin-bottom: 0.5rem;
+  text-shadow: none;
 }
 
 .meta-label {
-  color: var(--text-muted);
-  font-size: 0.9rem;
+  color: var(--text-muted) !important;
+  font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.3;
+  text-shadow: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .conf-hero-card {
   background: white;
-  border-radius: 18px;
-  box-shadow: var(--shadow-lg);
-  padding: 1.75rem;
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 0;
+  box-shadow: 20px 20px 60px rgba(0, 0, 0, 0.1),
+    -5px -5px 20px rgba(255, 255, 255, 0.9);
+  padding: 3rem;
+  border: none;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+}
+
+/* Accent corner */
+.conf-hero-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 60px;
+  background: var(--primary-color);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.conf-hero-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 25px 25px 70px rgba(0, 0, 0, 0.15),
+    -8px -8px 25px rgba(255, 255, 255, 1);
 }
 
 .hero-card-header {
@@ -198,57 +379,68 @@
   box-shadow: 0 6px 16px rgba(15, 98, 254, 0.4);
 }
 
-/* Grid Card */
+/* Card Section with asymmetric layout */
 .conf-section {
-  max-width: 1200px;
-  margin: -3rem auto 0; /* Kéo lên đè vào Hero một chút cho đẹp */
-  padding: 0 2rem 5rem;
+  max-width: 1400px;
+  margin: 4rem auto 0;
+  padding: 0 2rem 6rem;
   position: relative;
   z-index: 2;
 }
 
 .conf-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 2.5rem;
 }
 
 .conf-card {
-  background-color: var(--bg-surface);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md); /* Bóng đổ chuẩn từ index */
-  padding: 2rem;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: white;
+  border-radius: 0;
+  box-shadow: 15px 15px 0 rgba(0, 134, 137, 0.1);
+  padding: 0;
+  transition: all 0.4s ease;
+  border: 2px solid var(--text-main);
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Colored accent bar */
+.conf-card-header {
+  background: var(--primary-color);
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--text-main);
+  margin: 0;
 }
 
 .conf-card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--primary-light);
+  transform: translate(-5px, -5px);
+  box-shadow: 20px 20px 0 rgba(0, 134, 137, 0.15);
 }
 
 .conf-date {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: white;
   text-transform: uppercase;
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.5px;
-  background: var(--primary-light);
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 4px;
+  letter-spacing: 1px;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  margin: 0;
 }
 
 .conf-card-title {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-main);
-  margin: 0 0 1rem;
-  line-height: 1.3;
+  margin: 2rem 2rem 1rem;
+  line-height: 1.2;
   writing-mode: horizontal-tb !important;
   text-orientation: mixed !important;
 }
@@ -257,8 +449,8 @@
   font-size: 0.95rem;
   color: var(--text-muted);
   line-height: 1.6;
-  margin-bottom: 1.5rem;
-  flex: 1; /* Đẩy nút xuống đáy */
+  margin: 0 2rem 1.5rem;
+  flex: 1;
   writing-mode: horizontal-tb !important;
   text-orientation: mixed !important;
 }
@@ -266,37 +458,49 @@
 .conf-stats {
   display: flex;
   gap: 15px;
-  margin-bottom: 1.5rem;
-  font-size: 0.9rem;
+  margin: 0 2rem 1.5rem;
+  font-size: 0.875rem;
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .conf-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 0;
+  border-top: 2px solid var(--text-main);
 }
 
-/* Chỉnh lại nút trong card cho khớp */
+.conf-actions .btn-secondary,
+.conf-actions .btn-primary {
+  border-radius: 0;
+  padding: 1rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: none;
+}
+
 .conf-actions .btn-secondary {
-  border: 1px solid #e0e0e0;
+  background: white;
+  color: var(--text-main);
+  border: none;
+  border-right: 2px solid var(--text-main);
 }
 
-
-/* Conference Card Header */
-.conf-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+.conf-actions .btn-secondary:hover {
+  background: #f5f5f5;
+  transform: none;
 }
 
-/* Cải thiện conf-actions buttons */
-.conf-actions .btn-primary,
-.conf-actions .btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  justify-content: center;
+.conf-actions .btn-primary {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+}
+
+.conf-actions .btn-primary:hover {
+  background: var(--primary-dark);
+  transform: none;
 }
