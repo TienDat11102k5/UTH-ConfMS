@@ -111,4 +111,20 @@ public class ProceedingsController {
                     .body("Error exporting proceedings: " + e.getMessage());
         }
     }
+
+    // API: Lấy chương trình hội nghị (Program) - nhóm theo track/session
+    // GET /api/proceedings/program/{conferenceId}
+    @GetMapping("/program/{conferenceId}")
+    public ResponseEntity<?> getConferenceProgram(@PathVariable Long conferenceId) {
+        try {
+            logger.info("GET /api/proceedings/program/{} - Fetching conference program", conferenceId);
+            var program = proceedingsService.getConferenceProgram(conferenceId);
+            logger.info("Successfully fetched program with {} sessions", program.size());
+            return ResponseEntity.ok(program);
+        } catch (Exception e) {
+            logger.error("Error fetching program for conference {}: {}", conferenceId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error fetching program: " + e.getMessage());
+        }
+    }
 }

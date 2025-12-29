@@ -1,93 +1,489 @@
-/* PAGE */
+/* Modern Conference Program Page */
+
 .program-page {
-  background: #ecf7f8; /* nền xanh rất nhạt UTH */
   min-height: 100vh;
-  padding-bottom: 4rem;
+  background: #f8f9fa;
+  display: flex;
+  flex-direction: column;
 }
 
-/* HERO */
+/* ===== HEADER ===== */
+.portal-header-container {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.portal-header {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.portal-logo {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.portal-logo-img {
+  height: 190px;
+  width: auto;
+  mix-blend-mode: multiply;
+}
+
+.portal-logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.portal-logo-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #008689;
+  letter-spacing: 0.3px;
+  line-height: 1.3;
+}
+
+.portal-logo-subtitle {
+  font-size: 0.9375rem;
+  color: #6b7280;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.portal-nav {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.portal-nav .nav-link {
+  color: #374151;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  transition: color 0.2s;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+}
+
+.portal-nav .nav-link:hover {
+  color: #008689;
+  background: rgba(0, 134, 137, 0.05);
+}
+
+/* ===== HERO BANNER ===== */
 .program-hero {
-  text-align: center;
-  padding: 4rem 1rem 3rem;
-  background: linear-gradient(
-    135deg,
-    #008689,   /* xanh ngọc UTH */
-    #006b6d    /* xanh đậm UTH */
-  );
+  background: linear-gradient(135deg, #008689 0%, #00a8ac 100%);
   color: white;
-  border-bottom-left-radius: 40px;
-  border-bottom-right-radius: 40px;
+  padding: 4rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.program-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+  opacity: 0.3;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .program-hero h1 {
-  font-size: 2.6rem;
+  font-size: 2.75rem;
   font-weight: 800;
+  margin: 0 0 1rem 0;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .program-hero p {
-  margin-top: 0.8rem;
-  opacity: 0.9;
-}
-
-/* LIST */
-.program-list {
-  max-width: 900px;
-  margin: 3rem auto 0;
-  padding: 0 1rem;
-  display: grid;
-  gap: 1.2rem;
-}
-
-/* CARD */
-.program-card {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 1.5rem;
-
-  background: #ffffff;
-  padding: 1.4rem 1.6rem;
-  border-radius: 14px;
-
-  box-shadow: 0 6px 18px rgba(0, 134, 137, 0.15); /* shadow xanh UTH */
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.program-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(0, 134, 137, 0.25);
-}
-
-/* TIME */
-.program-time {
-  font-weight: 700;
-  color: #008689; /* xanh ngọc */
-  font-size: 1rem;
-  text-align: right;
-}
-
-/* CONTENT */
-.program-content h3 {
+  font-size: 1.25rem;
   margin: 0;
-  font-size: 1.15rem;
+  opacity: 0.95;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* ===== MAIN CONTAINER ===== */
+.program-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  flex: 1;
+  width: 100%;
+}
+
+/* ===== CONFERENCE SELECTOR ===== */
+.conference-selector {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.conference-selector label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.conference-selector select {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  color: #1f2937;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.conference-selector select:hover {
+  border-color: #008689;
+}
+
+.conference-selector select:focus {
+  outline: none;
+  border-color: #008689;
+  box-shadow: 0 0 0 3px rgba(0, 134, 137, 0.1);
+}
+
+/* ===== PROGRAM LIST ===== */
+.program-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ===== SESSION CARD ===== */
+.session-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.session-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.session-header {
+  background: linear-gradient(135deg, #008689, #00a8ac);
+  color: white;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.session-info {
+  flex: 1;
+  min-width: 250px;
+}
+
+.session-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 0.5px;
+}
+
+.session-description {
+  margin: 0;
+  opacity: 0.95;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.session-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.session-date,
+.session-time,
+.session-room {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.session-date svg,
+.session-time svg,
+.session-room svg {
+  flex-shrink: 0;
+}
+
+/* ===== PAPERS LIST ===== */
+.papers-list {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.paper-item {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.paper-item:hover {
+  background: #f0f9fa;
+  border-color: rgba(0, 134, 137, 0.2);
+  transform: translateX(4px);
+}
+
+.paper-number {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #008689, #00a8ac);
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 700;
-  color: #003234; /* chữ đậm UTH */
+  font-size: 1.125rem;
 }
 
-.program-content span {
-  display: block;
-  margin-top: 0.4rem;
-  font-size: 0.95rem;
-  color: #577071; /* chữ mô tả UTH */
+.paper-details {
+  flex: 1;
+  min-width: 0;
 }
 
-/* RESPONSIVE */
-@media (max-width: 600px) {
-  .program-card {
-    grid-template-columns: 1fr;
+.paper-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #008689;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.paper-authors {
+  color: #6b7280;
+  font-size: 0.9375rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.author-label {
+  font-weight: 700;
+  color: #374151;
+}
+
+.paper-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.paper-meta svg {
+  flex-shrink: 0;
+  color: #008689;
+}
+
+/* ===== EMPTY STATES ===== */
+.empty-state {
+  background: white;
+  padding: 4rem 2rem;
+  border-radius: 12px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 1.125rem;
+}
+
+.error-message {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #dc2626;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6b7280;
+  font-size: 1.125rem;
+}
+
+/* ===== BACK LINK ===== */
+.back-link-container {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #008689;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #008689;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.back-link:hover {
+  background: #008689;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 134, 137, 0.3);
+}
+
+/* ===== FOOTER ===== */
+.program-footer {
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-top: auto;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .portal-header {
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem 1.5rem;
   }
 
-  .program-time {
-    text-align: left;
-    font-size: 0.95rem;
+  .portal-logo {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .portal-logo-img {
+    height: 80px !important;
+  }
+
+  .portal-logo-title {
+    font-size: 0.875rem;
+  }
+
+  .portal-logo-subtitle {
+    font-size: 0.8125rem;
+  }
+
+  .portal-nav {
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .portal-nav .nav-link {
+    width: 100%;
+    text-align: center;
+  }
+
+  .program-hero {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .program-hero h1 {
+    font-size: 1.75rem;
+  }
+
+  .program-hero p {
+    font-size: 1rem;
+  }
+
+  .program-container {
+    padding: 1rem;
+  }
+
+  .conference-selector {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .session-header {
+    flex-direction: column;
+    padding: 1.5rem;
+  }
+
+  .session-meta {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .session-date,
+  .session-time,
+  .session-room {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .paper-item {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .paper-number {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .paper-title {
+    font-size: 1rem;
   }
 }

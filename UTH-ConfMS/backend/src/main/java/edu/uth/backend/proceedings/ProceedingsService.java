@@ -5,6 +5,8 @@ import edu.uth.backend.entity.PaperCoAuthor;
 import edu.uth.backend.entity.PaperStatus;
 import edu.uth.backend.proceedings.dto.ProceedingsDTO;
 import edu.uth.backend.proceedings.dto.ProceedingsExportDTO;
+import edu.uth.backend.proceedings.dto.ProgramSessionDTO;
+import edu.uth.backend.proceedings.dto.ProgramPaperDTO;
 import edu.uth.backend.repository.PaperRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -140,5 +143,73 @@ public class ProceedingsService {
             proceedings.size(),
             proceedings
         );
+    }
+
+    public List<ProgramSessionDTO> getConferenceProgram(Long conferenceId) {
+        logger.info("Generating program for conference ID: {}", conferenceId);
+        
+        // 1. Lấy tất cả bài ACCEPTED
+        List<Paper> acceptedPapers = paperRepo.findAllWithDetailsByConferenceIdAndStatus(
+            conferenceId, 
+            PaperStatus.ACCEPTED
+        );
+
+        logger.info("Found {} accepted papers for program", acceptedPapers.size());
+
+        // 2. Nhóm theo Track
+        Map<String, List<Paper>> papersByTrack = acceptedPapers.stream()
+            .collect(Collectors.groupingBy(paper -> paper.getTrack().getName()));
+
+        // 3. Tạo sessions (mỗi track = 1 session)
+        List<ProgramSessionDTO> sessions = papersByTrack.entrySet().stream()
+            .map(entry -> {
+                String trackName = entry.getKey();
+                List<Paper> papers = entry.getValue();
+                
+                // Lấy Track object từ paper đầu tiên
+                Paper firstPaper = papers.get(0);
+                String sessionDate = firstPaper.getTrack().getSessionDate();
+                String sessionTime = firstPaper.getTrack().getSessionTime();
+                String room = firstPaper.getTrack().getRoom();
+                String trackDescription = firstPaper.getTrack().getDescription();
+                
+                // Nếu không có description, dùng mặc định
+                if (trackDescription == null || trackDescription.isEmpty()) {
+                    trackDescription = "Phiên trình bày " + trackName;
+                }
+                
+                // Chuyển papers sang DTO
+                List<ProgramPaperDTO> paperDTOs = papers.stream()
+                    .map(paper -> {
+                        String coAuthors = paper.getCoAuthors() != null 
+                            ? paper.getCoAuthors().stream()
+                                .map(PaperCoAuthor::getName)
+                                .collect(Collectors.joining(", "))
+                            : "";
+                        
+                        return new ProgramPaperDTO(
+                            paper.getId(),
+                            paper.getTitle(),
+                            paper.getMainAuthor().getFullName(),
+                            coAuthors,
+                            null  // Không cần presentationTime nữa
+                        );
+                    })
+                    .collect(Collectors.toList());
+                
+                return new ProgramSessionDTO(
+                    trackName,
+                    trackDescription,
+                    sessionDate,  // Có thể null
+                    sessionTime,  // Có thể null
+                    room,         // Có thể null
+                    paperDTOs
+                );
+            })
+            .sorted((s1, s2) -> s1.getTrackName().compareTo(s2.getTrackName()))
+            .collect(Collectors.toList());
+
+        logger.info("Generated {} program sessions", sessions.size());
+        return sessions;
     }
 }
