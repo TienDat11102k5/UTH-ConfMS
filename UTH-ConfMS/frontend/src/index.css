@@ -433,6 +433,38 @@ button {
   color: var(--text-muted);
 }
 
+.auth-footer .link-primary {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
+  position: relative;
+  display: inline-block;
+  transition: color 0.3s ease;
+}
+
+/* Hiệu ứng gạch dưới giống link-inline */
+.auth-footer .link-primary::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--primary-color);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
+}
+
+.auth-footer .link-primary:hover {
+  color: var(--primary-dark);
+}
+
+.auth-footer .link-primary:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
 /* --- DASHBOARD LAYOUT --- */
 .dash-page {
   min-height: 100vh;

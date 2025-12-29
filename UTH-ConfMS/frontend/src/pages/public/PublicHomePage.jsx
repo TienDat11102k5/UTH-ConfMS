@@ -31,7 +31,7 @@ const PublicHomePage = () => {
 
           <nav className="portal-nav">
             <Link to="/proceedings" className="nav-link">
-              Proceedings
+              Kỷ yếu hội nghị
             </Link>
             <Link to="/login" className="nav-link">
               Đăng nhập

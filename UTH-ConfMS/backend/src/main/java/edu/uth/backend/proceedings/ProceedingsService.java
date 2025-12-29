@@ -86,13 +86,39 @@ public class ProceedingsService {
             ? paper.getCameraReadyPath() 
             : paper.getFilePath();
         
-        logger.info("File path to download: {}", filePath);
+        logger.info("File path from database: {}", filePath);
         
         if (filePath == null || filePath.isEmpty()) {
             throw new Exception("No file available for this paper");
         }
 
-        Path path = Paths.get(uploadDir).resolve(filePath).normalize();
+        // Nếu path không bắt đầu bằng subfolder, thử thêm camera-ready/ hoặc submissions/
+        Path path;
+        if (filePath.contains("/") || filePath.contains("\\")) {
+            // Path đã có subfolder
+            path = Paths.get(uploadDir).resolve(filePath).normalize();
+        } else {
+            // Path không có subfolder, thử tìm trong camera-ready trước, sau đó submissions
+            Path cameraReadyPath = Paths.get(uploadDir).resolve("camera-ready").resolve(filePath).normalize();
+            Path submissionsPath = Paths.get(uploadDir).resolve("submissions").resolve(filePath).normalize();
+            
+            Resource cameraReadyResource = new UrlResource(cameraReadyPath.toUri());
+            if (cameraReadyResource.exists() && cameraReadyResource.isReadable()) {
+                path = cameraReadyPath;
+                logger.info("File found in camera-ready folder");
+            } else {
+                Resource submissionsResource = new UrlResource(submissionsPath.toUri());
+                if (submissionsResource.exists() && submissionsResource.isReadable()) {
+                    path = submissionsPath;
+                    logger.info("File found in submissions folder");
+                } else {
+                    // Fallback: thử path gốc
+                    path = Paths.get(uploadDir).resolve(filePath).normalize();
+                    logger.warn("File not found in subfolders, trying root path");
+                }
+            }
+        }
+        
         logger.info("Full file path: {}", path.toAbsolutePath());
         
         Resource resource = new UrlResource(path.toUri());
