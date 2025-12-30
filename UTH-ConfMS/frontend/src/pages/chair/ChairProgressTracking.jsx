@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import "../../styles/ChairProgressTracking.css";
 
 const ChairProgressTracking = () => {
   const [conferences, setConferences] = useState([]);
@@ -29,7 +30,7 @@ const ChairProgressTracking = () => {
   useEffect(() => {
     const loadProgress = async () => {
       if (!selectedConference) return;
-      
+
       try {
         setLoading(true);
         const res = await apiClient.get(

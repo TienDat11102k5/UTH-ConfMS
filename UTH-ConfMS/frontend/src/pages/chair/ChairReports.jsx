@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import "../../styles/ChairReports.css";
 
 const ChairReports = () => {
   const [conferences, setConferences] = useState([]);
@@ -32,14 +33,16 @@ const ChairReports = () => {
   useEffect(() => {
     const loadReports = async () => {
       if (!selectedConference) return;
-      
+
       try {
         setLoading(true);
 
         const [confRes, trackRes, progressRes] = await Promise.all([
           apiClient.get(`/reports/conference/${selectedConference}`),
           apiClient.get(`/reports/conference/${selectedConference}/tracks`),
-          apiClient.get(`/reports/conference/${selectedConference}/review-progress`),
+          apiClient.get(
+            `/reports/conference/${selectedConference}/review-progress`
+          ),
         ]);
 
         setConferenceReport(confRes.data);
@@ -91,7 +94,9 @@ const ChairReports = () => {
     <DashboardLayout
       roleLabel="Program / Track Chair"
       title="Báo cáo &amp; Thống kê"
-      subtitle="Xem báo cáo tổng hợp và export dữ liệu"      showChairNav={true}    >
+      subtitle="Xem báo cáo tổng hợp và export dữ liệu"
+      showChairNav={true}
+    >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
@@ -139,67 +144,28 @@ const ChairReports = () => {
       )}
 
       {error && (
-        <div
-          style={{
-            background: "#ffebee",
-            border: "1px solid #d32f2f",
-            padding: "1rem",
-            borderRadius: "8px",
-            marginBottom: "1.5rem",
-            color: "#d32f2f",
-          }}
-        >
+        <div className="error-box">
           {error}
         </div>
       )}
 
       {/* Tabs */}
-      <div
-        style={{
-          display: "flex",
-          gap: "1rem",
-          marginBottom: "2rem",
-          borderBottom: "2px solid #e5e7eb",
-        }}
-      >
+      <div className="report-tabs">
         <button
           onClick={() => setActiveTab("overview")}
-          style={{
-            padding: "0.75rem 1.5rem",
-            border: "none",
-            background: activeTab === "overview" ? "#0f62fe" : "transparent",
-            color: activeTab === "overview" ? "white" : "#666",
-            cursor: "pointer",
-            borderBottom:
-              activeTab === "overview" ? "2px solid #0f62fe" : "none",
-          }}
+          className={activeTab === "overview" ? "active" : ""}
         >
           Tổng quan
         </button>
         <button
           onClick={() => setActiveTab("tracks")}
-          style={{
-            padding: "0.75rem 1.5rem",
-            border: "none",
-            background: activeTab === "tracks" ? "#0f62fe" : "transparent",
-            color: activeTab === "tracks" ? "white" : "#666",
-            cursor: "pointer",
-            borderBottom: activeTab === "tracks" ? "2px solid #0f62fe" : "none",
-          }}
+          className={activeTab === "tracks" ? "active" : ""}
         >
           Theo Track
         </button>
         <button
           onClick={() => setActiveTab("progress")}
-          style={{
-            padding: "0.75rem 1.5rem",
-            border: "none",
-            background: activeTab === "progress" ? "#0f62fe" : "transparent",
-            color: activeTab === "progress" ? "white" : "#666",
-            cursor: "pointer",
-            borderBottom:
-              activeTab === "progress" ? "2px solid #0f62fe" : "none",
-          }}
+          className={activeTab === "progress" ? "active" : ""}
         >
           Tiến độ Review
         </button>
@@ -210,41 +176,31 @@ const ChairReports = () => {
         <div className="dash-grid">
           <div className="dash-card">
             <h3>Tổng số bài nộp</h3>
-            <div
-              style={{ fontSize: "2rem", fontWeight: "bold", color: "#0f62fe" }}
-            >
+            <div className="stat-blue">
               {conferenceReport.totalSubmissions || 0}
             </div>
           </div>
           <div className="dash-card">
             <h3>Đã chấp nhận</h3>
-            <div
-              style={{ fontSize: "2rem", fontWeight: "bold", color: "#2e7d32" }}
-            >
+            <div className="stat-green">
               {conferenceReport.accepted || 0}
             </div>
           </div>
           <div className="dash-card">
             <h3>Đã từ chối</h3>
-            <div
-              style={{ fontSize: "2rem", fontWeight: "bold", color: "#d32f2f" }}
-            >
+            <div className="stat-red">
               {conferenceReport.rejected || 0}
             </div>
           </div>
           <div className="dash-card">
             <h3>Đang review</h3>
-            <div
-              style={{ fontSize: "2rem", fontWeight: "bold", color: "#ff9800" }}
-            >
+            <div className="stat-orange">
               {conferenceReport.underReview || 0}
             </div>
           </div>
           <div className="dash-card">
             <h3>Tỷ lệ chấp nhận</h3>
-            <div
-              style={{ fontSize: "2rem", fontWeight: "bold", color: "#1976d2" }}
-            >
+            <div className="stat-indigo">
               {conferenceReport.acceptanceRate?.toFixed(1) || 0}%
             </div>
           </div>
@@ -268,12 +224,10 @@ const ChairReports = () => {
               {trackReport.tracks &&
                 Object.entries(trackReport.tracks).map(([trackName, stats]) => (
                   <tr key={trackName}>
-                    <td>
-                      <strong>{trackName}</strong>
-                    </td>
+                    <td><strong>{trackName}</strong></td>
                     <td>{stats.total || 0}</td>
-                    <td style={{ color: "#2e7d32" }}>{stats.accepted || 0}</td>
-                    <td style={{ color: "#d32f2f" }}>{stats.rejected || 0}</td>
+                    <td className="text-green">{stats.accepted || 0}</td>
+                    <td className="text-red">{stats.rejected || 0}</td>
                     <td>{stats.acceptanceRate?.toFixed(1) || 0}%</td>
                   </tr>
                 ))}
@@ -287,44 +241,34 @@ const ChairReports = () => {
         <div className="dash-grid">
           <div className="dash-card">
             <h3>Tổng Assignment</h3>
-            <div
-              style={{ fontSize: "2rem", fontWeight: "bold", color: "#0f62fe" }}
-            >
+            <div className="stat-blue">
               {progressReport.totalAssignments || 0}
             </div>
           </div>
           <div className="dash-card">
             <h3>Đã hoàn thành</h3>
-            <div
-              style={{ fontSize: "2rem", fontWeight: "bold", color: "#2e7d32" }}
-            >
+            <div className="stat-green">
               {progressReport.completed || 0}
             </div>
-            <div style={{ marginTop: "0.5rem", color: "#666" }}>
+            <div className="completion-rate">
               {progressReport.completionRate?.toFixed(1) || 0}%
             </div>
           </div>
           <div className="dash-card">
             <h3>Đang chờ</h3>
-            <div
-              style={{ fontSize: "2rem", fontWeight: "bold", color: "#ff9800" }}
-            >
+            <div className="stat-orange">
               {progressReport.pending || 0}
             </div>
           </div>
           <div className="dash-card">
             <h3>Đã chấp nhận</h3>
-            <div
-              style={{ fontSize: "2rem", fontWeight: "bold", color: "#1976d2" }}
-            >
+            <div className="stat-indigo">
               {progressReport.accepted || 0}
             </div>
           </div>
           <div className="dash-card">
             <h3>Đã từ chối</h3>
-            <div
-              style={{ fontSize: "2rem", fontWeight: "bold", color: "#d32f2f" }}
-            >
+            <div className="stat-red">
               {progressReport.declined || 0}
             </div>
           </div>
