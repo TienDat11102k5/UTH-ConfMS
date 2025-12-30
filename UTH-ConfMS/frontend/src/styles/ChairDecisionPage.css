@@ -1,0 +1,231 @@
+/* =========================
+   ROOT & RESET
+========================= */
+.decision-page {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.decision-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr; /* filter | table */
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* =========================
+   CARD
+========================= */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* =========================
+   FILTER
+========================= */
+.filter-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-card label {
+  font-weight: 600;
+  color: #333;
+}
+
+.filter-card select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* =========================
+   TABLE
+========================= */
+.table-card {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.modern-table thead {
+  background: #f5f7fb;
+}
+
+.modern-table th,
+.modern-table td {
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.modern-table th {
+  font-weight: 600;
+  color: #444;
+}
+
+.modern-table tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+.modern-table tbody tr:hover {
+  background: #fafbff;
+}
+
+/* =========================
+   PAPER INFO
+========================= */
+.paper-title {
+  font-weight: 600;
+  color: #222;
+}
+
+.track {
+  font-size: 12px;
+  color: #777;
+}
+
+/* =========================
+   SCORE
+========================= */
+.score {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-block;
+}
+
+.score.good {
+  background: #e6f4ea;
+  color: #137333;
+}
+
+.score.bad {
+  background: #fce8e6;
+  color: #c5221f;
+}
+
+.score.neutral {
+  background: #f1f3f4;
+  color: #555;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.btn-primary {
+  background: #0f62fe;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-primary:hover {
+  background: #0043ce;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+/* =========================
+   EMPTY & LOADING
+========================= */
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: #777;
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  font-size: 16px;
+}
+
+/* =========================
+   MODAL
+========================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #fff;
+  width: 420px;
+  max-width: 90%;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.modal h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.modal select,
+.modal textarea {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.modal textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 900px) {
+  .decision-layout {
+    grid-template-columns: 1fr;
+  }
+}
