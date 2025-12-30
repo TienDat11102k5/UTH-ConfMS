@@ -25,4 +25,14 @@ public class Track extends BaseEntity {
     
     @Column(columnDefinition = "TEXT")
     private String description;
+    
+    // Thông tin cho Program/Schedule
+    @Column(name = "session_date")
+    private String sessionDate; // VD: "2025-01-15" hoặc "Ngày 15/01/2025"
+    
+    @Column(name = "session_time")
+    private String sessionTime; // VD: "09:00 - 11:00"
+    
+    @Column(name = "room")
+    private String room; // VD: "Phòng 201", "Hội trường A"
 }
