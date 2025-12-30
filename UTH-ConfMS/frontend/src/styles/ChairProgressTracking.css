@@ -1,114 +1,149 @@
-/* ===== Page Header ===== */
-.data-page-header {
-  margin-bottom: 1.5rem;
+/* ==================================
+   Chair Progress Tracking – UTH TEAL
+   ================================== */
+
+.loading-box {
+  padding: 3rem;
+  text-align: center;
+  color: #64748b;
 }
 
-.data-page-header-left {
+/* ===== Top header ===== */
+.analytics-top {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.breadcrumb {
-  font-size: 0.9rem;
-  color: #777;
-}
-
-.breadcrumb-current {
-  font-weight: 500;
-}
-
-.data-page-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-/* ===== Conference Selector ===== */
-.conference-selector {
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 2rem;
-  padding: 1rem;
-  background: #f5f5f5;
+}
+
+.analytics-top h2 {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #008b8b; /* UTH TEAL */
+}
+
+.analytics-top select {
+  padding: 0.55rem 0.9rem;
   border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
 }
 
-.conference-selector label {
-  margin-right: 1rem;
-  font-weight: bold;
+/* ===== KPI Panel ===== */
+.kpi-panel {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 2rem;
+  border-left: 6px solid #008b8b;
+  margin-bottom: 2rem;
 }
 
-.conference-selector select {
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-  min-width: 300px;
+/* Main KPI */
+.kpi-main span {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
 }
 
-/* ===== Dashboard Grid ===== */
-.dash-grid {
+.kpi-main strong {
+  display: block;
+  font-size: 3.2rem;
+  font-weight: 900;
+  margin: 0.3rem 0 1rem;
+  color: #008b8b;
+}
+
+/* Progress bar */
+.progress-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: #e6f5f5;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #008b8b,
+    #006d6d
+  );
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+/* ===== KPI stats ===== */
+.kpi-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 1.6rem;
+  gap: 1.2rem;
+}
+
+.kpi-stats div {
+  background: #f9fafb;
+  border-radius: 14px;
+  padding: 1.1rem;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+}
+
+.kpi-stats label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.kpi-stats b {
+  font-size: 1.45rem;
+  color: #008b8b;
+}
+
+/* ===== Status board ===== */
+.status-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
 }
 
-/* ===== Cards ===== */
-.dash-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.dash-card h3 {
-  margin-bottom: 0.75rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #333;
-}
-
-/* ===== Numbers ===== */
-.stat-total {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #0f62fe;
-}
-
-.stat-completed {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #2e7d32;
-}
-
-.stat-pending {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #ff9800;
-}
-
-.stat-accepted {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #1976d2;
-}
-
-.stat-declined {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #d32f2f;
-}
-
-.completion-rate {
-  margin-top: 0.5rem;
-  color: #666;
-}
-
-/* ===== Loading & Error ===== */
-.page-loading {
+/* Accepted */
+.status.accepted {
+  background: #008b8b;
+  border-radius: 18px;
+  padding: 1.6rem;
+  color: #ffffff;
   text-align: center;
-  padding: 3rem;
 }
 
-.page-error {
-  color: #d32f2f;
-  padding: 1rem;
+.status.accepted span {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.status.accepted b {
+  font-size: 2.3rem;
+  font-weight: 900;
+  color: #ffffff; /* accent vàng */
+}
+
+/* Declined */
+.status.declined {
+  background: #008b8b;
+  border-radius: 18px;
+  padding: 1.6rem;
+  color: #ffffff;
+  text-align: center;
+}
+
+.status.declined span {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.status.declined b {
+  font-size: 2.3rem;
+  font-weight: 900;
 }
