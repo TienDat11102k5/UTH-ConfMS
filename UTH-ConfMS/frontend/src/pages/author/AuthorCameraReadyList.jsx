@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DashboardLayout from "../../components/Layout/DashboardLayout.jsx";
 import apiClient from "../../apiClient";
+import { FiSearch } from "react-icons/fi";
 import "../../styles/AuthorPages.css";
 
 const AuthorCameraReadyList = () => {
@@ -12,6 +13,7 @@ const AuthorCameraReadyList = () => {
   const [submissions, setSubmissions] = useState([]);
   const [conferences, setConferences] = useState([]);
   const [selectedConference, setSelectedConference] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     let ignore = false;
@@ -86,12 +88,23 @@ const AuthorCameraReadyList = () => {
     }
   };
 
-  // Filter submissions by conference
-  const filteredSubmissions = selectedConference
-    ? submissions.filter(
-        (s) => (s.conferenceName || s.conferenceId) === selectedConference
-      )
-    : submissions;
+  // Filter submissions by conference and search query
+  const filteredSubmissions = submissions.filter((s) => {
+    // Filter by conference
+    if (selectedConference && (s.conferenceName || s.conferenceId) !== selectedConference) {
+      return false;
+    }
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      return (
+        s.title?.toLowerCase().includes(query) ||
+        s.conferenceName?.toLowerCase().includes(query) ||
+        s.trackName?.toLowerCase().includes(query)
+      );
+    }
+    return true;
+  });
 
   return (
     <DashboardLayout roleLabel="Author" title="Quản lý Camera-ready">
@@ -116,30 +129,90 @@ const AuthorCameraReadyList = () => {
         </div>
       </div>
 
-      {/* Filter Bar - Same style as AuthorSubmissionListPage */}
+      {/* Filter Box - Same style as chair/reviewer */}
       {!loading && submissions.length > 0 && (
-        <div className="submission-filter-bar">
-          <div className="filter-row">
-            <div className="filter-label">Lọc theo hội nghị:</div>
-            <select
-              className="select-input"
-              style={{ minWidth: 240, maxWidth: 360 }}
-              value={selectedConference}
-              onChange={(e) => setSelectedConference(e.target.value)}
-            >
-              <option value="">Tất cả hội nghị</option>
-              {conferences.map((conf, idx) => (
-                <option key={idx} value={conf}>
-                  {conf}
-                </option>
-              ))}
-            </select>
+        <div
+          style={{
+            marginBottom: "1.25rem",
+            background: "white",
+            borderRadius: "10px",
+            padding: "1rem 1.25rem",
+            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+            border: "1px solid #e2e8f0",
+          }}
+        >
+          <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ 
+                display: "block",
+                marginBottom: "0.5rem", 
+                fontWeight: 600,
+                color: "#64748b",
+                fontSize: "0.875rem",
+              }}>
+                Chọn hội nghị:
+              </label>
+              <select
+                value={selectedConference}
+                onChange={(e) => setSelectedConference(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.5rem 0.875rem",
+                  borderRadius: "8px",
+                  border: "1.5px solid #e2e8f0",
+                  fontSize: "0.8125rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background: "white",
+                  color: "#475569",
+                }}
+              >
+                <option value="">Tất cả hội nghị</option>
+                {conferences.map((conf, idx) => (
+                  <option key={idx} value={conf}>
+                    {conf}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            {selectedConference && (
-              <span className="badge-soft">
-                Đang hiển thị: {selectedConference}
-              </span>
-            )}
+            <div style={{ flex: 1 }}>
+              <label style={{ 
+                display: "block",
+                marginBottom: "0.5rem", 
+                fontWeight: 600,
+                color: "#64748b",
+                fontSize: "0.875rem",
+              }}>
+                Tìm kiếm:
+              </label>
+              <div style={{ position: "relative" }}>
+                <FiSearch style={{
+                  position: "absolute",
+                  left: "0.875rem",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "#94a3b8",
+                  width: "16px",
+                  height: "16px"
+                }} />
+                <input
+                  type="text"
+                  placeholder="Tìm theo tiêu đề, hội nghị, track..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem 0.875rem 0.5rem 2.5rem",
+                    borderRadius: "8px",
+                    border: "1.5px solid #e2e8f0",
+                    fontSize: "0.8125rem",
+                    background: "white",
+                    color: "#475569",
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -281,6 +354,18 @@ const AuthorCameraReadyList = () => {
           })}
         </div>
       )}
+
+      {/* Footer */}
+      <footer style={{
+        marginTop: "3rem",
+        paddingTop: "1.5rem",
+        borderTop: "1px solid #e5e7eb",
+        textAlign: "center",
+        color: "#6b7280",
+        fontSize: "0.875rem"
+      }}>
+        © {new Date().getFullYear()} Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải
+      </footer>
     </DashboardLayout>
   );
 };
