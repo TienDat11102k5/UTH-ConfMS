@@ -124,17 +124,20 @@
    BUTTONS
 ========================= */
 .btn-primary {
-  background: #0f62fe;
+  background: linear-gradient(135deg, #008689, #00a8ac);
   color: white;
   border: none;
   border-radius: 8px;
   padding: 8px 14px;
   cursor: pointer;
   font-size: 14px;
+  transition: all 0.2s;
 }
 
 .btn-primary:hover {
-  background: #0043ce;
+  background: linear-gradient(135deg, #00a8ac, #00c4c8);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 134, 137, 0.3);
 }
 
 .btn-primary:disabled {

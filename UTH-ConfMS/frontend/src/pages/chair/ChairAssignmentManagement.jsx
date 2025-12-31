@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from "react";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { FiFilter, FiTrendingUp, FiSearch } from "react-icons/fi";
+import "../../styles/ReviewerAssignments.css";
 
 const ChairAssignmentManagement = () => {
   const [conferences, setConferences] = useState([]);
-  const [selectedConference, setSelectedConference] = useState(null);
+  const [selectedConference, setSelectedConference] = useState("ALL");
   const [papers, setPapers] = useState([]);
   const [reviewers, setReviewers] = useState([]);
   const [assignments, setAssignments] = useState({});
@@ -15,6 +17,9 @@ const ChairAssignmentManagement = () => {
   const [selectedPaper, setSelectedPaper] = useState(null);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [selectedReviewer, setSelectedReviewer] = useState("");
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [sortBy, setSortBy] = useState('newest');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Load conferences
   useEffect(() => {
@@ -22,9 +27,8 @@ const ChairAssignmentManagement = () => {
       try {
         const res = await apiClient.get("/conferences");
         setConferences(res.data || []);
-        if (res.data && res.data.length > 0) {
-          setSelectedConference(res.data[0].id);
-        }
+        // Mặc định chọn "Tất cả hội nghị"
+        setSelectedConference("ALL");
       } catch (err) {
         console.error("Load conferences error:", err);
       }
@@ -57,14 +61,29 @@ const ChairAssignmentManagement = () => {
         setLoading(true);
         setError("");
 
-        // Load papers của conference
-        console.log("Loading papers for conference:", selectedConference);
-        const papersRes = await apiClient.get(
-          `/decisions/papers/${selectedConference}`
-        );
-        console.log("Papers response:", papersRes.data);
-        const confPapers = papersRes.data || [];
-        setPapers(confPapers);
+        let allPapers = [];
+
+        // Nếu chọn "Tất cả hội nghị", load papers từ tất cả conferences
+        if (selectedConference === "ALL") {
+          console.log("Loading papers from all conferences");
+          for (const conf of conferences) {
+            try {
+              const papersRes = await apiClient.get(`/decisions/papers/${conf.id}`);
+              const confPapers = papersRes.data || [];
+              allPapers = [...allPapers, ...confPapers];
+            } catch (err) {
+              console.error(`Error loading papers for conference ${conf.id}:`, err);
+            }
+          }
+        } else {
+          // Load papers của conference cụ thể
+          console.log("Loading papers for conference:", selectedConference);
+          const papersRes = await apiClient.get(`/decisions/papers/${selectedConference}`);
+          allPapers = papersRes.data || [];
+        }
+
+        console.log("Total papers loaded:", allPapers.length);
+        setPapers(allPapers);
 
         // Load reviewers
         try {
@@ -72,7 +91,6 @@ const ChairAssignmentManagement = () => {
           const usersRes = await apiClient.get("/decisions/reviewers");
           console.log("Reviewers response:", usersRes.data);
           const allUsers = usersRes.data || [];
-          // Backend đã lọc rồi, không cần filter nữa
           setReviewers(allUsers);
         } catch (uErr) {
           console.error("Không thể tải danh sách reviewers:", uErr);
@@ -84,7 +102,7 @@ const ChairAssignmentManagement = () => {
 
         // Load assignments for each paper
         const assignmentsMap = {};
-        for (const paper of confPapers) {
+        for (const paper of allPapers) {
           try {
             const assignRes = await apiClient.get(
               `/assignments/paper/${paper.id}`
@@ -103,7 +121,7 @@ const ChairAssignmentManagement = () => {
       }
     };
     loadData();
-  }, [selectedConference]);
+  }, [selectedConference, conferences]);
 
   const handleAssign = async () => {
     if (!selectedPaper || !selectedReviewer) {
@@ -185,18 +203,18 @@ const ChairAssignmentManagement = () => {
   const getStatusBadge = (status) => {
     const badges = {
       PENDING: { text: "Chờ xác nhận", className: "badge-warning" },
-      ACCEPTED: { text: "Đã chấp nhận", className: "badge-success" },
-      DECLINED: { text: "Đã từ chối", className: "badge-danger" },
-      COMPLETED: { text: "Đã hoàn thành", className: "badge-info" },
+      ACCEPTED: { text: "Đang chấm", className: "badge-success" },
+      DECLINED: { text: "Từ chối", className: "badge-danger" },
+      COMPLETED: { text: "Hoàn thành", className: "badge-info" },
     };
     const badge = badges[status] || badges.PENDING;
-    return <span className={`badge ${badge.className}`}>{badge.text}</span>;
+    return <span className={`badge ${badge.className}`} style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem" }}>{badge.text}</span>;
   };
 
   const getPaperStatusBadge = (status) => {
     const badges = {
       SUBMITTED: { text: "Đã nộp", className: "badge-info" },
-      UNDER_REVIEW: { text: "Đang review", className: "badge-warning" },
+      UNDER_REVIEW: { text: "Đang chấm", className: "badge-warning" },
       ACCEPTED: { text: "Chấp nhận", className: "badge-success" },
       REJECTED: { text: "Từ chối", className: "badge-danger" },
       WITHDRAWN: { text: "Đã rút", className: "badge-secondary" },
@@ -236,31 +254,163 @@ const ChairAssignmentManagement = () => {
       {conferences.length > 0 && (
         <div
           style={{
-            marginBottom: "2rem",
-            padding: "1rem",
-            background: "#f5f5f5",
-            borderRadius: "8px",
+            marginBottom: "1.25rem",
+            background: "white",
+            borderRadius: "10px",
+            padding: "1rem 1.25rem",
+            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+            border: "1px solid #e2e8f0",
           }}
         >
-          <label style={{ marginRight: "1rem", fontWeight: "bold" }}>
-            Chọn hội nghị:
-          </label>
-          <select
-            value={selectedConference || ""}
-            onChange={(e) => setSelectedConference(parseInt(e.target.value))}
-            style={{
-              padding: "0.5rem",
-              borderRadius: "4px",
-              border: "1px solid #ddd",
-              minWidth: "300px",
-            }}
-          >
-            {conferences.map((conf) => (
-              <option key={conf.id} value={conf.id}>
-                {conf.name}
-              </option>
-            ))}
-          </select>
+          <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ 
+                display: "block",
+                marginBottom: "0.5rem", 
+                fontWeight: 600,
+                color: "#64748b",
+                fontSize: "0.875rem",
+              }}>
+                Chọn hội nghị:
+              </label>
+              <select
+                value={selectedConference}
+                onChange={(e) => setSelectedConference(e.target.value === "ALL" ? "ALL" : parseInt(e.target.value))}
+                style={{
+                  width: "100%",
+                  padding: "0.5rem 0.875rem",
+                  borderRadius: "8px",
+                  border: "1.5px solid #e2e8f0",
+                  fontSize: "0.8125rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background: "white",
+                  color: "#475569",
+                }}
+              >
+                <option value="ALL">Tất cả hội nghị</option>
+                {conferences.map((conf) => (
+                  <option key={conf.id} value={conf.id}>
+                    {conf.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div style={{ flex: 1 }}>
+              <label style={{ 
+                display: "block",
+                marginBottom: "0.5rem", 
+                fontWeight: 600,
+                color: "#64748b",
+                fontSize: "0.875rem",
+              }}>
+                Tìm kiếm:
+              </label>
+              <div style={{ position: "relative" }}>
+                <FiSearch style={{
+                  position: "absolute",
+                  left: "0.875rem",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "#94a3b8",
+                  width: "16px",
+                  height: "16px"
+                }} />
+                <input
+                  type="text"
+                  placeholder="Tìm theo tiêu đề, tác giả, track..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem 0.875rem 0.5rem 2.5rem",
+                    borderRadius: "8px",
+                    border: "1.5px solid #e2e8f0",
+                    fontSize: "0.8125rem",
+                    background: "white",
+                    color: "#475569",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Filter & Sort Controls */}
+      {papers.length > 0 && (
+        <div className="filter-sort-controls">
+          <div className="filter-section">
+            <div className="filter-label">
+              <FiFilter />
+              <span>Lọc:</span>
+            </div>
+            <div className="filter-buttons">
+              <button 
+                className={`filter-btn ${statusFilter === 'ALL' ? 'active' : ''}`}
+                onClick={() => setStatusFilter('ALL')}
+              >
+                Tất cả
+                <span className="filter-count">{papers.length}</span>
+              </button>
+              <button 
+                className={`filter-btn ${statusFilter === 'UNASSIGNED' ? 'active' : ''}`}
+                onClick={() => setStatusFilter('UNASSIGNED')}
+              >
+                Chưa phân công
+                <span className="filter-count">
+                  {papers.filter(p => 
+                    (!assignments[p.id] || assignments[p.id].length === 0) &&
+                    (p.status === 'SUBMITTED' || p.status === 'UNDER_REVIEW')
+                  ).length}
+                </span>
+              </button>
+              <button 
+                className={`filter-btn ${statusFilter === 'UNDER_REVIEW' ? 'active' : ''}`}
+                onClick={() => setStatusFilter('UNDER_REVIEW')}
+              >
+                Đang review
+                <span className="filter-count">
+                  {papers.filter(p => p.status === 'UNDER_REVIEW').length}
+                </span>
+              </button>
+              <button 
+                className={`filter-btn ${statusFilter === 'WITHDRAWN' ? 'active' : ''}`}
+                onClick={() => setStatusFilter('WITHDRAWN')}
+              >
+                Đã rút
+                <span className="filter-count">
+                  {papers.filter(p => p.status === 'WITHDRAWN').length}
+                </span>
+              </button>
+              <button 
+                className={`filter-btn ${statusFilter === 'COMPLETED' ? 'active' : ''}`}
+                onClick={() => setStatusFilter('COMPLETED')}
+              >
+                Hoàn thành
+                <span className="filter-count">
+                  {papers.filter(p => p.status === 'ACCEPTED' || p.status === 'REJECTED').length}
+                </span>
+              </button>
+            </div>
+          </div>
+          
+          <div className="sort-section">
+            <div className="sort-label">
+              <FiTrendingUp />
+              <span>Sắp xếp:</span>
+            </div>
+            <select 
+              className="sort-select"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="newest">Mới nhất</option>
+              <option value="oldest">Cũ nhất</option>
+              <option value="unassigned">Chưa phân công trước</option>
+            </select>
+          </div>
         </div>
       )}
 
@@ -289,38 +439,89 @@ const ChairAssignmentManagement = () => {
             <thead>
               <tr>
                 <th>Tiêu đề</th>
-                <th>Track</th>
+                <th>Chủ đề </th>
                 <th>Tác giả</th>
                 <th>Trạng thái</th>
-                <th>Reviewers</th>
+                <th>Người chấm bài</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              {papers.map((paper) => {
+              {(() => {
+                // Filter papers by status
+                let filteredPapers = papers;
+                if (statusFilter === 'UNASSIGNED') {
+                  // Chỉ hiển thị bài chưa phân công VÀ chưa bị rút/từ chối/chấp nhận
+                  filteredPapers = papers.filter(p => 
+                    (!assignments[p.id] || assignments[p.id].length === 0) &&
+                    (p.status === 'SUBMITTED' || p.status === 'UNDER_REVIEW')
+                  );
+                } else if (statusFilter === 'UNDER_REVIEW') {
+                  filteredPapers = papers.filter(p => p.status === 'UNDER_REVIEW');
+                } else if (statusFilter === 'WITHDRAWN') {
+                  filteredPapers = papers.filter(p => p.status === 'WITHDRAWN');
+                } else if (statusFilter === 'COMPLETED') {
+                  filteredPapers = papers.filter(p => p.status === 'ACCEPTED' || p.status === 'REJECTED');
+                }
+
+                // Filter by search query
+                if (searchQuery.trim()) {
+                  const query = searchQuery.toLowerCase();
+                  filteredPapers = filteredPapers.filter(p => 
+                    p.title?.toLowerCase().includes(query) ||
+                    p.mainAuthor?.fullName?.toLowerCase().includes(query) ||
+                    p.track?.name?.toLowerCase().includes(query) ||
+                    p.conference?.name?.toLowerCase().includes(query)
+                  );
+                }
+
+                // Sort papers
+                let sortedPapers = [...filteredPapers];
+                if (sortBy === 'newest') {
+                  sortedPapers.sort((a, b) => b.id - a.id);
+                } else if (sortBy === 'oldest') {
+                  sortedPapers.sort((a, b) => a.id - b.id);
+                } else if (sortBy === 'unassigned') {
+                  sortedPapers.sort((a, b) => {
+                    const aAssigned = assignments[a.id]?.length || 0;
+                    const bAssigned = assignments[b.id]?.length || 0;
+                    return aAssigned - bAssigned;
+                  });
+                }
+
+                return sortedPapers.map((paper) => {
                 const paperAssignments = assignments[paper.id] || [];
                 return (
                   <tr key={paper.id}>
                     <td>
                       <strong>{paper.title}</strong>
+                      {selectedConference === "ALL" && paper.conference && (
+                        <div style={{ 
+                          fontSize: "0.75rem", 
+                          color: "#6b7280", 
+                          marginTop: "0.25rem",
+                          fontWeight: 500
+                        }}>
+                          🏛️ {paper.conference.name}
+                        </div>
+                      )}
                     </td>
                     <td>{paper.track?.name || "N/A"}</td>
                     <td>{paper.mainAuthor?.fullName || "N/A"}</td>
                     <td>{getPaperStatusBadge(paper.status)}</td>
                     <td>
                       {paperAssignments.length > 0 ? (
-                        <div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
                           {paperAssignments.map((assign) => (
                             <div
                               key={assign.id}
                               style={{
-                                marginBottom: "0.25rem",
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "0.5rem"
                               }}
                             >
-                              <span style={{ minWidth: "120px" }}>
+                              <span style={{ fontWeight: 600, color: "#1f2937", fontSize: "0.875rem" }}>
                                 {assign.reviewer?.fullName}
                               </span>
                               {getStatusBadge(assign.status)}
@@ -328,34 +529,48 @@ const ChairAssignmentManagement = () => {
                           ))}
                         </div>
                       ) : (
-                        <span style={{ color: "#999" }}>Chưa phân công</span>
+                        <span style={{ color: "#999", fontSize: "0.875rem" }}>Chưa phân công</span>
                       )}
                     </td>
                     <td>
                       <div className="inline-actions">
-                        <button
-                          className="btn-primary table-action"
-                          onClick={() => {
-                            setSelectedPaper(paper);
-                            setShowAssignModal(true);
-                          }}
-                          disabled={paper.status === "WITHDRAWN"}
-                          title={
-                            paper.status === "WITHDRAWN"
-                              ? "Không thể phân công cho bài đã rút"
-                              : paperAssignments.length > 0
+                        {/* Chỉ cho phân công nếu bài chưa bị REJECTED, WITHDRAWN, hoặc ACCEPTED */}
+                        {(paper.status === 'SUBMITTED' || paper.status === 'UNDER_REVIEW') ? (
+                          <button
+                            className="btn-primary table-action"
+                            onClick={() => {
+                              setSelectedPaper(paper);
+                              setShowAssignModal(true);
+                            }}
+                            style={{ minWidth: "140px" }}
+                            title={
+                              paperAssignments.length > 0
                                 ? "Thêm reviewer cho bài này"
                                 : "Phân công reviewer"
-                          }
-                        >
-                          {paperAssignments.length > 0 ? "Thêm reviewer" : "Phân công"}
-                        </button>
-
+                            }
+                          >
+                            {paperAssignments.length > 0 ? "Thêm reviewer" : "Phân công"}
+                          </button>
+                        ) : (
+                          <span 
+                            className={`badge ${
+                              paper.status === 'ACCEPTED' ? 'badge-success' : 
+                              paper.status === 'REJECTED' ? 'badge-danger' : 
+                              'badge-secondary'
+                            }`}
+                            style={{ minWidth: "120px", display: "inline-block", textAlign: "center" }}
+                          >
+                            {paper.status === 'ACCEPTED' && 'Đã chấp nhận'}
+                            {paper.status === 'REJECTED' && 'Đã từ chối'}
+                            {paper.status === 'WITHDRAWN' && 'Đã rút'}
+                          </span>
+                        )}
                       </div>
                     </td>
                   </tr>
                 );
-              })}
+              });
+              })()}
             </tbody>
           </table>
         )}
