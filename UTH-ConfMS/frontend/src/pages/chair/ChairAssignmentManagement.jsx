@@ -567,7 +567,7 @@ const ChairAssignmentManagement = () => {
                               paper.status === 'REJECTED' ? 'badge-danger' : 
                               'badge-secondary'
                             }`}
-                            style={{ minWidth: "120px", display: "inline-block", textAlign: "center" }}
+                            style={{ minWidth: "140px", display: "inline-block", textAlign: "center" }}
                           >
                             {paper.status === 'ACCEPTED' && 'Đã chấp nhận'}
                             {paper.status === 'REJECTED' && 'Đã từ chối'}
