@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import logoUth from "../../assets/logoUTH.jpg";
+import { FiCalendar, FiClock, FiMapPin } from "react-icons/fi";
 import "../../styles/PublicProgram.css";
 
 const PublicProgram = () => {
@@ -88,38 +89,117 @@ const PublicProgram = () => {
   if (loading) {
     return (
       <div className="program-page">
-        <div className="portal-header-container">
-          <header className="portal-header">
-            <div className="portal-logo">
+        <div style={{
+          background: "white",
+          borderBottom: "1px solid #e5e7eb",
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)"
+        }}>
+          <header style={{
+            maxWidth: "1400px",
+            margin: "0 auto",
+            padding: "1rem 2rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem"
+            }}>
               <img
                 src={logoUth}
                 alt="Logo UTH"
-                className="portal-logo-img"
                 style={{
-                  height: "190px",
+                  height: "60px",
                   width: "auto",
-                  marginRight: "0px",
-                  mixBlendMode: "multiply",
+                  mixBlendMode: "multiply"
                 }}
               />
-              <div className="portal-logo-text">
-                <div className="portal-logo-title">HỆ THỐNG QUẢN LÝ HỘI NGHỊ KHOA HỌC</div>
-                <div className="portal-logo-subtitle">
+              <div>
+                <div style={{
+                  fontSize: "1.125rem",
+                  fontWeight: 700,
+                  color: "#0d9488",
+                  lineHeight: 1.2,
+                  marginBottom: "0.25rem"
+                }}>
+                  HỆ THỐNG QUẢN LÝ HỘI NGHỊ KHOA HỌC
+                </div>
+                <div style={{
+                  fontSize: "0.8125rem",
+                  color: "#64748b",
+                  fontWeight: 500
+                }}>
                   Trường Đại học Giao thông Vận tải
                 </div>
               </div>
             </div>
-            <nav className="portal-nav">
-              <Link to="/" className="nav-link">Trang chủ</Link>
-              <Link to="/login" className="nav-link">Đăng nhập</Link>
+            <nav style={{
+              display: "flex",
+              gap: "1.5rem"
+            }}>
+              <Link to="/" style={{
+                color: "#475569",
+                textDecoration: "none",
+                fontSize: "0.9375rem",
+                fontWeight: 600
+              }}>Trang chủ</Link>
+              <Link to="/login" style={{
+                color: "#475569",
+                textDecoration: "none",
+                fontSize: "0.9375rem",
+                fontWeight: 600
+              }}>Đăng nhập</Link>
             </nav>
           </header>
         </div>
 
-        <div className="program-hero">
-          <div className="hero-content">
-            <h1>CHƯƠNG TRÌNH HỘI NGHỊ</h1>
-            <p>Lịch trình các phiên trình bày và hoạt động</p>
+        <div style={{
+          background: "linear-gradient(135deg, rgba(13, 148, 136, 0.05) 0%, rgba(20, 184, 166, 0.08) 100%)",
+          padding: "3rem 2rem",
+          borderBottom: "3px solid #14b8a6",
+          position: "relative",
+          overflow: "hidden"
+        }}>
+          <div style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%2314b8a6\" fill-opacity=\"0.03\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
+            opacity: 0.4
+          }}></div>
+          <div style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            textAlign: "center",
+            position: "relative",
+            zIndex: 1
+          }}>
+            <h1 style={{
+              fontSize: "2.25rem",
+              fontWeight: 700,
+              color: "#0d9488",
+              marginBottom: "0.75rem",
+              letterSpacing: "-0.02em",
+              textShadow: "0 2px 4px rgba(13, 148, 136, 0.1)"
+            }}>
+              Chương trình hội nghị
+            </h1>
+            <p style={{
+              fontSize: "1.0625rem",
+              color: "#64748b",
+              fontWeight: 500,
+              margin: 0,
+              letterSpacing: "0.01em"
+            }}>
+              Lịch trình các phiên trình bày và hoạt động
+            </p>
           </div>
         </div>
 
@@ -133,39 +213,130 @@ const PublicProgram = () => {
   return (
     <div className="program-page">
       {/* Header */}
-      <div className="portal-header-container">
-        <header className="portal-header">
-          <div className="portal-logo">
+      <div style={{
+        background: "white",
+        borderBottom: "1px solid #e5e7eb",
+        position: "sticky",
+        top: 0,
+        zIndex: 100,
+        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)"
+      }}>
+        <header style={{
+          maxWidth: "1400px",
+          margin: "0 auto",
+          padding: "1rem 2rem",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem"
+          }}>
             <img
               src={logoUth}
               alt="Logo UTH"
-              className="portal-logo-img"
               style={{
-                height: "190px",
+                height: "60px",
                 width: "auto",
-                marginRight: "0px",
-                mixBlendMode: "multiply",
+                mixBlendMode: "multiply"
               }}
             />
-            <div className="portal-logo-text">
-              <div className="portal-logo-title">HỆ THỐNG QUẢN LÝ HỘI NGHỊ KHOA HỌC</div>
-              <div className="portal-logo-subtitle">
+            <div>
+              <div style={{
+                fontSize: "1.125rem",
+                fontWeight: 700,
+                color: "#0d9488",
+                lineHeight: 1.2,
+                marginBottom: "0.25rem"
+              }}>
+                HỆ THỐNG QUẢN LÝ HỘI NGHỊ KHOA HỌC
+              </div>
+              <div style={{
+                fontSize: "0.8125rem",
+                color: "#64748b",
+                fontWeight: 500
+              }}>
                 Trường Đại học Giao thông Vận tải
               </div>
             </div>
           </div>
-          <nav className="portal-nav">
-            <Link to="/" className="nav-link">Trang chủ</Link>
-            <Link to="/login" className="nav-link">Đăng nhập</Link>
+          <nav style={{
+            display: "flex",
+            gap: "1.5rem"
+          }}>
+            <Link to="/" style={{
+              color: "#475569",
+              textDecoration: "none",
+              fontSize: "0.9375rem",
+              fontWeight: 600,
+              transition: "color 0.2s ease"
+            }}
+            onMouseOver={(e) => e.currentTarget.style.color = "#0d9488"}
+            onMouseOut={(e) => e.currentTarget.style.color = "#475569"}
+            >
+              Trang chủ
+            </Link>
+            <Link to="/login" style={{
+              color: "#475569",
+              textDecoration: "none",
+              fontSize: "0.9375rem",
+              fontWeight: 600,
+              transition: "color 0.2s ease"
+            }}
+            onMouseOver={(e) => e.currentTarget.style.color = "#0d9488"}
+            onMouseOut={(e) => e.currentTarget.style.color = "#475569"}
+            >
+              Đăng nhập
+            </Link>
           </nav>
         </header>
       </div>
 
       {/* Hero Banner */}
-      <div className="program-hero">
-        <div className="hero-content">
-          <h1>CHƯƠNG TRÌNH HỘI NGHỊ</h1>
-          <p>Lịch trình các phiên trình bày và hoạt động</p>
+      <div style={{
+        background: "linear-gradient(135deg, rgba(13, 148, 136, 0.05) 0%, rgba(20, 184, 166, 0.08) 100%)",
+        padding: "3rem 2rem",
+        borderBottom: "3px solid #14b8a6",
+        position: "relative",
+        overflow: "hidden"
+      }}>
+        <div style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%2314b8a6\" fill-opacity=\"0.03\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
+          opacity: 0.4
+        }}></div>
+        <div style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          textAlign: "center",
+          position: "relative",
+          zIndex: 1
+        }}>
+          <h1 style={{
+            fontSize: "2.25rem",
+            fontWeight: 700,
+            color: "#0d9488",
+            marginBottom: "0.75rem",
+            letterSpacing: "-0.02em",
+            textShadow: "0 2px 4px rgba(13, 148, 136, 0.1)"
+          }}>
+            Chương trình hội nghị
+          </h1>
+          <p style={{
+            fontSize: "1.0625rem",
+            color: "#64748b",
+            fontWeight: 500,
+            margin: 0,
+            letterSpacing: "0.01em"
+          }}>
+            Lịch trình các phiên trình bày và hoạt động
+          </p>
         </div>
       </div>
 
@@ -173,9 +344,38 @@ const PublicProgram = () => {
       <div className="program-container">
         {/* Conference Selector */}
         {conferences.length > 1 && (
-          <div className="conference-selector">
-            <label>Chọn hội nghị:</label>
-            <select value={selectedConference} onChange={handleConferenceChange}>
+          <div style={{
+            marginBottom: "1.5rem",
+            background: "white",
+            borderRadius: "10px",
+            padding: "1rem 1.25rem",
+            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+            border: "1px solid #e2e8f0",
+          }}>
+            <label style={{ 
+              display: "block",
+              marginBottom: "0.5rem", 
+              fontWeight: 600,
+              color: "#64748b",
+              fontSize: "0.875rem",
+            }}>
+              Chọn hội nghị:
+            </label>
+            <select
+              value={selectedConference}
+              onChange={handleConferenceChange}
+              style={{
+                width: "100%",
+                padding: "0.5rem 0.875rem",
+                borderRadius: "8px",
+                border: "1.5px solid #e2e8f0",
+                fontSize: "0.8125rem",
+                fontWeight: 600,
+                cursor: "pointer",
+                background: "white",
+                color: "#475569",
+              }}
+            >
               {conferences.map((conf) => (
                 <option key={conf.id} value={conf.id}>
                   {conf.name}
@@ -185,42 +385,98 @@ const PublicProgram = () => {
           </div>
         )}
 
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <div style={{
+            background: "white",
+            borderRadius: "12px",
+            padding: "3rem",
+            textAlign: "center",
+            color: "#ef4444",
+            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+          }}>
+            {error}
+          </div>
+        )}
 
         {!error && program.length > 0 && (
-          <div className="program-list">
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
             {program.map((session, index) => (
-              <div key={index} className="session-card">
-                <div className="session-header">
-                  <div className="session-info">
-                    <h2 className="session-title">{session.trackName}</h2>
-                    {session.trackDescription && (
-                      <p className="session-description">{session.trackDescription}</p>
-                    )}
-                  </div>
+              <div key={index} style={{
+                background: "white",
+                borderRadius: "12px",
+                boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+                overflow: "hidden",
+                border: "1px solid #e5e7eb"
+              }}>
+                {/* Session Header */}
+                <div style={{
+                  background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)",
+                  padding: "1.25rem 1.5rem",
+                  color: "white"
+                }}>
+                  <h2 style={{
+                    fontSize: "1.375rem",
+                    fontWeight: 700,
+                    margin: "0 0 0.5rem 0",
+                    letterSpacing: "-0.01em"
+                  }}>
+                    {session.trackName}
+                  </h2>
+                  {session.trackDescription && (
+                    <p style={{
+                      fontSize: "0.9375rem",
+                      margin: "0 0 1rem 0",
+                      opacity: 0.95,
+                      lineHeight: 1.5
+                    }}>
+                      {session.trackDescription}
+                    </p>
+                  )}
+                  
                   {(session.sessionDate || session.sessionTime || session.room) && (
-                    <div className="session-meta">
+                    <div style={{
+                      display: "flex",
+                      gap: "1.5rem",
+                      flexWrap: "wrap",
+                      fontSize: "0.875rem",
+                      fontWeight: 600
+                    }}>
                       {session.sessionDate && (
-                        <div className="session-date">
-                          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/>
-                          </svg>
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                          background: "rgba(255, 255, 255, 0.2)",
+                          padding: "0.375rem 0.75rem",
+                          borderRadius: "6px"
+                        }}>
+                          <FiCalendar size={16} />
                           {formatDisplayDate(session.sessionDate)}
                         </div>
                       )}
                       {session.sessionTime && (
-                        <div className="session-time">
-                          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12zm1-6V6H9v5h5V9h-3z"/>
-                          </svg>
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                          background: "rgba(255, 255, 255, 0.2)",
+                          padding: "0.375rem 0.75rem",
+                          borderRadius: "6px"
+                        }}>
+                          <FiClock size={16} />
                           {session.sessionTime}
                         </div>
                       )}
                       {session.room && (
-                        <div className="session-room">
-                          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10 2L2 7v11h6v-6h4v6h6V7l-8-5z"/>
-                          </svg>
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                          background: "rgba(255, 255, 255, 0.2)",
+                          padding: "0.375rem 0.75rem",
+                          borderRadius: "6px"
+                        }}>
+                          <FiMapPin size={16} />
                           {session.room}
                         </div>
                       )}
@@ -228,25 +484,64 @@ const PublicProgram = () => {
                   )}
                 </div>
 
-                <div className="papers-list">
-                  {session.papers.map((paper, paperIndex) => (
-                    <div key={paper.paperId} className="paper-item">
-                      <div className="paper-number">{paperIndex + 1}</div>
-                      <div className="paper-details">
-                        <h3 className="paper-title">{paper.title}</h3>
-                        <div className="paper-authors">
-                          <span className="author-label">Tác giả:</span> {paper.authorName}
-                          {paper.coAuthors && `, ${paper.coAuthors}`}
+                {/* Papers List */}
+                <div style={{ padding: "1.5rem" }}>
+                  <div style={{
+                    marginBottom: "1rem",
+                    fontSize: "0.875rem",
+                    color: "#6b7280",
+                    fontWeight: 600
+                  }}>
+                    {session.papers.length} bài báo
+                  </div>
+                  
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                    {session.papers.map((paper, paperIndex) => (
+                      <div key={paper.paperId} style={{
+                        padding: "1rem",
+                        background: "#f9fafb",
+                        borderRadius: "8px",
+                        border: "1px solid #e5e7eb",
+                        display: "flex",
+                        gap: "1rem"
+                      }}>
+                        <div style={{
+                          minWidth: "36px",
+                          height: "36px",
+                          background: "linear-gradient(135deg, #008689, #00a8ac)",
+                          color: "white",
+                          borderRadius: "6px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontWeight: 700,
+                          fontSize: "0.9375rem"
+                        }}>
+                          {paperIndex + 1}
                         </div>
-                        <div className="paper-meta">
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M3 3h10a1 1 0 011 1v8a1 1 0 01-1 1H3a1 1 0 01-1-1V4a1 1 0 011-1zm1 2v6h8V5H4z"/>
-                          </svg>
-                          Bài số {paperIndex + 1} / {session.papers.length}
+                        
+                        <div style={{ flex: 1 }}>
+                          <h3 style={{
+                            fontSize: "1rem",
+                            fontWeight: 600,
+                            color: "#008689",
+                            margin: "0 0 0.5rem 0",
+                            lineHeight: 1.4
+                          }}>
+                            {paper.title}
+                          </h3>
+                          <div style={{
+                            fontSize: "0.875rem",
+                            color: "#6b7280",
+                            lineHeight: 1.5
+                          }}>
+                            <span style={{ fontWeight: 600, color: "#475569" }}>Tác giả:</span> {paper.authorName}
+                            {paper.coAuthors && `, ${paper.coAuthors}`}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
@@ -254,21 +549,52 @@ const PublicProgram = () => {
         )}
 
         {!error && program.length === 0 && !loading && (
-          <div className="empty-state">
+          <div style={{
+            background: "white",
+            borderRadius: "12px",
+            padding: "3rem",
+            textAlign: "center",
+            color: "#6b7280",
+            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+          }}>
             Chưa có chương trình nào được công bố.
           </div>
         )}
 
-        <div className="back-link-container">
-          <Link to="/" className="back-link">
+        <div style={{
+          marginTop: "2rem",
+          textAlign: "center"
+        }}>
+          <Link to="/" style={{
+            color: "#0d9488",
+            textDecoration: "none",
+            fontSize: "0.9375rem",
+            fontWeight: 600,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            transition: "color 0.2s ease"
+          }}
+          onMouseOver={(e) => e.currentTarget.style.color = "#14b8a6"}
+          onMouseOut={(e) => e.currentTarget.style.color = "#0d9488"}
+          >
             ← Quay lại trang chủ
           </Link>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="program-footer">
-        <span>
+      <footer style={{
+        background: "#f9fafb",
+        borderTop: "1px solid #e5e7eb",
+        padding: "1.5rem 2rem",
+        marginTop: "3rem",
+        textAlign: "center"
+      }}>
+        <span style={{
+          fontSize: "0.875rem",
+          color: "#6b7280"
+        }}>
           © {new Date().getFullYear()} Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải
         </span>
       </footer>
