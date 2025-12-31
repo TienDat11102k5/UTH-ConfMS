@@ -43,14 +43,14 @@ const ChairConferenceSubmissions = () => {
 
   const getStatusBadge = (status) => {
     const statusMap = {
-      SUBMITTED: { label: "ĐÃ NỘP", class: "badge-info" },
-      UNDER_REVIEW: { label: "ĐANG REVIEW", class: "badge-warning" },
-      ACCEPTED: { label: "CHẤP NHẬN", class: "badge-success" },
-      REJECTED: { label: "TỪ CHỐI", class: "badge-danger" },
-      WITHDRAWN: { label: "ĐÃ RÚT", class: "badge-secondary" },
+      SUBMITTED: { label: "Đã nộp", class: "badge badge-info" },
+      UNDER_REVIEW: { label: "Đang chấm", class: "badge badge-warning" },
+      ACCEPTED: { label: "Chấp nhận", class: "badge badge-success" },
+      REJECTED: { label: "Từ chối", class: "badge badge-danger" },
+      WITHDRAWN: { label: "Đã rút", class: "badge badge-secondary" },
     };
-    const info = statusMap[status] || { label: status, class: "badge-secondary" };
-    return <span className={info.class}>{info.label}</span>;
+    const info = statusMap[status] || { label: status, class: "badge badge-secondary" };
+    return <span className={info.class} style={{ minWidth: "90px", display: "inline-block", textAlign: "center" }}>{info.label}</span>;
   };
 
   const getTrackName = (paper) => {
@@ -117,11 +117,11 @@ const ChairConferenceSubmissions = () => {
             <tr>
               <th style={{ width: "60px" }}>ID</th>
               <th>Tiêu đề bài báo</th>
-              <th style={{ width: "150px" }}>Track</th>
-              <th style={{ width: "180px" }}>Tác giả</th>
-              <th style={{ width: "120px" }}>Ngày nộp</th>
-              <th style={{ width: "100px" }}>Trạng thái</th>
-              <th style={{ width: "120px" }}>Thao tác</th>
+              <th style={{ width: "120px" }}>Track</th>
+              <th style={{ width: "150px" }}>Tác giả</th>
+              <th style={{ width: "110px" }}>Ngày nộp</th>
+              <th style={{ width: "120px", whiteSpace: "nowrap" }}>Trạng thái</th>
+              <th style={{ width: "130px", whiteSpace: "nowrap" }}>Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -183,8 +183,8 @@ const ChairConferenceSubmissions = () => {
                         ? new Date(paper.createdAt).toLocaleDateString("vi-VN")
                         : "—"}
                     </td>
-                    <td>{getStatusBadge(paper.status)}</td>
-                    <td>
+                    <td style={{ whiteSpace: "nowrap" }}>{getStatusBadge(paper.status)}</td>
+                    <td style={{ whiteSpace: "nowrap" }}>
                       <button
                         className="btn-primary table-action"
                         type="button"

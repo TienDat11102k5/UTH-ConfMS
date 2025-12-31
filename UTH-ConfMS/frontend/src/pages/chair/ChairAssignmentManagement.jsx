@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import Pagination from "../../components/Pagination";
+import { usePagination } from "../../hooks/usePagination";
 import { FiFilter, FiTrendingUp, FiSearch } from "react-icons/fi";
 import "../../styles/ReviewerAssignments.css";
 
@@ -9,6 +11,7 @@ const ChairAssignmentManagement = () => {
   const [conferences, setConferences] = useState([]);
   const [selectedConference, setSelectedConference] = useState("ALL");
   const [papers, setPapers] = useState([]);
+  const [filteredPapers, setFilteredPapers] = useState([]);
   const [reviewers, setReviewers] = useState([]);
   const [assignments, setAssignments] = useState({});
   const [loading, setLoading] = useState(true);
@@ -20,6 +23,8 @@ const ChairAssignmentManagement = () => {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [sortBy, setSortBy] = useState('newest');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination(filteredPapers, 20);
 
   // Load conferences
   useEffect(() => {
@@ -122,6 +127,52 @@ const ChairAssignmentManagement = () => {
     };
     loadData();
   }, [selectedConference, conferences]);
+
+  // Apply filters and sorting whenever papers, filters, or sort changes
+  useEffect(() => {
+    let result = papers;
+
+    // Filter by status
+    if (statusFilter === 'UNASSIGNED') {
+      result = papers.filter(p => 
+        (!assignments[p.id] || assignments[p.id].length === 0) &&
+        (p.status === 'SUBMITTED' || p.status === 'UNDER_REVIEW')
+      );
+    } else if (statusFilter === 'UNDER_REVIEW') {
+      result = papers.filter(p => p.status === 'UNDER_REVIEW');
+    } else if (statusFilter === 'WITHDRAWN') {
+      result = papers.filter(p => p.status === 'WITHDRAWN');
+    } else if (statusFilter === 'COMPLETED') {
+      result = papers.filter(p => p.status === 'ACCEPTED' || p.status === 'REJECTED');
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(p => 
+        p.title?.toLowerCase().includes(query) ||
+        p.mainAuthor?.fullName?.toLowerCase().includes(query) ||
+        p.track?.name?.toLowerCase().includes(query) ||
+        p.conference?.name?.toLowerCase().includes(query)
+      );
+    }
+
+    // Sort
+    if (sortBy === 'newest') {
+      result.sort((a, b) => b.id - a.id);
+    } else if (sortBy === 'oldest') {
+      result.sort((a, b) => a.id - b.id);
+    } else if (sortBy === 'unassigned') {
+      result.sort((a, b) => {
+        const aAssigned = assignments[a.id]?.length || 0;
+        const bAssigned = assignments[b.id]?.length || 0;
+        return aAssigned - bAssigned;
+      });
+    }
+
+    setFilteredPapers(result);
+    setCurrentPage(1); // Reset to page 1 when filters change
+  }, [papers, statusFilter, sortBy, searchQuery, assignments, setCurrentPage]);
 
   const handleAssign = async () => {
     if (!selectedPaper || !selectedReviewer) {
@@ -447,49 +498,7 @@ const ChairAssignmentManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {(() => {
-                // Filter papers by status
-                let filteredPapers = papers;
-                if (statusFilter === 'UNASSIGNED') {
-                  // Chỉ hiển thị bài chưa phân công VÀ chưa bị rút/từ chối/chấp nhận
-                  filteredPapers = papers.filter(p => 
-                    (!assignments[p.id] || assignments[p.id].length === 0) &&
-                    (p.status === 'SUBMITTED' || p.status === 'UNDER_REVIEW')
-                  );
-                } else if (statusFilter === 'UNDER_REVIEW') {
-                  filteredPapers = papers.filter(p => p.status === 'UNDER_REVIEW');
-                } else if (statusFilter === 'WITHDRAWN') {
-                  filteredPapers = papers.filter(p => p.status === 'WITHDRAWN');
-                } else if (statusFilter === 'COMPLETED') {
-                  filteredPapers = papers.filter(p => p.status === 'ACCEPTED' || p.status === 'REJECTED');
-                }
-
-                // Filter by search query
-                if (searchQuery.trim()) {
-                  const query = searchQuery.toLowerCase();
-                  filteredPapers = filteredPapers.filter(p => 
-                    p.title?.toLowerCase().includes(query) ||
-                    p.mainAuthor?.fullName?.toLowerCase().includes(query) ||
-                    p.track?.name?.toLowerCase().includes(query) ||
-                    p.conference?.name?.toLowerCase().includes(query)
-                  );
-                }
-
-                // Sort papers
-                let sortedPapers = [...filteredPapers];
-                if (sortBy === 'newest') {
-                  sortedPapers.sort((a, b) => b.id - a.id);
-                } else if (sortBy === 'oldest') {
-                  sortedPapers.sort((a, b) => a.id - b.id);
-                } else if (sortBy === 'unassigned') {
-                  sortedPapers.sort((a, b) => {
-                    const aAssigned = assignments[a.id]?.length || 0;
-                    const bAssigned = assignments[b.id]?.length || 0;
-                    return aAssigned - bAssigned;
-                  });
-                }
-
-                return sortedPapers.map((paper) => {
+              {paginatedItems.map((paper) => {
                 const paperAssignments = assignments[paper.id] || [];
                 return (
                   <tr key={paper.id}>
@@ -569,12 +578,23 @@ const ChairAssignmentManagement = () => {
                     </td>
                   </tr>
                 );
-              });
-              })()}
+              })}
             </tbody>
           </table>
         )}
       </div>
+
+      {/* Pagination */}
+      {!loading && filteredPapers.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredPapers.length}
+          itemsPerPage={20}
+          onPageChange={setCurrentPage}
+          itemName="bài báo"
+        />
+      )}
 
       {/* Modal phân công */}
       {showAssignModal && selectedPaper && (
