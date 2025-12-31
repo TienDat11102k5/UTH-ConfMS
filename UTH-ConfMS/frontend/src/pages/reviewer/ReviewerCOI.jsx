@@ -3,19 +3,17 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
-import { FiAlertTriangle, FiFileText, FiPlus, FiX, FiTrash2, FiEye, FiCheckCircle, FiXCircle } from 'react-icons/fi';
+import { FiAlertTriangle, FiPlus, FiX, FiTrash2, FiCheckCircle, FiXCircle } from 'react-icons/fi';
 
 const ReviewerCOI = () => {
   const navigate = useNavigate();
   const [conflicts, setConflicts] = useState([]);
   const [papers, setPapers] = useState([]);
-  const [myPapers, setMyPapers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [activeTab, setActiveTab] = useState("coi"); // 'coi' or 'bidding'
   const [formData, setFormData] = useState({
     paperId: "",
     reason: "",
@@ -43,13 +41,6 @@ const ReviewerCOI = () => {
         `/conflicts/reviewer/${reviewerId}`
       );
       setConflicts(conflictsRes.data || []);
-
-      // Load papers được phân công (cho bidding)
-      const assignmentsRes = await apiClient.get(
-        `/assignments/my-assignments?reviewerId=${reviewerId}`
-      );
-      const assignedPapers = assignmentsRes.data.map((a) => a.paper);
-      setMyPapers(assignedPapers);
     } catch (err) {
       console.error("Load error:", err);
       setError(
@@ -86,7 +77,7 @@ const ReviewerCOI = () => {
         }&reason=${encodeURIComponent(formData.reason.trim())}`
       );
 
-      setSuccess("Khai báo COI thành công!");
+      setSuccess("Khai báo xung đột lợi ích thành công!");
       setShowForm(false);
       setFormData({ paperId: "", reason: "" });
       await loadData(); // Reload data
@@ -95,7 +86,7 @@ const ReviewerCOI = () => {
         err.response?.data?.message ||
           err.response?.data ||
           err.message ||
-          "Lỗi khi khai báo COI"
+          "Lỗi khi khai báo xung đột lợi ích"
       );
     } finally {
       setSubmitting(false);
@@ -103,18 +94,18 @@ const ReviewerCOI = () => {
   };
 
   const handleDeleteCOI = async (coiId) => {
-    if (!confirm("Bạn có chắc muốn xóa khai báo COI này?")) return;
+    if (!confirm("Bạn có chắc muốn xóa khai báo xung đột lợi ích này?")) return;
 
     try {
       await apiClient.delete(`/conflicts/${coiId}`);
-      setSuccess("Đã xóa COI thành công");
+      setSuccess("Đã xóa xung đột lợi ích thành công");
       await loadData();
     } catch (err) {
       setError(
         err.response?.data?.message ||
           err.response?.data ||
           err.message ||
-          "Lỗi khi xóa COI"
+          "Lỗi khi xóa xung đột lợi ích"
       );
     }
   };
@@ -126,7 +117,7 @@ const ReviewerCOI = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Reviewer / PC" title="Quản lý COI & Bidding">
+      <DashboardLayout roleLabel="Người chấm" title="Quản lý xung đột lợi ích">
         <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
       </DashboardLayout>
     );
@@ -134,18 +125,18 @@ const ReviewerCOI = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Reviewer / PC"
-      title="Quản lý COI & Bidding"
+      roleLabel="Người chấm"
+      title="Quản lý xung đột lợi ích"
       subtitle="Khai báo xung đột lợi ích và xem danh sách bài được phân công"
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <span className="breadcrumb-current">Reviewer</span>
+            <span className="breadcrumb-current">Người chấm</span>
           </div>
           <h2 className="data-page-title">
             <FiAlertTriangle style={{ marginRight: "0.5rem", verticalAlign: "middle", color: "#f59e0b" }} />
-            Quản lý COI & Bidding
+            Quản lý xung đột lợi ích
           </h2>
           <p className="data-page-subtitle">
             Khai báo xung đột lợi ích để tránh được phân công chấm các bài không phù hợp.
@@ -156,24 +147,6 @@ const ReviewerCOI = () => {
             ← Quay lại
           </button>
         </div>
-      </div>
-
-      {/* Tab Navigation */}
-      <div className="coi-tabs">
-        <button
-          onClick={() => setActiveTab("coi")}
-          className={`coi-tab ${activeTab === "coi" ? "active" : ""}`}
-        >
-          <FiAlertTriangle size={18} />
-          Quản lý COI
-        </button>
-        <button
-          onClick={() => setActiveTab("bidding")}
-          className={`coi-tab ${activeTab === "bidding" ? "active" : ""}`}
-        >
-          <FiFileText size={18} />
-          Bidding / Gợi ý bài
-        </button>
       </div>
 
       {success && (
@@ -190,35 +163,46 @@ const ReviewerCOI = () => {
         </div>
       )}
 
-      {/* COI Tab */}
-      {activeTab === "coi" && (
-        <>
-          <div style={{ marginBottom: "1.5rem" }}>
-            <button
-              className="btn-primary"
-              onClick={() => setShowForm(!showForm)}
-            >
-              {showForm ? (
-                <>
-                  <FiX size={18} style={{ marginRight: "0.5rem" }} />
-                  Đóng form
-                </>
-              ) : (
-                <>
-                  <FiPlus size={18} style={{ marginRight: "0.5rem" }} />
-                  Khai báo COI mới
-                </>
-              )}
-            </button>
-          </div>
+      <div style={{ marginBottom: "1.5rem" }}>
+        <button
+          className="btn-primary"
+          onClick={() => setShowForm(!showForm)}
+        >
+          {showForm ? (
+            <>
+              <FiX size={18} style={{ marginRight: "0.5rem" }} />
+              Đóng form
+            </>
+          ) : (
+            <>
+              <FiPlus size={18} style={{ marginRight: "0.5rem" }} />
+              Khai báo xung đột lợi ích mới
+            </>
+          )}
+        </button>
+      </div>
 
-          {showForm && (
-            <div className="coi-form-card">
-              <div className="coi-form-header">
-                <FiAlertTriangle size={20} />
-                <span>Khai báo xung đột lợi ích mới</span>
-              </div>
-              <div className="coi-form-body">
+      {showForm && (
+              <div style={{
+                marginBottom: "1.5rem",
+                background: "white",
+                borderRadius: "10px",
+                padding: "1rem 1.25rem",
+                boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+                border: "1px solid #e2e8f0",
+              }}>
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  marginBottom: "1rem",
+                  fontWeight: 600,
+                  color: "#64748b",
+                  fontSize: "0.875rem",
+                }}>
+                  <FiAlertTriangle size={16} />
+                  Khai báo xung đột lợi ích mới
+                </div>
                 <form onSubmit={handleSubmitCOI} className="submission-form">
                   <div className="form-group">
                     <label className="form-label">Chọn bài báo *</label>
@@ -233,12 +217,12 @@ const ReviewerCOI = () => {
                       <option value="">-- Chọn bài báo --</option>
                       {availablePapers.map((paper) => (
                         <option key={paper.id} value={paper.id}>
-                          {paper.title} (Track: {paper.track?.name || "N/A"})
+                          {paper.title} (Chủ đề: {paper.track?.name || "N/A"})
                         </option>
                       ))}
                     </select>
                     <div className="field-hint">
-                      Chỉ hiển thị các bài chưa khai báo COI
+                      Chỉ hiển thị các bài chưa khai báo xung đột lợi ích
                     </div>
                   </div>
 
@@ -267,7 +251,7 @@ const ReviewerCOI = () => {
                       disabled={submitting}
                     >
                       <FiCheckCircle size={18} style={{ marginRight: "0.5rem" }} />
-                      {submitting ? "Đang gửi..." : "Khai báo COI"}
+                      {submitting ? "Đang gửi..." : "Khai báo xung đột"}
                     </button>
                     <button
                       type="button"
@@ -283,21 +267,34 @@ const ReviewerCOI = () => {
                   </div>
                 </form>
               </div>
-            </div>
-          )}
+            )}
 
-          <div className="coi-card">
-            <div className="coi-card-header">
-              <FiAlertTriangle size={20} />
-              <span>Danh sách COI đã khai báo ({conflicts.length})</span>
+          <div style={{
+            marginBottom: "1.5rem",
+            background: "white",
+            borderRadius: "10px",
+            padding: "1rem 1.25rem",
+            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+            border: "1px solid #e2e8f0",
+          }}>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              marginBottom: "1rem",
+              fontWeight: 600,
+              color: "#64748b",
+              fontSize: "0.875rem",
+            }}>
+              <FiAlertTriangle size={16} />
+              Danh sách xung đột lợi ích đã khai báo ({conflicts.length})
             </div>
-            <div className="coi-card-body">
               {conflicts.length === 0 ? (
                 <div className="empty-state">
                   <FiAlertTriangle size={48} style={{ color: "#cbd5e1" }} />
-                  <p>Bạn chưa khai báo COI nào.</p>
+                  <p>Bạn chưa khai báo xung đột lợi ích nào.</p>
                   <p style={{ fontSize: "0.9rem", color: "#94a3b8" }}>
-                    Nhấn nút "Khai báo COI mới" để thêm.
+                    Nhấn nút "Khai báo xung đột lợi ích mới" để thêm.
                   </p>
                 </div>
               ) : (
@@ -307,7 +304,7 @@ const ReviewerCOI = () => {
                       <tr>
                         <th style={{ width: "60px" }}>ID</th>
                         <th>Tiêu đề bài báo</th>
-                        <th style={{ width: "150px" }}>Track</th>
+                        <th style={{ width: "150px" }}>Chủ đề</th>
                         <th style={{ width: "250px" }}>Lý do</th>
                         <th style={{ width: "120px" }}>Ngày khai báo</th>
                         <th style={{ width: "100px", textAlign: "center" }}>Thao tác</th>
@@ -329,7 +326,7 @@ const ReviewerCOI = () => {
                             <button
                               className="btn-delete-icon"
                               onClick={() => handleDeleteCOI(conflict.id)}
-                              title="Xóa COI"
+                              title="Xóa xung đột lợi ích"
                             >
                               <FiTrash2 size={17} />
                             </button>
@@ -340,117 +337,19 @@ const ReviewerCOI = () => {
                   </table>
                 </div>
               )}
-            </div>
           </div>
-        </>
-      )}
-
-      {/* Bidding Tab */}
-      {activeTab === "bidding" && (
-        <div className="coi-card">
-          <div className="coi-card-header">
-            <FiFileText size={20} />
-            <span>Danh sách bài được phân công ({myPapers.length})</span>
-          </div>
-          <div className="coi-card-body">
-            <p className="bidding-description">
-              Dưới đây là danh sách các bài báo hiện được phân công cho bạn. 
-              Bạn có thể xem chi tiết và tiến hành review cho từng bài.
-            </p>
-
-            {myPapers.length === 0 ? (
-              <div className="empty-state">
-                <FiFileText size={48} style={{ color: "#cbd5e1" }} />
-                <p>Bạn chưa được phân công bài nào.</p>
-                <p style={{ fontSize: "0.9rem", color: "#94a3b8" }}>
-                  Danh sách sẽ xuất hiện khi Chair phân công.
-                </p>
-              </div>
-            ) : (
-              <div className="coi-table-wrapper">
-                <table className="coi-table">
-                  <thead>
-                    <tr>
-                      <th style={{ width: "60px" }}>ID</th>
-                      <th>Tiêu đề</th>
-                      <th style={{ width: "150px" }}>Track</th>
-                      <th style={{ width: "200px" }}>Keywords</th>
-                      <th style={{ width: "120px", textAlign: "center" }}>Trạng thái</th>
-                      <th style={{ width: "120px", textAlign: "center" }}>Thao tác</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {myPapers.map((paper) => (
-                      <tr key={paper.id}>
-                        <td>{paper.id}</td>
-                        <td>
-                          <strong>{paper.title}</strong>
-                        </td>
-                        <td>{paper.track?.name || "N/A"}</td>
-                        <td className="keywords-cell">
-                          {paper.keywords || "N/A"}
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          <span className={`status-badge status-${paper.status?.toLowerCase()}`}>
-                            {paper.status}
-                          </span>
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          <button
-                            className="btn-view-icon"
-                            onClick={() => navigate(`/reviewer/assignments`)}
-                            title="Xem chi tiết"
-                          >
-                            <FiEye size={17} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       <style dangerouslySetInnerHTML={{__html: `
         .coi-tabs {
-          display: flex;
-          gap: 0.5rem;
-          margin-bottom: 2rem;
-          background: white;
-          border-radius: 12px;
-          padding: 0.5rem;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+          display: none;
         }
 
         .coi-tab {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          padding: 0.875rem 1.5rem;
-          background: transparent;
-          color: #64748b;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-weight: 500;
-          font-size: 1rem;
-          transition: all 0.2s;
-        }
-
-        .coi-tab:hover {
-          background: #f1f5f9;
-          color: #334155;
+          display: none;
         }
 
         .coi-tab.active {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          font-weight: 600;
+          display: none;
         }
 
         .alert-success {
@@ -477,27 +376,30 @@ const ReviewerCOI = () => {
           color: #991b1b;
         }
 
+        .coi-card-header {
+          display: none;
+        }
+
+        .coi-card-body {
+          padding: 0;
+        }
+
+        .coi-card {
+          background: transparent;
+          box-shadow: none;
+        }
+
         .coi-form-card {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-          margin-bottom: 2rem;
-          overflow: hidden;
+          background: transparent;
+          box-shadow: none;
         }
 
         .coi-form-header {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 1.25rem 1.5rem;
-          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-          color: white;
-          font-weight: 600;
-          font-size: 1rem;
+          display: none;
         }
 
         .coi-form-body {
-          padding: 1.5rem;
+          padding: 0;
         }
 
         .char-count {
@@ -519,7 +421,7 @@ const ReviewerCOI = () => {
           align-items: center;
           gap: 0.75rem;
           padding: 1.25rem 1.5rem;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
           color: white;
           font-weight: 600;
           font-size: 1rem;
@@ -530,9 +432,7 @@ const ReviewerCOI = () => {
         }
 
         .bidding-description {
-          color: #64748b;
-          margin-bottom: 1.5rem;
-          line-height: 1.6;
+          display: none;
         }
 
         .empty-state {

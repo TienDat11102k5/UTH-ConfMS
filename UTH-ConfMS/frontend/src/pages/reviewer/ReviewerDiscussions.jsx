@@ -174,21 +174,21 @@ const ReviewerDiscussions = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Reviewer / PC"
-      title="Thảo luận nội bộ PC"
-      subtitle="Thảo luận private với các PC members về bài báo"
+      roleLabel="Người chấm"
+      title="Thảo luận nội bộ"
+      subtitle="Trao đổi ý kiến về bài báo với các thành viên khác trước khi Chair đưa ra quyết định cuối"
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <span className="breadcrumb-current">Reviewer</span>
+            <span className="breadcrumb-current">Người chấm</span>
           </div>
           <h2 className="data-page-title">
             <FiMessageSquare style={{ marginRight: "0.5rem", verticalAlign: "middle" }} />
-            Thảo luận nội bộ PC
+            Thảo luận nội bộ
           </h2>
           <p className="data-page-subtitle">
-            Trao đổi ý kiến về bài báo với các PC members khác trước khi Chair đưa ra quyết định cuối.
+            Trao đổi ý kiến về bài báo với các thành viên khác trước khi Chair đưa ra quyết định cuối.
           </p>
         </div>
         <div className="data-page-header-right">
@@ -204,66 +204,116 @@ const ReviewerDiscussions = () => {
         </div>
       )}
 
-      <div className="discussion-card">
-        <div className="discussion-card-header">
-          <FiMessageSquare size={20} />
-          <span>Chọn bài báo để thảo luận</span>
-        </div>
-        <div className="discussion-card-body">
-          <select
-            value={selectedPaperId}
-            onChange={(e) => setSelectedPaperId(e.target.value)}
-            className="paper-select"
-          >
-            <option value="">-- Chọn bài báo --</option>
-            {papers.map((paper) => (
-              <option key={paper.id} value={paper.id}>
-                {paper.title} (Track: {paper.track?.name})
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* Paper Selector */}
+      <div style={{
+        marginBottom: "1.5rem",
+        background: "white",
+        borderRadius: "10px",
+        padding: "1rem 1.25rem",
+        boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+        border: "1px solid #e2e8f0",
+      }}>
+        <label style={{ 
+          display: "block",
+          marginBottom: "0.5rem", 
+          fontWeight: 600,
+          color: "#64748b",
+          fontSize: "0.875rem",
+        }}>
+          Chọn bài báo để thảo luận:
+        </label>
+        <select
+          value={selectedPaperId}
+          onChange={(e) => setSelectedPaperId(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "0.5rem 0.875rem",
+            borderRadius: "8px",
+            border: "1.5px solid #e2e8f0",
+            fontSize: "0.8125rem",
+            fontWeight: 600,
+            cursor: "pointer",
+            background: "white",
+            color: "#475569",
+          }}
+        >
+          <option value="">-- Chọn bài báo --</option>
+          {papers.map((paper) => (
+            <option key={paper.id} value={paper.id}>
+              {paper.title} (Chủ đề: {paper.track?.name})
+            </option>
+          ))}
+        </select>
       </div>
 
       {selectedPaperId && (
         <>
-          <div className="discussion-card">
-            <div className="discussion-card-header">
-              <FiSend size={20} />
-              <span>Thêm bình luận mới</span>
+          {/* New Comment Form */}
+          <div style={{
+            marginBottom: "1.5rem",
+            background: "white",
+            borderRadius: "10px",
+            padding: "1rem 1.25rem",
+            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+            border: "1px solid #e2e8f0",
+          }}>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              marginBottom: "1rem",
+              fontWeight: 600,
+              color: "#64748b",
+              fontSize: "0.875rem",
+            }}>
+              <FiSend size={16} />
+              Thêm bình luận mới
             </div>
-            <div className="discussion-card-body">
-              <form onSubmit={handleSubmitComment} className="comment-form">
-                <textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  rows={4}
-                  className="comment-textarea"
-                  placeholder="Nhập bình luận của bạn về bài báo này..."
-                  disabled={submitting}
-                  maxLength={10000}
-                />
-                <div className="textarea-footer">
-                  <span className="char-count">{newComment.length}/10000 ký tự</span>
-                  <button
-                    type="submit"
-                    className="btn-primary"
-                    disabled={submitting || !newComment.trim()}
-                  >
-                    <FiSend size={16} style={{ marginRight: "0.5rem" }} />
-                    {submitting ? "Đang gửi..." : "Gửi bình luận"}
-                  </button>
-                </div>
-              </form>
-            </div>
+            <form onSubmit={handleSubmitComment} className="comment-form">
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                rows={4}
+                className="comment-textarea"
+                placeholder="Nhập bình luận của bạn về bài báo này..."
+                disabled={submitting}
+                maxLength={10000}
+              />
+              <div className="textarea-footer">
+                <span className="char-count">{newComment.length}/10000 ký tự</span>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={submitting || !newComment.trim()}
+                >
+                  <FiSend size={16} style={{ marginRight: "0.5rem" }} />
+                  {submitting ? "Đang gửi..." : "Gửi bình luận"}
+                </button>
+              </div>
+            </form>
           </div>
 
-          <div className="discussion-card">
-            <div className="discussion-card-header">
-              <FiMessageSquare size={20} />
-              <span>Danh sách thảo luận ({organizedDiscussions.length})</span>
+          {/* Discussions List */}
+          <div style={{
+            background: "white",
+            borderRadius: "10px",
+            padding: "1rem 1.25rem",
+            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+            border: "1px solid #e2e8f0",
+          }}>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              marginBottom: "1rem",
+              fontWeight: 600,
+              color: "#64748b",
+              fontSize: "0.875rem",
+            }}>
+              <FiMessageSquare size={16} />
+              Danh sách thảo luận ({organizedDiscussions.length})
             </div>
-            <div className="discussion-card-body">
+            <div style={{ padding: "0.5rem 0" }}>
               {loading ? (
                 <div className="empty-state">
                   <FiClock size={48} style={{ color: "#cbd5e1" }} />
@@ -401,7 +451,7 @@ const ReviewerDiscussions = () => {
           align-items: center;
           gap: 0.75rem;
           padding: 1.25rem 1.5rem;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
           color: white;
           font-weight: 600;
           font-size: 1rem;
@@ -412,19 +462,7 @@ const ReviewerDiscussions = () => {
         }
 
         .paper-select {
-          width: 100%;
-          padding: 0.875rem;
-          border: 2px solid #e2e8f0;
-          border-radius: 8px;
-          font-size: 1rem;
-          transition: all 0.2s;
-          background: white;
-        }
-
-        .paper-select:focus {
-          outline: none;
-          border-color: #667eea;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+          display: none;
         }
 
         .comment-form {
@@ -446,8 +484,8 @@ const ReviewerDiscussions = () => {
 
         .comment-textarea:focus {
           outline: none;
-          border-color: #667eea;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+          border-color: #14b8a6;
+          box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
         }
 
         .textarea-footer {
@@ -508,7 +546,7 @@ const ReviewerDiscussions = () => {
           width: 40px;
           height: 40px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
           color: white;
           display: flex;
           align-items: center;
@@ -557,7 +595,7 @@ const ReviewerDiscussions = () => {
           gap: 0.5rem;
           background: transparent;
           border: none;
-          color: #667eea;
+          color: #0d9488;
           cursor: pointer;
           font-size: 0.9rem;
           font-weight: 500;
@@ -567,8 +605,8 @@ const ReviewerDiscussions = () => {
         }
 
         .reply-btn:hover {
-          background: #f1f5f9;
-          color: #764ba2;
+          background: #f0fdfa;
+          color: #14b8a6;
         }
 
         .discussion-replies {
@@ -585,7 +623,7 @@ const ReviewerDiscussions = () => {
         }
 
         .reply-indicator {
-          color: #667eea;
+          color: #0d9488;
           flex-shrink: 0;
           padding-top: 0.25rem;
         }
@@ -618,7 +656,7 @@ const ReviewerDiscussions = () => {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          color: #667eea;
+          color: #0d9488;
           font-weight: 600;
           margin-bottom: 0.75rem;
           font-size: 0.9rem;
