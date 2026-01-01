@@ -119,6 +119,44 @@ public class AIController {
         );
     }
 
+    @PostMapping("/recommend-decision")
+    @PreAuthorize("hasAnyRole('CHAIR', 'TRACK_CHAIR')")
+    public ResponseEntity<DecisionRecommendationResponse> recommendDecision(
+            @RequestBody DecisionRecommendationRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails != null ? userDetails.getUser().getId() : null;
+        log.info(
+                "POST /api/ai/recommend-decision | userId={} | paperId={} | conferenceId={}",
+                userId,
+                request.getPaperId(),
+                request.getConferenceId()
+        );
+
+        return ResponseEntity.ok(
+                aiProxyService.recommendDecision(request, userId, request.getConferenceId())
+        );
+    }
+
+    @PostMapping("/summarize-reviews")
+    @PreAuthorize("hasAnyRole('CHAIR', 'TRACK_CHAIR')")
+    public ResponseEntity<ReviewSummaryResponse> summarizeReviews(
+            @RequestBody ReviewSummaryRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails != null ? userDetails.getUser().getId() : null;
+        log.info(
+                "POST /api/ai/summarize-reviews | userId={} | paperId={} | conferenceId={}",
+                userId,
+                request.getPaperId(),
+                request.getConferenceId()
+        );
+
+        return ResponseEntity.ok(
+                aiProxyService.summarizeReviews(request, userId, request.getConferenceId())
+        );
+    }
+
     @PostMapping("/draft-email")
     @PreAuthorize("hasAnyRole('CHAIR', 'TRACK_CHAIR')")
     public ResponseEntity<EmailDraftResponse> draftEmail(

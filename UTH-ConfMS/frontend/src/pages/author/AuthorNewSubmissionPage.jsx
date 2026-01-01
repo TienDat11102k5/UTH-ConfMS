@@ -20,31 +20,57 @@ const AIModal = ({ isOpen, title, onClose, children }) => {
         alignItems: "center",
         justifyContent: "center",
         zIndex: 9999,
+        padding: "20px",
       }}
+      onClick={onClose}
     >
       <div
         style={{
           background: "#fff",
-          borderRadius: "8px",
-          width: "90%",
-          maxWidth: "700px",
+          borderRadius: "12px",
+          width: "100%",
+          maxWidth: "900px",
           maxHeight: "90vh",
           overflowY: "auto",
-          padding: "20px",
+          padding: "24px",
           position: "relative",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
         }}
+        onClick={(e) => e.stopPropagation()}
       >
-        <h3 style={{ marginTop: 0 }}>{title}</h3>
+        <h3 style={{ 
+          marginTop: 0, 
+          marginBottom: "20px",
+          fontSize: "1.25rem",
+          fontWeight: 600,
+          color: "#1f2937"
+        }}>{title}</h3>
         <button
           onClick={onClose}
           style={{
             position: "absolute",
-            top: "10px",
-            right: "10px",
-            background: "none",
+            top: "16px",
+            right: "16px",
+            background: "#f3f4f6",
             border: "none",
-            fontSize: "1.2rem",
+            fontSize: "1.5rem",
             cursor: "pointer",
+            width: "32px",
+            height: "32px",
+            borderRadius: "6px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#6b7280",
+            transition: "all 0.2s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "#e5e7eb";
+            e.currentTarget.style.color = "#374151";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "#f3f4f6";
+            e.currentTarget.style.color = "#6b7280";
           }}
         >
           &times;
@@ -633,13 +659,13 @@ const AuthorNewSubmissionPage = () => {
                           Chọn tệp
                         </span>
                         <span style={{ 
-                          color: formValues.file ? "#059669" : "#64748b",
-                          fontWeight: formValues.file ? 500 : 400,
+                          color: file ? "#059669" : "#64748b",
+                          fontWeight: file ? 500 : 400,
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap"
                         }}>
-                          {formValues.file ? formValues.file.name : "Không có tệp nào được chọn"}
+                          {file ? file.name : "Không có tệp nào được chọn"}
                         </span>
                       </label>
                     </div>
@@ -682,29 +708,92 @@ const AuthorNewSubmissionPage = () => {
         title={`Kiểm tra ngôn ngữ: ${grammarResult?.field}`}
         onClose={() => setGrammarResult(null)}
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div>
-            <strong>Văn bản gốc:</strong>
-            <p style={{ background: "#f5f5f5", padding: "10px", borderRadius: "5px" }}>{grammarResult?.originalText}</p>
+            <strong style={{ 
+              display: "block", 
+              marginBottom: "8px",
+              color: "#374151",
+              fontSize: "0.9375rem"
+            }}>Văn bản gốc:</strong>
+            <p style={{ 
+              background: "#f9fafb", 
+              padding: "12px", 
+              borderRadius: "8px",
+              border: "1px solid #e5e7eb",
+              margin: 0,
+              lineHeight: "1.6",
+              fontSize: "0.9375rem",
+              color: "#1f2937"
+            }}>{grammarResult?.originalText}</p>
           </div>
           {grammarResult?.errors && grammarResult.errors.length > 0 ? (
-            <div style={{ color: "#d97706" }}>
-              Tìm thấy {grammarResult.errors.length} vấn đề cần lưu ý.
+            <div style={{ 
+              color: "#d97706",
+              background: "#fef3c7",
+              padding: "10px 12px",
+              borderRadius: "6px",
+              fontSize: "0.875rem",
+              fontWeight: 500
+            }}>
+              ⚠️ Tìm thấy {grammarResult.errors.length} vấn đề cần lưu ý.
             </div>
           ) : (
-            <div style={{ color: "green" }}>Không tìm thấy lỗi ngữ pháp/chính tả nào!</div>
+            <div style={{ 
+              color: "#059669",
+              background: "#d1fae5",
+              padding: "10px 12px",
+              borderRadius: "6px",
+              fontSize: "0.875rem",
+              fontWeight: 500
+            }}>
+              ✓ Không tìm thấy lỗi ngữ pháp/chính tả nào!
+            </div>
           )}
 
           <div>
-            <strong>Bản sửa đổi (Đề xuất):</strong>
-            <p style={{ background: "#eef2ff", padding: "10px", borderRadius: "5px", border: "1px solid #4f46e5" }}>
+            <strong style={{ 
+              display: "block", 
+              marginBottom: "8px",
+              color: "#374151",
+              fontSize: "0.9375rem"
+            }}>Bản sửa đổi (Đề xuất):</strong>
+            <p style={{ 
+              background: "#eff6ff", 
+              padding: "12px", 
+              borderRadius: "8px",
+              border: "1px solid #3b82f6",
+              margin: 0,
+              lineHeight: "1.6",
+              fontSize: "0.9375rem",
+              color: "#1f2937"
+            }}>
               {grammarResult?.correctedText}
             </p>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
-            <button className="btn-secondary" onClick={() => setGrammarResult(null)}>Đóng</button>
-            <button className="btn-primary" onClick={() => applyCorrection(grammarResult.correctedText, grammarResult.field)}>Dùng bản sửa đổi này</button>
+          <div style={{ 
+            display: "flex", 
+            justifyContent: "flex-end", 
+            gap: "10px",
+            marginTop: "8px",
+            paddingTop: "16px",
+            borderTop: "1px solid #e5e7eb"
+          }}>
+            <button 
+              className="btn-secondary" 
+              onClick={() => setGrammarResult(null)}
+              style={{ minWidth: "100px" }}
+            >
+              Đóng
+            </button>
+            <button 
+              className="btn-primary" 
+              onClick={() => applyCorrection(grammarResult.correctedText, grammarResult.field)}
+              style={{ minWidth: "160px" }}
+            >
+              Dùng bản sửa đổi này
+            </button>
           </div>
         </div>
       </AIModal>
@@ -715,26 +804,111 @@ const AuthorNewSubmissionPage = () => {
         title="Cải thiện nội dung (So sánh)"
         onClose={() => setPolishResult(null)}
       >
-        <div style={{ display: "flex", gap: "20px" }}>
-          <div style={{ flex: 1 }}>
-            <h4 style={{ textAlign: "center" }}>Gốc</h4>
-            <div style={{ background: "#fce7f3", padding: "10px", borderRadius: "5px", minHeight: "200px", whiteSpace: "pre-wrap" }}>
-              {polishResult?.originalText}
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div style={{ 
+            display: "grid", 
+            gridTemplateColumns: "1fr 1fr", 
+            gap: "16px",
+            "@media (max-width: 768px)": {
+              gridTemplateColumns: "1fr"
+            }
+          }}>
+            <div>
+              <h4 style={{ 
+                textAlign: "center",
+                margin: "0 0 12px 0",
+                fontSize: "1rem",
+                fontWeight: 600,
+                color: "#374151",
+                padding: "8px",
+                background: "#fce7f3",
+                borderRadius: "6px"
+              }}>Gốc</h4>
+              <div style={{ 
+                background: "#fef2f2", 
+                padding: "12px", 
+                borderRadius: "8px",
+                border: "1px solid #fecaca",
+                minHeight: "200px", 
+                whiteSpace: "pre-wrap",
+                lineHeight: "1.6",
+                fontSize: "0.9375rem",
+                color: "#1f2937"
+              }}>
+                {polishResult?.originalText}
+              </div>
+            </div>
+            <div>
+              <h4 style={{ 
+                textAlign: "center",
+                margin: "0 0 12px 0",
+                fontSize: "1rem",
+                fontWeight: 600,
+                color: "#374151",
+                padding: "8px",
+                background: "#d1fae5",
+                borderRadius: "6px"
+              }}>Đã cải thiện (AI)</h4>
+              <div style={{ 
+                background: "#ecfdf5", 
+                padding: "12px", 
+                borderRadius: "8px",
+                border: "1px solid #6ee7b7",
+                minHeight: "200px", 
+                whiteSpace: "pre-wrap",
+                lineHeight: "1.6",
+                fontSize: "0.9375rem",
+                color: "#1f2937"
+              }}>
+                {polishResult?.polishedText}
+              </div>
             </div>
           </div>
-          <div style={{ flex: 1 }}>
-            <h4 style={{ textAlign: "center" }}>Đã cải thiện (AI)</h4>
-            <div style={{ background: "#d1fae5", padding: "10px", borderRadius: "5px", minHeight: "200px", whiteSpace: "pre-wrap" }}>
-              {polishResult?.polishedText}
+          
+          {polishResult?.comment && (
+            <div style={{
+              background: "#eff6ff",
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #bfdbfe"
+            }}>
+              <strong style={{ 
+                color: "#1e40af",
+                fontSize: "0.875rem"
+              }}>💡 AI Nhận xét:</strong>
+              <p style={{ 
+                margin: "8px 0 0 0",
+                color: "#1f2937",
+                fontSize: "0.875rem",
+                lineHeight: "1.5"
+              }}>
+                {polishResult.comment}
+              </p>
             </div>
+          )}
+          
+          <div style={{ 
+            display: "flex", 
+            justifyContent: "flex-end", 
+            gap: "10px",
+            paddingTop: "16px",
+            borderTop: "1px solid #e5e7eb"
+          }}>
+            <button 
+              className="btn-secondary" 
+              onClick={() => setPolishResult(null)}
+              style={{ minWidth: "100px" }}
+            >
+              Hủy
+            </button>
+            <button 
+              className="btn-primary" 
+              onClick={() => applyPolish(polishResult.polishedText)}
+              style={{ minWidth: "140px" }}
+            >
+              Áp dụng thay đổi
+            </button>
           </div>
-        </div>
-        <div style={{ marginTop: "15px" }}>
-          <strong>AI Nhận xét:</strong> {polishResult?.comment}
-        </div>
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "20px" }}>
-          <button className="btn-secondary" onClick={() => setPolishResult(null)}>Hủy</button>
-          <button className="btn-primary" onClick={() => applyPolish(polishResult.polishedText)}>Áp dụng thay đổi</button>
         </div>
       </AIModal>
 

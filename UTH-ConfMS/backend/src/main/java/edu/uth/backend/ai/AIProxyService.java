@@ -231,6 +231,63 @@ public class AIProxyService {
                 "email_draft", "draft_email", userId, conferenceId);
     }
 
+    public DecisionRecommendationResponse recommendDecision(DecisionRecommendationRequest request, Long userId, Long conferenceId) {
+        checkFeatureEnabled(conferenceId, "decision_recommendation");
+
+        String reviewsJson = "";
+        try {
+            reviewsJson = objectMapper.writeValueAsString(request.getReviews());
+        } catch (Exception e) {
+            reviewsJson = request.getReviews().toString();
+        }
+
+        String prompt = String.format(
+                "Bạn là trợ lý AI cho hội nghị khoa học. Phân tích các đánh giá sau và đưa ra gợi ý quyết định. " +
+                        "Bài báo: \"%s\". " +
+                        "Điểm trung bình: %.2f (thang điểm từ -3 đến +3, trong đó -3 là rất kém, 0 là trung bình, +3 là xuất sắc). " +
+                        "Các đánh giá: %s. " +
+                        "QUAN TRỌNG: Trả lời 100%% bằng TIẾNG VIỆT. " +
+                        "Trả về JSON với: " +
+                        "'recommendation' (chuỗi: ACCEPT nếu điểm >= 1, REJECT nếu điểm < 0, REVISE nếu 0-1), " +
+                        "'confidence' (số nguyên 0-100), " +
+                        "'reasoning' (giải thích chi tiết bằng tiếng Việt, 2-3 câu), " +
+                        "'strengths' (danh sách 2-4 điểm mạnh bằng tiếng Việt), " +
+                        "'weaknesses' (danh sách 2-4 điểm yếu bằng tiếng Việt), " +
+                        "'summary' (tóm tắt ngắn gọn 1-2 câu bằng tiếng Việt).",
+                request.getPaperTitle(), request.getAverageScore(), reviewsJson);
+
+        return processRequest(prompt, new TypeReference<DecisionRecommendationResponse>() {
+        },
+                "decision_recommendation", "recommend_decision", userId, conferenceId);
+    }
+
+    public ReviewSummaryResponse summarizeReviews(ReviewSummaryRequest request, Long userId, Long conferenceId) {
+        checkFeatureEnabled(conferenceId, "review_summary");
+
+        String reviewsJson = "";
+        try {
+            reviewsJson = objectMapper.writeValueAsString(request.getReviews());
+        } catch (Exception e) {
+            reviewsJson = request.getReviews().toString();
+        }
+
+        String prompt = String.format(
+                "Bạn là trợ lý AI cho hội nghị khoa học. Tóm tắt các đánh giá sau cho bài báo \"%s\". " +
+                        "Các đánh giá: %s. " +
+                        "QUAN TRỌNG: Trả lời 100%% bằng TIẾNG VIỆT. " +
+                        "Trả về JSON với: " +
+                        "'overallSummary' (tóm tắt tổng quan 2-3 câu bằng tiếng Việt), " +
+                        "'commonStrengths' (danh sách điểm mạnh chung bằng tiếng Việt), " +
+                        "'commonWeaknesses' (danh sách điểm yếu chung bằng tiếng Việt), " +
+                        "'keyPoints' (danh sách các điểm quan trọng bằng tiếng Việt), " +
+                        "'consensus' (mô tả mức độ đồng thuận giữa các reviewer bằng tiếng Việt).",
+                request.getPaperTitle(), reviewsJson);
+
+        return processRequest(prompt, new TypeReference<ReviewSummaryResponse>() {
+        },
+                "review_summary", "summarize_reviews", userId, conferenceId);
+    }
+
     // =================================================================================
     // Logic nội bộ
     // =================================================================================

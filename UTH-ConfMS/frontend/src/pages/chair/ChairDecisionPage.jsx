@@ -3,7 +3,10 @@ import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
 import { usePagination } from "../../hooks/usePagination";
-import { FiFilter, FiTrendingUp, FiSearch, FiCheckCircle, FiXCircle } from "react-icons/fi";
+import { FiFilter, FiTrendingUp, FiSearch, FiCheckCircle, FiXCircle, FiRefreshCw } from "react-icons/fi";
+import EmailDraftModal from "../../components/EmailDraftModal";
+import AIDecisionModal from "../../components/AIDecisionModal";
+import AIReviewSummaryModal from "../../components/AIReviewSummaryModal";
 import "../../styles/ReviewerAssignments.css";
 import "../../styles/ChairDecisionPage.css";
 
@@ -22,6 +25,11 @@ const ChairDecisionPage = () => {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [sortBy, setSortBy] = useState('newest');
   const [searchQuery, setSearchQuery] = useState('');
+  const [emailModal, setEmailModal] = useState({ show: false, paper: null, decision: null });
+  const [aiDecisionModal, setAiDecisionModal] = useState({ show: false, paper: null });
+  const [aiSummaryModal, setAiSummaryModal] = useState({ show: false, paper: null });
+  const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [refreshing, setRefreshing] = useState(false);
 
   const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination(filteredPapers, 20);
 
@@ -446,19 +454,67 @@ const ChairDecisionPage = () => {
                       )}
                     </td>
                     <td>
-                      <button
-                        className="btn-primary table-action"
-                        onClick={() => {
-                          setSelectedPaper(paper);
-                          setDecision("");
-                          setComment("");
-                        }}
-                        disabled={!ready}
-                        style={{ minWidth: "140px" }}
-                        title={!ready ? "Cần đủ đánh giá từ tất cả người chấm" : ""}
-                      >
-                        Ra quyết định
-                      </button>
+                      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                        <button
+                          className="btn-primary table-action"
+                          onClick={() => {
+                            setSelectedPaper(paper);
+                            setDecision("");
+                            setComment("");
+                          }}
+                          disabled={!ready}
+                          style={{ minWidth: "110px", fontSize: "0.8125rem" }}
+                          title={!ready ? "Cần đủ đánh giá từ tất cả người chấm" : ""}
+                        >
+                          Ra quyết định
+                        </button>
+                        
+                        {paperReviews.length > 0 && (
+                          <>
+                            <button
+                              onClick={() => setAiDecisionModal({ show: true, paper })}
+                              style={{
+                                padding: "0.5rem 0.75rem",
+                                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "6px",
+                                fontSize: "0.8125rem",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                transition: "all 0.2s",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.375rem"
+                              }}
+                              title="AI gợi ý quyết định"
+                            >
+                              ✨ Gợi ý
+                            </button>
+                            
+                            <button
+                              onClick={() => setAiSummaryModal({ show: true, paper })}
+                              style={{
+                                padding: "0.5rem 0.75rem",
+                                background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "6px",
+                                fontSize: "0.8125rem",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                transition: "all 0.2s",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.375rem"
+                              }}
+                              title="AI tóm tắt reviews"
+                            >
+                              ✨ Tóm tắt
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
@@ -611,6 +667,37 @@ const ChairDecisionPage = () => {
               >
                 {submitting ? "Đang xử lý..." : "Xác nhận quyết định"}
               </button>
+              
+              {decision && (
+                <button
+                  onClick={() => {
+                    setEmailModal({
+                      show: true,
+                      paper: selectedPaper,
+                      decision: decision
+                    });
+                  }}
+                  disabled={submitting}
+                  style={{
+                    padding: "0.625rem 1rem",
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontSize: "0.875rem",
+                    fontWeight: 600,
+                    cursor: submitting ? "not-allowed" : "pointer",
+                    transition: "all 0.2s",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem"
+                  }}
+                  title="AI soạn email thông báo quyết định"
+                >
+                  ✨ Soạn email AI
+                </button>
+              )}
+              
               <button
                 className="btn-secondary"
                 onClick={() => setSelectedPaper(null)}
@@ -621,6 +708,53 @@ const ChairDecisionPage = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* AI Decision Modal */}
+      {aiDecisionModal.show && (
+        <AIDecisionModal
+          paper={aiDecisionModal.paper}
+          reviews={reviews[aiDecisionModal.paper.id] || []}
+          onClose={() => setAiDecisionModal({ show: false, paper: null })}
+        />
+      )}
+
+      {/* AI Summary Modal */}
+      {aiSummaryModal.show && (
+        <AIReviewSummaryModal
+          paper={aiSummaryModal.paper}
+          reviews={reviews[aiSummaryModal.paper.id] || []}
+          onClose={() => setAiSummaryModal({ show: false, paper: null })}
+        />
+      )}
+
+      {/* Email Draft Modal */}
+      {emailModal.show && (
+        <EmailDraftModal
+          paper={emailModal.paper}
+          decision={emailModal.decision}
+          conferenceName={emailModal.paper?.conference?.name}
+          onClose={() => setEmailModal({ show: false, paper: null, decision: null })}
+          onSend={async () => {
+            // Sau khi gửi email thành công, tự động submit quyết định
+            try {
+              await apiClient.post("/decisions", {
+                paperId: emailModal.paper.id,
+                status: emailModal.decision,
+                comment: comment || "Đã gửi email thông báo quyết định",
+                skipEmail: true // Bỏ qua email tự động vì đã gửi bằng AI
+              });
+              alert("✅ Đã gửi email và ra quyết định thành công!");
+              setEmailModal({ show: false, paper: null, decision: null });
+              setSelectedPaper(null);
+              setDecision("");
+              setComment("");
+              window.location.reload();
+            } catch (err) {
+              alert("⚠️ Email đã gửi nhưng lỗi khi lưu quyết định: " + (err.response?.data || err.message));
+            }
+          }}
+        />
       )}
     </DashboardLayout>
   );

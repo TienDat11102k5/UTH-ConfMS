@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import { getToken } from "../../auth";  // ✅ IMPORT getToken
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import PaperSynopsisModal from "../../components/PaperSynopsisModal";
 
 const ReviewerReviewForm = () => {
   const { assignmentId } = useParams();
@@ -13,6 +14,7 @@ const ReviewerReviewForm = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [synopsisModal, setSynopsisModal] = useState({ show: false, paper: null });
 
   const [formData, setFormData] = useState({
     score: 0,
@@ -254,7 +256,37 @@ const ReviewerReviewForm = () => {
 
       <div className="form-card">
         <div style={{ marginBottom: "1.5rem" }}>
-          <h3>Thông tin bài báo</h3>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+            <h3 style={{ margin: 0 }}>Thông tin bài báo</h3>
+            <button
+              type="button"
+              onClick={() => setSynopsisModal({ show: true, paper: assignment.paper })}
+              style={{
+                padding: "0.5rem 1rem",
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                fontSize: "0.875rem",
+                fontWeight: 600,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(102, 126, 234, 0.4)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              ✨ Tóm tắt AI
+            </button>
+          </div>
 
           <div
             style={{
@@ -462,6 +494,14 @@ const ReviewerReviewForm = () => {
           </div>
         </form>
       </div>
+
+      {/* Paper Synopsis Modal */}
+      {synopsisModal.show && (
+        <PaperSynopsisModal
+          paper={synopsisModal.paper}
+          onClose={() => setSynopsisModal({ show: false, paper: null })}
+        />
+      )}
     </DashboardLayout>
   );
 };

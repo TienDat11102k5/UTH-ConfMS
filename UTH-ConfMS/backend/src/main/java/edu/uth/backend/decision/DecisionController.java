@@ -21,6 +21,9 @@ public class DecisionController {
     
     @Autowired
     private edu.uth.backend.security.AuditLogger auditLogger;
+    
+    @Autowired
+    private edu.uth.backend.common.MailService mailService;
 
     // API: Xem điểm trung bình của bài báo
     @GetMapping("/score/{paperId}")
@@ -37,16 +40,20 @@ public class DecisionController {
             "hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
     public ResponseEntity<?> makeDecision(@RequestBody DecisionRequestDTO req,
             org.springframework.security.core.Authentication authentication) {
-        log.info("Make decision - paperId={}, status={}",
-                req.getPaperId(), req.getStatus());
+        log.info("Make decision - paperId={}, status={}, skipEmail={}",
+                req.getPaperId(), req.getStatus(), req.getSkipEmail());
         try {
+            // Sử dụng skipEmail từ request (mặc định false nếu null)
+            boolean skipEmail = req.getSkipEmail() != null ? req.getSkipEmail() : false;
+            
             var result = decisionService.makeDecision(
                     req.getPaperId(),
                     req.getStatus(),
-                    req.getComment()
+                    req.getComment(),
+                    skipEmail
             );
-            log.info("Make decision success - paperId={}, status={}",
-                    req.getPaperId(), req.getStatus());
+            log.info("Make decision success - paperId={}, status={}, skipEmail={}",
+                    req.getPaperId(), req.getStatus(), skipEmail);
             
             // Audit log
             String chair = authentication != null ? authentication.getName() : "unknown";
@@ -141,6 +148,32 @@ public class DecisionController {
             log.error("Get decision failed - paperId={}, error={}",
                     paperId, e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+    // API: Gửi email custom từ Chair
+    @PostMapping("/send-email")
+    @org.springframework.security.access.prepost.PreAuthorize(
+            "hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
+    public ResponseEntity<?> sendCustomEmail(@RequestBody java.util.Map<String, String> request) {
+        String to = request.get("to");
+        String subject = request.get("subject");
+        String body = request.get("body");
+        
+        log.info("Send custom email - to={}, subject={}", to, subject);
+        
+        try {
+            boolean sent = mailService.trySendHtmlEmail(to, subject, body, body);
+            if (sent) {
+                log.info("Email sent successfully - to={}", to);
+                return ResponseEntity.ok(java.util.Map.of("success", true, "message", "Email đã được gửi thành công"));
+            } else {
+                log.error("Failed to send email - to={}", to);
+                return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Không thể gửi email"));
+            }
+        } catch (Exception e) {
+            log.error("Error sending email - to={}, error={}", to, e.getMessage());
+            return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Lỗi: " + e.getMessage()));
         }
     }
 }

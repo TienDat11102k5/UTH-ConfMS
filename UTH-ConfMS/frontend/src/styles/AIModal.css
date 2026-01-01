@@ -1,0 +1,49 @@
+/* AI Modal Styles */
+
+.ai-modal .spinner {
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.ai-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-modal .modal-header button:hover {
+  background: rgba(255,255,255,0.3) !important;
+}
+
+.ai-modal .modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.ai-modal .modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ai-modal .modal-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.ai-modal .modal-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.ai-modal .modal-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

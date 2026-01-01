@@ -7,5 +7,6 @@ import lombok.Data;
 public class DecisionRequestDTO {
     private Long paperId;
     private PaperStatus status;
-    private String comment;     
+    private String comment;
+    private Boolean skipEmail; // true = không gửi email tự động (đã gửi bằng AI)
 }

@@ -33,6 +33,11 @@ public class DecisionService {
 
     // 2. Hàm Ra Quyết định
     public Paper makeDecision(Long paperId, PaperStatus decision, String comment) {
+        return makeDecision(paperId, decision, comment, false);
+    }
+    
+    // Overload với skipEmail parameter
+    public Paper makeDecision(Long paperId, PaperStatus decision, String comment, boolean skipEmail) {
         Paper paper = paperRepo.findById(paperId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy bài báo"));
 
@@ -51,25 +56,25 @@ public class DecisionService {
 
         // Cập nhật trạng thái
         paper.setStatus(decision);
-        // (Optional: Có thể lưu comment của Chair vào đâu đó nếu muốn mở rộng DB)
         Paper savedPaper = paperRepo.save(paper);
         
-        // --- GỌI NOTIFICATION SERVICE ĐỂ GỬI MAIL (Legacy) ---
-        notificationService.sendDecisionEmail(
-                savedPaper.getMainAuthor().getEmail(),      // Email tác giả
-                savedPaper.getMainAuthor().getFullName(),   // Tên tác giả
-                savedPaper.getTitle(),                      // Tên bài báo
-                decision                                    // Kết quả
-        );
-        
-        // --- GỌI EMAIL SERVICE MỚI ĐỂ GỬI EMAIL TEMPLATE ---
-        try {
-            emailService.sendDecisionNotification(savedPaper, decision.name());
-        } catch (Exception e) {
-            // Log error but don't fail the decision
-            System.err.println("Failed to send decision email: " + e.getMessage());
+        // Chỉ gửi email tự động nếu Chair không dùng AI
+        if (!skipEmail) {
+            // --- GỌI NOTIFICATION SERVICE ĐỂ GỬI MAIL (Legacy) ---
+            notificationService.sendDecisionEmail(
+                    savedPaper.getMainAuthor().getEmail(),
+                    savedPaper.getMainAuthor().getFullName(),
+                    savedPaper.getTitle(),
+                    decision
+            );
+            
+            // --- GỌI EMAIL SERVICE MỚI ĐỂ GỬI EMAIL TEMPLATE ---
+            try {
+                emailService.sendDecisionNotification(savedPaper, decision.name());
+            } catch (Exception e) {
+                System.err.println("Failed to send decision email: " + e.getMessage());
+            }
         }
-        // ---------------------------------------------
        
         return savedPaper;
     }
