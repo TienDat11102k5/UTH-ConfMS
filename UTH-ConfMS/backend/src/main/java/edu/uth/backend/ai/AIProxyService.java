@@ -72,9 +72,15 @@ public class AIProxyService {
         checkFeatureEnabled(request.getConferenceId(), "grammar_check");
 
         String prompt = String.format(
-                "Check grammar and spelling for the following text (%s). " +
+                "You are a Vietnamese academic writing assistant. " +
+                        "Check grammar and spelling for the following text (%s). " +
+                        "CRITICAL RULES: " +
+                        "1. If input is in VIETNAMESE, all error messages MUST be in VIETNAMESE. " +
+                        "2. If input is in ENGLISH, all error messages MUST be in ENGLISH. " +
+                        "3. NEVER translate the text. Keep it in the SAME language. " +
+                        "4. The 'message' field in errors MUST be in the SAME language as the input. " +
                         "Return a JSON object with: " +
-                        "'correctedText' (string), 'errors' (list of objects with 'message', 'offset' (int), 'length' (int), 'replacements' (list of strings)). "
+                        "'correctedText' (string in the SAME language), 'errors' (list of objects with 'message' in SAME language, 'offset' (int), 'length' (int), 'replacements' (list of strings)). "
                         +
                         "Do not change the meaning. " +
                         "Text: \"\"\"%s\"\"\"",
@@ -89,9 +95,15 @@ public class AIProxyService {
         checkFeatureEnabled(request.getConferenceId(), "polish_content");
 
         String prompt = String.format(
-                "Polish the following text to make it more academic, professional, and clear. field: %s. " +
+                "You are a Vietnamese academic writing assistant. " +
+                        "Polish the following text to make it more academic, professional, and clear. field: %s. " +
+                        "CRITICAL RULES: " +
+                        "1. If input is in VIETNAMESE, output MUST be 100%% VIETNAMESE (including all explanations). " +
+                        "2. If input is in ENGLISH, output MUST be 100%% ENGLISH. " +
+                        "3. NEVER mix languages. NEVER translate. " +
+                        "4. The 'comment' field MUST be in the SAME language as the input text. " +
                         "Return a JSON object with: " +
-                        "'originalText' (the input text), 'polishedText' (the improved version), and 'comment' (brief explanation of changes). "
+                        "'originalText' (the input text), 'polishedText' (the improved version in the SAME language), and 'comment' (explanation in the SAME language as input). "
                         +
                         "Text: \"\"\"%s\"\"\"",
                 request.getType(), request.getContent());
@@ -105,8 +117,13 @@ public class AIProxyService {
         checkFeatureEnabled(request.getConferenceId(), "keyword_suggestion");
 
         String prompt = String.format(
-                "Suggest %d academic keywords for a paper with the following Title and Abstract. " +
-                        "Return a JSON object with 'keywords' (list of strings). " +
+                "You are a Vietnamese academic writing assistant. " +
+                        "Suggest %d academic keywords for a paper with the following Title and Abstract. " +
+                        "CRITICAL RULES: " +
+                        "1. If input is in VIETNAMESE, keywords MUST be in VIETNAMESE. " +
+                        "2. If input is in ENGLISH, keywords MUST be in ENGLISH. " +
+                        "3. NEVER translate keywords. Use the SAME language as the input. " +
+                        "Return a JSON object with 'keywords' (list of strings in the SAME language as input). " +
                         "Title: \"%s\" " +
                         "Abstract: \"%s\"",
                 request.getMaxKeywords(), request.getTitle(), request.getAbstractText());
@@ -219,13 +236,16 @@ public class AIProxyService {
     // =================================================================================
 
     private void checkFeatureEnabled(Long conferenceId, String featureName) {
-        if (conferenceId == null)
+        if (conferenceId == null) {
+            logger.debug("Bỏ qua kiểm tra feature flag vì conferenceId = null");
             return; // Bỏ qua kiểm tra nếu không có ngữ cảnh hội nghị
+        }
         Optional<AIFeatureFlag> flag = featureFlagRepository.findByConferenceIdAndFeatureName(conferenceId,
                 featureName);
         if (flag.isPresent() && !flag.get().isEnabled()) {
             throw new RuntimeException("Tính năng AI '" + featureName + "' bị vô hiệu hóa cho hội nghị này.");
         }
+        logger.debug("Feature {} enabled for conference {}", featureName, conferenceId);
     }
 
     private <T> T processRequest(String prompt, TypeReference<T> responseType,
@@ -261,6 +281,10 @@ public class AIProxyService {
     }
 
     private <T> T callGemini(String promptText, TypeReference<T> responseType) {
+        logger.info("Calling Gemini API with prompt length: {}", promptText.length());
+        logger.debug("Gemini URL: {}", geminiUrl);
+        logger.debug("API Key present: {}", geminiKey != null && !geminiKey.isEmpty());
+        
         // Xây dựng yêu cầu Gemini
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("contents", Collections.singletonList(
@@ -279,6 +303,8 @@ public class AIProxyService {
                             .filter(t -> t instanceof WebClientResponseException
                                     && ((WebClientResponseException) t).getStatusCode().is5xxServerError()))
                     .block();
+
+            logger.debug("Gemini response received, length: {}", responseJson != null ? responseJson.length() : 0);
 
             // Phân tích phản hồi từ Gemini
             Map<String, Object> rootNode = objectMapper.readValue(responseJson,
@@ -327,7 +353,7 @@ public class AIProxyService {
                     .action(action)
                     .prompt(promptTrunc)
                     .inputHash(inputHash)
-                    .modelId("gemini-1.5-flash")
+                    .modelId("gemini-2.5-flash")
                     .outputSummary(outputSummary)
                     .accepted(null) // Chờ người dùng chấp nhận
                     .metadata(fromCache ? "{\"cache_hit\": true}" : "{\"cache_hit\": false}")

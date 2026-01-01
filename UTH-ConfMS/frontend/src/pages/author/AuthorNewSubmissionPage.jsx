@@ -206,6 +206,7 @@ const AuthorNewSubmissionPage = () => {
       const res = await apiClient.post("/ai/grammar-check", {
         text: text,
         fieldName: field,
+        conferenceId: formValues.conferenceId || null,
       });
       setGrammarResult({ ...res.data, field: fieldVN });
     } catch (err) {
@@ -226,6 +227,7 @@ const AuthorNewSubmissionPage = () => {
       const res = await apiClient.post("/ai/polish", {
         content: text,
         type: "abstract",
+        conferenceId: formValues.conferenceId || null,
       });
       setPolishResult(res.data);
     } catch (err) {
@@ -246,6 +248,7 @@ const AuthorNewSubmissionPage = () => {
         title: formValues.title,
         abstractText: formValues.abstractText,
         maxKeywords: 5,
+        conferenceId: formValues.conferenceId || null,
       });
       setKeywordSuggestions(res.data.keywords || []);
     } catch (err) {
@@ -374,12 +377,29 @@ const AuthorNewSubmissionPage = () => {
                       <label htmlFor="title">Tiêu đề bài báo <span style={{ color: "red" }}>*</span></label>
                       <button
                         type="button"
-                        className="btn-secondary"
-                        style={{ fontSize: "0.8rem", padding: "2px 8px" }}
                         onClick={() => handleCheckGrammar("Title")}
                         disabled={aiLoading}
+                        style={{
+                          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                          color: "white",
+                          border: "none",
+                          padding: "6px 14px",
+                          borderRadius: "8px",
+                          fontSize: "0.85rem",
+                          fontWeight: 500,
+                          cursor: aiLoading ? "not-allowed" : "pointer",
+                          opacity: aiLoading ? 0.6 : 1,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          transition: "all 0.2s",
+                          boxShadow: "0 2px 4px rgba(102, 126, 234, 0.3)"
+                        }}
+                        onMouseEnter={(e) => !aiLoading && (e.currentTarget.style.transform = "translateY(-2px)", e.currentTarget.style.boxShadow = "0 4px 8px rgba(102, 126, 234, 0.4)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)", e.currentTarget.style.boxShadow = "0 2px 4px rgba(102, 126, 234, 0.3)")}
                       >
-                        ✨ Check lỗi ngữ pháp
+                        <span style={{ fontSize: "1rem" }}>✨</span>
+                        Check lỗi
                       </button>
                     </div>
                     <input
@@ -396,25 +416,59 @@ const AuthorNewSubmissionPage = () => {
 
                   <div className="form-group">
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <label htmlFor="abstractText">Tóm tắt (Abstract) <span style={{ color: "red" }}>*</span></label>
-                      <div style={{ display: "flex", gap: "5px" }}>
+                      <label htmlFor="abstractText">Tóm tắt <span style={{ color: "red" }}>*</span></label>
+                      <div style={{ display: "flex", gap: "8px" }}>
                         <button
                           type="button"
-                          className="btn-secondary"
-                          style={{ fontSize: "0.8rem", padding: "2px 8px" }}
                           onClick={() => handleCheckGrammar("Abstract")}
                           disabled={aiLoading}
+                          style={{
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            color: "white",
+                            border: "none",
+                            padding: "6px 14px",
+                            borderRadius: "8px",
+                            fontSize: "0.85rem",
+                            fontWeight: 500,
+                            cursor: aiLoading ? "not-allowed" : "pointer",
+                            opacity: aiLoading ? 0.6 : 1,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            transition: "all 0.2s",
+                            boxShadow: "0 2px 4px rgba(102, 126, 234, 0.3)"
+                          }}
+                          onMouseEnter={(e) => !aiLoading && (e.currentTarget.style.transform = "translateY(-2px)", e.currentTarget.style.boxShadow = "0 4px 8px rgba(102, 126, 234, 0.4)")}
+                          onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)", e.currentTarget.style.boxShadow = "0 2px 4px rgba(102, 126, 234, 0.3)")}
                         >
-                          ✨ Check lỗi
+                          <span style={{ fontSize: "1rem" }}>✨</span>
+                          Check lỗi
                         </button>
                         <button
                           type="button"
-                          className="btn-secondary"
-                          style={{ fontSize: "0.8rem", padding: "2px 8px" }}
                           onClick={handlePolish}
                           disabled={aiLoading}
+                          style={{
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            color: "#1e293b",
+                            border: "none",
+                            padding: "6px 14px",
+                            borderRadius: "8px",
+                            fontSize: "0.85rem",
+                            fontWeight: 500,
+                            cursor: aiLoading ? "not-allowed" : "pointer",
+                            opacity: aiLoading ? 0.6 : 1,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            transition: "all 0.2s",
+                            boxShadow: "0 2px 4px rgba(168, 237, 234, 0.3)"
+                          }}
+                          onMouseEnter={(e) => !aiLoading && (e.currentTarget.style.transform = "translateY(-2px)", e.currentTarget.style.boxShadow = "0 4px 8px rgba(168, 237, 234, 0.4)")}
+                          onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)", e.currentTarget.style.boxShadow = "0 2px 4px rgba(168, 237, 234, 0.3)")}
                         >
-                          ✨ Văn phong
+                          <span style={{ fontSize: "1rem" }}>✨</span>
+                          Văn phong
                         </button>
                       </div>
                     </div>
@@ -435,15 +489,32 @@ const AuthorNewSubmissionPage = () => {
 
                   <div className="form-group">
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <label htmlFor="keywords">Từ khóa (Keywords)</label>
+                      <label htmlFor="keywords">Từ khóa </label>
                       <button
                         type="button"
-                        className="btn-secondary"
-                        style={{ fontSize: "0.8rem", padding: "2px 8px" }}
                         onClick={handleSuggestKeywords}
                         disabled={aiLoading}
+                        style={{
+                          background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                          color: "white",
+                          border: "none",
+                          padding: "6px 14px",
+                          borderRadius: "8px",
+                          fontSize: "0.85rem",
+                          fontWeight: 500,
+                          cursor: aiLoading ? "not-allowed" : "pointer",
+                          opacity: aiLoading ? 0.6 : 1,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          transition: "all 0.2s",
+                          boxShadow: "0 2px 4px rgba(79, 172, 254, 0.3)"
+                        }}
+                        onMouseEnter={(e) => !aiLoading && (e.currentTarget.style.transform = "translateY(-2px)", e.currentTarget.style.boxShadow = "0 4px 8px rgba(79, 172, 254, 0.4)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)", e.currentTarget.style.boxShadow = "0 2px 4px rgba(79, 172, 254, 0.3)")}
                       >
-                        ✨ Gợi ý từ khóa
+                        <span style={{ fontSize: "1rem" }}>✨</span>
+                        Gợi ý từ khóa
                       </button>
                     </div>
                     <input
@@ -487,7 +558,7 @@ const AuthorNewSubmissionPage = () => {
                 <div>
                   {/* Track Selection */}
                   <div className="form-group">
-                    <label htmlFor="trackId">Track / Chủ đề <span style={{ color: "red" }}>*</span></label>
+                    <label htmlFor="trackId">Chủ đề <span style={{ color: "red" }}>*</span></label>
                     <select
                       id="trackId"
                       name="trackId"
@@ -516,13 +587,62 @@ const AuthorNewSubmissionPage = () => {
                   {/* File Upload */}
                   <div className="form-group">
                     <label htmlFor="file">File bài báo (PDF) <span style={{ color: "red" }}>*</span></label>
-                    <input
-                      id="file"
-                      name="file"
-                      type="file"
-                      accept="application/pdf"
-                      onChange={handleFileChange}
-                    />
+                    <div style={{ position: "relative" }}>
+                      <input
+                        id="file"
+                        name="file"
+                        type="file"
+                        accept="application/pdf"
+                        onChange={handleFileChange}
+                        style={{ display: "none" }}
+                      />
+                      <label 
+                        htmlFor="file"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "12px",
+                          width: "100%",
+                          padding: "0.875rem 1rem",
+                          borderRadius: "8px",
+                          border: "2px solid #e2e8f0",
+                          background: "transparent",
+                          fontSize: "0.95rem",
+                          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+                          cursor: "pointer",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = "#cbd5e1";
+                          e.currentTarget.style.background = "#f8fafc";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = "#e2e8f0";
+                          e.currentTarget.style.background = "transparent";
+                        }}
+                      >
+                        <span style={{
+                          background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                          color: "white",
+                          padding: "6px 16px",
+                          borderRadius: "6px",
+                          fontSize: "0.9rem",
+                          fontWeight: 500,
+                          whiteSpace: "nowrap"
+                        }}>
+                          Chọn tệp
+                        </span>
+                        <span style={{ 
+                          color: formValues.file ? "#059669" : "#64748b",
+                          fontWeight: formValues.file ? 500 : 400,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap"
+                        }}>
+                          {formValues.file ? formValues.file.name : "Không có tệp nào được chọn"}
+                        </span>
+                      </label>
+                    </div>
                     <div className="field-hint">
                       Chỉ chấp nhận file PDF, dung lượng theo quy định. Không nhúng thông tin tác giả (Double-blind).
                     </div>
