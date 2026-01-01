@@ -7,6 +7,7 @@ import { usePagination } from '../../hooks/usePagination';
 import { FiFileText, FiEdit, FiEye, FiEyeOff, FiTrash2, FiLock } from 'react-icons/fi';
 
 const ChairConferenceManager = () => {
+  const navigate = useNavigate();
   const [conferences, setConferences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -14,25 +15,6 @@ const ChairConferenceManager = () => {
   // Pagination
   const { currentPage, setCurrentPage, totalPages, paginatedItems} =
     usePagination(conferences, 20);
-
-  // State cho Modal tạo mới
-  const [showModal, setShowModal] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
-  // Form Data khớp với Entity Backend
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    startDate: "",
-    endDate: "",
-    submissionDeadline: "",
-    reviewDeadline: "",
-    cameraReadyDeadline: "",
-    blindReview: true,
-    tracks: [{ name: "" }], // Mặc định có 1 track rỗng
-  });
-
-  const navigate = useNavigate();
 
   // --- 1. Lấy dữ liệu ---
   const fetchConfs = async () => {
@@ -51,66 +33,6 @@ const ChairConferenceManager = () => {
   useEffect(() => {
     fetchConfs();
   }, []);
-
-  // --- 2. Xử lý Input Form ---
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  // --- 3. Xử lý Dynamic Tracks (Thêm/Sửa/Xóa Track) ---
-  const handleTrackChange = (index, value) => {
-    const newTracks = [...formData.tracks];
-    newTracks[index].name = value;
-    setFormData({ ...formData, tracks: newTracks });
-  };
-
-  const addTrack = () => {
-    setFormData({ ...formData, tracks: [...formData.tracks, { name: "" }] });
-  };
-
-  const removeTrack = (index) => {
-    const newTracks = formData.tracks.filter((_, i) => i !== index);
-    setFormData({ ...formData, tracks: newTracks });
-  };
-
-  // --- 4. Gửi API Tạo mới ---
-  const handleCreate = async (e) => {
-    e.preventDefault();
-
-    // Validate cơ bản phía Client
-    if (!formData.name || !formData.startDate || !formData.endDate) {
-      alert("Vui lòng điền tên, ngày bắt đầu và ngày kết thúc!");
-      return;
-    }
-
-    // Lọc bỏ các track rỗng trước khi gửi
-    const cleanTracks = formData.tracks.filter((t) => t.name.trim() !== "");
-
-    const payload = {
-      ...formData,
-      tracks: cleanTracks,
-    };
-
-    try {
-      setSubmitting(true);
-      const res = await apiClient.post(`/conferences`, payload);
-      setConferences([res.data, ...conferences]); // Thêm vào list hiển thị
-      setShowModal(false); // Đóng modal
-      resetForm();
-      alert("Tạo hội nghị thành công!");
-    } catch (err) {
-      console.error(err);
-      // Hiển thị lỗi từ Backend trả về (ví dụ: Ngày nộp bài phải trước ngày bắt đầu)
-      const serverMsg = err.response?.data || "Tạo thất bại";
-      alert("Lỗi: " + serverMsg);
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   const handleDelete = async (id) => {
     if (
@@ -146,20 +68,6 @@ const ChairConferenceManager = () => {
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      description: "",
-      startDate: "",
-      endDate: "",
-      submissionDeadline: "",
-      reviewDeadline: "",
-      cameraReadyDeadline: "",
-      blindReview: true,
-      tracks: [{ name: "" }],
-    });
-  };
-
   return (
     <DashboardLayout
       roleLabel="Chủ tịch Chương trình / Chủ tịch Chuyên đề"
@@ -182,10 +90,7 @@ const ChairConferenceManager = () => {
           <button
             className="btn-primary"
             type="button"
-            onClick={() => {
-              resetForm();
-              setShowModal(true);
-            }}
+            onClick={() => navigate("/chair/conferences/create")}
           >
             + Tạo hội nghị
           </button>
@@ -221,19 +126,7 @@ const ChairConferenceManager = () => {
             ) : conferences.length === 0 ? (
               <tr>
                 <td colSpan={7} className="table-empty">
-                  Chưa có hội nghị nào. Nhấn{" "}
-                  <button
-                    type="button"
-                    className="link-inline"
-                    onClick={() => {
-                      resetForm();
-                      setShowModal(true);
-                    }}
-                    style={{ background: "none", border: "none", padding: 0 }}
-                  >
-                    "Tạo hội nghị"
-                  </button>{" "}
-                  để thêm mới.
+                  Chưa có hội nghị nào. Nhấn "Tạo hội nghị" để thêm mới.
                 </td>
               </tr>
             ) : (
@@ -422,146 +315,6 @@ const ChairConferenceManager = () => {
           onPageChange={setCurrentPage}
           itemName="hội nghị"
         />
-      )}
-
-      {/* --- MODAL FORM TẠO MỚI --- */}
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-card">
-            <h3>Tạo Hội Nghị Mới</h3>
-            <form onSubmit={handleCreate} className="submission-form">
-              <div className="form-group">
-                <label className="form-label">Tên hội nghị *</label>
-                <input
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  placeholder="Ví dụ: UTH Conference 2025"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Mô tả *</label>
-                <textarea
-                  name="description"
-                  rows="3"
-                  value={formData.description}
-                  onChange={handleChange}
-                  required
-                  className="textarea-input"
-                  placeholder="Giới thiệu ngắn gọn về hội nghị..."
-                />
-              </div>
-
-              <div className="form-grid">
-                <div className="form-group">
-                  <label className="form-label">Ngày bắt đầu *</label>
-                  <input
-                    type="datetime-local"
-                    name="startDate"
-                    value={formData.startDate}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Ngày kết thúc *</label>
-                  <input
-                    type="datetime-local"
-                    name="endDate"
-                    value={formData.endDate}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label text-danger">
-                  Hạn nộp bài (Phải trước ngày bắt đầu)
-                </label>
-                <input
-                  type="datetime-local"
-                  name="submissionDeadline"
-                  value={formData.submissionDeadline}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-grid">
-                <div className="form-group">
-                  <label className="form-label">Hạn chấm bài (Review deadline)</label>
-                  <input
-                    type="datetime-local"
-                    name="reviewDeadline"
-                    value={formData.reviewDeadline}
-                    onChange={handleChange}
-                    placeholder="Thời hạn reviewer chấm bài"
-                  />
-                  <div className="field-hint">Thời hạn để reviewer hoàn thành đánh giá</div>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Hạn nộp bản cuối (Camera-ready deadline)</label>
-                  <input
-                    type="datetime-local"
-                    name="cameraReadyDeadline"
-                    value={formData.cameraReadyDeadline}
-                    onChange={handleChange}
-                    placeholder="Thời hạn nộp bản cuối"
-                  />
-                  <div className="field-hint">Thời hạn tác giả nộp bản cuối sau khi được chấp nhận</div>
-                </div>
-              </div>
-
-              <div className="form-card" style={{ padding: "1rem" }}>
-                <label className="form-label">Danh sách Tracks (Chủ đề)</label>
-                {formData.tracks.map((track, index) => (
-                  <div key={index} className="inline-actions" style={{ width: "100%" }}>
-                    <input
-                      style={{ flex: 1, minWidth: 0 }}
-                      placeholder={`Tên track ${index + 1} (VD: AI, Security...)`}
-                      value={track.name}
-                      onChange={(e) => handleTrackChange(index, e.target.value)}
-                    />
-                    {formData.tracks.length > 1 && (
-                      <button
-                        type="button"
-                        className="btn-secondary table-action"
-                        style={{ color: "#d72d2d" }}
-                        onClick={() => removeTrack(index)}
-                      >
-                        Xóa
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button type="button" className="btn-secondary table-action" onClick={addTrack}>
-                  + Thêm Track
-                </button>
-              </div>
-
-              <label className="checkbox" style={{ marginTop: "0.5rem" }}>
-                <input
-                  type="checkbox"
-                  name="blindReview"
-                  checked={formData.blindReview}
-                  onChange={handleChange}
-                />
-                Bật chế độ Blind Review
-              </label>
-
-              <div className="modal-actions">
-                <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>
-                  Hủy
-                </button>
-                <button type="submit" className="btn-primary" disabled={submitting}>
-                  {submitting ? "Đang xử lý..." : "Tạo Hội Nghị"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
       )}
     </DashboardLayout>
   );

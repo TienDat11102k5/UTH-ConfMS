@@ -1,9 +1,36 @@
 // src/pages/public/PublicHomePage.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoUth from "../../assets/logoUTH.jpg";
+import UserProfileDropdown from "../../components/UserProfileDropdown";
 
 const PublicHomePage = () => {
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const token = sessionStorage.getItem("accessToken") || localStorage.getItem("accessToken");
+    const userStr = sessionStorage.getItem("currentUser") || localStorage.getItem("currentUser");
+    
+    if (token && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setCurrentUser(user);
+      } catch (err) {
+        console.error("Error parsing user data:", err);
+      }
+    }
+  }, []);
+
+  const getDashboardLink = () => {
+    if (!currentUser) return "/author/dashboard";
+    
+    const role = currentUser.role?.toLowerCase();
+    if (role === "admin") return "/admin/dashboard";
+    if (role === "chair" || role === "pc") return "/chair/dashboard";
+    if (role === "reviewer") return "/reviewer/dashboard";
+    return "/author/dashboard";
+  };
   return (
     <div className="portal-page">
       <div className="portal-header-container">
@@ -33,12 +60,18 @@ const PublicHomePage = () => {
             <Link to="/proceedings" className="nav-link">
               Kỷ yếu hội nghị
             </Link>
-            <Link to="/login" className="nav-link">
-              Đăng nhập
-            </Link>
-            <Link to="/register" className="nav-link nav-link-primary">
-              Đăng ký
-            </Link>
+            {currentUser ? (
+              <UserProfileDropdown />
+            ) : (
+              <>
+                <Link to="/login" className="nav-link">
+                  Đăng nhập
+                </Link>
+                <Link to="/register" className="nav-link nav-link-primary">
+                  Đăng ký
+                </Link>
+              </>
+            )}
           </nav>
         </header>
       </div>
@@ -60,12 +93,20 @@ const PublicHomePage = () => {
             </p>
 
             <div className="portal-actions">
-              <Link to="/login" className="btn-primary">
-                Đăng nhập hệ thống
-              </Link>
-              <Link to="/register" className="btn-secondary">
-                Đăng ký Author mới
-              </Link>
+              {currentUser ? (
+                <Link to={getDashboardLink()} className="btn-primary">
+                  Trang hội nghị
+                </Link>
+              ) : (
+                <>
+                  <Link to="/login" className="btn-primary">
+                    Đăng nhập hệ thống
+                  </Link>
+                  <Link to="/register" className="btn-secondary">
+                    Đăng ký Author mới
+                  </Link>
+                </>
+              )}
             </div>
 
             <p className="portal-note">

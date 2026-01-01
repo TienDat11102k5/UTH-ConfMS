@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import logoUth from "../../assets/logoUTH.jpg";
+import UserProfileDropdown from "../../components/UserProfileDropdown";
 import { FiDownload, FiFilter, FiSearch } from "react-icons/fi";
 import "../../styles/PublicProceedings.css";
 
@@ -16,6 +17,22 @@ const PublicProceedings = () => {
   const [selectedTrack, setSelectedTrack] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const token = sessionStorage.getItem("accessToken") || localStorage.getItem("accessToken");
+    const userStr = sessionStorage.getItem("currentUser") || localStorage.getItem("currentUser");
+    
+    if (token && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setCurrentUser(user);
+      } catch (err) {
+        console.error("Error parsing user data:", err);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     fetchConferences();
@@ -216,7 +233,8 @@ const PublicProceedings = () => {
             </div>
             <nav style={{
               display: "flex",
-              gap: "1.5rem"
+              gap: "1.5rem",
+              alignItems: "center"
             }}>
               <Link to="/" style={{
                 color: "#475569",
@@ -224,12 +242,16 @@ const PublicProceedings = () => {
                 fontSize: "0.9375rem",
                 fontWeight: 600
               }}>Trang chủ</Link>
-              <Link to="/login" style={{
-                color: "#475569",
-                textDecoration: "none",
-                fontSize: "0.9375rem",
-                fontWeight: 600
-              }}>Đăng nhập</Link>
+              {currentUser ? (
+                <UserProfileDropdown />
+              ) : (
+                <Link to="/login" style={{
+                  color: "#475569",
+                  textDecoration: "none",
+                  fontSize: "0.9375rem",
+                  fontWeight: 600
+                }}>Đăng nhập</Link>
+              )}
             </nav>
           </header>
         </div>
@@ -340,7 +362,8 @@ const PublicProceedings = () => {
           </div>
           <nav style={{
             display: "flex",
-            gap: "1.5rem"
+            gap: "1.5rem",
+            alignItems: "center"
           }}>
             <Link to="/" style={{
               color: "#475569",
@@ -354,18 +377,22 @@ const PublicProceedings = () => {
             >
               Trang chủ
             </Link>
-            <Link to="/login" style={{
-              color: "#475569",
-              textDecoration: "none",
-              fontSize: "0.9375rem",
-              fontWeight: 600,
-              transition: "color 0.2s ease"
-            }}
-            onMouseOver={(e) => e.currentTarget.style.color = "#0d9488"}
-            onMouseOut={(e) => e.currentTarget.style.color = "#475569"}
-            >
-              Đăng nhập
-            </Link>
+            {currentUser ? (
+              <UserProfileDropdown />
+            ) : (
+              <Link to="/login" style={{
+                color: "#475569",
+                textDecoration: "none",
+                fontSize: "0.9375rem",
+                fontWeight: 600,
+                transition: "color 0.2s ease"
+              }}
+              onMouseOver={(e) => e.currentTarget.style.color = "#0d9488"}
+              onMouseOut={(e) => e.currentTarget.style.color = "#475569"}
+              >
+                Đăng nhập
+              </Link>
+            )}
           </nav>
         </header>
       </div>

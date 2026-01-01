@@ -48,6 +48,7 @@ import ChairReports from "./pages/chair/ChairReports.jsx";
 // Đã thêm 2 import bị thiếu ở đây
 import ChairConferenceManager from "./pages/chair/ChairConferenceManager.jsx";
 import ChairConferenceEdit from "./pages/chair/ChairConferenceEdit.jsx";
+import ChairConferenceCreate from "./pages/chair/ChairConferenceCreate.jsx";
 import ChairConferenceSubmissions from "./pages/chair/ChairConferenceSubmissions.jsx";
 import ChairProceedingsPreview from "./pages/chair/ChairProceedingsPreview.jsx";
 
@@ -55,6 +56,7 @@ import ChairProceedingsPreview from "./pages/chair/ChairProceedingsPreview.jsx";
 import AdminDashboardOverview from "./pages/admin/AdminDashboardOverview.jsx";
 import AdminConferences from "./pages/admin/AdminConferences.jsx";
 import AdminConferenceEdit from "./pages/admin/AdminConferenceEdit.jsx";
+import AdminConferenceCreate from "./pages/admin/AdminConferenceCreate.jsx";
 import AdminConferenceSubmissions from "./pages/admin/AdminConferenceSubmissions.jsx";
 import AdminUserEdit from "./pages/admin/AdminUserEdit.jsx";
 import AdminUserCreate from "./pages/admin/AdminUserCreate.jsx";
@@ -245,7 +247,7 @@ const App = () => {
           path="/chair/conferences/create"
           element={
             <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
-              <ChairConferenceEdit />
+              <ChairConferenceCreate />
             </ProtectedRoute>
           }
         />
@@ -334,6 +336,14 @@ const App = () => {
           element={
             <ProtectedRoute requiredRole={"ADMIN"}>
               <AdminConferences />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/conferences/create"
+          element={
+            <ProtectedRoute requiredRole={"ADMIN"}>
+              <AdminConferenceCreate />
             </ProtectedRoute>
           }
         />
