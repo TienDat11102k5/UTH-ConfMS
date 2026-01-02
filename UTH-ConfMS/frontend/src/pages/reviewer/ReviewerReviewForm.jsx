@@ -34,7 +34,14 @@ const ReviewerReviewForm = () => {
         console.log("Assignment data:", assignmentRes.data);
         console.log("Paper data:", assignmentRes.data?.paper);
         console.log("File Path:", assignmentRes.data?.paper?.filePath);
-        setAssignment(assignmentRes.data);
+        
+        // Add conferenceId to paper object for AI features
+        const assignmentData = assignmentRes.data;
+        if (assignmentData.paper && assignmentData.paper.track) {
+          assignmentData.paper.conferenceId = assignmentData.paper.track.conferenceId;
+        }
+        
+        setAssignment(assignmentData);
 
         // Check if review already exists
         try {

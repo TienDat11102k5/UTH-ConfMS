@@ -62,7 +62,7 @@ public interface PaperRepository extends JpaRepository<Paper, Long> {
     // 5. Hàm này kiểm tra: Có bài nào của Ông Tác Giả A, nộp vào Track B, mà Tiêu đề là C chưa?
     boolean existsByMainAuthorIdAndTrackIdAndTitle(Long authorId, Long trackId, String title);
     // 6. Tìm bài theo Hội nghị (thông qua Track) và Trạng thái
-    List<Paper> findByTrack_ConferenceIdAndStatus(Long conferenceId, PaperStatus status);
+    List<Paper> findByTrack_Conference_IdAndStatus(Long conferenceId, PaperStatus status);
 
     // 7. Lấy bài theo hội nghị và trạng thái với eager loading (cho Proceedings)
     @Query("""

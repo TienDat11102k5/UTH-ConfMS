@@ -333,9 +333,13 @@ public class AIProxyService {
     // =================================================================================
 
     private void checkFeatureEnabled(Long conferenceId, String featureName) {
+        // CRITICAL: Require conferenceId for security - no bypass allowed
         if (conferenceId == null) {
-            logger.debug("Bỏ qua kiểm tra feature flag vì conferenceId = null");
-            return; // Bỏ qua kiểm tra nếu không có ngữ cảnh hội nghị
+            logger.warn("AI feature {} blocked: conferenceId is null", featureName);
+            throw new RuntimeException(
+                "Không thể sử dụng tính năng AI: thiếu thông tin hội nghị. " +
+                "Vui lòng liên hệ quản trị viên để được hỗ trợ."
+            );
         }
         
         Optional<AIFeatureFlag> flag = featureFlagRepository.findByConferenceIdAndFeatureName(conferenceId,
@@ -343,6 +347,8 @@ public class AIProxyService {
         
         // Default: DISABLED (phải bật rõ ràng mới được dùng)
         if (!flag.isPresent() || !flag.get().isEnabled()) {
+            logger.info("AI feature {} blocked for conference {}: disabled or not configured", 
+                featureName, conferenceId);
             throw new RuntimeException(
                 "Tính năng AI này hiện đang tắt cho hội nghị. " +
                 "Vui lòng liên hệ quản trị viên để được hỗ trợ."

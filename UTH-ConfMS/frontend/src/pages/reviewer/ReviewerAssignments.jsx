@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import PaperSynopsisModal from "../../components/PaperSynopsisModal";
+import Pagination from "../../components/Pagination";
+import { usePagination } from "../../hooks/usePagination";
 import { 
   FiFileText, 
   FiClock, 
@@ -20,12 +22,32 @@ import "../../styles/ReviewerAssignments.css";
 
 const ReviewerAssignments = () => {
   const [assignments, setAssignments] = useState([]);
+  const [filteredAssignments, setFilteredAssignments] = useState([]);
+  const [conferences, setConferences] = useState([]);
+  const [selectedConference, setSelectedConference] = useState("ALL");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [sortBy, setSortBy] = useState("NEWEST");
+  const [searchQuery, setSearchQuery] = useState("");
   const [synopsisModal, setSynopsisModal] = useState({ show: false, paper: null });
 
+  const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination(filteredAssignments, 12);
+
+  // Load conferences
+  useEffect(() => {
+    const loadConferences = async () => {
+      try {
+        const res = await apiClient.get("/conferences");
+        setConferences(res.data || []);
+      } catch (err) {
+        console.error("Load conferences error:", err);
+      }
+    };
+    loadConferences();
+  }, []);
+
+  // Load assignments
   useEffect(() => {
     const loadAssignments = async () => {
       try {
@@ -43,7 +65,16 @@ const ReviewerAssignments = () => {
         const res = await apiClient.get(
           `/assignments/my-assignments?reviewerId=${reviewerId}`
         );
-        setAssignments(res.data || []);
+        
+        // Add conferenceId to each paper for AI features
+        const assignmentsData = (res.data || []).map(assignment => {
+          if (assignment.paper && assignment.paper.track) {
+            assignment.paper.conferenceId = assignment.paper.track.conferenceId;
+          }
+          return assignment;
+        });
+        
+        setAssignments(assignmentsData);
       } catch (err) {
         console.error("Load assignments error:", err);
         setError("Không thể tải danh sách bài được phân công.");
@@ -53,6 +84,43 @@ const ReviewerAssignments = () => {
     };
     loadAssignments();
   }, []);
+
+  // Apply filters and sorting
+  useEffect(() => {
+    let result = assignments;
+
+    // Filter by conference
+    if (selectedConference !== "ALL") {
+      result = result.filter(a => 
+        a.paper?.track?.conferenceId === parseInt(selectedConference)
+      );
+    }
+
+    // Filter by status
+    if (filterStatus !== "ALL") {
+      result = result.filter(a => a.status === filterStatus);
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(a =>
+        a.paper?.title?.toLowerCase().includes(query) ||
+        a.paper?.track?.name?.toLowerCase().includes(query) ||
+        a.paper?.mainAuthor?.fullName?.toLowerCase().includes(query)
+      );
+    }
+
+    // Sort
+    if (sortBy === "NEWEST") {
+      result.sort((a, b) => new Date(b.assignedDate) - new Date(a.assignedDate));
+    } else if (sortBy === "DEADLINE") {
+      result.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    }
+
+    setFilteredAssignments(result);
+    setCurrentPage(1); // Reset to page 1 when filters change
+  }, [assignments, selectedConference, filterStatus, searchQuery, sortBy, setCurrentPage]);
 
   const handleAccept = async (assignmentId) => {
     try {
@@ -119,29 +187,7 @@ const ReviewerAssignments = () => {
     );
   };
 
-  // Filter và Sort logic
-  const getFilteredAndSortedAssignments = () => {
-    let filtered = assignments;
-    
-    // Filter theo status
-    if (filterStatus !== "ALL") {
-      filtered = filtered.filter(a => a.status === filterStatus);
-    }
-    
-    // Sort
-    const sorted = [...filtered].sort((a, b) => {
-      if (sortBy === "NEWEST") {
-        return new Date(b.assignedDate) - new Date(a.assignedDate);
-      } else if (sortBy === "DEADLINE") {
-        return new Date(a.dueDate) - new Date(b.dueDate);
-      }
-      return 0;
-    });
-    
-    return sorted;
-  };
 
-  const filteredAssignments = getFilteredAndSortedAssignments();
 
   if (loading) {
     return (
@@ -198,6 +244,94 @@ const ReviewerAssignments = () => {
         </div>
       </div>
 
+      {/* Conference & Search Filter */}
+      {conferences.length > 0 && (
+        <div
+          style={{
+            marginBottom: "1.25rem",
+            background: "white",
+            borderRadius: "10px",
+            padding: "1rem 1.25rem",
+            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+            border: "1px solid #e2e8f0",
+          }}
+        >
+          <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ 
+                display: "block",
+                marginBottom: "0.5rem", 
+                fontWeight: 600,
+                color: "#64748b",
+                fontSize: "0.875rem",
+              }}>
+                Chọn hội nghị:
+              </label>
+              <select
+                value={selectedConference}
+                onChange={(e) => setSelectedConference(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.5rem 0.875rem",
+                  borderRadius: "8px",
+                  border: "1.5px solid #e2e8f0",
+                  fontSize: "0.8125rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background: "white",
+                  color: "#475569",
+                }}
+              >
+                <option value="ALL">Tất cả hội nghị</option>
+                {conferences.map((conf) => (
+                  <option key={conf.id} value={conf.id}>
+                    {conf.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div style={{ flex: 1 }}>
+              <label style={{ 
+                display: "block",
+                marginBottom: "0.5rem", 
+                fontWeight: 600,
+                color: "#64748b",
+                fontSize: "0.875rem",
+              }}>
+                Tìm kiếm:
+              </label>
+              <div style={{ position: "relative" }}>
+                <FiFilter style={{
+                  position: "absolute",
+                  left: "0.875rem",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "#94a3b8",
+                  width: "16px",
+                  height: "16px"
+                }} />
+                <input
+                  type="text"
+                  placeholder="Tìm theo tiêu đề, track, tác giả..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem 0.875rem 0.5rem 2.5rem",
+                    borderRadius: "8px",
+                    border: "1.5px solid #e2e8f0",
+                    fontSize: "0.8125rem",
+                    background: "white",
+                    color: "#475569",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Filter và Sort Controls */}
       <div className="filter-sort-controls">
         <div className="filter-section">
@@ -211,35 +345,35 @@ const ReviewerAssignments = () => {
               onClick={() => setFilterStatus('ALL')}
             >
               Tất cả
-              <span className="filter-count">{assignments.length}</span>
+              <span className="filter-count">{filteredAssignments.length}</span>
             </button>
             <button 
               className={`filter-btn ${filterStatus === 'PENDING' ? 'active' : ''}`}
               onClick={() => setFilterStatus('PENDING')}
             >
               Chờ xác nhận
-              <span className="filter-count">{assignments.filter(a => a.status === 'PENDING').length}</span>
+              <span className="filter-count">{filteredAssignments.filter(a => a.status === 'PENDING').length}</span>
             </button>
             <button 
               className={`filter-btn ${filterStatus === 'ACCEPTED' ? 'active' : ''}`}
               onClick={() => setFilterStatus('ACCEPTED')}
             >
               Đang review
-              <span className="filter-count">{assignments.filter(a => a.status === 'ACCEPTED').length}</span>
+              <span className="filter-count">{filteredAssignments.filter(a => a.status === 'ACCEPTED').length}</span>
             </button>
             <button 
               className={`filter-btn ${filterStatus === 'COMPLETED' ? 'active' : ''}`}
               onClick={() => setFilterStatus('COMPLETED')}
             >
               Hoàn thành
-              <span className="filter-count">{assignments.filter(a => a.status === 'COMPLETED').length}</span>
+              <span className="filter-count">{filteredAssignments.filter(a => a.status === 'COMPLETED').length}</span>
             </button>
             <button 
               className={`filter-btn ${filterStatus === 'DECLINED' ? 'active' : ''}`}
               onClick={() => setFilterStatus('DECLINED')}
             >
               Đã từ chối
-              <span className="filter-count">{assignments.filter(a => a.status === 'DECLINED').length}</span>
+              <span className="filter-count">{filteredAssignments.filter(a => a.status === 'DECLINED').length}</span>
             </button>
           </div>
         </div>
@@ -269,7 +403,7 @@ const ReviewerAssignments = () => {
           </div>
         ) : (
           <div className="assignments-grid">
-            {filteredAssignments.map((assignment) => (
+            {paginatedItems.map((assignment) => (
               <div key={assignment.id} className="assignment-card">
                 <div className="assignment-card-header">
                   <div className="assignment-icon">
@@ -279,6 +413,19 @@ const ReviewerAssignments = () => {
                     <h3 className="assignment-title">
                       {assignment.paper?.title || "N/A"}
                     </h3>
+                    {selectedConference === "ALL" && assignment.paper?.track?.conference && (
+                      <div style={{ 
+                        fontSize: "0.75rem", 
+                        color: "#6b7280", 
+                        marginTop: "0.25rem",
+                        fontWeight: 500,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.25rem"
+                      }}>
+                        🏛️ {conferences.find(c => c.id === assignment.paper.track.conferenceId)?.name || "N/A"}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -361,6 +508,18 @@ const ReviewerAssignments = () => {
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {!loading && filteredAssignments.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredAssignments.length}
+          itemsPerPage={12}
+          onPageChange={setCurrentPage}
+          itemName="bài phân công"
+        />
+      )}
 
       {/* Paper Synopsis Modal */}
       {synopsisModal.show && (

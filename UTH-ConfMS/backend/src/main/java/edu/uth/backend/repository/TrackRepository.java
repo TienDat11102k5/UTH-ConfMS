@@ -9,5 +9,5 @@ import java.util.List;
 public interface TrackRepository extends JpaRepository<Track, Long> {
     
     // Lấy danh sách Track của một hội nghị cụ thể
-    List<Track> findByConferenceId(Long conferenceId);
+    List<Track> findByConference_Id(Long conferenceId);
 }

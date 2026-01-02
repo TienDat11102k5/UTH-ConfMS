@@ -2,6 +2,7 @@ package edu.uth.backend.entity;
 
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,4 +36,10 @@ public class Track extends BaseEntity {
     
     @Column(name = "room")
     private String room; // VD: "Phòng 201", "Hội trường A"
+    
+    // Expose conferenceId for AI feature governance without exposing full conference object
+    @JsonProperty("conferenceId")
+    public Long getConferenceId() {
+        return conference != null ? conference.getId() : null;
+    }
 }
