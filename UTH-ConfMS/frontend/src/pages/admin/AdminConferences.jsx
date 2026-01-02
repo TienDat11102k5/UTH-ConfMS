@@ -97,17 +97,13 @@ const AdminConferences = () => {
 
   return (
     <AdminLayout
-      title="Quản lý Hội nghị"
-      subtitle="Tạo và quản lý các hội nghị khoa học."
+      title="QUẢN LÝ HỘI NGHỊ"
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <span className="breadcrumb-current">Hội nghị</span>
           </div>
-          <h2 className="data-page-title">Danh sách hội nghị</h2>
         </div>
-
         <div className="data-page-header-right">
           <button className="btn-secondary" type="button" onClick={fetchConfs}>
             Làm mới

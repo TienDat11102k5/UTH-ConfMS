@@ -99,18 +99,11 @@ const AdminConferenceCreate = () => {
   return (
     <AdminLayout
       title="Tạo Hội Nghị Mới"
-      subtitle="Điền thông tin chi tiết để tạo hội nghị khoa học mới"
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <Link to="/admin/conferences" className="breadcrumb-link">
-              Hội nghị
-            </Link>
-            <span className="breadcrumb-separator">/</span>
-            <span className="breadcrumb-current">Tạo mới</span>
           </div>
-          <h2 className="data-page-title">Tạo hội nghị mới</h2>
         </div>
       </div>
 

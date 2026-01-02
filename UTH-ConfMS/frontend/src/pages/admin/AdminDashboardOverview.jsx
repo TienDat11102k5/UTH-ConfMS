@@ -177,9 +177,9 @@ const AdminDashboardOverview = () => {
                                 type="monotone"
                                 dataKey="users"
                                 name="Số người dùng"
-                                stroke="#0f62fe"
+                                stroke="#007173"
                                 strokeWidth={3}
-                                dot={{ fill: "#0f62fe", r: 5 }}
+                                dot={{ fill: "#007173", r: 5 }}
                                 activeDot={{ r: 7 }}
                             />
                         </LineChart>
@@ -211,7 +211,7 @@ const AdminDashboardOverview = () => {
                             <Bar
                                 dataKey="visits"
                                 name="Lượt truy cập"
-                                fill="#00d9f9"
+                                fill="#007173"
                                 radius={[8, 8, 0, 0]}
                             />
                         </BarChart>
