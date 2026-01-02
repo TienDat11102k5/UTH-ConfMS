@@ -1,61 +1,67 @@
-# Security Configuration Guide
+# Hướng Dẫn Cấu Hình Bảo Mật
 
-**Project:** UTH-ConfMS (Conference Management System)  
-**Last Updated:** December 25, 2025  
-**Status:** ✅ Production Ready
+**Dự án:** UTH-ConfMS (Hệ thống Quản lý Hội nghị)  
+**Cập nhật:** Tháng 01/2026  
+**Trạng thái:** ✅ Sẵn sàng cho Production
 
 ---
 
-## 🔒 Overview
+## 🔒 Tổng Quan
 
-This document describes the security configuration and best practices implemented in UTH-ConfMS backend system.
+Tài liệu này mô tả cấu hình bảo mật và các best practices được triển khai trong hệ thống UTH-ConfMS.
 
-## 🛡️ Security Features
+---
 
-### 1. Authentication & Authorization
+## 🛡️ Các Tính Năng Bảo Mật
 
-#### JWT-Based Authentication
-- **Token Type:** JSON Web Token (JWT)
-- **Algorithm:** HS256 (HMAC with SHA-256)
-- **Access Token Lifetime:** 60 minutes (configurable)
-- **Refresh Token Lifetime:** 7 days (configurable)
+### 1. Xác Thực & Phân Quyền
+
+#### Xác Thực Dựa Trên JWT
+
+- **Loại Token:** JSON Web Token (JWT)
+- **Thuật toán:** HS256 (HMAC với SHA-256)
+- **Thời hạn Access Token:** 60 phút (có thể cấu hình)
+- **Thời hạn Refresh Token:** 7 ngày (có thể cấu hình)
 
 ```properties
-# JWT Configuration
-app.jwt.secret=YOUR_SECRET_KEY_AT_LEAST_32_CHARACTERS
+# Cấu hình JWT
+app.jwt.secret=YOUR_SECRET_KEY_IT_NHAT_32_KY_TU
 app.jwt.access-token-minutes=60
 app.jwt.refresh-token-days=7
 ```
 
-#### Role-Based Access Control (RBAC)
-The system implements 5 user roles with hierarchical permissions:
+#### Kiểm Soát Truy Cập Theo Vai Trò (RBAC)
 
-| Role | Code | Permissions |
-|------|------|-------------|
-| Admin | `ROLE_ADMIN` | Full system access, user management |
-| Chair | `ROLE_CHAIR` | Conference management, decisions, reports |
-| Track Chair | `ROLE_TRACK_CHAIR` | Track-level management, limited decisions |
-| Reviewer | `ROLE_REVIEWER` | Review assigned papers |
-| PC (Program Committee) | `ROLE_PC` | Review + committee privileges |
-| Author | `ROLE_AUTHOR` | Submit papers, view own submissions |
+Hệ thống triển khai 5 vai trò với quyền hạn phân cấp:
 
-### 2. Spring Security Configuration
+| Vai Trò     | Mã                 | Quyền Hạn                                |
+| ----------- | ------------------ | ---------------------------------------- |
+| Admin       | `ROLE_ADMIN`       | Toàn quyền hệ thống, quản lý người dùng  |
+| Chair       | `ROLE_CHAIR`       | Quản lý hội nghị, ra quyết định, báo cáo |
+| Track Chair | `ROLE_TRACK_CHAIR` | Quản lý cấp track, quyết định giới hạn   |
+| Reviewer    | `ROLE_REVIEWER`    | Đánh giá bài được phân công              |
+| PC          | `ROLE_PC`          | Đánh giá + quyền ủy ban chương trình     |
+| Author      | `ROLE_AUTHOR`      | Nộp bài, xem bài nộp của mình            |
+
+### 2. Cấu Hình Spring Security
 
 #### SecurityConfig.java
-Located at: `backend/src/main/java/edu/uth/backend/config/SecurityConfig.java`
 
-**Key Features:**
-- ✅ Stateless session management (no server-side sessions)
-- ✅ JWT filter for all authenticated endpoints
-- ✅ CSRF disabled (REST API with JWT)
-- ✅ Method-level security with `@PreAuthorize`
-- ✅ Configurable CORS
+Vị trí: `backend/src/main/java/edu/uth/backend/config/SecurityConfig.java`
+
+**Các tính năng chính:**
+
+- ✅ Quản lý session stateless (không lưu session phía server)
+- ✅ JWT filter cho tất cả endpoints yêu cầu xác thực
+- ✅ CSRF bị tắt (REST API với JWT)
+- ✅ Bảo mật cấp method với `@PreAuthorize`
+- ✅ CORS có thể cấu hình
 
 ```java
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-    
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
@@ -72,41 +78,39 @@ public class SecurityConfig {
 }
 ```
 
-### 3. CORS Configuration
+### 3. Cấu Hình CORS
 
-#### Production-Ready CORS Setup
+#### Thiết Lập CORS Cho Production
 
-**Location:** `SecurityConfig.java` → `corsConfigurationSource()`
+**Vị trí:** `SecurityConfig.java` → `corsConfigurationSource()`
 
-**Configuration:**
+**Cấu hình:**
+
 ```properties
-# Single origin
+# Một origin
 app.cors.allowed-origins=http://localhost:5173
 
-# Multiple origins (comma-separated)
+# Nhiều origins (phân cách bằng dấu phẩy)
 app.cors.allowed-origins=http://localhost:5173,https://confms.uth.edu.vn
 ```
 
-**Allowed Methods:**
-- GET
-- POST
-- PUT
-- PATCH
-- DELETE
-- OPTIONS
+**Các phương thức được phép:**
 
-**Security Notes:**
-- ✅ Credentials allowed (for cookie-based authentication if needed)
-- ✅ Authorization header exposed
-- ✅ All headers allowed for development (restrict in production)
-- ❌ Wildcard `*` NOT allowed (removed from all controllers)
+- GET, POST, PUT, PATCH, DELETE, OPTIONS
 
-### 4. Password Security
+**Lưu ý bảo mật:**
 
-#### Password Policy
-- **Minimum Length:** 6 characters (configurable)
-- **Encoding:** BCrypt (Blowfish cipher)
-- **Strength:** 10 rounds (BCrypt default)
+- ✅ Cho phép credentials (nếu cần xác thực cookie)
+- ✅ Header Authorization được expose
+- ❌ Wildcard `*` KHÔNG được phép (đã xóa khỏi tất cả controllers)
+
+### 4. Bảo Mật Mật Khẩu
+
+#### Chính Sách Mật Khẩu
+
+- **Độ dài tối thiểu:** 6 ký tự (có thể cấu hình)
+- **Mã hóa:** BCrypt (Blowfish cipher)
+- **Độ mạnh:** 10 rounds (BCrypt mặc định)
 
 ```java
 @Bean
@@ -115,68 +119,62 @@ PasswordEncoder passwordEncoder() {
 }
 ```
 
-#### Password Reset Flow
-1. User requests reset → Email sent with OTP
-2. OTP verification (5-minute expiration)
-3. Reset token issued (15-minute expiration)
-4. Password reset with token
+#### Quy Trình Đặt Lại Mật Khẩu
 
-**Configuration:**
+1. Người dùng yêu cầu reset → Email được gửi với OTP
+2. Xác thực OTP (hết hạn sau 5 phút)
+3. Cấp reset token (hết hạn sau 15 phút)
+4. Đặt lại mật khẩu với token
+
+**Cấu hình:**
+
 ```properties
 app.reset-password.otp-ttl-minutes=5
 app.reset-password.token-ttl-minutes=15
 ```
 
-### 5. Endpoint Security
+### 5. Bảo Mật Endpoint
 
-All API endpoints are protected with `@PreAuthorize` annotations:
+#### Endpoints Công Khai (Không Cần Xác Thực)
 
-#### Public Endpoints (No Authentication)
 ```java
-// Authentication endpoints
+// Endpoints xác thực
 POST /api/auth/register
 POST /api/auth/login
 POST /api/auth/forgot-password
 POST /api/auth/verify-otp
 POST /api/auth/reset-password
 
-// Public conference listings
+// Danh sách hội nghị công khai
 GET /api/conferences
 GET /api/conferences/{id}
-
-// Public proceedings
-GET /api/proceedings/**
 ```
 
-#### Authenticated Endpoints
+#### Endpoints Yêu Cầu Xác Thực
+
 ```java
-// User profile (any authenticated user)
+// Hồ sơ người dùng (bất kỳ user đã xác thực)
 @PreAuthorize("isAuthenticated()")
 GET /api/user/profile
 PUT /api/user/profile
 POST /api/user/upload-avatar
 PUT /api/user/change-password
-
-// Paper submissions (authenticated + ownership check)
-@PreAuthorize("isAuthenticated()")
-POST /api/submissions
-GET /api/submissions/{id}
-PUT /api/submissions/{id}
 ```
 
-#### Role-Based Endpoints
+#### Endpoints Theo Vai Trò
+
 ```java
-// Admin/Chair only
+// Chỉ Admin/Chair
 @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR')")
 POST /api/conferences
 PUT /api/conferences/{id}
 DELETE /api/conferences/{id}
 
-// Reviewer/PC only
+// Chỉ Reviewer/PC
 @PreAuthorize("hasAnyAuthority('ROLE_REVIEWER','ROLE_PC')")
 POST /api/reviews
 
-// Chair/Track Chair (decision making)
+// Chair/Track Chair (ra quyết định)
 @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
 POST /api/decisions
 GET /api/reports/conference/{id}
@@ -184,11 +182,12 @@ GET /api/reports/conference/{id}
 
 ---
 
-## 🚀 Deployment Checklist
+## 🚀 Checklist Triển Khai
 
-### Environment Variables
+### Biến Môi Trường
 
-**Required for Production:**
+**Bắt buộc cho Production:**
+
 ```bash
 # Server
 SERVER_PORT=8080
@@ -196,126 +195,132 @@ SERVER_PORT=8080
 # Database
 SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/confms_db
 SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=<STRONG_PASSWORD>
+SPRING_DATASOURCE_PASSWORD=<MAT_KHAU_MANH>
 
-# JWT Security
-JWT_SECRET=<GENERATE_STRONG_SECRET_AT_LEAST_32_CHARS>
+# Bảo mật JWT
+JWT_SECRET=<TAO_SECRET_MANH_IT_NHAT_32_KY_TU>
 JWT_ACCESS_MINUTES=60
 JWT_REFRESH_DAYS=7
 
 # CORS
 CORS_ALLOWED_ORIGINS=https://confms.uth.edu.vn
 
-# Firebase (for Google OAuth)
+# Firebase (cho Google OAuth)
 FIREBASE_PROJECT_ID=your-project-id
 FIREBASE_CREDENTIALS=/path/to/service-account.json
 
-# Email (for OTP)
+# Email (cho OTP)
 MAIL_HOST=smtp.gmail.com
 MAIL_USERNAME=your-email@gmail.com
 MAIL_PASSWORD=<APP_PASSWORD>
 
-# AI Service (optional)
+# AI Service (tùy chọn)
 GEMINI_API_KEY=<YOUR_GEMINI_KEY>
 ```
 
-### Security Hardening Steps
+### Các Bước Tăng Cường Bảo Mật
 
-#### 1. Generate Strong JWT Secret
+#### 1. Tạo JWT Secret Mạnh
+
 ```bash
-# Generate 64-character random string
+# Tạo chuỗi ngẫu nhiên 64 ký tự
 openssl rand -base64 64 | tr -d '\n'
 ```
 
-#### 2. Configure HTTPS
-- Use reverse proxy (nginx) with SSL/TLS
-- Redirect HTTP to HTTPS
-- Set `Strict-Transport-Security` header
+#### 2. Cấu Hình HTTPS
 
-#### 3. Rate Limiting (Recommended)
-Add rate limiting to prevent brute force attacks:
+- Sử dụng reverse proxy (nginx) với SSL/TLS
+- Chuyển hướng HTTP sang HTTPS
+- Đặt header `Strict-Transport-Security`
 
-**Suggested Endpoints:**
-- `/api/auth/login` - Max 5 attempts per minute per IP
-- `/api/auth/register` - Max 3 attempts per hour per IP
-- `/api/auth/forgot-password` - Max 3 attempts per hour per email
+#### 3. Giới Hạn Tốc Độ (Rate Limiting)
 
-**Implementation Options:**
-- Spring Cloud Gateway (if using microservices)
-- Bucket4j (in-memory or Redis)
-- Nginx rate limiting
+Thêm rate limiting để ngăn chặn tấn công brute force:
 
-#### 4. Database Security
+**Endpoints đề xuất:**
+
+- `/api/auth/login` - Tối đa 5 lần/phút/IP
+- `/api/auth/register` - Tối đa 3 lần/giờ/IP
+- `/api/auth/forgot-password` - Tối đa 3 lần/giờ/email
+
+#### 4. Bảo Mật Database
+
 ```sql
--- Create separate database user with limited privileges
-CREATE USER confms_app WITH PASSWORD 'strong_password';
+-- Tạo user database riêng với quyền hạn giới hạn
+CREATE USER confms_app WITH PASSWORD 'mat_khau_manh';
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO confms_app;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO confms_app;
 
--- Revoke superuser privileges
+-- Thu hồi quyền superuser
 REVOKE ALL PRIVILEGES ON DATABASE confms_db FROM PUBLIC;
 ```
 
-#### 5. File Upload Security
-Currently implemented:
-- ✅ File size limit: 100MB
-- ✅ File type validation (PDF for papers)
-- ✅ Secure file naming (UUID-based)
+#### 5. Bảo Mật Upload File
 
-**Additional Recommendations:**
-- Virus scanning for uploaded files
-- Content-Type validation
-- Separate storage bucket for uploads
+Đã triển khai:
 
-#### 6. Logging & Monitoring
-Enable security logging:
+- ✅ Giới hạn kích thước file: 100MB
+- ✅ Kiểm tra loại file (PDF cho bài báo)
+- ✅ Đặt tên file an toàn (dựa trên UUID)
+
+**Đề xuất bổ sung:**
+
+- Quét virus cho file upload
+- Kiểm tra Content-Type
+- Bucket lưu trữ riêng cho uploads
+
+#### 6. Logging & Giám Sát
+
+Bật logging bảo mật:
 
 ```properties
 # Audit logging
 logging.level.org.springframework.security=DEBUG
 logging.level.edu.uth.backend.security=DEBUG
 
-# Log all authentication attempts
+# Log tất cả authentication attempts
 logging.level.org.springframework.security.authentication=INFO
 ```
 
-**Log Events to Monitor:**
-- Failed login attempts
-- Password changes
-- Role changes
-- Permission denials
-- API errors (4xx, 5xx)
+**Các sự kiện cần giám sát:**
+
+- Các lần đăng nhập thất bại
+- Thay đổi mật khẩu
+- Thay đổi vai trò
+- Từ chối quyền truy cập
+- Lỗi API (4xx, 5xx)
 
 ---
 
-## 🔍 Security Audit Results
+## 🔍 Kết Quả Audit Bảo Mật
 
-**Audit Date:** December 25, 2025  
-**Total Endpoints:** 41  
-**Security Coverage:** 100%
+**Ngày audit:** Tháng 01/2026  
+**Tổng số Endpoints:** 41  
+**Độ bao phủ bảo mật:** 100%
 
-### Issues Fixed
-1. ✅ **Missing @PreAuthorize annotations** - 13 endpoints fixed
-2. ✅ **CORS wildcard misconfiguration** - Removed from 6 controllers
-3. ✅ **Manual auth checks** - Replaced with framework-level security
+### Các Vấn Đề Đã Sửa
 
-### Current Status
-- ✅ All endpoints properly secured
-- ✅ RBAC correctly implemented
-- ✅ CORS restricted to configured origins
-- ✅ No public endpoints exposing sensitive data
+1. ✅ **Thiếu annotation @PreAuthorize** - 13 endpoints đã sửa
+2. ✅ **Cấu hình sai CORS wildcard** - Xóa khỏi 6 controllers
+3. ✅ **Kiểm tra auth thủ công** - Thay bằng bảo mật cấp framework
 
-**Full Audit Report:** See [SECURITY_AUDIT_REPORT.md](../SECURITY_AUDIT_REPORT.md)
+### Trạng Thái Hiện Tại
+
+- ✅ Tất cả endpoints được bảo mật đúng cách
+- ✅ RBAC được triển khai chính xác
+- ✅ CORS giới hạn cho các origins đã cấu hình
+- ✅ Không có endpoints công khai lộ dữ liệu nhạy cảm
 
 ---
 
-## 🧪 Testing Security
+## 🧪 Kiểm Thử Bảo Mật
 
-### Manual Testing
+### Kiểm Thử Thủ Công
 
-#### 1. Test Authentication
+#### 1. Test Xác Thực
+
 ```bash
-# Register new user
+# Đăng ký user mới
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
@@ -324,7 +329,7 @@ curl -X POST http://localhost:8080/api/auth/register \
     "fullName": "Test User"
   }'
 
-# Login
+# Đăng nhập
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
@@ -332,51 +337,101 @@ curl -X POST http://localhost:8080/api/auth/login \
     "password": "password123"
   }'
 
-# Response contains JWT token
-{
-  "accessToken": "eyJhbGciOiJIUzI1NiIs...",
-  "refreshToken": "eyJhbGciOiJIUzI1NiIs...",
-  "tokenType": "Bearer"
-}
+# Response chứa JWT token
 ```
 
-#### 2. Test Authorization
+#### 2. Test Phân Quyền
+
 ```bash
-# Access protected endpoint WITHOUT token (should fail)
+# Truy cập endpoint bảo vệ KHÔNG có token (sẽ thất bại)
 curl -X GET http://localhost:8080/api/user/profile
 
-# Access with token (should succeed)
+# Truy cập với token (sẽ thành công)
 curl -X GET http://localhost:8080/api/user/profile \
   -H "Authorization: Bearer <ACCESS_TOKEN>"
-
-# Access admin endpoint as regular user (should fail)
-curl -X POST http://localhost:8080/api/conferences \
-  -H "Authorization: Bearer <USER_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Test Conference"}'
 ```
 
 #### 3. Test CORS
+
 ```bash
 # Preflight request
 curl -X OPTIONS http://localhost:8080/api/conferences \
   -H "Origin: http://localhost:5173" \
   -H "Access-Control-Request-Method: POST"
 
-# Should return CORS headers:
+# Kết quả mong đợi:
 # Access-Control-Allow-Origin: http://localhost:5173
 # Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
 ```
 
-### Automated Testing
+---
 
-See integration tests in:
-- `backend/src/test/java/.../integration/test_auth_workflow.py`
-- `backend/src/test/java/.../integration/test_governance.py`
+## 🆘 Xử Lý Sự Cố
+
+### Các Vấn Đề Thường Gặp
+
+#### 1. Lỗi CORS Trong Browser
+
+**Triệu chứng:** `Access to fetch at '...' from origin '...' has been blocked by CORS policy`
+
+**Giải pháp:**
+
+1. Kiểm tra `app.cors.allowed-origins` trong `application.properties`
+2. Đảm bảo URL frontend khớp chính xác (bao gồm protocol và port)
+3. Xác nhận SecurityConfig có cấu hình CORS đúng
+4. Xóa cache browser
+
+#### 2. Lỗi 401 Unauthorized
+
+**Triệu chứng:** API trả về 401 dù có token hợp lệ
+
+**Nguyên nhân có thể:**
+
+- Token hết hạn
+- JWT secret không hợp lệ
+- Token không đúng format `Authorization: Bearer <token>`
+
+**Giải pháp:**
+
+- Kiểm tra server logs cho lỗi JWT parsing
+- Đăng nhập lại để lấy token mới
+
+#### 3. Lỗi 403 Forbidden
+
+**Triệu chứng:** API trả về 403 với token hợp lệ
+
+**Nguyên nhân:** User không có vai trò yêu cầu cho endpoint
+
+**Giải pháp:**
+
+1. Kiểm tra roles của user trong database
+2. Xác nhận annotation `@PreAuthorize` khớp với authority của user
+
+```sql
+-- Kiểm tra roles của user
+SELECT u.email, r.name
+FROM users u
+JOIN user_roles ur ON u.id = ur.user_id
+JOIN roles r ON ur.role_id = r.id
+WHERE u.email = 'test@example.com';
+```
+
+#### 4. Reset Password Không Hoạt Động
+
+**Các vấn đề có thể:**
+
+- Cấu hình SMTP sai
+- Chưa đặt Gmail App Password
+- OTP hết hạn (5 phút)
+
+**Giải pháp:**
+
+1. Kiểm tra cấu hình email trong application.properties
+2. Tạo Gmail App Password tại: https://myaccount.google.com/apppasswords
 
 ---
 
-## 📚 References
+## 📚 Tài Liệu Tham Khảo
 
 - [Spring Security Documentation](https://docs.spring.io/spring-security/reference/index.html)
 - [JWT Best Practices](https://datatracker.ietf.org/doc/html/rfc8725)
@@ -385,89 +440,15 @@ See integration tests in:
 
 ---
 
-## 🆘 Troubleshooting
+## 📞 Liên Hệ
 
-### Common Issues
+Với các vấn đề liên quan đến bảo mật:
 
-#### 1. CORS Errors in Browser
-**Symptom:** `Access to fetch at '...' from origin '...' has been blocked by CORS policy`
-
-**Solution:**
-1. Check `app.cors.allowed-origins` in `application.properties`
-2. Ensure frontend URL matches exactly (including protocol and port)
-3. Verify SecurityConfig has correct CORS configuration
-4. Clear browser cache
-
-#### 2. 401 Unauthorized
-**Symptom:** API returns 401 even with valid token
-
-**Possible Causes:**
-- Token expired (check expiration time)
-- Invalid JWT secret (must match between instances)
-- Token not in `Authorization: Bearer <token>` format
-- JwtAuthFilter not registered properly
-
-**Solution:**
-```bash
-# Verify token is valid
-curl -X GET http://localhost:8080/api/user/profile \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -v
-
-# Check server logs for JWT parsing errors
-```
-
-#### 3. 403 Forbidden
-**Symptom:** API returns 403 with valid token
-
-**Cause:** User lacks required role for endpoint
-
-**Solution:**
-1. Check user roles in database
-2. Verify `@PreAuthorize` annotation matches user authority
-3. Check if `ROLE_` prefix is present in authorities
-
-```sql
--- Check user roles
-SELECT u.email, r.name 
-FROM users u 
-JOIN user_roles ur ON u.id = ur.user_id
-JOIN roles r ON ur.role_id = r.id
-WHERE u.email = 'test@example.com';
-```
-
-#### 4. Password Reset Not Working
-**Possible Issues:**
-- SMTP configuration incorrect
-- Gmail App Password not set
-- OTP expired (5-minute window)
-- Redis not running (if using Redis for OTP storage)
-
-**Solution:**
-1. Test email configuration:
-```bash
-# Check SMTP settings in application.properties
-spring.mail.host=smtp.gmail.com
-spring.mail.username=your-email@gmail.com
-spring.mail.password=<16-CHAR-APP-PASSWORD>
-```
-
-2. Generate Gmail App Password:
-   - Visit: https://myaccount.google.com/apppasswords
-   - Create new app password
-   - Copy 16-character password (no spaces)
+- **Đội Bảo Mật:** security@uth.edu.vn
+- **Khẩn cấp:** Liên hệ quản trị viên hệ thống ngay lập tức
 
 ---
 
-## 📞 Contact
-
-For security-related issues or questions:
-- **Security Team:** security@uth.edu.vn
-- **Project Repository:** [GitHub Issues](https://github.com/your-org/UTH-ConfMS/issues)
-- **Emergency:** Contact system administrator immediately
-
----
-
-**Document Version:** 1.0  
-**Last Review:** December 25, 2025  
-**Next Review:** March 25, 2026
+**Phiên bản tài liệu:** 1.0  
+**Lần review cuối:** Tháng 01/2026  
+**Lần review tiếp theo:** Tháng 04/2026
