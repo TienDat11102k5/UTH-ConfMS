@@ -94,8 +94,7 @@ const AdminDashboardOverview = () => {
 
     return (
         <AdminLayout
-            title="Tổng quan Hệ thống"
-            subtitle="Thống kê và phân tích hoạt động người dùng"
+            title="TỔNG QUAN HỆ THỐNG"
         >
             {/* Statistics Cards */}
             <div className="stats-grid">

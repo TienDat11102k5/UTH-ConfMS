@@ -26,19 +26,19 @@ const AdminSidebar = () => {
         {
             path: "/admin/dashboard",
             icon: <FiHome />,
-            label: "Tổng quan",
+            label: "TỔNG QUAN",
             title: "Dashboard Overview",
         },
         {
             path: "/admin/users",
             icon: <FiUsers />,
-            label: "Người dùng",
+            label: "NGƯỜI DÙNG",
             title: "Quản lý Người dùng",
         },
         {
             path: "/admin/conferences",
             icon: <FiCalendar />,
-            label: "Hội nghị",
+            label: "HỘI NGHỊ",
             title: "Quản lý Hội nghị",
         },
         {
@@ -50,25 +50,25 @@ const AdminSidebar = () => {
         {
             path: "/admin/email-settings",
             icon: <FiMail />,
-            label: "Email",
+            label: "EMAIL",
             title: "Cấu hình Email",
         },
         {
             path: "/admin/ai-governance",
             icon: <FiCpu />,
-            label: "AI Governance",
+            label: "AI GOVERNANCE",
             title: "Quản lý AI",
         },
         {
             path: "/admin/backups",
             icon: <FiDatabase />,
-            label: "Backup",
+            label: "BACKUP",
             title: "Backup & Restore",
         },
         {
             path: "/admin/logs",
             icon: <FiFileText />,
-            label: "Audit Logs",
+            label: "AUDIT LOGS",
             title: "Nhật ký Hệ thống",
         },
     ];
@@ -95,8 +95,8 @@ const AdminSidebar = () => {
                         <div className="brand-icon">A</div>
                         {!isCollapsed && (
                             <div className="brand-text">
-                                <h2>Admin Panel</h2>
-                                <p>UTH-ConfMS</p>
+                                <h2>ADMIN PANEL</h2>
+                                <p>UTH-CONFMS</p>
                             </div>
                         )}
                     </div>

@@ -116,18 +116,11 @@ const AdminUserCreate = () => {
   };
 
   return (
-    <AdminLayout title="Tạo tài khoản" subtitle="Tạo tài khoản mới và phân quyền.">
+    <AdminLayout title="TẠO TÀI KHOẢN MỚI">
       <div className="data-page-header">
         <div className="data-page-header-left">
-          <div className="breadcrumb">
-            <Link to="/admin/users" className="breadcrumb-link">Người dùng</Link>
-            <span className="breadcrumb-separator">/</span>
-            <span className="breadcrumb-current">Tạo tài khoản</span>
+          <div className="breadcrumb">         
           </div>
-          <h2 className="data-page-title" style={{ marginBottom: '0.25rem' }}>Tạo tài khoản mới</h2>
-          <p className="data-page-subtitle" style={{ fontSize: '0.85rem', marginTop: '0.25rem' }}>
-            Sau khi tạo, bạn có thể dùng nút "Phân quyền" để đổi vai trò.
-          </p>
         </div>
       </div>
 

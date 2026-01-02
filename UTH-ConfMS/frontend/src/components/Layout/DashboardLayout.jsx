@@ -54,14 +54,14 @@ const DashboardLayout = ({
             <div>
               <div className="dash-logo-text">UTH-ConfMS · {roleLabel}</div>
               <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>
-                UTH Scientific Conference Paper Management System
+                HỆ THỐNG QUẢN LÝ BÀI BÁO HỘI NGHỊ KHOA HỌC UTH
               </div>
             </div>
           </div>
 
           <nav className="dash-header-right">
             <Link to="/conferences" className="nav-link">
-              Cổng thông tin
+              CỔNG THÔNG TIN
             </Link>
 
             {showAdminNav && (
