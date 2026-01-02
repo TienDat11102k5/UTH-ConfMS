@@ -185,8 +185,7 @@ const AiGovernancePage = () => {
 
   return (
     <AdminLayout
-      title="Quản trị AI"
-      subtitle="Kiểm soát tính năng AI và theo dõi lịch sử sử dụng"
+      title="QUẢN TRỊ AI"
     >
       <div className="ai-governance-page">
         {flagsError && (
@@ -200,7 +199,6 @@ const AiGovernancePage = () => {
           <div className="governance-card">
             <div className="card-header">
               <h3>Chọn hội nghị</h3>
-              <p>Quản lý tính năng AI cho từng hội nghị riêng biệt</p>
             </div>
             <select
               value={selectedConferenceId}
@@ -220,9 +218,7 @@ const AiGovernancePage = () => {
         <div className="governance-card">
           <div className="card-header">
             <h3>Cấu hình tính năng AI</h3>
-            <p>Bật/tắt các tính năng AI cho hội nghị đã chọn</p>
           </div>
-
           {loadingFlags ? (
             <div className="loading-state">
               <div className="spinner"></div>
@@ -269,7 +265,6 @@ const AiGovernancePage = () => {
         <div className="governance-card">
           <div className="card-header">
             <h3>Nhật ký sử dụng AI</h3>
-            <p>Theo dõi lịch sử sử dụng các tính năng AI để phục vụ kiểm toán</p>
           </div>
 
           <div className="logs-controls">

@@ -87,17 +87,11 @@ const AuditLogPage = () => {
 
   return (
     <AdminLayout title="Audit Logs"
-      subtitle="Theo dõi các thao tác quan trọng để phục vụ kiểm toán."
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <span className="breadcrumb-current">Audit Logs</span>
           </div>
-          <h2 className="data-page-title">Nhật ký hệ thống</h2>
-          <p className="data-page-subtitle">
-            Lọc theo thời gian, actor, loại hành động và phân trang.
-          </p>
         </div>
       </div>
 

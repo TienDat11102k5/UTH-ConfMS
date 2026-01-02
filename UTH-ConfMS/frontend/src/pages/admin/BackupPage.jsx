@@ -119,18 +119,12 @@ const BackupPage = () => {
   };
 
   return (
-    <AdminLayout title="Backup & Restore"
-      subtitle="Tạo bản sao lưu định kỳ và khôi phục khi cần."
+    <AdminLayout title="BACKUP & RESTORE"
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <span className="breadcrumb-current">Backup</span>
           </div>
-          <h2 className="data-page-title">Sao lưu &amp; khôi phục</h2>
-          <p className="data-page-subtitle">
-            Quản lý backup database (JSON format)
-          </p>
         </div>
         <div className="data-page-header-right">
           <button
