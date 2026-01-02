@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
+import Toast, { toastStyles } from "../../components/Toast";
 
 // Modal component for simple AI capabilities (internal use here)
 const AIModal = ({ isOpen, title, onClose, children }) => {
@@ -124,6 +125,7 @@ const AuthorNewSubmissionPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [toast, setToast] = useState(null); // { message, type: 'success' | 'error' }
 
   // AI State
   const [aiLoading, setAiLoading] = useState(false);
@@ -312,17 +314,18 @@ const AuthorNewSubmissionPage = () => {
     e.preventDefault();
     setError("");
     setSuccessMessage("");
+    setToast(null);
 
     const payloadTrackId =
       formValues.trackId || (tracks[0]?.id ? String(tracks[0].id) : "");
 
     if (!payloadTrackId) {
-      setError("Vui lòng chọn Track/Chủ đề cho bài báo.");
+      setToast({ message: "Vui lòng chọn Track/Chủ đề cho bài báo.", type: "error" });
       return;
     }
 
     if (!file) {
-      setError("Vui lòng chọn file PDF bài báo để nộp.");
+      setToast({ message: "Vui lòng chọn file PDF bài báo để nộp.", type: "error" });
       return;
     }
 
@@ -346,13 +349,13 @@ const AuthorNewSubmissionPage = () => {
       formData.append("file", file);
 
       await apiClient.post("/submissions", formData);
-      setSuccessMessage("Nộp bài thành công.");
+      setToast({ message: "Nộp bài thành công! Đang chuyển hướng...", type: "success" });
       setTimeout(() => {
         navigate("/author/submissions");
-      }, 800);
+      }, 1500);
     } catch (err) {
       const msg = err.response?.data?.message || err.response?.data?.error || "Không thể nộp bài.";
-      setError(msg);
+      setToast({ message: msg, type: "error" });
     } finally {
       setSubmitting(false);
     }

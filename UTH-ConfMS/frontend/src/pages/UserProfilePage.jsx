@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser, setCurrentUser } from "../auth";
 import apiClient from "../apiClient";
+import Toast, { toastStyles } from "../components/Toast";
 import "../styles/UserProfilePage.css";
 
 const UserProfilePage = () => {
@@ -12,6 +13,7 @@ const UserProfilePage = () => {
   const [fetchingProfile, setFetchingProfile] = useState(false); // loading khi đồng bộ profile
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [toast, setToast] = useState(null); // { message, type: 'success' | 'error' }
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -110,16 +112,16 @@ const UserProfilePage = () => {
     if (!file) return;
     // Kiểm tra file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setError("Kích thước ảnh không được vượt quá 5MB");
+      setToast({ message: "Kích thước ảnh không được vượt quá 5MB", type: "error" });
       return;
     }
     // Kiểm tra file type
     if (!file.type.startsWith("image/")) {
-      setError("Vui lòng chọn file ảnh");
+      setToast({ message: "Vui lòng chọn file ảnh", type: "error" });
       return;
     }
     setUploadingAvatar(true);
-    setError("");
+    setToast(null);
     try {
       // Preview local
       const reader = new FileReader();
@@ -139,12 +141,12 @@ const UserProfilePage = () => {
       const updatedUser = { ...currentUserState, ...res.data };
       setCurrentUser(updatedUser, { remember: true });
       setCurrentUserState(updatedUser); // Update state để re-render đúng
-      setSuccess("Cập nhật avatar thành công!");
+      setToast({ message: "Cập nhật ảnh đại diện thành công!", type: "success" });
     } catch (err) {
-      setError(
-        err?.response?.data?.message ||
-          "Không thể upload avatar. Vui lòng thử lại."
-      );
+      setToast({
+        message: err?.response?.data?.message || "Không thể upload avatar. Vui lòng thử lại.",
+        type: "error"
+      });
       // Rollback preview
       setAvatarPreview(
         currentUserState.photoURL ||
@@ -176,6 +178,7 @@ const UserProfilePage = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setToast(null);
     setLoading(true);
 
     try {
@@ -200,7 +203,7 @@ const UserProfilePage = () => {
 
       setOriginalFormData(payload);
       setIsEditing(false);
-      setSuccess("Cập nhật thông tin thành công!");
+      setToast({ message: "Cập nhật thông tin thành công!", type: "success" });
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
@@ -213,7 +216,7 @@ const UserProfilePage = () => {
         errorMessage = err.response.data.message;
       }
 
-      setError(errorMessage);
+      setToast({ message: errorMessage, type: "error" });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
       setLoading(false);
@@ -236,7 +239,19 @@ const UserProfilePage = () => {
   };
 
   return (
-    <div className="profile-page">
+    <>
+      {/* Toast Notification */}
+      {toast && (
+        <div style={toastStyles.container}>
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        </div>
+      )}
+      
+      <div className="profile-page">
       <div className="profile-container">
         <div className="profile-header">
           <h1>Thông tin cá nhân</h1>
@@ -503,6 +518,7 @@ const UserProfilePage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

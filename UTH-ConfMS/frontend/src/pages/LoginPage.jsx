@@ -1,11 +1,124 @@
 // src/pages/LoginPage.jsx
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import apiClient from "../apiClient";
 import { setToken, setCurrentUser } from "../auth";
 
 import { signInWithPopup } from "firebase/auth";
 import { firebaseAuth, googleProvider } from "../firebase";
+
+/* =========================
+   TOAST STYLES - Matching website design (teal theme)
+   ========================= */
+const toastStyles = {
+  container: {
+    position: "fixed",
+    top: "24px",
+    right: "24px",
+    zIndex: 9999,
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+  },
+  toast: {
+    padding: "16px 20px",
+    borderRadius: "25px",
+    boxShadow: "0 4px 20px rgba(13, 148, 136, 0.3)",
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    animation: "slideIn 0.4s ease-out",
+    minWidth: "280px",
+    maxWidth: "380px",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+  },
+  success: {
+    background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)",
+    color: "white",
+  },
+  error: {
+    background: "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)",
+    color: "white",
+  },
+  icon: {
+    fontSize: "18px",
+    width: "28px",
+    height: "28px",
+    borderRadius: "50%",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  message: {
+    flex: 1,
+    fontSize: "14px",
+    fontWeight: "600",
+    letterSpacing: "0.3px",
+  },
+  closeBtn: {
+    background: "rgba(255, 255, 255, 0.2)",
+    border: "none",
+    color: "white",
+    cursor: "pointer",
+    fontSize: "16px",
+    padding: "4px 8px",
+    borderRadius: "50%",
+    opacity: 0.9,
+    transition: "all 0.2s ease",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "24px",
+    height: "24px",
+  },
+};
+
+/* =========================
+   TOAST COMPONENT
+   ========================= */
+const Toast = ({ message, type, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div style={{ ...toastStyles.toast, ...toastStyles[type] }}>
+      <span style={toastStyles.icon}>
+        {type === "success" ? "✓" : "✕"}
+      </span>
+      <span style={toastStyles.message}>{message}</span>
+      <button style={toastStyles.closeBtn} onClick={onClose}>
+        ×
+      </button>
+    </div>
+  );
+};
+
+/* =========================
+   KEYFRAMES (injected once)
+   ========================= */
+const styleSheet = document.createElement("style");
+styleSheet.textContent = `
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+`;
+if (!document.querySelector("#toast-keyframes")) {
+  styleSheet.id = "toast-keyframes";
+  document.head.appendChild(styleSheet);
+}
 
 /* =========================
    HELPERS
@@ -36,9 +149,19 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+  const [toast, setToast] = useState(null); // { message, type: 'success' | 'error' }
 
   /* ===== TAB STATE (NEW) ===== */
   const [activeTab, setActiveTab] = useState("general");
+
+  /* ===== CHECK FOR LOGOUT SUCCESS ===== */
+  useEffect(() => {
+    if (location.state?.logoutSuccess) {
+      setToast({ message: "Đăng xuất thành công!", type: "success" });
+      // Clear the state to prevent showing again on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const from = useMemo(() => {
     return (
@@ -71,7 +194,14 @@ const LoginPage = () => {
     if (user) {
       setCurrentUser(user, { remember: rememberMe });
     }
-    navigate(routeByRole(user), { replace: true });
+    
+    // Hiển thị thông báo thành công
+    setToast({ message: "Đăng nhập thành công!", type: "success" });
+    
+    // Chuyển trang sau 1.5 giây
+    setTimeout(() => {
+      navigate(routeByRole(user), { replace: true });
+    }, 1500);
   };
 
   /* =========================
@@ -80,6 +210,7 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setToast(null);
     setLoading(true);
 
     try {
@@ -98,6 +229,7 @@ const LoginPage = () => {
 
   const handleGoogleLogin = async () => {
     setError("");
+    setToast(null);
     setGoogleLoading(true);
 
     try {
@@ -122,7 +254,19 @@ const LoginPage = () => {
      RENDER
      ========================= */
   return (
-    <div className="auth-page auth-layout">
+    <>
+      {/* ===== TOAST NOTIFICATION ===== */}
+      {toast && (
+        <div style={toastStyles.container}>
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        </div>
+      )}
+      
+      <div className="auth-page auth-layout">
       {/* ===== LEFT: NOTICE BOARD ===== */}
       <div className="auth-left">
         <div className="notice-container">
@@ -265,6 +409,7 @@ const LoginPage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

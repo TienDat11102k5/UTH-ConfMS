@@ -29,8 +29,14 @@ const UserProfileDropdown = () => {
   }, [isOpen]);
 
   const handleLogout = () => {
+    setIsOpen(false);
     clearAuth();
-    navigate("/login", { replace: true });
+    
+    // Chuyển về trang login với thông báo đăng xuất thành công
+    navigate("/login", { 
+      replace: true, 
+      state: { logoutSuccess: true } 
+    });
   };
 
   if (!user) {
