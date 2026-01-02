@@ -25,7 +25,7 @@ const DashboardLayout = ({
   }, []);
 
   const adminMenuItems = [
-    { icon: "FiUsers", text: "QUẢN LÝ NGƯỜI DÙNG", link: "/admin/users" },
+    { icon: "FiUsers", text: "Quản lý người dùng", link: "/admin/users" },
     { icon: "FiSettings", text: "Quản lý hội nghị", link: "/admin/conferences" },
     { icon: "FiShield", text: "AI Governance", link: "/admin/ai-governance" },
     { icon: "FiFileText", text: "Backup & Restore", link: "/admin/backup" }
@@ -52,9 +52,9 @@ const DashboardLayout = ({
               <img src={logoUTH} alt="UTH logo" className="dash-logo-img" />
             </div>
             <div>
-              <div className="dash-logo-text">UTH-CONFMS · {roleLabel}</div>
+              <div className="dash-logo-text">UTH-ConfMS · {roleLabel}</div>
               <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>
-                HỆ THỐNG QUẢN LÝ BÀI BÁO HỘI NGHỊ KHOA HỌC UTH
+                UTH Scientific Conference Paper Management System
               </div>
             </div>
           </div>
