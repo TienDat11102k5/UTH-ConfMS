@@ -502,7 +502,6 @@ const PublicProceedings = () => {
             <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end", flexWrap: "wrap" }}>
               <div style={{ flex: 1, minWidth: "200px" }}>
                 <label style={{ 
-                  display: "block",
                   marginBottom: "0.5rem", 
                   fontWeight: 600,
                   color: "#64748b",
@@ -540,7 +539,6 @@ const PublicProceedings = () => {
 
               <div style={{ flex: 1, minWidth: "200px" }}>
                 <label style={{ 
-                  display: "block",
                   marginBottom: "0.5rem", 
                   fontWeight: 600,
                   color: "#64748b",
