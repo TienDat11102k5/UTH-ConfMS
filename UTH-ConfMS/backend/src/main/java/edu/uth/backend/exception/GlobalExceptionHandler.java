@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(buildErrorResponse(
-                        "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+                        ex.getMessage(), // Dùng message từ exception thay vì hardcode
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         "Internal Server Error"
                 ));

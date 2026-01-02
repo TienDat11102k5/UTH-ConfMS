@@ -60,14 +60,21 @@ const ChairDecisionPage = () => {
           for (const conf of conferences) {
             try {
               const papersRes = await apiClient.get(`/decisions/papers/${conf.id}`);
-              allPapers = [...allPapers, ...(papersRes.data || [])];
+              const papersWithConfId = (papersRes.data || []).map(p => ({
+                ...p,
+                conferenceId: conf.id
+              }));
+              allPapers = [...allPapers, ...papersWithConfId];
             } catch (err) {
               console.error(`Error loading papers for conference ${conf.id}:`, err);
             }
           }
         } else {
           const papersRes = await apiClient.get(`/decisions/papers/${selectedConference}`);
-          allPapers = papersRes.data || [];
+          allPapers = (papersRes.data || []).map(p => ({
+            ...p,
+            conferenceId: selectedConference
+          }));
         }
 
         // Chỉ lấy bài UNDER_REVIEW

@@ -14,15 +14,17 @@ from core.infra.config import get_settings
 logger = logging.getLogger(__name__)
 
 # Tất cả các tính năng AI có sẵn
+# Tên phải khớp với backend Java AIProxyService
 AVAILABLE_FEATURES = [
-    "spell_check",
-    "grammar_check",
-    "abstract_polish",
-    "keyword_suggest",
-    "synopsis_generation",
-    "key_point_extraction",
-    "reviewer_similarity",
-    "email_draft_assist"
+    "grammar_check",           # Author: Kiểm tra ngữ pháp
+    "polish_content",          # Author: Đánh bóng nội dung (abstract/title)
+    "keyword_suggestion",      # Author: Gợi ý từ khóa
+    "paper_synopsis",          # Reviewer: Tóm tắt bài báo
+    "reviewer_similarity",     # Chair: Độ tương đồng reviewer-paper
+    "assignment_suggestion",   # Chair: Gợi ý phân công reviewer
+    "decision_recommendation", # Chair: Gợi ý quyết định accept/reject
+    "review_summary",          # Chair: Tóm tắt các review
+    "email_draft"              # Chair: Soạn email thông báo
 ]
 
 
@@ -96,6 +98,9 @@ class FeatureFlagManager:
             return False
         
         try:
+            # Convert conference_id to int for database query
+            conf_id = int(conference_id) if isinstance(conference_id, str) else conference_id
+            
             # Cập nhật PostgreSQL
             await self._init_db_pool()
             async with self.db_pool.acquire() as conn:
@@ -104,7 +109,7 @@ class FeatureFlagManager:
                     VALUES ($1, $2, $3, $4)
                     ON CONFLICT (conference_id, feature_name)
                     DO UPDATE SET enabled = $3, updated_at = $4
-                """, conference_id, feature_name, True, datetime.utcnow())
+                """, conf_id, feature_name, True, datetime.utcnow())
             
             # Cập nhật Redis cache
             if self.redis_client:
@@ -139,6 +144,9 @@ class FeatureFlagManager:
             True nếu tắt thành công, False nếu không
         """
         try:
+            # Convert conference_id to int for database query
+            conf_id = int(conference_id) if isinstance(conference_id, str) else conference_id
+            
             # Cập nhật PostgreSQL
             await self._init_db_pool()
             async with self.db_pool.acquire() as conn:
@@ -147,7 +155,7 @@ class FeatureFlagManager:
                     VALUES ($1, $2, $3, $4)
                     ON CONFLICT (conference_id, feature_name)
                     DO UPDATE SET enabled = $3, updated_at = $4
-                """, conference_id, feature_name, False, datetime.utcnow())
+                """, conf_id, feature_name, False, datetime.utcnow())
             
             # Cập nhật Redis cache
             if self.redis_client:
@@ -187,12 +195,15 @@ class FeatureFlagManager:
         
         # Fallback về PostgreSQL
         try:
+            # Convert conference_id to int for database query
+            conf_id = int(conference_id) if isinstance(conference_id, str) else conference_id
+            
             await self._init_db_pool()
             async with self.db_pool.acquire() as conn:
                 row = await conn.fetchrow("""
                     SELECT enabled FROM ai_feature_flags
                     WHERE conference_id = $1 AND feature_name = $2
-                """, conference_id, feature_name)
+                """, conf_id, feature_name)
                 
                 if row:
                     enabled = row['enabled']
@@ -225,21 +236,28 @@ class FeatureFlagManager:
         """
         try:
             await self._init_db_pool()
+            # Convert conference_id to int for database query
+            conf_id = int(conference_id) if isinstance(conference_id, str) else conference_id
+            
             async with self.db_pool.acquire() as conn:
                 rows = await conn.fetch("""
                     SELECT feature_name, enabled FROM ai_feature_flags
                     WHERE conference_id = $1
-                """, conference_id)
+                """, conf_id)
                 
-                result = {feature: False for feature in AVAILABLE_FEATURES}
+                # CHỈ trả về features có trong database
+                result = {}
                 for row in rows:
-                    result[row['feature_name']] = row['enabled']
+                    feature_name = row['feature_name']
+                    # Chỉ thêm nếu feature_name nằm trong AVAILABLE_FEATURES
+                    if feature_name in AVAILABLE_FEATURES:
+                        result[feature_name] = row['enabled']
                 
                 return result
                 
         except Exception as e:
             logger.error(f"Không thể lấy tất cả features: {e}")
-            return {feature: False for feature in AVAILABLE_FEATURES}
+            return {}
     
     async def close(self) -> None:
         """Đóng kết nối database."""

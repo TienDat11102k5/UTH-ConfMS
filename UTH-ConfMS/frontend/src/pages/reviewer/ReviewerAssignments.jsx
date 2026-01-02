@@ -310,37 +310,6 @@ const ReviewerAssignments = () => {
                 </div>
 
                 <div className="assignment-card-footer">
-                  {/* AI Synopsis Button - Always visible */}
-                  <button
-                    onClick={() => setSynopsisModal({ show: true, paper: assignment.paper })}
-                    style={{
-                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 14px",
-                      borderRadius: "8px",
-                      fontSize: "0.85rem",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      transition: "all 0.2s",
-                      boxShadow: "0 2px 4px rgba(102, 126, 234, 0.3)"
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow = "0 4px 8px rgba(102, 126, 234, 0.4)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = "0 2px 4px rgba(102, 126, 234, 0.3)";
-                    }}
-                  >
-                    <span style={{ fontSize: "1rem" }}>✨</span>
-                    <span>Tóm tắt AI</span>
-                  </button>
-
                   {assignment.status === "PENDING" && (
                     <>
                       <button

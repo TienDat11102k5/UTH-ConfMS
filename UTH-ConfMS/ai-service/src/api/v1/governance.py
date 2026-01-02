@@ -141,12 +141,22 @@ async def get_feature_flags(conference_id: str):
     
     - **conference_id**: UUID của hội nghị
     """
+    from fastapi.responses import JSONResponse
+    
     manager = get_feature_flag_manager()
     features = await manager.get_all_features(conference_id)
     
-    return FeatureFlagsListResponse(
-        conference_id=conference_id,
-        features=features
+    # Trả về với no-cache headers để tránh browser cache
+    return JSONResponse(
+        content={
+            "conference_id": conference_id,
+            "features": features
+        },
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        }
     )
 
 

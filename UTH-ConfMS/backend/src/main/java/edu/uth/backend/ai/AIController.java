@@ -119,6 +119,25 @@ public class AIController {
         );
     }
 
+    @PostMapping("/suggest-reviewers-for-paper")
+    @PreAuthorize("hasAnyRole('CHAIR', 'TRACK_CHAIR')")
+    public ResponseEntity<SinglePaperAssignmentResponse> suggestReviewersForPaper(
+            @RequestBody SinglePaperAssignmentRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails != null ? userDetails.getUser().getId() : null;
+        log.info(
+                "POST /api/ai/suggest-reviewers-for-paper | userId={} | paperId={} | conferenceId={}",
+                userId,
+                request.getPaperId(),
+                request.getConferenceId()
+        );
+
+        return ResponseEntity.ok(
+                aiProxyService.suggestReviewersForPaper(request, userId, request.getConferenceId())
+        );
+    }
+
     @PostMapping("/recommend-decision")
     @PreAuthorize("hasAnyRole('CHAIR', 'TRACK_CHAIR')")
     public ResponseEntity<DecisionRecommendationResponse> recommendDecision(

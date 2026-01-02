@@ -23,6 +23,8 @@ const ChairAssignmentManagement = () => {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [sortBy, setSortBy] = useState('newest');
   const [searchQuery, setSearchQuery] = useState('');
+  const [aiSuggestions, setAiSuggestions] = useState(null);
+  const [loadingAI, setLoadingAI] = useState(false);
 
   const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination(filteredPapers, 20);
 
@@ -191,6 +193,7 @@ const ChairAssignmentManagement = () => {
       setShowAssignModal(false);
       setSelectedPaper(null);
       setSelectedReviewer("");
+      setAiSuggestions(null); // Reset AI suggestions
 
       // Reload assignments
       const assignRes = await apiClient.get(
@@ -223,6 +226,48 @@ const ChairAssignmentManagement = () => {
       alert(errorMsg);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleGetAISuggestions = async () => {
+    if (!selectedPaper) return;
+
+    setLoadingAI(true);
+    try {
+      // Lấy danh sách reviewer chưa được phân công
+      const paperAssignments = assignments[selectedPaper.id] || [];
+      const availableReviewers = reviewers.filter((reviewer) => {
+        return !paperAssignments.some(
+          (assign) => assign.reviewer?.id === reviewer.id
+        );
+      });
+
+      if (availableReviewers.length === 0) {
+        alert("Không có reviewer nào khả dụng để gợi ý!");
+        return;
+      }
+
+      const response = await apiClient.post("/ai/suggest-reviewers-for-paper", {
+        paperId: selectedPaper.id,
+        paperTitle: selectedPaper.title,
+        paperAbstract: selectedPaper.paperAbstract || selectedPaper.abstract || "",
+        paperKeywords: selectedPaper.keywords || [],
+        availableReviewers: availableReviewers.map(r => ({
+          id: r.id,
+          name: r.fullName,
+          email: r.email,
+          expertise: r.expertise || [r.affiliation || ""].filter(Boolean),
+          keywords: r.keywords || (r.bio ? [r.bio] : [])
+        })),
+        conferenceId: selectedPaper.conference?.id || selectedPaper.conferenceId
+      });
+
+      setAiSuggestions(response.data);
+    } catch (err) {
+      console.error("AI suggestion error:", err);
+      alert("Không thể lấy gợi ý AI: " + (err.response?.data?.message || err.message));
+    } finally {
+      setLoadingAI(false);
     }
   };
 
@@ -600,9 +645,12 @@ const ChairAssignmentManagement = () => {
       {showAssignModal && selectedPaper && (
         <div
           className="modal-overlay"
-          onClick={() => setShowAssignModal(false)}
+          onClick={() => {
+            setShowAssignModal(false);
+            setAiSuggestions(null);
+          }}
         >
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "800px" }}>
             <h3>Phân công Reviewer cho: {selectedPaper.title}</h3>
 
             {/* Hiển thị các reviewer đã được phân công */}
@@ -622,6 +670,124 @@ const ChairAssignmentManagement = () => {
               }
               return null;
             })()}
+
+            {/* AI Suggestions Button */}
+            <div style={{ marginBottom: '1rem' }}>
+              <button
+                onClick={handleGetAISuggestions}
+                disabled={loadingAI}
+                style={{
+                  padding: "0.625rem 1rem",
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                  cursor: loadingAI ? "not-allowed" : "pointer",
+                  transition: "all 0.2s",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  width: "100%",
+                  justifyContent: "center"
+                }}
+              >
+                {loadingAI ? (
+                  <>
+                    <span>⏳</span>
+                    <span>Đang phân tích...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>✨</span>
+                    <span>Gợi ý AI người chấm phù hợp</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* AI Suggestions Results */}
+            {aiSuggestions && aiSuggestions.suggestions && aiSuggestions.suggestions.length > 0 && (
+              <div style={{
+                marginBottom: '1rem',
+                padding: '1rem',
+                background: '#f0f9ff',
+                borderRadius: '8px',
+                border: '2px solid #bfdbfe'
+              }}>
+                <div style={{ 
+                  fontSize: '0.875rem', 
+                  fontWeight: 600, 
+                  marginBottom: '0.75rem',
+                  color: '#1e40af',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}>
+                  <span>🤖</span>
+                  <span>Gợi ý từ AI (xếp hạng theo độ phù hợp):</span>
+                </div>
+                {aiSuggestions.suggestions.map((suggestion, idx) => (
+                  <div
+                    key={suggestion.reviewerId}
+                    onClick={() => setSelectedReviewer(suggestion.reviewerId.toString())}
+                    style={{
+                      padding: '0.75rem',
+                      background: selectedReviewer === suggestion.reviewerId.toString() ? '#dbeafe' : 'white',
+                      borderRadius: '6px',
+                      marginBottom: '0.5rem',
+                      cursor: 'pointer',
+                      border: selectedReviewer === suggestion.reviewerId.toString() ? '2px solid #3b82f6' : '1px solid #e5e7eb',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ 
+                          fontWeight: 700, 
+                          fontSize: '1rem',
+                          color: idx === 0 ? '#059669' : idx === 1 ? '#0891b2' : '#6b7280'
+                        }}>
+                          #{idx + 1}
+                        </span>
+                        <span style={{ fontWeight: 600, fontSize: '0.9375rem', color: '#1f2937' }}>
+                          {suggestion.reviewerName}
+                        </span>
+                      </div>
+                      <div style={{
+                        padding: '0.25rem 0.75rem',
+                        background: suggestion.similarityScore >= 0.7 ? '#d1fae5' : 
+                                   suggestion.similarityScore >= 0.5 ? '#fef3c7' : '#fee2e2',
+                        color: suggestion.similarityScore >= 0.7 ? '#065f46' : 
+                               suggestion.similarityScore >= 0.5 ? '#92400e' : '#991b1b',
+                        borderRadius: '12px',
+                        fontSize: '0.75rem',
+                        fontWeight: 700
+                      }}>
+                        {(suggestion.similarityScore * 100).toFixed(0)}% phù hợp
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '0.8125rem', color: '#6b7280', fontStyle: 'italic' }}>
+                      {suggestion.rationale}
+                    </div>
+                  </div>
+                ))}
+                {aiSuggestions.explanation && (
+                  <div style={{
+                    marginTop: '0.75rem',
+                    padding: '0.75rem',
+                    background: '#fffbeb',
+                    borderRadius: '6px',
+                    fontSize: '0.8125rem',
+                    color: '#92400e',
+                    border: '1px solid #fcd34d'
+                  }}>
+                    <strong>💡 Lưu ý:</strong> {aiSuggestions.explanation}
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="form-group">
               <label className="form-label">Chọn Reviewer *</label>
@@ -670,6 +836,7 @@ const ChairAssignmentManagement = () => {
                   setShowAssignModal(false);
                   setSelectedPaper(null);
                   setSelectedReviewer("");
+                  setAiSuggestions(null);
                 }}
               >
                 Hủy

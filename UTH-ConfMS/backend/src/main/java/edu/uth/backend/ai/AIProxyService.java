@@ -212,6 +212,46 @@ public class AIProxyService {
                 "assignment_suggestion", "suggest_assignments", userId, conferenceId);
     }
 
+    public SinglePaperAssignmentResponse suggestReviewersForPaper(SinglePaperAssignmentRequest request, Long userId,
+            Long conferenceId) {
+        checkFeatureEnabled(conferenceId, "assignment_suggestion");
+
+        String reviewersJson = "";
+        try {
+            reviewersJson = objectMapper.writeValueAsString(request.getAvailableReviewers());
+        } catch (Exception e) {
+            reviewersJson = request.getAvailableReviewers().toString();
+        }
+
+        String keywordsStr = request.getPaperKeywords() != null ? String.join(", ", request.getPaperKeywords()) : "";
+
+        String prompt = String.format(
+                "Bạn là trợ lý AI cho hội nghị khoa học. Gợi ý những reviewer phù hợp nhất cho bài báo sau. " +
+                        "Bài báo: \"%s\". " +
+                        "Tóm tắt: \"%s\". " +
+                        "Từ khóa: %s. " +
+                        "Danh sách reviewer khả dụng: %s. " +
+                        "LƯU Ý: " +
+                        "- Thông tin reviewer có thể giới hạn (chỉ có tên, email, affiliation, bio). " +
+                        "- Nếu không có đủ thông tin, hãy phân tích dựa trên affiliation và bio. " +
+                        "- Nếu thực sự không có thông tin gì, hãy đánh giá similarity thấp (0.3-0.5) và giải thích rõ. " +
+                        "QUAN TRỌNG: " +
+                        "1. Xếp hạng reviewer theo độ phù hợp (similarity score từ 0.0 đến 1.0). " +
+                        "2. Ưu tiên reviewer có expertise và keywords trùng khớp với bài báo. " +
+                        "3. Trả lời 100%% bằng TIẾNG VIỆT. " +
+                        "Trả về JSON với: " +
+                        "'suggestions' (danh sách các object với 'reviewerId' (số nguyên), 'reviewerName' (chuỗi), 'similarityScore' (số thực 0.0-1.0), 'rationale' (giải thích ngắn gọn bằng tiếng Việt)), " +
+                        "'explanation' (giải thích tổng quan về cách chọn bằng tiếng Việt).",
+                request.getPaperTitle(), 
+                request.getPaperAbstract() != null ? request.getPaperAbstract() : "", 
+                keywordsStr, 
+                reviewersJson);
+
+        return processRequest(prompt, new TypeReference<SinglePaperAssignmentResponse>() {
+        },
+                "assignment_suggestion", "suggest_reviewers_for_paper", userId, conferenceId);
+    }
+
     public EmailDraftResponse draftEmail(EmailDraftRequest request, Long userId, Long conferenceId) {
         checkFeatureEnabled(conferenceId, "email_draft");
 
@@ -297,11 +337,18 @@ public class AIProxyService {
             logger.debug("Bỏ qua kiểm tra feature flag vì conferenceId = null");
             return; // Bỏ qua kiểm tra nếu không có ngữ cảnh hội nghị
         }
+        
         Optional<AIFeatureFlag> flag = featureFlagRepository.findByConferenceIdAndFeatureName(conferenceId,
                 featureName);
-        if (flag.isPresent() && !flag.get().isEnabled()) {
-            throw new RuntimeException("Tính năng AI '" + featureName + "' bị vô hiệu hóa cho hội nghị này.");
+        
+        // Default: DISABLED (phải bật rõ ràng mới được dùng)
+        if (!flag.isPresent() || !flag.get().isEnabled()) {
+            throw new RuntimeException(
+                "Tính năng AI này hiện đang tắt cho hội nghị. " +
+                "Vui lòng liên hệ quản trị viên để được hỗ trợ."
+            );
         }
+        
         logger.debug("Feature {} enabled for conference {}", featureName, conferenceId);
     }
 

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
-import Toast, { toastStyles } from "../../components/Toast";
 
 // Modal component for simple AI capabilities (internal use here)
 const AIModal = ({ isOpen, title, onClose, children }) => {
@@ -125,7 +124,6 @@ const AuthorNewSubmissionPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [toast, setToast] = useState(null); // { message, type: 'success' | 'error' }
 
   // AI State
   const [aiLoading, setAiLoading] = useState(false);
@@ -234,7 +232,7 @@ const AuthorNewSubmissionPage = () => {
       const res = await apiClient.post("/ai/grammar-check", {
         text: text,
         fieldName: field,
-        conferenceId: formValues.conferenceId || null,
+        conferenceId: confId ? parseInt(confId) : null,
       });
       setGrammarResult({ ...res.data, field: fieldVN });
     } catch (err) {
@@ -255,7 +253,7 @@ const AuthorNewSubmissionPage = () => {
       const res = await apiClient.post("/ai/polish", {
         content: text,
         type: "abstract",
-        conferenceId: formValues.conferenceId || null,
+        conferenceId: confId ? parseInt(confId) : null,
       });
       setPolishResult(res.data);
     } catch (err) {
@@ -276,7 +274,7 @@ const AuthorNewSubmissionPage = () => {
         title: formValues.title,
         abstractText: formValues.abstractText,
         maxKeywords: 5,
-        conferenceId: formValues.conferenceId || null,
+        conferenceId: confId ? parseInt(confId) : null,
       });
       setKeywordSuggestions(res.data.keywords || []);
     } catch (err) {
@@ -314,18 +312,17 @@ const AuthorNewSubmissionPage = () => {
     e.preventDefault();
     setError("");
     setSuccessMessage("");
-    setToast(null);
 
     const payloadTrackId =
       formValues.trackId || (tracks[0]?.id ? String(tracks[0].id) : "");
 
     if (!payloadTrackId) {
-      setToast({ message: "Vui lòng chọn Track/Chủ đề cho bài báo.", type: "error" });
+      setError("Vui lòng chọn Track/Chủ đề cho bài báo.");
       return;
     }
 
     if (!file) {
-      setToast({ message: "Vui lòng chọn file PDF bài báo để nộp.", type: "error" });
+      setError("Vui lòng chọn file PDF bài báo để nộp.");
       return;
     }
 
@@ -349,13 +346,13 @@ const AuthorNewSubmissionPage = () => {
       formData.append("file", file);
 
       await apiClient.post("/submissions", formData);
-      setToast({ message: "Nộp bài thành công! Đang chuyển hướng...", type: "success" });
+      setSuccessMessage("Nộp bài thành công.");
       setTimeout(() => {
         navigate("/author/submissions");
-      }, 1500);
+      }, 800);
     } catch (err) {
       const msg = err.response?.data?.message || err.response?.data?.error || "Không thể nộp bài.";
-      setToast({ message: msg, type: "error" });
+      setError(msg);
     } finally {
       setSubmitting(false);
     }
