@@ -85,21 +85,14 @@ const RbacManagement = () => {
   }
 
   return (
-    <AdminLayout title="Quản lý RBAC"
-      subtitle="Xem vai trò và quyền trong hệ thống."
+    <AdminLayout title="QUẢN LÝ RBAC"
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <span className="breadcrumb-current">RBAC</span>
           </div>
-          <h2 className="data-page-title">Vai trò &amp; Quyền</h2>
-          <p className="data-page-subtitle">
-            Hệ thống sử dụng 4 vai trò cố định với các quyền được định nghĩa sẵn.
-          </p>
         </div>
       </div>
-
       <div className="table-wrapper">
         <table className="simple-table">
           <thead>

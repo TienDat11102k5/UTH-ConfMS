@@ -12,18 +12,12 @@ const SmtpConfigPage = () => {
   };
 
   return (
-    <AdminLayout title="Cấu hình Email"
-      subtitle="Xem thông tin cấu hình email hệ thống."
+    <AdminLayout title="CẤU HÌNH EMAIL"
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <span className="breadcrumb-current">Email / SMTP</span>
           </div>
-          <h2 className="data-page-title" style={{ marginBottom: "0.25rem" }}>Thông tin Email</h2>
-          <p className="data-page-subtitle" style={{ fontSize: "0.85rem", marginTop: "0.25rem" }}>
-            Hệ thống sử dụng cấu hình email sau để gửi thông báo, reset mật khẩu, v.v.
-          </p>
         </div>
       </div>
 

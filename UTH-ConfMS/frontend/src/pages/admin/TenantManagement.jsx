@@ -41,19 +41,12 @@ const TenantManagement = () => {
 
   return (
     <AdminLayout
-      title="Quản lý người dùng"
-      subtitle="Tìm kiếm, xem nhanh vai trò và trạng thái người dùng trong hệ thống (dữ liệu demo)."
+      title="QUẢN LÝ NGƯỜI DÙNG"
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <span className="breadcrumb-current">Người dùng</span>
           </div>
-          <h2 className="data-page-title">Danh sách tài khoản</h2>
-          <p className="data-page-subtitle">
-            Khi kết nối backend, bảng này sẽ hiển thị danh sách người dùng thật
-            kèm phân quyền.
-          </p>
         </div>
         <div className="data-page-header-right">
           <input
