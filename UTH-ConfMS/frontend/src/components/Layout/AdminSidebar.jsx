@@ -26,50 +26,50 @@ const AdminSidebar = () => {
         {
             path: "/admin/dashboard",
             icon: <FiHome />,
-            label: "Tổng quan",
+            label: "TỔNG QUAN",
             title: "Dashboard Overview",
         },
         {
             path: "/admin/users",
             icon: <FiUsers />,
-            label: "Người dùng",
-            title: "Quản lý Người dùng",
+            label: "NGƯỜI DÙNG",
+            title: "QUẢN LÝ NGƯỜI DÙNG",
         },
         {
             path: "/admin/conferences",
             icon: <FiCalendar />,
-            label: "Hội nghị",
-            title: "Quản lý Hội nghị",
+            label: "HỘI NGHỊ",
+            title: "QUẢN LÝ HỘI NGHỊ",
         },
         {
             path: "/admin/rbac",
             icon: <FiShield />,
             label: "RBAC",
-            title: "Phân quyền & RBAC",
+            title: "PHÂN QUYỀN & RBAC",
         },
         {
             path: "/admin/email-settings",
             icon: <FiMail />,
-            label: "Email",
-            title: "Cấu hình Email",
+            label: "EMAIL",
+            title: "CẤU HÌNH EMAIL",
         },
         {
             path: "/admin/ai-governance",
             icon: <FiCpu />,
-            label: "AI Governance",
-            title: "Quản lý AI",
+            label: "AI GOVERNANCE",
+            title: "QUẢN LÝ AI",
         },
         {
             path: "/admin/backups",
             icon: <FiDatabase />,
-            label: "Backup",
-            title: "Backup & Restore",
+            label: "BACKUP",
+            title: "BACKUP & RESTORE",
         },
         {
             path: "/admin/logs",
             icon: <FiFileText />,
-            label: "Audit Logs",
-            title: "Nhật ký Hệ thống",
+            label: "AUDIT LOGS",
+            title: "NHẬT KÝ HỆ THỐNG",
         },
     ];
 
@@ -95,8 +95,8 @@ const AdminSidebar = () => {
                         <div className="brand-icon">A</div>
                         {!isCollapsed && (
                             <div className="brand-text">
-                                <h2>Admin Panel</h2>
-                                <p>UTH-ConfMS</p>
+                                <h2>ADMIN PANEL</h2>
+                                <p>UTH-CONFMS</p>
                             </div>
                         )}
                     </div>
