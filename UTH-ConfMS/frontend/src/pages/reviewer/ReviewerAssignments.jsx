@@ -1,11 +1,12 @@
 // src/pages/reviewer/ReviewerAssignments.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import PaperSynopsisModal from "../../components/PaperSynopsisModal";
 import Pagination from "../../components/Pagination";
 import { usePagination } from "../../hooks/usePagination";
+import { ToastContainer } from "../../components/Toast";
 import { 
   FiFileText, 
   FiClock, 
@@ -31,6 +32,18 @@ const ReviewerAssignments = () => {
   const [sortBy, setSortBy] = useState("NEWEST");
   const [searchQuery, setSearchQuery] = useState("");
   const [synopsisModal, setSynopsisModal] = useState({ show: false, paper: null });
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination(filteredAssignments, 12);
 
@@ -131,7 +144,7 @@ const ReviewerAssignments = () => {
         )
       );
     } catch (err) {
-      alert("Lỗi: " + (err.response?.data?.message || err.message));
+      addToast("Lỗi: " + (err.response?.data?.message || err.message), "error");
     }
   };
 
@@ -146,7 +159,7 @@ const ReviewerAssignments = () => {
         )
       );
     } catch (err) {
-      alert("Lỗi: " + (err.response?.data?.message || err.message));
+      addToast("Lỗi: " + (err.response?.data?.message || err.message), "error");
     }
   };
 
@@ -528,6 +541,9 @@ const ReviewerAssignments = () => {
           onClose={() => setSynopsisModal({ show: false, paper: null })}
         />
       )}
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </DashboardLayout>
   );
 };

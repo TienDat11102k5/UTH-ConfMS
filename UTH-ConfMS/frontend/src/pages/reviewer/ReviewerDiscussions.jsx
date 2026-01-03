@@ -1,8 +1,9 @@
 // src/pages/reviewer/ReviewerDiscussions.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { ToastContainer } from "../../components/Toast";
 import { FiMessageSquare, FiSend, FiX, FiCornerDownRight, FiClock } from 'react-icons/fi';
 
 const ReviewerDiscussions = () => {
@@ -15,10 +16,21 @@ const ReviewerDiscussions = () => {
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
   const [newComment, setNewComment] = useState("");
   const [replyTo, setReplyTo] = useState(null);
   const [replyContent, setReplyContent] = useState("");
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   useEffect(() => {
     loadPapers();
@@ -52,7 +64,7 @@ const ReviewerDiscussions = () => {
       }
     } catch (err) {
       console.error("Load papers error:", err);
-      setError("Không thể tải danh sách bài báo.");
+      addToast("Không thể tải danh sách bài báo.", "error");
     }
   };
 
@@ -63,7 +75,7 @@ const ReviewerDiscussions = () => {
       setDiscussions(res.data || []);
     } catch (err) {
       console.error("Load discussions error:", err);
-      setError("Không thể tải discussions.");
+      addToast("Không thể tải discussions.", "error");
     } finally {
       setLoading(false);
     }
@@ -74,17 +86,16 @@ const ReviewerDiscussions = () => {
     
     const trimmedComment = newComment.trim();
     if (!trimmedComment) {
-      setError("Nội dung không được để trống");
+      addToast("Nội dung không được để trống", "warning");
       return;
     }
     
     if (trimmedComment.length > 10000) {
-      setError("Nội dung quá dài (tối đa 10000 ký tự)");
+      addToast("Nội dung quá dài (tối đa 10000 ký tự)", "warning");
       return;
     }
 
     setSubmitting(true);
-    setError("");
 
     try {
       const currentUser = JSON.parse(
@@ -101,11 +112,12 @@ const ReviewerDiscussions = () => {
       setNewComment("");
       loadDiscussions(selectedPaperId);
     } catch (err) {
-      setError(
+      addToast(
         err.response?.data?.message ||
           err.response?.data ||
           err.message ||
-          "Lỗi khi gửi bình luận"
+          "Lỗi khi gửi bình luận",
+        "error"
       );
     } finally {
       setSubmitting(false);
@@ -115,17 +127,16 @@ const ReviewerDiscussions = () => {
   const handleSubmitReply = async (parentId) => {
     const trimmedReply = replyContent.trim();
     if (!trimmedReply) {
-      setError("Nội dung trả lời không được để trống");
+      addToast("Nội dung trả lời không được để trống", "warning");
       return;
     }
     
     if (trimmedReply.length > 10000) {
-      setError("Nội dung quá dài (tối đa 10000 ký tự)");
+      addToast("Nội dung quá dài (tối đa 10000 ký tự)", "warning");
       return;
     }
 
     setSubmitting(true);
-    setError("");
 
     try {
       const currentUser = JSON.parse(
@@ -143,11 +154,12 @@ const ReviewerDiscussions = () => {
       setReplyContent("");
       loadDiscussions(selectedPaperId);
     } catch (err) {
-      setError(
+      addToast(
         err.response?.data?.message || 
           err.response?.data ||
           err.message || 
-          "Lỗi khi gửi trả lời"
+          "Lỗi khi gửi trả lời",
+        "error"
       );
     } finally {
       setSubmitting(false);
@@ -198,11 +210,6 @@ const ReviewerDiscussions = () => {
         </div>
       </div>
 
-      {error && (
-        <div className="alert-error">
-          {error}
-        </div>
-      )}
 
       {/* Paper Selector */}
       <div style={{
@@ -667,6 +674,9 @@ const ReviewerDiscussions = () => {
           gap: 0.5rem;
         }
       `}} />
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </DashboardLayout>
   );
 };

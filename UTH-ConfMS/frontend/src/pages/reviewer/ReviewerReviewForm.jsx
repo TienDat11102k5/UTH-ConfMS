@@ -1,10 +1,11 @@
 // src/pages/reviewer/ReviewerReviewForm.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import { getToken } from "../../auth";  // ✅ IMPORT getToken
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import PaperSynopsisModal from "../../components/PaperSynopsisModal";
+import { ToastContainer } from "../../components/Toast";
 
 const ReviewerReviewForm = () => {
   const { assignmentId } = useParams();
@@ -22,6 +23,18 @@ const ReviewerReviewForm = () => {
     commentForAuthor: "",
     commentForPC: "",
   });
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -88,20 +101,21 @@ const ReviewerReviewForm = () => {
     console.log("Form data:", formData);
 
     if (assignment?.status !== "ACCEPTED") {
-      alert(
-        "Chỉ có thể chấm bài khi đã chấp nhận assignment (status = ACCEPTED)!"
+      addToast(
+        "Chỉ có thể chấm bài khi đã chấp nhận assignment (status = ACCEPTED)!",
+        "warning"
       );
       return;
     }
 
     if (existingReview) {
-      alert("Bạn đã chấm bài này rồi. Không thể sửa đổi.");
+      addToast("Bạn đã chấm bài này rồi. Không thể sửa đổi.", "warning");
       return;
     }
 
     // Validate form data
     if (!formData.commentForAuthor || !formData.commentForPC) {
-      alert("Vui lòng điền đầy đủ các nhận xét!");
+      addToast("Vui lòng điền đầy đủ các nhận xét!", "warning");
       return;
     }
 
@@ -123,8 +137,8 @@ const ReviewerReviewForm = () => {
 
       console.log("Response:", response.data);
 
-      alert("Gửi review thành công!");
-      navigate("/reviewer/assignments");
+      addToast("Gửi review thành công!", "success");
+      setTimeout(() => navigate("/reviewer/assignments"), 800);
     } catch (err) {
       console.error("Submit error:", err);
       console.error("Error response:", err.response?.data);
@@ -145,7 +159,7 @@ const ReviewerReviewForm = () => {
       console.log("Paper ID:", assignment.paper.id);
       
       if (!token) {
-        alert("Vui lòng đăng nhập lại");
+        addToast("Vui lòng đăng nhập lại", "warning");
         return;
       }
 
@@ -166,13 +180,13 @@ const ReviewerReviewForm = () => {
 
       if (!response.ok) {
         if (response.status === 403) {
-          alert("Bạn không có quyền xem file này");
+          addToast("Bạn không có quyền xem file này", "error");
         } else if (response.status === 404) {
-          alert("Không tìm thấy file");
+          addToast("Không tìm thấy file", "error");
         } else {
           const errorText = await response.text();
           console.error("Error response:", errorText);
-          alert("Lỗi khi tải file: " + response.statusText);
+          addToast("Lỗi khi tải file: " + response.statusText, "error");
         }
         return;
       }
@@ -195,7 +209,7 @@ const ReviewerReviewForm = () => {
       }, 1000);
     } catch (err) {
       console.error("Download error:", err);
-      alert("Lỗi khi mở file: " + err.message);
+      addToast("Lỗi khi mở file: " + err.message, "error");
     }
   };
 
@@ -509,6 +523,9 @@ const ReviewerReviewForm = () => {
           onClose={() => setSynopsisModal({ show: false, paper: null })}
         />
       )}
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </DashboardLayout>
   );
 };

@@ -1,8 +1,9 @@
 // src/pages/reviewer/ReviewerCOI.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { ToastContainer } from "../../components/Toast";
 import { FiAlertTriangle, FiPlus, FiX, FiTrash2, FiCheckCircle, FiXCircle } from 'react-icons/fi';
 
 const ReviewerCOI = () => {
@@ -11,13 +12,24 @@ const ReviewerCOI = () => {
   const [papers, setPapers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [loadError, setLoadError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     paperId: "",
     reason: "",
   });
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -26,7 +38,7 @@ const ReviewerCOI = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      setError("");
+      setLoadError("");
       const currentUser = JSON.parse(
         localStorage.getItem("currentUser") || "{}"
       );
@@ -43,7 +55,7 @@ const ReviewerCOI = () => {
       setConflicts(conflictsRes.data || []);
     } catch (err) {
       console.error("Load error:", err);
-      setError(
+      setLoadError(
         err.response?.data?.message ||
           err.message ||
           "Không thể tải dữ liệu."
@@ -57,13 +69,11 @@ const ReviewerCOI = () => {
     e.preventDefault();
     
     if (!formData.reason.trim()) {
-      setError("Vui lòng nhập lý do xung đột");
+      addToast("Vui lòng nhập lý do xung đột", "warning");
       return;
     }
 
     setSubmitting(true);
-    setError("");
-    setSuccess("");
 
     try {
       const currentUser = JSON.parse(
@@ -77,16 +87,17 @@ const ReviewerCOI = () => {
         }&reason=${encodeURIComponent(formData.reason.trim())}`
       );
 
-      setSuccess("Khai báo xung đột lợi ích thành công!");
+      addToast("Khai báo xung đột lợi ích thành công!", "success");
       setShowForm(false);
       setFormData({ paperId: "", reason: "" });
       await loadData(); // Reload data
     } catch (err) {
-      setError(
+      addToast(
         err.response?.data?.message ||
           err.response?.data ||
           err.message ||
-          "Lỗi khi khai báo xung đột lợi ích"
+          "Lỗi khi khai báo xung đột lợi ích",
+        "error"
       );
     } finally {
       setSubmitting(false);
@@ -98,14 +109,15 @@ const ReviewerCOI = () => {
 
     try {
       await apiClient.delete(`/conflicts/${coiId}`);
-      setSuccess("Đã xóa xung đột lợi ích thành công");
+      addToast("Đã xóa xung đột lợi ích thành công", "success");
       await loadData();
     } catch (err) {
-      setError(
+      addToast(
         err.response?.data?.message ||
           err.response?.data ||
           err.message ||
-          "Lỗi khi xóa xung đột lợi ích"
+          "Lỗi khi xóa xung đột lợi ích",
+        "error"
       );
     }
   };
@@ -149,17 +161,10 @@ const ReviewerCOI = () => {
         </div>
       </div>
 
-      {success && (
-        <div className="alert-success">
-          <FiCheckCircle size={20} />
-          <span>{success}</span>
-        </div>
-      )}
-
-      {error && (
+      {loadError && (
         <div className="alert-error">
           <FiXCircle size={20} />
-          <span>{error}</span>
+          <span>{loadError}</span>
         </div>
       )}
 
@@ -567,6 +572,9 @@ const ReviewerCOI = () => {
           transform: scale(1.1);
         }
       `}} />
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </DashboardLayout>
   );
 };
