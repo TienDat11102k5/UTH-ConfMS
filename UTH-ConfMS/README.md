@@ -1,510 +1,450 @@
-# UTH-ConfMS (Conference Management System)
+<p align="center">
+  <h1 align="center">🎓 UTH-ConfMS</h1>
+  <p align="center">
+    <strong>Hệ thống Quản lý Hội nghị Khoa học</strong>
+    <br/>
+    Conference Management System
+  </p>
+</p>
 
-[![Security Audit](https://img.shields.io/badge/Security-Audited-success)](docs/SECURITY_AUDIT_REPORT.md)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.9-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-
-A comprehensive conference management system for academic conferences, supporting paper submission, peer review, and decision-making workflows.
-
----
-
-## 📑 Table of Contents
-
-- [Features](#-features)
-- [Architecture](#-architecture)
-- [Quick Start](#-quick-start)
-- [Security](#-security)
-- [Documentation](#-documentation)
-- [Development](#-development)
-- [Deployment](#-deployment)
-- [Database Backup](#-database-backup)
-- [Contributing](#-contributing)
+<p align="center">
+  <img src="https://img.shields.io/badge/Spring%20Boot-3.5.9-brightgreen?logo=springboot" alt="Spring Boot"/>
+  <img src="https://img.shields.io/badge/Java-17-orange?logo=openjdk" alt="Java"/>
+  <img src="https://img.shields.io/badge/React-18-blue?logo=react" alt="React"/>
+  <img src="https://img.shields.io/badge/Python-3.11-yellow?logo=python" alt="Python"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-16-blue?logo=postgresql" alt="PostgreSQL"/>
+  <img src="https://img.shields.io/badge/License-MIT-green" alt="License"/>
+</p>
 
 ---
 
-## ✨ Features
+## 📋 Mục Lục
 
-### For Authors
-- 📝 Paper submission with PDF upload
-- 📊 Track submission status
-- 💬 View review feedback
-- ✏️ Submit camera-ready versions
-
-### For Reviewers
-- 📋 View assigned papers
-- ⭐ Submit detailed reviews with ratings
-- 💭 Provide confidential comments to chairs
-
-### For Chairs
-- 🎯 Conference management
-- 👥 Reviewer assignment
-- 📈 Review progress tracking
-- ✅ Accept/Reject decisions
-- 📊 Generate reports
-
-### For Administrators
-- 👤 User management
-- 🔐 Role assignment
-- 📁 System configuration
-- 🔍 Audit logs
+- [Giới Thiệu](#-giới-thiệu)
+- [Tính Năng](#-tính-năng)
+- [Tech Stack](#-tech-stack)
+- [Kiến Trúc](#-kiến-trúc)
+- [Cài Đặt](#-cài-đặt)
+- [Demo & Screenshots](#-demo--screenshots)
+- [API Documentation](#-api-documentation)
+- [Tài Liệu](#-tài-liệu)
+- [Đóng Góp](#-đóng-góp)
+- [Nhóm Phát Triển](#-nhóm-phát-triển)
 
 ---
 
-## 🏗️ Architecture
+## 🎯 Giới Thiệu
+
+**UTH-ConfMS** là hệ thống quản lý hội nghị khoa học toàn diện, được phát triển theo mô hình EasyChair. Hệ thống hỗ trợ toàn bộ quy trình từ **nộp bài** → **đánh giá** → **ra quyết định** → **xuất bản**.
+
+### Vấn Đề Giải Quyết
+
+| Vấn đề                                | Giải pháp UTH-ConfMS                                   |
+| ------------------------------------- | ------------------------------------------------------ |
+| Quản lý bài nộp thủ công, dễ nhầm lẫn | Hệ thống tự động theo dõi trạng thái, thông báo email  |
+| Phân công reviewer khó khăn           | AI gợi ý reviewer phù hợp, kiểm tra COI tự động        |
+| Theo dõi tiến độ review kém           | Dashboard real-time cho Chair                          |
+| Thiếu bảo mật trong blind review      | Double-blind mode, ẩn thông tin tác giả                |
+| Không có AI hỗ trợ                    | Tích hợp Gemini AI: spell check, synopsis, email draft |
+
+---
+
+## ✨ Tính Năng
+
+### 👤 Theo Vai Trò
+
+<table>
+<tr>
+<td width="50%">
+
+**📝 Author (Tác giả)**
+
+- Nộp bài với PDF (max 50MB)
+- Thêm đồng tác giả (co-authors)
+- Theo dõi trạng thái bài nộp
+- Xem kết quả đánh giá
+- Nộp Camera-ready sau accept
+- AI spell check cho abstract
+
+</td>
+<td width="50%">
+
+**⭐ Reviewer (Người đánh giá)**
+
+- Xem bài được phân công
+- Khai báo xung đột lợi ích (COI)
+- Nộp đánh giá với điểm & nhận xét
+- Thảo luận PC (Program Committee)
+- AI synopsis để tóm tắt bài
+
+</td>
+</tr>
+<tr>
+<td>
+
+**🎯 Chair (Chủ tịch)**
+
+- Tạo & quản lý hội nghị
+- Thiết lập deadlines
+- Tạo tracks/chủ đề
+- Phân công reviewer
+- Ra quyết định Accept/Reject
+- Gửi email thông báo hàng loạt
+- Xuất báo cáo thống kê
+
+</td>
+<td>
+
+**🔧 Admin (Quản trị viên)**
+
+- Quản lý người dùng
+- Phân quyền RBAC
+- Cấu hình AI features per conference
+- Xem audit logs
+- Backup/Restore database
+
+</td>
+</tr>
+</table>
+
+### 🤖 Tính Năng AI (Gemini Integration)
+
+| Tính năng       | Mô tả                                     |
+| --------------- | ----------------------------------------- |
+| **Spell Check** | Kiểm tra chính tả & ngữ pháp cho abstract |
+| **Synopsis**    | Tạo tóm tắt trung lập cho PC bidding      |
+| **Similarity**  | Gợi ý reviewer dựa trên keyword matching  |
+| **Email Draft** | Tạo template email Accept/Reject          |
+| **Governance**  | Bật/tắt AI per conference, audit logging  |
+
+---
+
+## 🛠 Tech Stack
+
+### Backend
+
+| Công nghệ       | Phiên bản | Mô tả                          |
+| --------------- | --------- | ------------------------------ |
+| Java            | 17        | Runtime                        |
+| Spring Boot     | 3.5.9     | Web framework                  |
+| Spring Security | 6.x       | Authentication & Authorization |
+| Spring Data JPA | 3.x       | ORM với Hibernate              |
+| PostgreSQL      | 16        | Database chính                 |
+| Redis           | 7.x       | Caching (optional)             |
+| Firebase Auth   | -         | Google SSO                     |
+| JWT             | HS256     | Token authentication           |
+
+### Frontend
+
+| Công nghệ    | Phiên bản | Mô tả               |
+| ------------ | --------- | ------------------- |
+| React        | 18        | UI Library          |
+| Vite         | 5.x       | Build tool          |
+| React Router | 6.x       | Routing             |
+| Axios        | 1.x       | HTTP client         |
+| i18next      | 23.x      | Đa ngôn ngữ (VI/EN) |
+| Firebase     | 10.x      | Google SSO          |
+
+### AI Service
+
+| Công nghệ     | Phiên bản | Mô tả                   |
+| ------------- | --------- | ----------------------- |
+| Python        | 3.11      | Runtime                 |
+| FastAPI       | 0.100+    | API framework           |
+| Google Gemini | 1.5       | AI model                |
+| spaCy         | 3.x       | NLP processing          |
+| asyncpg       | 0.29+     | Async PostgreSQL driver |
+
+### DevOps
+
+| Công nghệ      | Mô tả                         |
+| -------------- | ----------------------------- |
+| Docker         | Containerization              |
+| Docker Compose | Multi-container orchestration |
+| Nginx          | Reverse proxy                 |
+| GitHub Actions | CI/CD (optional)              |
+
+---
+
+## 🏗 Kiến Trúc
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         CLIENT                                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │              Frontend (React + Vite) :5173               │   │
+│  │  ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐  │   │
+│  │  │ Admin  │ │ Author │ │ Chair  │ │Reviewer│ │ Public │  │   │
+│  │  │14 pages│ │12 pages│ │10 pages│ │ 5 pages│ │ 6 pages│  │   │
+│  │  └────────┘ └────────┘ └────────┘ └────────┘ └────────┘  │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└────────────────────────────┬────────────────────────────────────┘
+                             │ REST API (HTTPS)
+┌────────────────────────────▼────────────────────────────────────┐
+│                         SERVER                                  │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │            Backend (Spring Boot) :8080                     │ │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐       │ │
+│  │  │   Auth   │ │Submission│ │  Review  │ │ Decision │       │ │
+│  │  └──────────┘ └──────────┘ └──────────┘ └──────────┘       │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │            AI Service (FastAPI) :8000                      │ │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐       │ │
+│  │  │SpellCheck│ │ Synopsis │ │Similarity│ │  Draft   │       │ │
+│  │  └──────────┘ └──────────┘ └──────────┘ └──────────┘       │ │
+│  └────────────────────────────────────────────────────────────┘ │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+┌────────────────────────────▼────────────────────────────────────┐
+│                          DATA                                   │
+│  ┌─────────────────────┐          ┌─────────────────────┐       │
+│  │   PostgreSQL :5432  │          │    Redis :6379      │       │
+│  │   (24 tables)       │          │    (Cache)          │       │
+│  └─────────────────────┘          └─────────────────────┘       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Cấu Trúc Thư Mục
 
 ```
 UTH-ConfMS/
-├── backend/           # Spring Boot REST API
-│   ├── src/
-│   │   ├── main/java/edu/uth/backend/
-│   │   │   ├── auth/           # Authentication & JWT
-│   │   │   ├── user/           # User management
-│   │   │   ├── conference/     # Conference CRUD
-│   │   │   ├── submission/     # Paper submissions
-│   │   │   ├── reviewassignment/ # Reviewer assignments
-│   │   │   ├── review/         # Review submissions
-│   │   │   ├── decision/       # Accept/Reject decisions
-│   │   │   ├── report/         # Reports & analytics
-│   │   │   └── config/         # Security & configuration
-│   │   └── resources/
-│   │       └── application.properties
+├── backend/                 # Spring Boot API
+│   ├── src/main/java/edu/uth/backend/
+│   │   ├── auth/           # Authentication & JWT
+│   │   ├── submission/     # Paper submissions
+│   │   ├── review/         # Review system
+│   │   ├── decision/       # Accept/Reject
+│   │   ├── ai/             # AI integration
+│   │   ├── admin/          # Admin management
+│   │   ├── entity/         # JPA Entities (24)
+│   │   ├── repository/     # Data access (18)
+│   │   └── config/         # Security, CORS, etc.
 │   └── pom.xml
 │
-├── frontend/          # React + Vite
+├── frontend/               # React SPA
 │   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   └── api/
+│   │   ├── pages/          # 47 pages total
+│   │   │   ├── admin/      # 14 admin pages
+│   │   │   ├── author/     # 12 author pages
+│   │   │   ├── chair/      # 10 chair pages
+│   │   │   ├── reviewer/   # 5 reviewer pages
+│   │   │   └── public/     # 6 public pages
+│   │   ├── components/     # Shared components
+│   │   ├── api/            # API client functions
+│   │   ├── i18n/           # Localization (VI/EN)
+│   │   └── utils/          # Utilities
 │   └── package.json
 │
-├── ai-service/        # Python AI microservice
+├── ai-service/             # Python AI Microservice
 │   ├── src/
-│   │   ├── core/nlp/         # NLP processing
-│   │   ├── core/services/    # AI services
-│   │   └── api/v1/           # API endpoints
+│   │   ├── core/nlp/       # NLP processing
+│   │   ├── core/services/  # Business logic
+│   │   ├── core/governance/# AI governance
+│   │   └── api/v1/         # REST endpoints
 │   └── requirements.txt
 │
-├── scripts/           # Utility scripts
-│   ├── backup-database.sh    # Automated backup
-│   └── restore-database.sh   # Database restore
+├── docker/                 # Docker configuration
+│   └── docker-compose.yml
 │
-├── docs/              # Documentation
-│   ├── security-configuration.md
-│   ├── security-testing-guide.md
+├── docs/                   # Documentation (11 files)
+│   ├── uml-diagrams.md     # 29 UML diagrams
+│   ├── architecture.md
+│   ├── detail-design.md
+│   ├── srs.md
+│   ├── user-requirements.md
+│   ├── test-plan.md
 │   ├── installation-guide.md
-│   └── user-guide.md
+│   ├── user-guide.md
+│   ├── system-implementation.md
+│   ├── security-configuration.md
+│   └── api_checklist.csv
 │
-└── docker/            # Docker configuration
-    └── docker-compose.yml
+└── scripts/                # Utility scripts
+    ├── backup-database.sh
+    └── restore-database.sh
 ```
-
-### Tech Stack
-
-**Backend:**
-- ☕ Java 17
-- 🍃 Spring Boot 3.5.9
-- 🔐 Spring Security + JWT
-- 🗄️ PostgreSQL 16
-- 📮 Redis (caching)
-- 🔥 Firebase Authentication
-
-**Frontend:**
-- ⚛️ React 18
-- ⚡ Vite
-- 🎨 Tailwind CSS
-- 🌐 React Router
-- 📡 Axios
-
-**AI Service:**
-- 🐍 Python 3.11
-- 🤖 Gemini AI
-- 📊 spaCy NLP
-- ⚡ FastAPI
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Cài Đặt
 
-### Prerequisites
+### Yêu Cầu
 
-- Java 17+
-- Node.js 18+
-- PostgreSQL 16+
-- Docker & Docker Compose (optional)
-- Redis (optional, for caching)
+| Phần mềm          | Phiên bản |
+| ----------------- | --------- |
+| Java JDK          | 17+       |
+| Node.js           | 18+       |
+| Python            | 3.11+     |
+| PostgreSQL        | 16+       |
+| Docker (optional) | 24+       |
 
-### 1. Clone Repository
+### Cách 1: Docker (Khuyến nghị)
 
 ```bash
-git clone https://github.com/your-org/UTH-ConfMS.git
+# Clone repo
+git clone https://github.com/TienDat11102k5/UTH-ConfMS.git
 cd UTH-ConfMS
-```
 
-### 2. Backend Setup
-
-```bash
-cd backend
-
-# Configure application.properties
-cp src/main/resources/application.properties.example src/main/resources/application.properties
-# Edit with your database credentials
-
-# Build and run
-./mvnw clean install
-./mvnw spring-boot:run
-```
-
-Backend runs on: `http://localhost:8080`
-
-### 3. Frontend Setup
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start dev server
-npm run dev
-```
-
-Frontend runs on: `http://localhost:5173`
-
-### 4. Database Setup
-
-```bash
-# Create database
-psql -U postgres
-CREATE DATABASE confms_db;
-\q
-
-# Tables are auto-created by Hibernate (spring.jpa.hibernate.ddl-auto=update)
-```
-
-### 5. Docker Setup (Alternative)
-
-```bash
+# Cấu hình
 cd docker
+cp .env.example .env
+# Chỉnh sửa .env với credentials của bạn
+
+# Khởi chạy
 docker-compose up -d
+
+# Truy cập
+# Frontend: http://localhost:3000
+# Backend:  http://localhost:8080
+# AI:       http://localhost:8001
 ```
 
-This starts:
-- PostgreSQL on port 5435
-- Redis on port 6379
-- Backend on port 8080
-- Frontend on port 5173
-- Automated daily backups
-
----
-
-## 🔐 Security
-
-### Security Features
-
-✅ **Authentication & Authorization**
-- JWT-based authentication
-- Role-based access control (RBAC)
-- 5 user roles: Admin, Chair, Track Chair, Reviewer, PC, Author
-- Method-level security with `@PreAuthorize`
-
-✅ **Password Security**
-- BCrypt password encryption
-- Secure password reset flow with OTP
-- Token-based reset (15-minute expiration)
-
-✅ **API Security**
-- All endpoints protected with authentication
-- CORS properly configured (no wildcards)
-- Input validation and sanitization
-- Rate limiting ready (configure per needs)
-
-✅ **Database Security**
-- Automated daily backups
-- 7-day backup retention
-- Encrypted connections
-- SQL injection prevention via JPA
-
-### Security Documentation
-
-📖 [Security Configuration Guide](docs/security-configuration.md) - Complete security setup  
-📖 [Security Testing Guide](docs/security-testing-guide.md) - Testing procedures  
-📖 [Security Audit Report](SECURITY_AUDIT_REPORT.md) - Full audit results
-
-### Security Audit Status
-
-**Last Audit:** December 25, 2025  
-**Security Coverage:** 100% (41/41 endpoints)  
-**Critical Issues:** 0  
-**Status:** ✅ Production Ready
-
----
-
-## 📚 Documentation
-
-### User Guides
-- [Installation Guide](docs/installation-guide.md) - Detailed setup instructions
-- [User Guide](docs/user-guide.md) - End-user documentation
-- [Admin Guide](docs/admin-user-management.md) - Administrator manual
-
-### Technical Documentation
-- [API Specification](docs/api-spec.md) - REST API reference
-- [Architecture](docs/architecture.md) - System design
-- [Detail Design](docs/detail-design.md) - Implementation details
-
-### Testing & Deployment
-- [Test Plan](docs/test-plan.md) - Testing strategy
-- [Deployment Guide](docker/BUILD_GUIDE.md) - Production deployment
-
----
-
-## 🔧 Development
-
-### Running Tests
-
-**Backend:**
-```bash
-cd backend
-./mvnw test
-```
-
-**Frontend:**
-```bash
-cd frontend
-npm run test
-```
-
-**AI Service:**
-```bash
-cd ai-service
-pytest
-```
-
-### Code Style
-
-**Java:**
-- Follow Google Java Style Guide
-- Use Lombok for boilerplate reduction
-- Document public APIs with Javadoc
-
-**JavaScript:**
-- ESLint configuration included
-- Prettier for formatting
-- Use functional components with hooks
-
-### Environment Variables
-
-Create `.env` file:
+### Cách 2: Manual
 
 ```bash
 # Backend
-SERVER_PORT=8080
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5435/confms_db
-SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=your_password
-JWT_SECRET=your_jwt_secret_at_least_32_characters
-CORS_ALLOWED_ORIGINS=http://localhost:5173
+cd backend
+cp .env.example .env
+./mvnw spring-boot:run
 
-# Firebase (for Google OAuth)
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_CREDENTIALS=./path/to/service-account.json
+# Frontend (terminal mới)
+cd frontend
+npm install
+npm run dev
 
-# Email (for OTP)
-MAIL_USERNAME=your-email@gmail.com
-MAIL_PASSWORD=your_app_password
-
-# AI Service
-GEMINI_API_KEY=your_gemini_api_key
+# AI Service (terminal mới)
+cd ai-service
+python -m venv venv
+source venv/bin/activate  # hoặc venv\Scripts\activate (Windows)
+pip install -r requirements.txt
+uvicorn src.app.main:app --reload --port 8000
 ```
+
+Chi tiết: [📖 Hướng dẫn cài đặt](docs/installation-guide.md)
 
 ---
 
-## 🚢 Deployment
+## 📸 Demo & Screenshots
 
-### Production Checklist
+### Workflow Tổng Quan
 
-- [ ] Set strong JWT secret (64+ characters)
-- [ ] Configure allowed CORS origins
-- [ ] Set secure database credentials
-- [ ] Enable HTTPS/SSL
-- [ ] Configure email service
-- [ ] Set up automated backups
-- [ ] Configure rate limiting
-- [ ] Enable audit logging
-- [ ] Review security settings
-
-### Docker Deployment
-
-```bash
-# Build images
-docker-compose build
-
-# Start services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f backend
-
-# Stop services
-docker-compose down
+```mermaid
+flowchart LR
+    A[📄 Nộp bài] --> B[👀 Review]
+    B --> C[✅ Quyết định]
+    C --> D[📚 Camera-ready]
+    D --> E[🎉 Xuất bản]
 ```
 
-### Manual Deployment
+### Screenshots
 
-See [Deployment Guide](docker/BUILD_GUIDE.md) for detailed instructions.
+| Màn hình           | Mô tả                                   |
+| ------------------ | --------------------------------------- |
+| Dashboard Author   | Xem danh sách bài nộp, trạng thái       |
+| Form nộp bài       | Upload PDF, thêm co-authors             |
+| Dashboard Reviewer | Bài được phân công, form đánh giá       |
+| Dashboard Chair    | Quản lý hội nghị, phân công, quyết định |
+| Admin Users        | Quản lý users, phân quyền RBAC          |
 
 ---
 
-## 💾 Database Backup
+## 📚 API Documentation
 
-### Automated Backup
+### Authentication
 
-Backups run automatically every 24 hours via Docker service:
+| Method | Endpoint                    | Mô tả            |
+| ------ | --------------------------- | ---------------- |
+| POST   | `/api/auth/register`        | Đăng ký          |
+| POST   | `/api/auth/login`           | Đăng nhập        |
+| POST   | `/api/auth/google`          | Google SSO       |
+| POST   | `/api/auth/forgot-password` | Gửi OTP          |
+| POST   | `/api/auth/reset-password`  | Đặt lại mật khẩu |
 
-```yaml
-# docker-compose.yml includes:
-backup:
-  image: postgres:16-alpine
-  volumes:
-    - ./scripts:/scripts
-    - ./backups:/backups
-  command: sh -c "while true; do /scripts/backup-database.sh && sleep 86400; done"
-```
+### Paper Submission
 
-**Features:**
-- ✅ Daily automated backups
-- ✅ 7-day retention (configurable)
-- ✅ Gzip compression
-- ✅ Timestamped backups
+| Method | Endpoint                             | Mô tả            |
+| ------ | ------------------------------------ | ---------------- |
+| POST   | `/api/submissions`                   | Nộp bài mới      |
+| GET    | `/api/submissions/my`                | Bài của tôi      |
+| PUT    | `/api/submissions/{id}`              | Cập nhật bài     |
+| POST   | `/api/submissions/{id}/camera-ready` | Nộp camera-ready |
 
-### Manual Backup
+### Review
 
-```bash
-# Backup
-cd scripts
-./backup-database.sh
+| Method | Endpoint              | Mô tả              |
+| ------ | --------------------- | ------------------ |
+| GET    | `/api/assignments/my` | Bài được phân công |
+| POST   | `/api/reviews`        | Nộp đánh giá       |
+| POST   | `/api/coi`            | Khai báo COI       |
 
-# Restore
-./restore-database.sh /path/to/backup.sql.gz
-```
-
-**Backup Location:** `./backups/`  
-**Retention:** 7 days (older backups auto-deleted)
-
-See [backup script README](scripts/README.md) for configuration options.
+Chi tiết: [📖 Detail Design](docs/detail-design.md)
 
 ---
 
-## 🤝 Contributing
+## 📖 Tài Liệu
 
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-### Commit Message Convention
-
-```
-<type>: <subject>
-
-<body>
-
-<footer>
-```
-
-**Types:**
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes (formatting)
-- `refactor`: Code refactoring
-- `test`: Adding tests
-- `chore`: Maintenance tasks
-- `security`: Security-related changes
-
-**Example:**
-```
-security: Fix missing authorization on review endpoints
-
-- Add @PreAuthorize annotations to ReviewController
-- Remove CORS wildcard from 3 controllers
-- Update security audit documentation
-
-Fixes #123
-```
+| Tài liệu                                      | Mô tả                   |
+| --------------------------------------------- | ----------------------- |
+| [📐 UML Diagrams](docs/uml-diagrams.md)       | 29 sơ đồ UML            |
+| [🏗 Architecture](docs/architecture.md)        | Kiến trúc hệ thống      |
+| [📋 SRS](docs/srs.md)                         | Đặc tả yêu cầu phần mềm |
+| [📝 Detail Design](docs/detail-design.md)     | Thiết kế chi tiết       |
+| [🧪 Test Plan](docs/test-plan.md)             | Kế hoạch kiểm thử       |
+| [🔧 Installation](docs/installation-guide.md) | Hướng dẫn cài đặt       |
+| [📖 User Guide](docs/user-guide.md)           | Hướng dẫn sử dụng       |
+| [🔐 Security](docs/security-configuration.md) | Cấu hình bảo mật        |
 
 ---
 
-## 📄 License
+## 🤝 Đóng Góp
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👥 Team
-
-**Project:** University of Transport and Communications  
-**Course:** Advanced Java Programming  
-**Year:** 2024-2025
-
-### Contributors
-
-- **PERSON 1** - Frontend Development
-- **PERSON 2** - AI Service Integration
-- **PERSON 3** - Database Backup & Security Audit
+1. Fork repository
+2. Tạo branch: `git checkout -b feature/your-feature`
+3. Commit: `git commit -m "feat: Add your feature"`
+4. Push: `git push origin feature/your-feature`
+5. Tạo Pull Request
 
 ---
 
-## 📞 Support
+## 👥 Nhóm Phát Triển
+
+**Đồ án:** Lập Trình Java Nâng Cao  
+**Trường:** Đại học Giao thông Vận tải TP.HCM (UTH)  
+**Năm:** 2024-2025
+
+| Thành viên  | Vai trò                |
+| ----------- | ---------------------- |
+| **[Tên 1]** | Backend Development    |
+| **[Tên 2]** | Frontend Development   |
+| **[Tên 3]** | AI Service Integration |
+
+---
+
+## 📊 Thống Kê Dự Án
+
+| Metric        | Giá trị                  |
+| ------------- | ------------------------ |
+| Dòng code     | ~50,000+                 |
+| API Endpoints | 41                       |
+| Pages         | 47                       |
+| Entities      | 24                       |
+| UML Diagrams  | 29                       |
+| Test Cases    | 50+                      |
+| Languages     | Java, JavaScript, Python |
+
+---
+
+## 📞 Liên Hệ
 
 - 📧 Email: support@uth.edu.vn
-- 🐛 Issues: [GitHub Issues](https://github.com/your-org/UTH-ConfMS/issues)
-- 📖 Documentation: [docs/](docs/)
-- 🔒 Security: security@uth.edu.vn
+- 🐛 Issues: [GitHub Issues](https://github.com/TienDat11102k5/UTH-ConfMS/issues)
+- 📖 Docs: [docs/](docs/)
 
 ---
 
-## 🎯 Roadmap
-
-### Phase 1 (Completed) ✅
-- [x] User authentication & authorization
-- [x] Conference management
-- [x] Paper submission workflow
-- [x] Peer review system
-- [x] Decision making
-- [x] Database backup automation
-- [x] Security audit & hardening
-
-### Phase 2 (In Progress) 🚧
-- [ ] AI-powered abstract enhancement
-- [ ] Keyword extraction
-- [ ] Duplicate detection
-- [ ] Email notifications
-- [ ] Rate limiting implementation
-
-### Phase 3 (Planned) 📋
-- [ ] Real-time notifications
-- [ ] Advanced analytics dashboard
-- [ ] Multi-conference support
-- [ ] Mobile app
-- [ ] Internationalization (i18n)
-
----
-
-## 📊 Project Stats
-
-- **Total Lines of Code:** ~50,000+
-- **API Endpoints:** 41
-- **Security Coverage:** 100%
-- **Test Coverage:** 75%+
-- **Supported Roles:** 6
-- **Languages:** Java, JavaScript, Python
-
----
-
-**Last Updated:** December 25, 2025  
-**Version:** 1.0.0  
-**Status:** 🟢 Active Development
+<p align="center">
+  <strong>Made with ❤️ by UTH Students</strong>
+  <br/>
+  <sub>© 2024-2025 UTH-ConfMS. All rights reserved.</sub>
+</p>

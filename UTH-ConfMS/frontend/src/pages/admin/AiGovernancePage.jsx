@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import AdminLayout from "../../components/Layout/AdminLayout";
 import apiClient from "../../apiClient";
 import {
@@ -8,6 +8,7 @@ import {
   getAuditLogs,
 } from "../../api/ai/governanceAI";
 import { useAuth } from "../../auth";
+import { ToastContainer } from "../../components/Toast";
 import "../../styles/AiGovernancePage.css";
 
 // Mapping tên features sang tiếng Việt với mô tả chi tiết
@@ -77,6 +78,27 @@ const AiGovernancePage = () => {
 
   const [selectedFeature, setSelectedFeature] = useState("");
 
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  // Confirm modal state
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    flag: null,
+    isEnabling: false
+  });
+
+  // Add toast helper
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  // Remove toast helper
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
   // Load conferences
   useEffect(() => {
     const loadConferences = async () => {
@@ -126,12 +148,40 @@ const AiGovernancePage = () => {
     fetchFlags();
   }, [selectedConferenceId]);
 
-  const handleToggleFlag = async (flag) => {
+  // Open confirmation modal when clicking toggle button
+  const handleToggleClick = (flag) => {
+    setConfirmModal({
+      isOpen: true,
+      flag: flag,
+      isEnabling: !flag.enabled
+    });
+  };
+
+  // Close confirmation modal
+  const handleCloseModal = () => {
+    setConfirmModal({
+      isOpen: false,
+      flag: null,
+      isEnabling: false
+    });
+  };
+
+  // Confirm and perform the toggle action
+  const handleConfirmToggle = async () => {
+    const flag = confirmModal.flag;
+    if (!flag) return;
+
     const featureName = flag.key;
+    const featureLabel = flag.label;
+    const isEnabling = confirmModal.isEnabling;
+    
+    // Close modal first
+    handleCloseModal();
+
     // Optimistic update
     setFlags((prev) =>
       prev.map((f) =>
-        f.key === featureName ? { ...f, enabled: !f.enabled } : f
+        f.key === featureName ? { ...f, enabled: isEnabling } : f
       )
     );
 
@@ -139,10 +189,12 @@ const AiGovernancePage = () => {
       const conferenceIdStr = String(selectedConferenceId);
       const userIdStr = userId ? String(userId) : null;
       
-      if (flag.enabled) {
-        await disableFeature(conferenceIdStr, featureName, userIdStr);
-      } else {
+      if (isEnabling) {
         await enableFeature(conferenceIdStr, featureName, userIdStr);
+        addToast(`Bạn đã bật thành công tính năng "${featureLabel}"`, "success");
+      } else {
+        await disableFeature(conferenceIdStr, featureName, userIdStr);
+        addToast(`Bạn đã tắt thành công tính năng "${featureLabel}"`, "success");
       }
     } catch (err) {
       console.error("Toggle flag error:", err);
@@ -153,7 +205,7 @@ const AiGovernancePage = () => {
         )
       );
       const errorMsg = err.message || err.toString() || "Không thể cập nhật trạng thái tính năng AI.";
-      alert(errorMsg);
+      addToast(errorMsg, "error");
     }
   };
 
@@ -247,7 +299,7 @@ const AiGovernancePage = () => {
                           <button
                             className={`toggle-btn ${flag.enabled ? 'btn-disable' : 'btn-enable'}`}
                             type="button"
-                            onClick={() => handleToggleFlag(flag)}
+                            onClick={() => handleToggleClick(flag)}
                           >
                             {flag.enabled ? "Tắt" : "Bật"}
                           </button>
@@ -314,6 +366,42 @@ const AiGovernancePage = () => {
           )}
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {confirmModal.isOpen && (
+        <div className="confirm-modal-overlay">
+          <div className="confirm-modal">
+            <div className="confirm-modal-header">
+              <h3>Xác nhận</h3>
+            </div>
+            <div className="confirm-modal-body">
+              <p>
+                Bạn có muốn {confirmModal.isEnabling ? "bật" : "tắt"} tính năng{" "}
+                <strong>"{confirmModal.flag?.label}"</strong> không?
+              </p>
+            </div>
+            <div className="confirm-modal-footer">
+              <button
+                className="btn-cancel"
+                type="button"
+                onClick={handleCloseModal}
+              >
+                Hủy
+              </button>
+              <button
+                className={`btn-confirm ${confirmModal.isEnabling ? 'btn-enable' : 'btn-disable'}`}
+                type="button"
+                onClick={handleConfirmToggle}
+              >
+                Đồng ý
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </AdminLayout>
   );
 };
