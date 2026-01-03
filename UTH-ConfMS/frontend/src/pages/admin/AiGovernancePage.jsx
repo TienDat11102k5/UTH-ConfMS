@@ -126,13 +126,14 @@ const AiGovernancePage = () => {
         const data = await getFeatureFlags(String(selectedConferenceId));
         const features = data.features || {};
 
-        // Map sang dạng dùng được cho UI với thông tin tiếng Việt
-        const mapped = Object.entries(features).map(([key, enabled]) => ({
+        // Map TẤT CẢ features có trong FEATURE_LABELS (không chỉ features đã bật)
+        // Nếu feature không có trong response, mặc định là disabled
+        const mapped = Object.keys(FEATURE_LABELS).map((key) => ({
           key,
           label: FEATURE_LABELS[key]?.name || key,
           description: FEATURE_LABELS[key]?.description || `Tính năng AI: ${key}`,
           role: FEATURE_LABELS[key]?.role || "Hệ thống",
-          enabled,
+          enabled: features[key] === true, // Mặc định false nếu không có trong response
         }));
 
         setFlags(mapped);
@@ -353,15 +354,61 @@ const AiGovernancePage = () => {
               <p>Chưa có bản ghi nào hoặc chưa tải nhật ký.</p>
             </div>
           ) : (
-            <div className="logs-list">
-              {logs.map((log, idx) => (
-                <div key={idx} className="log-item">
-                  <div className="log-feature">{FEATURE_LABELS[log.feature]?.name || log.feature}</div>
-                  <div className="log-action">{log.action}</div>
-                  <div className="log-time">{log.timestamp}</div>
-                  {log.user_id && <div className="log-user">User: {log.user_id}</div>}
-                </div>
-              ))}
+            <div className="logs-table-container">
+              <table className="logs-table">
+                <thead>
+                  <tr>
+                    <th>Thời gian</th>
+                    <th>Tính năng</th>
+                    <th>Hành động</th>
+                    <th>Người dùng</th>
+                    <th>Model</th>
+                    <th>Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {logs.map((log, idx) => {
+                    const timestamp = new Date(log.timestamp);
+                    const formattedTime = timestamp.toLocaleString('vi-VN', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    });
+                    
+                    // Hiển thị tên người dùng hoặc email, fallback về ID
+                    const userName = log.user_name || log.user_email || `User #${log.user_id}`;
+                    
+                    return (
+                      <tr key={idx}>
+                        <td className="log-time">{formattedTime}</td>
+                        <td className="log-feature">
+                          <span className="feature-badge">
+                            {FEATURE_LABELS[log.feature]?.name || log.feature}
+                          </span>
+                        </td>
+                        <td className="log-action">{log.action}</td>
+                        <td className="log-user" title={log.user_email || ''}>
+                          {userName}
+                        </td>
+                        <td className="log-model">{log.model_id}</td>
+                        <td className="log-status">
+                          {log.accepted === true && (
+                            <span className="status-badge accepted">✓ Chấp nhận</span>
+                          )}
+                          {log.accepted === false && (
+                            <span className="status-badge rejected">✗ Từ chối</span>
+                          )}
+                          {log.accepted === null && (
+                            <span className="status-badge pending">⋯ Chưa xác nhận</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </div>

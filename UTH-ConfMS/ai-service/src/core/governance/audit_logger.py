@@ -288,12 +288,14 @@ class AuditLogger:
             
             if conference_id:
                 conditions.append(f"conference_id = ${param_idx}")
-                params.append(conference_id)
+                # Convert to int for database comparison
+                params.append(int(conference_id) if isinstance(conference_id, str) else conference_id)
                 param_idx += 1
             
             if user_id:
                 conditions.append(f"user_id = ${param_idx}")
-                params.append(user_id)
+                # Convert to int for database comparison
+                params.append(int(user_id) if isinstance(user_id, str) else user_id)
                 param_idx += 1
             
             if feature:
@@ -305,11 +307,13 @@ class AuditLogger:
             
             query = f"""
                 SELECT 
-                    id, timestamp, conference_id, user_id, feature, action,
-                    prompt, model_id, input_hash, output_summary, accepted, metadata
-                FROM ai_audit_logs
+                    l.id, l.timestamp, l.conference_id, l.user_id, l.feature, l.action,
+                    l.prompt, l.model_id, l.input_hash, l.output_summary, l.accepted, l.metadata,
+                    u.full_name as user_name, u.email as user_email
+                FROM ai_audit_logs l
+                LEFT JOIN users u ON l.user_id = u.id
                 {where_clause}
-                ORDER BY timestamp DESC
+                ORDER BY l.timestamp DESC
                 LIMIT ${param_idx} OFFSET ${param_idx + 1}
             """
             params.extend([limit, offset])
@@ -322,8 +326,10 @@ class AuditLogger:
                     logs.append({
                         "id": str(row['id']),
                         "timestamp": row['timestamp'].isoformat(),
-                        "conference_id": str(row['conference_id']),
-                        "user_id": str(row['user_id']),
+                        "conference_id": str(row['conference_id']) if row['conference_id'] else None,
+                        "user_id": str(row['user_id']) if row['user_id'] else None,
+                        "user_name": row['user_name'] if row['user_name'] else None,
+                        "user_email": row['user_email'] if row['user_email'] else None,
                         "feature": row['feature'],
                         "action": row['action'],
                         "prompt": row['prompt'],
@@ -337,7 +343,7 @@ class AuditLogger:
                 return logs
                 
         except Exception as e:
-            logger.error(f"Không thể lấy audit logs: {e}")
+            logger.error(f"Không thể lấy audit logs: {e}", exc_info=True)
             return []
     
     async def close(self) -> None:
