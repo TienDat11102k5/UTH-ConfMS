@@ -1,12 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import apiClient from "../../apiClient";
 import AdminLayout from "../../components/Layout/AdminLayout";
+import { ToastContainer } from "../../components/Toast";
 
 const AdminConferenceCreate = () => {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -85,8 +98,8 @@ const AdminConferenceCreate = () => {
     try {
       setSubmitting(true);
       await apiClient.post(`/conferences`, payload);
-      alert("Tạo hội nghị thành công!");
-      navigate("/admin/conferences");
+      addToast("Tạo hội nghị thành công!", "success");
+      setTimeout(() => navigate("/admin/conferences"), 800);
     } catch (err) {
       console.error(err);
       const serverMsg = err.response?.data || "Tạo thất bại";
@@ -204,6 +217,9 @@ const AdminConferenceCreate = () => {
           <button type="button" className="btn-secondary" onClick={() => navigate("/admin/conferences")} style={{ minWidth: "120px" }}>Hủy</button>
         </div>
       </form>
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </AdminLayout>
   );
 };

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import apiClient from "../../apiClient";
 import AdminLayout from "../../components/Layout/AdminLayout";
+import { ToastContainer } from "../../components/Toast";
 
 const AdminConferenceEdit = () => {
   const { id } = useParams();
@@ -10,6 +11,18 @@ const AdminConferenceEdit = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -150,8 +163,8 @@ const AdminConferenceEdit = () => {
       };
 
       await apiClient.put(`/conferences/${id}`, payload);
-      alert("Cập nhật thành công!");
-      navigate("/admin/conferences");
+      addToast("Cập nhật thành công!", "success");
+      setTimeout(() => navigate("/admin/conferences"), 800);
     } catch (err) {
       console.error(err);
       const msg = err.response?.data || "Lưu thất bại.";
@@ -637,6 +650,9 @@ const AdminConferenceEdit = () => {
           </button>
         </div>
       </form>
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </AdminLayout>
   );
 };

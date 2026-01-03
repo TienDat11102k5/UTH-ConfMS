@@ -1,16 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import AdminLayout from "../../components/Layout/AdminLayout";
 import Pagination from '../../components/Pagination';
 import { usePagination } from '../../hooks/usePagination';
 import apiClient from "../../apiClient";
+import { ToastContainer } from "../../components/Toast";
 
 const TenantManagement = () => {
   const [users, setUsers] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const fetchUsers = async () => {
     try {
@@ -145,7 +158,7 @@ const TenantManagement = () => {
                             setUsers((s) => s.filter((x) => x.id !== u.id));
                           } catch (err) {
                             console.error(err);
-                            alert("Xoá thất bại");
+                            addToast("Xoá thất bại", "error");
                           }
                         }}
                         style={{
@@ -191,6 +204,9 @@ const TenantManagement = () => {
           itemName="người dùng"
         />
       )}
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </AdminLayout>
   );
 };

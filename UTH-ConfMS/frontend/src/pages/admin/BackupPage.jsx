@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import AdminLayout from "../../components/Layout/AdminLayout";
 import Pagination from '../../components/Pagination';
 import { usePagination } from '../../hooks/usePagination';
 import apiClient from "../../apiClient";
+import { ToastContainer } from "../../components/Toast";
 import { FiDownload, FiRotateCcw, FiTrash2 } from 'react-icons/fi';
 
 const BackupPage = () => {
@@ -10,6 +11,18 @@ const BackupPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const { currentPage, setCurrentPage, totalPages, paginatedItems } =
     usePagination(backups, 20);
@@ -38,12 +51,12 @@ const BackupPage = () => {
     try {
       setCreating(true);
       await apiClient.post("/backups");
-      alert("Tạo backup thành công!");
+      addToast("Tạo backup thành công!", "success");
       fetchBackups();
     } catch (err) {
       console.error(err);
       const errorMsg = err.response?.data?.error || "Tạo backup thất bại.";
-      alert(errorMsg);
+      addToast(errorMsg, "error");
     } finally {
       setCreating(false);
     }
@@ -66,7 +79,7 @@ const BackupPage = () => {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error(err);
-      alert("Tải xuống thất bại.");
+      addToast("Tải xuống thất bại.", "error");
     }
   };
 
@@ -77,12 +90,12 @@ const BackupPage = () => {
     
     try {
       await apiClient.post(`/backups/restore/${filename}`);
-      alert("Khôi phục thành công! Vui lòng đăng nhập lại.");
-      window.location.href = "/login";
+      addToast("Khôi phục thành công! Vui lòng đăng nhập lại.", "success");
+      setTimeout(() => { window.location.href = "/login"; }, 1500);
     } catch (err) {
       console.error(err);
       const errorMsg = err.response?.data?.error || "Khôi phục thất bại.";
-      alert(errorMsg);
+      addToast(errorMsg, "error");
     }
   };
 
@@ -91,12 +104,12 @@ const BackupPage = () => {
     
     try {
       await apiClient.delete(`/backups/${filename}`);
-      alert("Xóa backup thành công!");
+      addToast("Xóa backup thành công!", "success");
       fetchBackups();
     } catch (err) {
       console.error(err);
       const errorMsg = err.response?.data?.error || "Xóa backup thất bại.";
-      alert(errorMsg);
+      addToast(errorMsg, "error");
     }
   };
 
@@ -311,6 +324,9 @@ const BackupPage = () => {
           itemName="bản sao lưu"
         />
       )}
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </AdminLayout>
   );
 };

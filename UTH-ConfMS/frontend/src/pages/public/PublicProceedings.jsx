@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import logoUth from "../../assets/logoUTH.jpg";
 import UserProfileDropdown from "../../components/UserProfileDropdown";
+import { ToastContainer } from "../../components/Toast";
 import { FiDownload, FiFilter, FiSearch } from "react-icons/fi";
 import "../../styles/PublicProceedings.css";
 
@@ -18,6 +19,18 @@ const PublicProceedings = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const [currentUser, setCurrentUser] = useState(null);
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   useEffect(() => {
     // Check if user is logged in
@@ -150,7 +163,7 @@ const PublicProceedings = () => {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Error downloading paper:", err);
-      alert("Không thể tải xuống file. Vui lòng thử lại sau.");
+      addToast("Không thể tải xuống file. Vui lòng thử lại sau.", "error");
     }
   };
 
@@ -901,6 +914,9 @@ const PublicProceedings = () => {
           © {new Date().getFullYear()} Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải
         </span>
       </footer>
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
   );
 };
