@@ -1,8 +1,9 @@
 // src/pages/SettingsPage.jsx
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser } from "../auth";
 import apiClient from "../apiClient";
+import { ToastContainer } from "../components/Toast";
 import "../styles/SettingsPage.css";
 
 const SettingsPage = () => {
@@ -10,8 +11,20 @@ const SettingsPage = () => {
   const currentUser = getCurrentUser();
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+
+  // Add toast helper
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  // Remove toast helper
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -26,39 +39,36 @@ const SettingsPage = () => {
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
 
     // Validate
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setError("Mật khẩu mới và xác nhận mật khẩu không khớp");
+      addToast("Mật khẩu mới và xác nhận mật khẩu không khớp", "error");
       return;
     }
 
     if (passwordData.newPassword.length < 6) {
-      setError("Mật khẩu mới phải có ít nhất 6 ký tự");
+      addToast("Mật khẩu mới phải có ít nhất 6 ký tự", "error");
       return;
     }
 
     setLoading(true);
 
     try {
-      await apiClient.put("/user/change-password", {  // Giả sử path này đúng, nếu sai thì thêm /api
+      await apiClient.put("/user/change-password", {
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
       });
 
-      setSuccess("Đổi mật khẩu thành công!");
+      addToast("Đổi mật khẩu thành công!", "success");
       setPasswordData({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
     } catch (err) {
-      setError(
-        err?.response?.data?.message ||
-          "Không thể đổi mật khẩu. Vui lòng kiểm tra mật khẩu hiện tại."
-      );
+      const errorMsg = err?.response?.data?.message ||
+        "Không thể đổi mật khẩu. Vui lòng kiểm tra mật khẩu hiện tại.";
+      addToast(errorMsg, "error");
     } finally {
       setLoading(false);
     }
@@ -81,8 +91,6 @@ const SettingsPage = () => {
           </button>
         </div>
 
-        {error && <div className="alert alert-error">{error}</div>}
-        {success && <div className="alert alert-success">{success}</div>}
 
         <div className="settings-content">
           {/* Password Section - Only for LOCAL users */}
@@ -163,6 +171,9 @@ const SettingsPage = () => {
 
         </div>
       </div>
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
   );
 };

@@ -1,8 +1,9 @@
 // src/pages/author/AuthorSubmissionEditPage.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
+import { ToastContainer } from "../../components/Toast";
 
 const AuthorSubmissionEditPage = () => {
   const { id } = useParams();
@@ -10,8 +11,19 @@ const AuthorSubmissionEditPage = () => {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [loadError, setLoadError] = useState("");
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const [form, setForm] = useState({
     title: "",
@@ -25,7 +37,7 @@ const AuthorSubmissionEditPage = () => {
     let ignore = false;
     const load = async () => {
       setLoading(true);
-      setError("");
+      setLoadError("");
       try {
         const res = await apiClient.get(`/submissions/${id}`);
         if (ignore) return;
@@ -41,7 +53,7 @@ const AuthorSubmissionEditPage = () => {
           navigate("/login");
           return;
         }
-        setError(
+        setLoadError(
           err?.response?.data?.message ||
             err?.response?.data?.error ||
             "Không tải được submission."
@@ -68,8 +80,6 @@ const AuthorSubmissionEditPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
     if (!id) return;
     try {
       setSaving(true);
@@ -80,7 +90,7 @@ const AuthorSubmissionEditPage = () => {
         formData.append("file", file);
       }
       await apiClient.put(`/submissions/${id}`, formData);
-      setSuccess("Cập nhật submission thành công.");
+      addToast("Cập nhật submission thành công.", "success");
       setTimeout(() => navigate("/author/submissions"), 800);
     } catch (err) {
       const status = err?.response?.status;
@@ -88,10 +98,11 @@ const AuthorSubmissionEditPage = () => {
         navigate("/login");
         return;
       }
-      setError(
+      addToast(
         err?.response?.data?.message ||
           err?.response?.data?.error ||
-          "Không thể cập nhật submission."
+          "Không thể cập nhật submission.",
+        "error"
       );
     } finally {
       setSaving(false);
@@ -109,14 +120,14 @@ const AuthorSubmissionEditPage = () => {
     );
   }
 
-  if (error) {
+  if (loadError) {
     return (
       <div className="dash-page">
         <PortalHeader ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
         <main className="dash-main">
           <section className="dash-section">
             <div className="auth-error" style={{ marginBottom: "1rem" }}>
-              {error}
+              {loadError}
             </div>
             <button className="btn-secondary" onClick={() => navigate(-1)}>
               Quay lại
@@ -153,16 +164,6 @@ const AuthorSubmissionEditPage = () => {
             </div>
           </div>
 
-          {success && (
-            <div className="auth-success" style={{ marginBottom: "1rem" }}>
-              {success}
-            </div>
-          )}
-          {error && (
-            <div className="auth-error" style={{ marginBottom: "1rem" }}>
-              {error}
-            </div>
-          )}
 
           {meta && (
             <div
@@ -259,6 +260,9 @@ const AuthorSubmissionEditPage = () => {
           </div>
         </section>
       </main>
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
   );
 };

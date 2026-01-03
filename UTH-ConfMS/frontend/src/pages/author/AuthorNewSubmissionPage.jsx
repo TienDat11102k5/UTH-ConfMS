@@ -1,8 +1,9 @@
 // src/pages/author/AuthorNewSubmissionPage.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
+import { ToastContainer } from "../../components/Toast";
 
 // Modal component for simple AI capabilities (internal use here)
 const AIModal = ({ isOpen, title, onClose, children }) => {
@@ -125,6 +126,18 @@ const AuthorNewSubmissionPage = () => {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
   // AI State
   const [aiLoading, setAiLoading] = useState(false);
   const [grammarResult, setGrammarResult] = useState(null); // { originalText, correctedText, errors: [] }
@@ -224,7 +237,7 @@ const AuthorNewSubmissionPage = () => {
     const text = field === "Title" ? formValues.title : formValues.abstractText;
     const fieldVN = field === "Title" ? "Tiêu đề" : "Tóm tắt";
     if (!text || text.trim().length < 5) {
-      alert(`Vui lòng nhập ${fieldVN} trước khi kiểm tra.`);
+      addToast(`Vui lòng nhập ${fieldVN} trước khi kiểm tra.`, "warning");
       return;
     }
     try {
@@ -236,7 +249,7 @@ const AuthorNewSubmissionPage = () => {
       });
       setGrammarResult({ ...res.data, field: fieldVN });
     } catch (err) {
-      alert("Lỗi khi kiểm tra ngữ pháp: " + (err.response?.data?.message || err.message));
+      addToast("Lỗi khi kiểm tra ngữ pháp: " + (err.response?.data?.message || err.message), "error");
     } finally {
       setAiLoading(false);
     }
@@ -245,7 +258,7 @@ const AuthorNewSubmissionPage = () => {
   const handlePolish = async () => {
     const text = formValues.abstractText;
     if (!text || text.trim().length < 10) {
-      alert("Vui lòng nhập Tóm tắt trước khi đánh bóng.");
+      addToast("Vui lòng nhập Tóm tắt trước khi đánh bóng.", "warning");
       return;
     }
     try {
@@ -257,7 +270,7 @@ const AuthorNewSubmissionPage = () => {
       });
       setPolishResult(res.data);
     } catch (err) {
-      alert("Lỗi khi cải thiện nội dung: " + (err.response?.data?.message || err.message));
+      addToast("Lỗi khi cải thiện nội dung: " + (err.response?.data?.message || err.message), "error");
     } finally {
       setAiLoading(false);
     }
@@ -265,7 +278,7 @@ const AuthorNewSubmissionPage = () => {
 
   const handleSuggestKeywords = async () => {
     if (!formValues.title || !formValues.abstractText) {
-      alert("Vui lòng nhập Tiêu đề và Tóm tắt để AI gợi ý từ khóa.");
+      addToast("Vui lòng nhập Tiêu đề và Tóm tắt để AI gợi ý từ khóa.", "warning");
       return;
     }
     try {
@@ -278,7 +291,7 @@ const AuthorNewSubmissionPage = () => {
       });
       setKeywordSuggestions(res.data.keywords || []);
     } catch (err) {
-      alert("Lỗi khi gợi ý từ khóa.");
+      addToast("Lỗi khi gợi ý từ khóa.", "error");
     } finally {
       setAiLoading(false);
     }
@@ -924,6 +937,9 @@ const AuthorNewSubmissionPage = () => {
           </div>
         </div>
       )}
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
   );
 };

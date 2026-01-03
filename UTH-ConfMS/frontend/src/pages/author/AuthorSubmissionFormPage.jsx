@@ -1,15 +1,26 @@
 // src/pages/author/AuthorSubmissionFormPage.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DashboardLayout from "../../components/Layout/DashboardLayout.jsx";
 import { getConferencesAPI } from "../../api/conferenceAPI";
 import { submitPaperAPI } from "../../api/submissionAPI";
+import { ToastContainer } from "../../components/Toast";
 
 const AuthorSubmissionFormPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
   
   const [conferences, setConferences] = useState([]);
   const [tracks, setTracks] = useState([]);
@@ -40,7 +51,7 @@ const AuthorSubmissionFormPage = () => {
       setConferences(data);
     } catch (err) {
       console.error("Error loading conferences:", err);
-      setError("Không thể tải danh sách hội nghị");
+      addToast("Không thể tải danh sách hội nghị", "error");
     }
   };
 
@@ -98,14 +109,14 @@ const AuthorSubmissionFormPage = () => {
 
   const addCoAuthor = () => {
     if (!coAuthorForm.name || !coAuthorForm.email) {
-      alert("Vui lòng nhập tên và email của đồng tác giả");
+      addToast("Vui lòng nhập tên và email của đồng tác giả", "warning");
       return;
     }
 
     // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(coAuthorForm.email)) {
-      alert("Email không hợp lệ");
+      addToast("Email không hợp lệ", "error");
       return;
     }
 
@@ -126,16 +137,14 @@ const AuthorSubmissionFormPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(false);
 
     if (!form.file) {
-      setError("Vui lòng chọn file PDF để nộp");
+      addToast("Vui lòng chọn file PDF để nộp", "error");
       return;
     }
 
     if (!form.trackId) {
-      setError("Vui lòng chọn Track cho bài báo");
+      addToast("Vui lòng chọn Track cho bài báo", "error");
       return;
     }
 
@@ -154,14 +163,14 @@ const AuthorSubmissionFormPage = () => {
 
       await submitPaperAPI(formData);
       
-      setSuccess(true);
+      addToast("Bài báo đã được nộp thành công! Đang chuyển hướng...", "success");
       setTimeout(() => {
         navigate('/author/submissions');
       }, 2000);
 
     } catch (err) {
       console.error("Submission error:", err);
-      setError(err.response?.data?.message || err.message || "Lỗi khi nộp bài. Vui lòng thử lại.");
+      addToast(err.response?.data?.message || err.message || "Lỗi khi nộp bài. Vui lòng thử lại.", "error");
     } finally {
       setLoading(false);
     }
@@ -188,18 +197,6 @@ const AuthorSubmissionFormPage = () => {
           </div>
         </div>
       </div>
-
-      {error && (
-        <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
-          <strong>Lỗi:</strong> {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="alert alert-success" style={{ marginBottom: '1rem' }}>
-          <strong>Thành công!</strong> Bài báo đã được nộp. Đang chuyển hướng...
-        </div>
-      )}
 
       <div className="form-card">
         <form onSubmit={handleSubmit} className="submission-form">
@@ -488,6 +485,9 @@ const AuthorSubmissionFormPage = () => {
           </div>
         </form>
       </div>
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </DashboardLayout>
   );
 };

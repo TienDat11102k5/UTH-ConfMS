@@ -1,8 +1,9 @@
 // src/pages/author/AuthorCameraReadyPage.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout.jsx";
+import { ToastContainer } from "../../components/Toast";
 
 const AuthorCameraReadyPage = () => {
   const { id } = useParams();
@@ -11,8 +12,19 @@ const AuthorCameraReadyPage = () => {
   const [submission, setSubmission] = useState(null);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [loadError, setLoadError] = useState("");
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   useEffect(() => {
     let ignore = false;
@@ -23,7 +35,7 @@ const AuthorCameraReadyPage = () => {
         if (!ignore) setSubmission(res.data || null);
       } catch (err) {
         if (!ignore)
-          setError(
+          setLoadError(
             err?.response?.data?.message ||
               err?.message ||
               "Không thể tải submission."
@@ -43,19 +55,16 @@ const AuthorCameraReadyPage = () => {
       return;
     }
     if (!uploaded.type.includes("pdf")) {
-      setError("Chỉ chấp nhận file PDF cho camera-ready.");
+      addToast("Chỉ chấp nhận file PDF cho camera-ready.", "error");
       return;
     }
     setFile(uploaded);
-    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
     if (!file) {
-      setError("Vui lòng chọn file PDF camera-ready.");
+      addToast("Vui lòng chọn file PDF camera-ready.", "error");
       return;
     }
     try {
@@ -80,15 +89,16 @@ const AuthorCameraReadyPage = () => {
         cameraReadyPath: camPath,
         cameraReadyDownloadUrl: camUrl,
       }));
-      setSuccess("Tải lên camera-ready thành công! Đang chuyển về trang reviews...");
+      addToast("Tải lên camera-ready thành công! Đang chuyển về trang reviews...", "success");
       
       // Redirect to reviews page after 2 seconds
       setTimeout(() => {
         navigate(`/author/submissions/${id}/reviews`);
       }, 2000);
     } catch (err) {
-      setError(
-        err?.response?.data?.message || err?.message || "Tải lên thất bại."
+      addToast(
+        err?.response?.data?.message || err?.message || "Tải lên thất bại.",
+        "error"
       );
     } finally {
       setUploading(false);
@@ -117,14 +127,9 @@ const AuthorCameraReadyPage = () => {
         <div style={{ padding: "2rem" }}>Đang tải...</div>
       ) : (
         <div className="form-card">
-          {error && (
+          {loadError && (
             <div className="auth-error" style={{ marginBottom: "1rem" }}>
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="auth-success" style={{ marginBottom: "1rem" }}>
-              {success}
+              {loadError}
             </div>
           )}
 
@@ -186,6 +191,9 @@ const AuthorCameraReadyPage = () => {
           )}
         </div>
       )}
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </DashboardLayout>
   );
 };
