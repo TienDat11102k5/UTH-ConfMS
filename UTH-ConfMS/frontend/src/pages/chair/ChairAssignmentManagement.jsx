@@ -1,10 +1,11 @@
 // src/pages/chair/ChairAssignmentManagement.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
 import { usePagination } from "../../hooks/usePagination";
 import { FiFilter, FiTrendingUp, FiSearch } from "react-icons/fi";
+import { ToastContainer } from "../../components/Toast";
 import "../../styles/ReviewerAssignments.css";
 
 const ChairAssignmentManagement = () => {
@@ -25,6 +26,18 @@ const ChairAssignmentManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [aiSuggestions, setAiSuggestions] = useState(null);
   const [loadingAI, setLoadingAI] = useState(false);
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination(filteredPapers, 20);
 
@@ -178,7 +191,7 @@ const ChairAssignmentManagement = () => {
 
   const handleAssign = async () => {
     if (!selectedPaper || !selectedReviewer) {
-      alert("Vui lòng chọn bài báo và reviewer!");
+      addToast("Vui lòng chọn bài báo và reviewer!", "warning");
       return;
     }
 
@@ -189,7 +202,7 @@ const ChairAssignmentManagement = () => {
         reviewerId: parseInt(selectedReviewer),
       });
 
-      alert("Phân công thành công!");
+      addToast("Phân công thành công!", "success");
       setShowAssignModal(false);
       setSelectedPaper(null);
       setSelectedReviewer("");
@@ -223,7 +236,7 @@ const ChairAssignmentManagement = () => {
         errorMsg = err.message;
       }
 
-      alert(errorMsg);
+      addToast(errorMsg, "error");
     } finally {
       setSubmitting(false);
     }
@@ -243,7 +256,7 @@ const ChairAssignmentManagement = () => {
       });
 
       if (availableReviewers.length === 0) {
-        alert("Không có reviewer nào khả dụng để gợi ý!");
+        addToast("Không có reviewer nào khả dụng để gợi ý!", "warning");
         return;
       }
 
@@ -265,7 +278,7 @@ const ChairAssignmentManagement = () => {
       setAiSuggestions(response.data);
     } catch (err) {
       console.error("AI suggestion error:", err);
-      alert("Không thể lấy gợi ý AI: " + (err.response?.data?.message || err.message));
+      addToast("Không thể lấy gợi ý AI: " + (err.response?.data?.message || err.message), "error");
     } finally {
       setLoadingAI(false);
     }
@@ -286,11 +299,11 @@ const ChairAssignmentManagement = () => {
         paperIds: paperIds,
         reviewerIds: reviewerIds,
       });
-      alert("Phân công hàng loạt thành công!");
+      addToast("Phân công hàng loạt thành công!", "success");
       // Reload
       window.location.reload();
     } catch (err) {
-      alert("Lỗi: " + (err.response?.data?.message || err.message));
+      addToast("Lỗi: " + (err.response?.data?.message || err.message), "error");
     } finally {
       setSubmitting(false);
     }
@@ -845,6 +858,9 @@ const ChairAssignmentManagement = () => {
           </div>
         </div>
       )}
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </DashboardLayout>
   );
 };

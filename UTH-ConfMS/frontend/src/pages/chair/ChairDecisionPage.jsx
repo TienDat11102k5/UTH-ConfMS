@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
@@ -7,6 +7,7 @@ import { FiFilter, FiTrendingUp, FiSearch, FiCheckCircle, FiXCircle, FiRefreshCw
 import EmailDraftModal from "../../components/EmailDraftModal";
 import AIDecisionModal from "../../components/AIDecisionModal";
 import AIReviewSummaryModal from "../../components/AIReviewSummaryModal";
+import { ToastContainer } from "../../components/Toast";
 import "../../styles/ReviewerAssignments.css";
 import "../../styles/ChairDecisionPage.css";
 
@@ -30,6 +31,18 @@ const ChairDecisionPage = () => {
   const [aiSummaryModal, setAiSummaryModal] = useState({ show: false, paper: null });
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [refreshing, setRefreshing] = useState(false);
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination(filteredPapers, 20);
 
@@ -187,7 +200,7 @@ const ChairDecisionPage = () => {
 
   const submitDecision = async () => {
     if (!decision) {
-      alert("Vui lòng chọn quyết định!");
+      addToast("Vui lòng chọn quyết định!", "warning");
       return;
     }
     
@@ -198,14 +211,14 @@ const ChairDecisionPage = () => {
         status: decision,
         comment,
       });
-      alert("Đã ra quyết định thành công!");
+      addToast("Đã ra quyết định thành công!", "success");
       setSelectedPaper(null);
       setDecision("");
       setComment("");
       // Reload data
       window.location.reload();
     } catch (err) {
-      alert("Lỗi: " + (err.response?.data || err.message));
+      addToast("Lỗi: " + (err.response?.data || err.message), "error");
     } finally {
       setSubmitting(false);
     }
@@ -751,18 +764,21 @@ const ChairDecisionPage = () => {
                 comment: comment || "Đã gửi email thông báo quyết định",
                 skipEmail: true // Bỏ qua email tự động vì đã gửi bằng AI
               });
-              alert("✅ Đã gửi email và ra quyết định thành công!");
+              addToast("✅ Đã gửi email và ra quyết định thành công!", "success");
               setEmailModal({ show: false, paper: null, decision: null });
               setSelectedPaper(null);
               setDecision("");
               setComment("");
               window.location.reload();
             } catch (err) {
-              alert("⚠️ Email đã gửi nhưng lỗi khi lưu quyết định: " + (err.response?.data || err.message));
+              addToast("⚠️ Email đã gửi nhưng lỗi khi lưu quyết định: " + (err.response?.data || err.message), "warning");
             }
           }}
         />
       )}
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </DashboardLayout>
   );
 };

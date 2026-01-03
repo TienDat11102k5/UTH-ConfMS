@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { ToastContainer } from "../../components/Toast";
 
 const ChairConferenceCreate = () => {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -19,6 +19,18 @@ const ChairConferenceCreate = () => {
     blindReview: true,
     tracks: [{ name: "", description: "", sessionDate: "", sessionTime: "", room: "" }],
   });
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -48,10 +60,9 @@ const ChairConferenceCreate = () => {
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    setError("");
 
     if (!formData.name || !formData.startDate || !formData.endDate) {
-      setError("Vui lòng điền tên, ngày bắt đầu và ngày kết thúc!");
+      addToast("Vui lòng điền tên, ngày bắt đầu và ngày kết thúc!", "warning");
       return;
     }
 
@@ -60,7 +71,7 @@ const ChairConferenceCreate = () => {
       const endDateTime = new Date(formData.endDate);
       
       if (endDateTime.getTime() <= startDateTime.getTime()) {
-        setError("Thời gian kết thúc phải sau thời gian bắt đầu!");
+        addToast("Thời gian kết thúc phải sau thời gian bắt đầu!", "error");
         return;
       }
     }
@@ -85,12 +96,12 @@ const ChairConferenceCreate = () => {
     try {
       setSubmitting(true);
       await apiClient.post(`/conferences`, payload);
-      alert("Tạo hội nghị thành công!");
-      navigate("/chair/conferences");
+      addToast("Tạo hội nghị thành công!", "success");
+      setTimeout(() => navigate("/chair/conferences"), 800);
     } catch (err) {
       console.error(err);
       const serverMsg = err.response?.data || "Tạo thất bại";
-      setError(typeof serverMsg === "string" ? serverMsg : JSON.stringify(serverMsg));
+      addToast(typeof serverMsg === "string" ? serverMsg : JSON.stringify(serverMsg), "error");
     } finally {
       setSubmitting(false);
     }
@@ -116,11 +127,6 @@ const ChairConferenceCreate = () => {
       </div>
 
       <form onSubmit={handleCreate} className="submission-form" style={{ maxWidth: 960, margin: "0 auto" }}>
-        {error && (
-          <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "8px", padding: "1rem", color: "#991b1b", marginBottom: "1.5rem" }}>
-            {error}
-          </div>
-        )}
 
         <h3 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: 600, color: "#111827" }}>Thông tin chung</h3>
         <div className="form-card" style={{ marginBottom: "1.5rem" }}>
@@ -212,6 +218,9 @@ const ChairConferenceCreate = () => {
           <button type="button" className="btn-secondary" onClick={() => navigate("/chair/conferences")} style={{ minWidth: "120px" }}>Hủy</button>
         </div>
       </form>
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </DashboardLayout>
   );
 };

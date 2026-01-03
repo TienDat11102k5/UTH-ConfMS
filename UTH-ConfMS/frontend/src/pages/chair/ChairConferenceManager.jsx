@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from '../../components/Pagination';
 import { usePagination } from '../../hooks/usePagination';
 import { FiFileText, FiEdit, FiEye, FiEyeOff, FiTrash2, FiLock } from 'react-icons/fi';
+import { ToastContainer } from "../../components/Toast";
 
 const ChairConferenceManager = () => {
   const navigate = useNavigate();
@@ -15,6 +16,18 @@ const ChairConferenceManager = () => {
   // Pagination
   const { currentPage, setCurrentPage, totalPages, paginatedItems} =
     usePagination(conferences, 20);
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   // --- 1. Lấy dữ liệu ---
   const fetchConfs = async () => {
@@ -47,7 +60,7 @@ const ChairConferenceManager = () => {
     } catch (err) {
       console.error(err);
       const errorMsg = err.response?.data || "Xoá thất bại. Có thể do ràng buộc dữ liệu.";
-      alert(errorMsg);
+      addToast(errorMsg, "error");
     }
   };
 
@@ -60,11 +73,11 @@ const ChairConferenceManager = () => {
       setConferences((prev) =>
         prev.map((c) => (c.id === id ? res.data : c))
       );
-      alert(`Đã ${action} hội nghị thành công!`);
+      addToast(`Đã ${action} hội nghị thành công!`, "success");
     } catch (err) {
       console.error(err);
       const errorMsg = err.response?.data || `Không thể ${action} hội nghị. Vui lòng thử lại.`;
-      alert(errorMsg);
+      addToast(errorMsg, "error");
     }
   };
 
@@ -316,6 +329,9 @@ const ChairConferenceManager = () => {
           itemName="hội nghị"
         />
       )}
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </DashboardLayout>
   );
 };

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { ToastContainer } from "../../components/Toast";
 
 const ChairConferenceEdit = () => {
   const { id } = useParams();
@@ -9,7 +10,19 @@ const ChairConferenceEdit = () => {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
+
+  // Toast notifications
+  const [toasts, setToasts] = useState([]);
+  
+  const addToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -51,7 +64,7 @@ const ChairConferenceEdit = () => {
         });
       } catch (err) {
         console.error(err);
-        setError("Không thể tải dữ liệu hội nghị.");
+        setLoadError("Không thể tải dữ liệu hội nghị.");
       } finally {
         setLoading(false);
       }
@@ -84,7 +97,6 @@ const ChairConferenceEdit = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    setError("");
 
     // Validation: Kiểm tra thời gian hội nghị
     if (formData.startDate && formData.endDate) {
@@ -94,7 +106,7 @@ const ChairConferenceEdit = () => {
       
       // Cho phép cùng ngày, chỉ cần giờ kết thúc sau giờ bắt đầu
       if (endDateTime.getTime() <= startDateTime.getTime()) {
-        setError("Thời gian kết thúc phải sau thời gian bắt đầu!");
+        addToast("Thời gian kết thúc phải sau thời gian bắt đầu!", "error");
         return;
       }
     }
@@ -116,7 +128,7 @@ const ChairConferenceEdit = () => {
           
           if (!isNaN(sessionDate.getTime())) {
             if (sessionDate < confStartDate || sessionDate > confEndDate) {
-              setError(`Track "${track.name}": Ngày session phải nằm trong khoảng thời gian hội nghị!`);
+              addToast(`Track "${track.name}": Ngày session phải nằm trong khoảng thời gian hội nghị!`, "error");
               return;
             }
           }
@@ -148,12 +160,12 @@ const ChairConferenceEdit = () => {
       };
 
       await apiClient.put(`/conferences/${id}`, payload);
-      alert("Cập nhật thành công!");
-      navigate("/chair/conferences");
+      addToast("Cập nhật thành công!", "success");
+      setTimeout(() => navigate("/chair/conferences"), 800);
     } catch (err) {
       console.error(err);
       const msg = err.response?.data || "Lưu thất bại.";
-      setError(typeof msg === "string" ? msg : JSON.stringify(msg));
+      addToast(typeof msg === "string" ? msg : JSON.stringify(msg), "error");
     } finally {
       setSaving(false);
     }
@@ -182,7 +194,7 @@ const ChairConferenceEdit = () => {
       </div>
 
       <form onSubmit={handleSave} className="submission-form" style={{ maxWidth: 960, margin: "0 auto" }}>
-        {error && (
+        {loadError && (
           <div style={{ 
             background: "#fef2f2", 
             border: "1px solid #fecaca", 
@@ -191,7 +203,7 @@ const ChairConferenceEdit = () => {
             color: "#991b1b",
             marginBottom: "1.5rem"
           }}>
-            {error}
+            {loadError}
           </div>
         )}
 
@@ -493,6 +505,9 @@ const ChairConferenceEdit = () => {
           </button>
         </div>
       </form>
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </DashboardLayout>
   );
 };
