@@ -120,6 +120,28 @@ const AuthorPaperReviews = () => {
   if (loading) {
     return (
       <DashboardLayout roleLabel="Tác giả" title="Kết quả chấm bài">
+        <div style={{ marginBottom: "1rem" }}>
+          <button 
+            className="btn-back" 
+            onClick={() => navigate(-1)}
+            style={{
+              padding: "0.5rem 1rem",
+              background: "transparent",
+              border: "1.5px solid #e2e8f0",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "0.875rem",
+              fontWeight: 600,
+              color: "#475569",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              transition: "all 0.2s"
+            }}
+          >
+            ← Quay lại
+          </button>
+        </div>
         <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
       </DashboardLayout>
     );
@@ -128,6 +150,28 @@ const AuthorPaperReviews = () => {
   if (error || !paper) {
     return (
       <DashboardLayout roleLabel="Tác giả" title="Kết quả chấm bài">
+        <div style={{ marginBottom: "1rem" }}>
+          <button 
+            className="btn-back" 
+            onClick={() => navigate(-1)}
+            style={{
+              padding: "0.5rem 1rem",
+              background: "transparent",
+              border: "1.5px solid #e2e8f0",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "0.875rem",
+              fontWeight: 600,
+              color: "#475569",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              transition: "all 0.2s"
+            }}
+          >
+            ← Quay lại
+          </button>
+        </div>
         <div style={{
           background: "white",
           borderRadius: "12px",
