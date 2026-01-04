@@ -68,6 +68,16 @@ const ChairConferenceSubmissions = () => {
     };
   };
 
+  // Calculate stats
+  const stats = {
+    total: papers.length,
+    submitted: papers.filter(p => p.status === 'SUBMITTED').length,
+    underReview: papers.filter(p => p.status === 'UNDER_REVIEW').length,
+    accepted: papers.filter(p => p.status === 'ACCEPTED').length,
+    rejected: papers.filter(p => p.status === 'REJECTED').length,
+    withdrawn: papers.filter(p => p.status === 'WITHDRAWN').length,
+  };
+
   return (
     <DashboardLayout
       roleLabel="Chủ tịch Chương trình / Chủ tịch Chuyên đề"
@@ -90,11 +100,6 @@ const ChairConferenceSubmissions = () => {
           <h2 className="data-page-title">
             {conference ? conference.name : "Đang tải..."}
           </h2>
-          {conference && (
-            <p style={{ color: "var(--text-muted)", marginTop: "0.5rem" }}>
-              {papers.length} bài nộp
-            </p>
-          )}
         </div>
 
         <div className="data-page-header-right">
@@ -110,6 +115,71 @@ const ChairConferenceSubmissions = () => {
           </button>
         </div>
       </div>
+
+      {/* Stats Cards */}
+      {!loading && !error && papers.length > 0 && (
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+          gap: "1rem",
+          marginBottom: "1.5rem"
+        }}>
+          <div style={{
+            background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+            borderRadius: "12px",
+            padding: "1.25rem",
+            color: "white"
+          }}>
+            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>Tổng số bài</div>
+            <div style={{ fontSize: "2rem", fontWeight: 700 }}>{stats.total}</div>
+          </div>
+          <div style={{
+            background: "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+            borderRadius: "12px",
+            padding: "1.25rem",
+            color: "white"
+          }}>
+            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>Đã nộp</div>
+            <div style={{ fontSize: "2rem", fontWeight: 700 }}>{stats.submitted}</div>
+          </div>
+          <div style={{
+            background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+            borderRadius: "12px",
+            padding: "1.25rem",
+            color: "white"
+          }}>
+            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>Đang chấm</div>
+            <div style={{ fontSize: "2rem", fontWeight: 700 }}>{stats.underReview}</div>
+          </div>
+          <div style={{
+            background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+            borderRadius: "12px",
+            padding: "1.25rem",
+            color: "white"
+          }}>
+            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>Chấp nhận</div>
+            <div style={{ fontSize: "2rem", fontWeight: 700 }}>{stats.accepted}</div>
+          </div>
+          <div style={{
+            background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+            borderRadius: "12px",
+            padding: "1.25rem",
+            color: "white"
+          }}>
+            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>Từ chối</div>
+            <div style={{ fontSize: "2rem", fontWeight: 700 }}>{stats.rejected}</div>
+          </div>
+          <div style={{
+            background: "linear-gradient(135deg, #6b7280 0%, #4b5563 100%)",
+            borderRadius: "12px",
+            padding: "1.25rem",
+            color: "white"
+          }}>
+            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>Đã rút</div>
+            <div style={{ fontSize: "2rem", fontWeight: 700 }}>{stats.withdrawn}</div>
+          </div>
+        </div>
+      )}
 
       <div className="table-wrapper">
         <table className="simple-table">
