@@ -34,10 +34,20 @@ const Toast = ({ message, type = "success", onClose, duration = 3000 }) => {
   }, [onClose, duration]);
 
   return (
-    <div style={{ ...toastStyles.toast, ...toastStyles[type] }}>
-      <span style={toastStyles.icon}>{getIcon(type)}</span>
+    <div 
+      style={{ ...toastStyles.toast, ...toastStyles[type] }}
+      role="alert"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <span style={toastStyles.icon} aria-hidden="true">{getIcon(type)}</span>
       <span style={toastStyles.message}>{message}</span>
-      <button style={toastStyles.closeBtn} onClick={onClose}>
+      <button 
+        style={toastStyles.closeBtn} 
+        onClick={onClose}
+        aria-label="Đóng thông báo"
+        title="Đóng"
+      >
         ×
       </button>
     </div>

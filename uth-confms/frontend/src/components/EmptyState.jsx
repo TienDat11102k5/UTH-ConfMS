@@ -29,8 +29,12 @@ const EmptyState = ({
   const IconComponent = iconMap[icon] || FiInbox;
 
   return (
-    <div className={`empty-state empty-state-${size}`}>
-      <div className="empty-state-icon">
+    <div 
+      className={`empty-state empty-state-${size}`}
+      role="status"
+      aria-label={`${title}. ${description}`}
+    >
+      <div className="empty-state-icon" aria-hidden="true">
         <IconComponent />
       </div>
       <h3 className="empty-state-title">{title}</h3>

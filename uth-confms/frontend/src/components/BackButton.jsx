@@ -41,6 +41,8 @@ const BackButton = ({
       className={`btn-back ${className}`}
       onClick={handleClick}
       style={defaultStyle}
+      aria-label={`${text} - Quay lại trang trước`}
+      title={text}
       onMouseOver={(e) => {
         e.currentTarget.style.background = "#f8fafc";
         e.currentTarget.style.borderColor = "#cbd5e1";
