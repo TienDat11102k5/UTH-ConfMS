@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import apiClient from "../apiClient";
+import { useEscapeKey } from "../hooks/useKeyboardShortcut";
 import "../styles/AIModal.css";
 
 const AIDecisionModal = ({ paper, reviews, onClose }) => {
+  // ESC key to close modal
+  useEscapeKey(onClose);
+  
   const [loading, setLoading] = useState(false);
   const [recommendation, setRecommendation] = useState(null);
   const [error, setError] = useState(null);

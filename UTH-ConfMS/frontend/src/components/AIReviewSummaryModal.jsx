@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import apiClient from "../apiClient";
+import { useEscapeKey } from "../hooks/useKeyboardShortcut";
 import "../styles/AIModal.css";
 
 const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
+  // ESC key to close modal
+  useEscapeKey(onClose);
+  
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState(null);
   const [error, setError] = useState(null);

@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import apiClient from "../apiClient";
+import { useEscapeKey } from "../hooks/useKeyboardShortcut";
+import KeyboardShortcut from "./KeyboardShortcut";
 
 const PaperSynopsisModal = ({ paper, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [synopsis, setSynopsis] = useState(null);
   const [error, setError] = useState("");
+
+  // ESC key to close modal
+  useEscapeKey(onClose);
 
   const generateSynopsis = async () => {
     try {
@@ -356,7 +361,20 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
             Đóng
           </button>
         </div>
-      </div>
+        {/* Keyboard Hint */}
+        <div className="modal-keyboard-hint" style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0.75rem 1.5rem",
+          background: "#f9fafb",
+          borderTop: "1px solid #e5e7eb"
+        }}>
+          <span style={{ fontSize: "0.8125rem", color: "#6b7280" }}>
+            Mẹo: Sử dụng phím tắt để thao tác nhanh hơn
+          </span>
+          <KeyboardShortcut keys="ESC" description="Đóng" variant="default" />
+        </div>      </div>
     </div>
   );
 };

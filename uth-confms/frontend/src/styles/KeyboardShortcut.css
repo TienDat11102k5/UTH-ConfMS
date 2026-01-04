@@ -1,0 +1,120 @@
+/* src/styles/KeyboardShortcut.css */
+.keyboard-shortcut {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.keyboard-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.5rem;
+  min-width: 2rem;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: linear-gradient(180deg, #ffffff 0%, #f3f4f6 100%);
+  border: 1px solid #d1d5db;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.keyboard-description {
+  color: #6b7280;
+  font-size: 0.8125rem;
+}
+
+/* Variants */
+.keyboard-shortcut-primary .keyboard-key {
+  background: linear-gradient(180deg, #dbeafe 0%, #bfdbfe 100%);
+  border-color: #93c5fd;
+  color: #1e40af;
+}
+
+.keyboard-shortcut-secondary .keyboard-key {
+  background: linear-gradient(180deg, #f3e8ff 0%, #e9d5ff 100%);
+  border-color: #c4b5fd;
+  color: #6b21a8;
+}
+
+/* Keyboard Hint Container */
+.keyboard-hint-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+/* Modal Footer Hint */
+.modal-keyboard-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  border-radius: 0 0 12px 12px;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.modal-keyboard-hint .keyboard-shortcut {
+  margin-left: auto;
+}
+
+/* Animation */
+.keyboard-key {
+  transition: all 0.15s ease;
+}
+
+.keyboard-key:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .keyboard-key {
+    background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+  
+  .keyboard-description {
+    color: #9ca3af;
+  }
+  
+  .keyboard-hint-container,
+  .modal-keyboard-hint {
+    background: #1f2937;
+    border-color: #374151;
+  }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .keyboard-hint-container {
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .keyboard-key {
+    padding: 0.2rem 0.4rem;
+    min-width: 1.75rem;
+    font-size: 0.7rem;
+  }
+  
+  .keyboard-description {
+    font-size: 0.75rem;
+  }
+}
