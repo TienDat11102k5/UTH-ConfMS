@@ -1,6 +1,7 @@
 // src/pages/reviewer/ReviewerDashboard.jsx
 import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/Layout/DashboardLayout.jsx";
+import LoadingText from "../../components/LoadingText.jsx";
 import { 
   FiFileText, 
   FiEdit3, 

@@ -159,15 +159,12 @@ const UserProfilePage = () => {
   };
 
   const handleEditClick = () => {
-    console.log("handleEditClick called - isEditing before:", isEditing);
     setIsEditing(true);
-    console.log("handleEditClick - setting isEditing to true");
     setError("");
     setSuccess("");
   };
 
   const handleCancelEdit = () => {
-    console.log("handleCancelEdit called - isEditing before:", isEditing);
     setIsEditing(false);
     setFormData(originalFormData);
     setError("");
@@ -192,8 +189,6 @@ const UserProfilePage = () => {
       if (!payload.dateOfBirth) {
         delete payload.dateOfBirth;
       }
-
-      console.log("Payload gửi lên:", payload);
 
       const res = await apiClient.put("/user/profile", payload);
 

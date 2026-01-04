@@ -88,7 +88,6 @@ const HistoryPage = () => {
     const loadStats = async () => {
         try {
             const statsData = await historyApi.getActivityStats();
-            console.log('Stats data received:', statsData);
             setStats(statsData);
         } catch (err) {
             console.error('Error loading stats:', err);
