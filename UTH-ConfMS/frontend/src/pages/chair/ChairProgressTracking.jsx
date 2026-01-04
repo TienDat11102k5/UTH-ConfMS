@@ -1,5 +1,6 @@
 // src/pages/chair/ChairProgressTracking.jsx
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
@@ -9,6 +10,7 @@ import "../../styles/ReviewerAssignments.css";
 import "../../styles/ChairProgressTracking.css";
 
 const ChairProgressTracking = () => {
+  const navigate = useNavigate();
   const [conferences, setConferences] = useState([]);
   const [selectedConference, setSelectedConference] = useState("ALL");
   const [papers, setPapers] = useState([]);
@@ -197,6 +199,36 @@ const ChairProgressTracking = () => {
       title="Theo dõi tiến độ"
       subtitle="Theo dõi tiến độ đánh giá và quyết định của hội nghị"
     >
+      <div style={{ marginBottom: "1rem" }}>
+        <button 
+          className="btn-back" 
+          onClick={() => navigate(-1)}
+          style={{
+            padding: "0.5rem 1rem",
+            background: "transparent",
+            border: "1.5px solid #e2e8f0",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "0.875rem",
+            fontWeight: 600,
+            color: "#475569",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            transition: "all 0.2s"
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.background = "#f8fafc";
+            e.currentTarget.style.borderColor = "#cbd5e1";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.borderColor = "#e2e8f0";
+          }}
+        >
+          ← Quay lại dashboard
+        </button>
+      </div>
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
