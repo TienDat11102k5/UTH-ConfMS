@@ -5,6 +5,7 @@ import UserProfileDropdown from "../UserProfileDropdown";
 import NavDropdown from "../NavDropdown";
 import logoUTH from "../../assets/logoUTH.jpg";
 import { getCurrentUser } from "../../auth";
+import "../../styles/PortalHeader.css";
 
 const DashboardLayout = ({
   roleLabel,
@@ -48,20 +49,20 @@ const DashboardLayout = ({
         {/* HEADER */}
         <header className="dash-header">
           <div className="dash-header-left">
-            <div className="dash-logo-mark">
-              <img src={logoUTH} alt="UTH logo" className="dash-logo-img" />
-            </div>
-            <div>
-              <div className="dash-logo-text">UTH-ConfMS · {roleLabel}</div>
-              <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>
-                HỆ THỐNG QUẢN LÝ BÀI BÁO HỘI NGHỊ KHOA HỌC UTH
+            <Link to="/" className="portal-brand">
+              <img src={logoUTH} alt="UTH logo" className="portal-logo-small" />
+              <div>
+                <div className="dash-logo-text">
+                  UTH Conference Portal{roleLabel ? ` · ${roleLabel}` : ""}
+                </div>
+                <div className="dash-logo-sub">University of Transport HCMC</div>
               </div>
-            </div>
+            </Link>
           </div>
 
           <nav className="dash-header-right">
             <Link to="/conferences" className="nav-link">
-              CỔNG THÔNG TIN
+              Trang chủ
             </Link>
 
             {showAdminNav && (

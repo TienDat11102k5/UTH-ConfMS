@@ -84,7 +84,7 @@ const ChairProceedingsPreview = () => {
 
     try {
       const csvData = [];
-      
+
       // Header
       csvData.push([
         "STT",
@@ -96,10 +96,10 @@ const ChairProceedingsPreview = () => {
 
       // Data rows
       proceedings.forEach((paper, index) => {
-        const allAuthors = paper.coAuthors 
+        const allAuthors = paper.coAuthors
           ? `${paper.authorName}, ${paper.coAuthors}`
           : paper.authorName || "Không có thông tin tác giả";
-        
+
         csvData.push([
           index + 1,
           `"${paper.title?.replace(/"/g, '""') || ''}"`,
@@ -111,11 +111,11 @@ const ChairProceedingsPreview = () => {
 
       // Convert to CSV string
       const csvContent = csvData.map(row => row.join(",")).join("\n");
-      
+
       // Add BOM for UTF-8
       const BOM = "\uFEFF";
       const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
-      
+
       // Download
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
@@ -125,7 +125,7 @@ const ChairProceedingsPreview = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       alert("Đã xuất CSV thành công!");
     } catch (err) {
       console.error("Export error:", err);
@@ -139,10 +139,10 @@ const ChairProceedingsPreview = () => {
   // Filter proceedings
   const filteredProceedings = proceedings.filter(paper => {
     const matchTrack = selectedTrack === "ALL" || paper.trackName === selectedTrack;
-    const allAuthors = paper.coAuthors 
+    const allAuthors = paper.coAuthors
       ? `${paper.authorName} ${paper.coAuthors}`
       : paper.authorName || "";
-    const matchSearch = !searchQuery.trim() || 
+    const matchSearch = !searchQuery.trim() ||
       paper.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       allAuthors.toLowerCase().includes(searchQuery.toLowerCase());
     return matchTrack && matchSearch;
@@ -150,7 +150,7 @@ const ChairProceedingsPreview = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Program / Track Chair" title="Xem trước kỷ yếu">
+      <DashboardLayout roleLabel="Chair" title="Xem trước kỷ yếu">
         <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
       </DashboardLayout>
     );
@@ -158,7 +158,7 @@ const ChairProceedingsPreview = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Program / Track Chair"
+      roleLabel="Chair"
       title="Xem trước kỷ yếu"
       subtitle="Kiểm tra danh sách kỷ yếu và xuất dữ liệu"
     >
@@ -189,9 +189,9 @@ const ChairProceedingsPreview = () => {
         flexWrap: "wrap"
       }}>
         <div style={{ flex: 1, minWidth: "250px" }}>
-          <label style={{ 
+          <label style={{
             display: "block",
-            marginBottom: "0.5rem", 
+            marginBottom: "0.5rem",
             fontWeight: 600,
             color: "#64748b",
             fontSize: "0.875rem",
@@ -265,8 +265,8 @@ const ChairProceedingsPreview = () => {
         }}>
           <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end", flexWrap: "wrap" }}>
             <div style={{ flex: 1, minWidth: "200px" }}>
-              <label style={{ 
-                marginBottom: "0.5rem", 
+              <label style={{
+                marginBottom: "0.5rem",
                 fontWeight: 600,
                 color: "#64748b",
                 fontSize: "0.875rem",
@@ -302,9 +302,9 @@ const ChairProceedingsPreview = () => {
             </div>
 
             <div style={{ flex: 1, minWidth: "200px" }}>
-              <label style={{ 
+              <label style={{
                 display: "block",
-                marginBottom: "0.5rem", 
+                marginBottom: "0.5rem",
                 fontWeight: 600,
                 color: "#64748b",
                 fontSize: "0.875rem",
@@ -350,9 +350,9 @@ const ChairProceedingsPreview = () => {
           padding: "1.5rem",
           boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
         }}>
-          <div style={{ 
-            marginBottom: "1rem", 
-            fontSize: "0.875rem", 
+          <div style={{
+            marginBottom: "1rem",
+            fontSize: "0.875rem",
             color: "#6b7280",
             fontWeight: 600
           }}>
@@ -361,10 +361,10 @@ const ChairProceedingsPreview = () => {
 
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             {filteredProceedings.map((paper, index) => {
-              const allAuthors = paper.coAuthors 
+              const allAuthors = paper.coAuthors
                 ? `${paper.authorName}, ${paper.coAuthors}`
                 : paper.authorName || "Không có thông tin tác giả";
-              
+
               return (
                 <div key={paper.paperId || index} style={{
                   padding: "1.25rem",
@@ -400,9 +400,9 @@ const ChairProceedingsPreview = () => {
                         {paper.title}
                       </h3>
 
-                      <div style={{ 
-                        fontSize: "0.875rem", 
-                        color: "#6b7280", 
+                      <div style={{
+                        fontSize: "0.875rem",
+                        color: "#6b7280",
                         marginBottom: "0.5rem",
                         fontWeight: 500
                       }}>
@@ -416,8 +416,8 @@ const ChairProceedingsPreview = () => {
                           lineHeight: 1.6,
                           marginBottom: "0.75rem"
                         }}>
-                          {paper.abstractText.length > 200 
-                            ? paper.abstractText.substring(0, 200) + "..." 
+                          {paper.abstractText.length > 200
+                            ? paper.abstractText.substring(0, 200) + "..."
                             : paper.abstractText}
                         </p>
                       )}

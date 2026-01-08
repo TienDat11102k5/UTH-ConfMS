@@ -2,14 +2,14 @@
 import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/Layout/DashboardLayout.jsx";
 import LoadingText from "../../components/LoadingText.jsx";
-import { 
-  FiSettings, 
-  FiUserCheck, 
-  FiCheckCircle, 
-  FiBarChart2, 
-  FiFileText, 
+import {
+  FiSettings,
+  FiUserCheck,
+  FiCheckCircle,
+  FiBarChart2,
+  FiFileText,
   FiBook,
-  FiArrowRight 
+  FiArrowRight
 } from "react-icons/fi";
 import "../../styles/ChairDashboard.css";
 
@@ -79,7 +79,7 @@ const ChairDashboard = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Chủ tịch Chương trình / Chủ tịch Chuyên đề"
+      roleLabel="Chair"
       title="Hệ thống Quản lý Hội nghị Khoa học"
       subtitle="Cấu hình hội nghị và Call for Papers, phân công phản biện, theo dõi tiến độ đánh giá và đưa ra quyết định học thuật."
       showChairNav={true}
@@ -88,7 +88,7 @@ const ChairDashboard = () => {
         {dashboardCards.map((card) => (
           <div key={card.id} className={`chair-card chair-card-${card.color}`}>
             <div className="chair-card-header">
-              <div 
+              <div
                 className="chair-card-icon"
                 style={{ background: card.gradient }}
               >

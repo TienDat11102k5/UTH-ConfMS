@@ -68,13 +68,10 @@
   font-weight: 500;
   font-size: 0.9375rem;
   transition: color 0.2s;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
 }
 
 .portal-nav .nav-link:hover {
   color: #008689;
-  background: rgba(0, 134, 137, 0.05);
 }
 
 /* ===== HERO BANNER ===== */

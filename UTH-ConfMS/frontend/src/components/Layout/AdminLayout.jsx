@@ -9,7 +9,7 @@ import AdminSidebar from "./AdminSidebar";
 const AdminLayout = ({ title, subtitle, children }) => {
     return (
         <DashboardLayout
-            roleLabel="QUẢN TRỊ VIÊN"
+            roleLabel="Admin"
             title={title}
             subtitle={subtitle}
             showSidebar={true}

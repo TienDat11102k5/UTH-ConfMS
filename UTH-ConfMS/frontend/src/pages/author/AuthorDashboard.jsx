@@ -50,7 +50,7 @@ const AuthorDashboard = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Tác giả"
+      roleLabel="Author"
       title="Cổng thông tin Tác giả"
       subtitle="Quản lý bài nộp khoa học, theo dõi quá trình phản biện và nộp bản hoàn chỉnh cho hội nghị."
       showGreeting={true}

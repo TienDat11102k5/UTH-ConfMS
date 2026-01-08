@@ -22,7 +22,7 @@ const ReviewerDiscussions = () => {
 
   // Toast notifications
   const [toasts, setToasts] = useState([]);
-  
+
   const addToast = useCallback((message, type = "success") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -83,13 +83,13 @@ const ReviewerDiscussions = () => {
 
   const handleSubmitComment = async (e) => {
     e.preventDefault();
-    
+
     const trimmedComment = newComment.trim();
     if (!trimmedComment) {
       addToast("Nội dung không được để trống", "warning");
       return;
     }
-    
+
     if (trimmedComment.length > 10000) {
       addToast("Nội dung quá dài (tối đa 10000 ký tự)", "warning");
       return;
@@ -114,9 +114,9 @@ const ReviewerDiscussions = () => {
     } catch (err) {
       addToast(
         err.response?.data?.message ||
-          err.response?.data ||
-          err.message ||
-          "Lỗi khi gửi bình luận",
+        err.response?.data ||
+        err.message ||
+        "Lỗi khi gửi bình luận",
         "error"
       );
     } finally {
@@ -130,7 +130,7 @@ const ReviewerDiscussions = () => {
       addToast("Nội dung trả lời không được để trống", "warning");
       return;
     }
-    
+
     if (trimmedReply.length > 10000) {
       addToast("Nội dung quá dài (tối đa 10000 ký tự)", "warning");
       return;
@@ -155,10 +155,10 @@ const ReviewerDiscussions = () => {
       loadDiscussions(selectedPaperId);
     } catch (err) {
       addToast(
-        err.response?.data?.message || 
-          err.response?.data ||
-          err.message || 
-          "Lỗi khi gửi trả lời",
+        err.response?.data?.message ||
+        err.response?.data ||
+        err.message ||
+        "Lỗi khi gửi trả lời",
         "error"
       );
     } finally {
@@ -186,7 +186,7 @@ const ReviewerDiscussions = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Người chấm"
+      roleLabel="Reviewer"
       title="Thảo luận nội bộ"
       subtitle="Trao đổi ý kiến về bài báo với các thành viên khác trước khi Chair đưa ra quyết định cuối"
     >
@@ -220,9 +220,9 @@ const ReviewerDiscussions = () => {
         boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
         border: "1px solid #e2e8f0",
       }}>
-        <label style={{ 
+        <label style={{
           display: "block",
-          marginBottom: "0.5rem", 
+          marginBottom: "0.5rem",
           fontWeight: 600,
           color: "#64748b",
           fontSize: "0.875rem",
@@ -435,7 +435,8 @@ const ReviewerDiscussions = () => {
         </>
       )}
 
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .alert-error {
           background: #fee;
           border: 1px solid #f5c6cb;

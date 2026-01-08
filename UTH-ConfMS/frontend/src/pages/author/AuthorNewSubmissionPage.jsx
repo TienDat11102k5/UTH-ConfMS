@@ -39,8 +39,8 @@ const AIModal = ({ isOpen, title, onClose, children }) => {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 style={{ 
-          marginTop: 0, 
+        <h3 style={{
+          marginTop: 0,
           marginBottom: "20px",
           fontSize: "1.25rem",
           fontWeight: 600,
@@ -128,7 +128,7 @@ const AuthorNewSubmissionPage = () => {
 
   // Toast notifications
   const [toasts, setToasts] = useState([]);
-  
+
   const addToast = useCallback((message, type = "success") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -373,7 +373,11 @@ const AuthorNewSubmissionPage = () => {
 
   return (
     <div className="dash-page">
-      <PortalHeader ctaHref="/author/dashboard" ctaText="Bảng điều khiển tác giả" />
+      <PortalHeader
+        title="UTH Conference Portal · Author"
+        ctaHref="/author/dashboard"
+        ctaText="Bảng điều khiển tác giả"
+      />
       <main className="dash-main">
         <section className="dash-section">
           <div className="data-page-header">
@@ -615,11 +619,11 @@ const AuthorNewSubmissionPage = () => {
                       ))}
                     </select>
                     <div className="field-hint">
-                      {!conference 
+                      {!conference
                         ? "Vui lòng chọn hội nghị trước"
-                        : tracks.length === 0 
-                        ? "Hội nghị này chưa có track nào"
-                        : "Chọn track/chủ đề phù hợp với bài báo của bạn"}
+                        : tracks.length === 0
+                          ? "Hội nghị này chưa có track nào"
+                          : "Chọn track/chủ đề phù hợp với bài báo của bạn"}
                     </div>
                   </div>
 
@@ -635,7 +639,7 @@ const AuthorNewSubmissionPage = () => {
                         onChange={handleFileChange}
                         style={{ display: "none" }}
                       />
-                      <label 
+                      <label
                         htmlFor="file"
                         style={{
                           display: "flex",
@@ -671,7 +675,7 @@ const AuthorNewSubmissionPage = () => {
                         }}>
                           Chọn tệp
                         </span>
-                        <span style={{ 
+                        <span style={{
                           color: file ? "#059669" : "#64748b",
                           fontWeight: file ? 500 : 400,
                           overflow: "hidden",
@@ -723,15 +727,15 @@ const AuthorNewSubmissionPage = () => {
       >
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div>
-            <strong style={{ 
-              display: "block", 
+            <strong style={{
+              display: "block",
               marginBottom: "8px",
               color: "#374151",
               fontSize: "0.9375rem"
             }}>Văn bản gốc:</strong>
-            <p style={{ 
-              background: "#f9fafb", 
-              padding: "12px", 
+            <p style={{
+              background: "#f9fafb",
+              padding: "12px",
               borderRadius: "8px",
               border: "1px solid #e5e7eb",
               margin: 0,
@@ -741,7 +745,7 @@ const AuthorNewSubmissionPage = () => {
             }}>{grammarResult?.originalText}</p>
           </div>
           {grammarResult?.errors && grammarResult.errors.length > 0 ? (
-            <div style={{ 
+            <div style={{
               color: "#d97706",
               background: "#fef3c7",
               padding: "10px 12px",
@@ -752,7 +756,7 @@ const AuthorNewSubmissionPage = () => {
               ⚠️ Tìm thấy {grammarResult.errors.length} vấn đề cần lưu ý.
             </div>
           ) : (
-            <div style={{ 
+            <div style={{
               color: "#059669",
               background: "#d1fae5",
               padding: "10px 12px",
@@ -765,15 +769,15 @@ const AuthorNewSubmissionPage = () => {
           )}
 
           <div>
-            <strong style={{ 
-              display: "block", 
+            <strong style={{
+              display: "block",
               marginBottom: "8px",
               color: "#374151",
               fontSize: "0.9375rem"
             }}>Bản sửa đổi (Đề xuất):</strong>
-            <p style={{ 
-              background: "#eff6ff", 
-              padding: "12px", 
+            <p style={{
+              background: "#eff6ff",
+              padding: "12px",
               borderRadius: "8px",
               border: "1px solid #3b82f6",
               margin: 0,
@@ -785,23 +789,23 @@ const AuthorNewSubmissionPage = () => {
             </p>
           </div>
 
-          <div style={{ 
-            display: "flex", 
-            justifyContent: "flex-end", 
+          <div style={{
+            display: "flex",
+            justifyContent: "flex-end",
             gap: "10px",
             marginTop: "8px",
             paddingTop: "16px",
             borderTop: "1px solid #e5e7eb"
           }}>
-            <button 
-              className="btn-secondary" 
+            <button
+              className="btn-secondary"
               onClick={() => setGrammarResult(null)}
               style={{ minWidth: "100px" }}
             >
               Đóng
             </button>
-            <button 
-              className="btn-primary" 
+            <button
+              className="btn-primary"
               onClick={() => applyCorrection(grammarResult.correctedText, grammarResult.field)}
               style={{ minWidth: "160px" }}
             >
@@ -818,16 +822,16 @@ const AuthorNewSubmissionPage = () => {
         onClose={() => setPolishResult(null)}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div style={{ 
-            display: "grid", 
-            gridTemplateColumns: "1fr 1fr", 
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
             gap: "16px",
             "@media (max-width: 768px)": {
               gridTemplateColumns: "1fr"
             }
           }}>
             <div>
-              <h4 style={{ 
+              <h4 style={{
                 textAlign: "center",
                 margin: "0 0 12px 0",
                 fontSize: "1rem",
@@ -837,12 +841,12 @@ const AuthorNewSubmissionPage = () => {
                 background: "#fce7f3",
                 borderRadius: "6px"
               }}>Gốc</h4>
-              <div style={{ 
-                background: "#fef2f2", 
-                padding: "12px", 
+              <div style={{
+                background: "#fef2f2",
+                padding: "12px",
                 borderRadius: "8px",
                 border: "1px solid #fecaca",
-                minHeight: "200px", 
+                minHeight: "200px",
                 whiteSpace: "pre-wrap",
                 lineHeight: "1.6",
                 fontSize: "0.9375rem",
@@ -852,7 +856,7 @@ const AuthorNewSubmissionPage = () => {
               </div>
             </div>
             <div>
-              <h4 style={{ 
+              <h4 style={{
                 textAlign: "center",
                 margin: "0 0 12px 0",
                 fontSize: "1rem",
@@ -862,12 +866,12 @@ const AuthorNewSubmissionPage = () => {
                 background: "#d1fae5",
                 borderRadius: "6px"
               }}>Đã cải thiện (AI)</h4>
-              <div style={{ 
-                background: "#ecfdf5", 
-                padding: "12px", 
+              <div style={{
+                background: "#ecfdf5",
+                padding: "12px",
                 borderRadius: "8px",
                 border: "1px solid #6ee7b7",
-                minHeight: "200px", 
+                minHeight: "200px",
                 whiteSpace: "pre-wrap",
                 lineHeight: "1.6",
                 fontSize: "0.9375rem",
@@ -877,7 +881,7 @@ const AuthorNewSubmissionPage = () => {
               </div>
             </div>
           </div>
-          
+
           {polishResult?.comment && (
             <div style={{
               background: "#eff6ff",
@@ -885,11 +889,11 @@ const AuthorNewSubmissionPage = () => {
               borderRadius: "8px",
               border: "1px solid #bfdbfe"
             }}>
-              <strong style={{ 
+              <strong style={{
                 color: "#1e40af",
                 fontSize: "0.875rem"
               }}>💡 AI Nhận xét:</strong>
-              <p style={{ 
+              <p style={{
                 margin: "8px 0 0 0",
                 color: "#1f2937",
                 fontSize: "0.875rem",
@@ -899,23 +903,23 @@ const AuthorNewSubmissionPage = () => {
               </p>
             </div>
           )}
-          
-          <div style={{ 
-            display: "flex", 
-            justifyContent: "flex-end", 
+
+          <div style={{
+            display: "flex",
+            justifyContent: "flex-end",
             gap: "10px",
             paddingTop: "16px",
             borderTop: "1px solid #e5e7eb"
           }}>
-            <button 
-              className="btn-secondary" 
+            <button
+              className="btn-secondary"
               onClick={() => setPolishResult(null)}
               style={{ minWidth: "100px" }}
             >
               Hủy
             </button>
-            <button 
-              className="btn-primary" 
+            <button
+              className="btn-primary"
               onClick={() => applyPolish(polishResult.polishedText)}
               style={{ minWidth: "140px" }}
             >

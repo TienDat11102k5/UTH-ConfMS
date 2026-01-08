@@ -32,7 +32,7 @@ const AuthorSubmissionDetail = () => {
         const res = await apiClient.get(`/submissions/${id}`);
         if (!ignore) {
           setSubmission(res.data || null);
-          
+
           // Load reviews
           try {
             const rev = await apiClient.get(`/reviews/paper/${id}/for-author`);
@@ -40,7 +40,7 @@ const AuthorSubmissionDetail = () => {
           } catch (e) {
             // ignore
           }
-          
+
           // Load decision
           try {
             const dec = await apiClient.get(`/decisions/paper/${id}`);
@@ -116,7 +116,7 @@ const AuthorSubmissionDetail = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Tác giả" title="Chi tiết bài báo">
+      <DashboardLayout roleLabel="Author" title="Chi tiết bài báo">
         <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
       </DashboardLayout>
     );
@@ -124,7 +124,7 @@ const AuthorSubmissionDetail = () => {
 
   if (error || !submission) {
     return (
-      <DashboardLayout roleLabel="Tác giả" title="Chi tiết bài báo">
+      <DashboardLayout roleLabel="Author" title="Chi tiết bài báo">
         <div style={{
           background: "white",
           borderRadius: "12px",
@@ -149,13 +149,13 @@ const AuthorSubmissionDetail = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Tác giả"
+      roleLabel="Author"
       title="Chi tiết bài báo"
       subtitle="Xem thông tin chi tiết, trạng thái và đánh giá của bài báo"
     >
       <div style={{ marginBottom: "1rem" }}>
-        <button 
-          className="btn-back" 
+        <button
+          className="btn-back"
           onClick={() => navigate(-1)}
           style={{
             padding: "0.5rem 1rem",
@@ -188,9 +188,9 @@ const AuthorSubmissionDetail = () => {
           <h2 className="data-page-title" style={{ marginTop: "0.5rem" }}>
             {submission.title}
           </h2>
-          <div style={{ 
-            display: "flex", 
-            gap: "0.75rem", 
+          <div style={{
+            display: "flex",
+            gap: "0.75rem",
             alignItems: "center",
             marginTop: "0.75rem",
             flexWrap: "wrap"
@@ -264,7 +264,7 @@ const AuthorSubmissionDetail = () => {
         }}>
           <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
             <div style={{ flex: 1 }}>
-              <h3 style={{ 
+              <h3 style={{
                 margin: "0 0 0.5rem 0",
                 color: decision.status === "ACCEPTED" ? "#065f46" : "#991b1b",
                 fontSize: "1.125rem",
@@ -272,7 +272,7 @@ const AuthorSubmissionDetail = () => {
               }}>
                 {decision.status === "ACCEPTED" ? "🎉 Chúc mừng! Bài báo được chấp nhận" : "Bài báo chưa được chấp nhận"}
               </h3>
-              <div style={{ 
+              <div style={{
                 fontSize: "0.875rem",
                 color: decision.status === "ACCEPTED" ? "#047857" : "#b91c1c",
                 marginBottom: "0.75rem"
@@ -287,7 +287,7 @@ const AuthorSubmissionDetail = () => {
                   borderRadius: "8px",
                   border: "1px solid #e5e7eb"
                 }}>
-                  <div style={{ 
+                  <div style={{
                     fontWeight: 600,
                     marginBottom: "0.5rem",
                     color: "#374151",
@@ -351,7 +351,7 @@ const AuthorSubmissionDetail = () => {
                 </a>
               </div>
             )}
-            
+
             {(submission.cameraReadyDownloadUrl || submission.cameraReadyPath) && (
               <div style={{
                 padding: "1rem",
@@ -381,7 +381,7 @@ const AuthorSubmissionDetail = () => {
                 </a>
               </div>
             )}
-            
+
             {!submission.downloadUrl && !submission.cameraReadyDownloadUrl && !submission.cameraReadyPath && (
               <div style={{
                 padding: "1rem",
@@ -411,9 +411,9 @@ const AuthorSubmissionDetail = () => {
           }}>
             Tóm tắt nghiên cứu
           </div>
-          <p style={{ 
-            margin: 0, 
-            color: "#374151", 
+          <p style={{
+            margin: 0,
+            color: "#374151",
             lineHeight: 1.7,
             fontSize: "0.9375rem"
           }}>
@@ -440,7 +440,7 @@ const AuthorSubmissionDetail = () => {
               Tác giả
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              <div style={{ 
+              <div style={{
                 padding: "0.75rem",
                 background: "#f8fafc",
                 borderRadius: "8px",
@@ -456,7 +456,7 @@ const AuthorSubmissionDetail = () => {
               {submission.coAuthors && submission.coAuthors.length > 0 && (
                 <>
                   {submission.coAuthors.map((c, i) => (
-                    <div key={i} style={{ 
+                    <div key={i} style={{
                       padding: "0.75rem",
                       background: "#fafbfc",
                       borderRadius: "8px",
@@ -645,9 +645,9 @@ const AuthorSubmissionDetail = () => {
                     </span>
                   </div>
                   {r.commentForAuthor && (
-                    <p style={{ 
-                      margin: 0, 
-                      color: "#6b7280", 
+                    <p style={{
+                      margin: 0,
+                      color: "#6b7280",
                       lineHeight: 1.6,
                       fontSize: "0.875rem"
                     }}>
@@ -662,14 +662,14 @@ const AuthorSubmissionDetail = () => {
       </div>
 
       {/* Back Button at Bottom */}
-      <div style={{ 
-        marginTop: "2rem", 
-        paddingTop: "1.5rem", 
+      <div style={{
+        marginTop: "2rem",
+        paddingTop: "1.5rem",
         borderTop: "1px solid #e5e7eb",
         textAlign: "center"
       }}>
-        <button 
-          onClick={() => navigate(-1)} 
+        <button
+          onClick={() => navigate(-1)}
           className="btn-secondary"
           onMouseOver={(e) => {
             e.currentTarget.style.background = "#f1f5f9";

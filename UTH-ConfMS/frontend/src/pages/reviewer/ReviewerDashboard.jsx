@@ -2,12 +2,12 @@
 import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/Layout/DashboardLayout.jsx";
 import LoadingText from "../../components/LoadingText.jsx";
-import { 
-  FiFileText, 
-  FiEdit3, 
-  FiMessageSquare, 
+import {
+  FiFileText,
+  FiEdit3,
+  FiMessageSquare,
   FiAlertCircle,
-  FiArrowRight 
+  FiArrowRight
 } from "react-icons/fi";
 import "../../styles/ReviewerDashboard.css";
 
@@ -59,7 +59,7 @@ const ReviewerDashboard = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Hội đồng Khoa học"
+      roleLabel="Reviewer"
       title="Cổng thông tin Phản biện viên"
       subtitle="Quản lý bài phản biện, gửi đánh giá và tham gia thảo luận Ban chương trình."
     >
@@ -67,7 +67,7 @@ const ReviewerDashboard = () => {
       <div className="reviewer-main-card-wrapper">
         <div className={`reviewer-card reviewer-card-main reviewer-card-${mainCard.color}`}>
           <div className="reviewer-card-icon-wrapper">
-            <div 
+            <div
               className="reviewer-card-icon"
               style={{ background: mainCard.gradient }}
             >
@@ -90,7 +90,7 @@ const ReviewerDashboard = () => {
         {secondaryCards.map((card) => (
           <div key={card.id} className={`reviewer-card reviewer-card-${card.color}`}>
             <div className="reviewer-card-icon-wrapper">
-              <div 
+              <div
                 className="reviewer-card-icon"
                 style={{ background: card.gradient }}
               >

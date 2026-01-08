@@ -85,7 +85,7 @@ const ChairReports = () => {
             ]);
             assignmentsMap[paper.id] = assignRes.data || [];
             reviewsMap[paper.id] = reviewsRes.data || [];
-            
+
             totalAssignments += (assignRes.data || []).length;
             completedReviews += (reviewsRes.data || []).length;
           } catch (err) {
@@ -156,11 +156,11 @@ const ChairReports = () => {
   // Export to CSV
   const exportToCSV = () => {
     setExporting(true);
-    
+
     try {
       // Prepare data
       const csvData = [];
-      
+
       // Header
       csvData.push([
         "ID",
@@ -179,7 +179,7 @@ const ChairReports = () => {
       papers.forEach(paper => {
         const paperAssignments = assignments[paper.id] || [];
         const paperReviews = reviews[paper.id] || [];
-        const avgScore = paperReviews.length > 0 
+        const avgScore = paperReviews.length > 0
           ? (paperReviews.reduce((sum, r) => sum + (r.score || 0), 0) / paperReviews.length).toFixed(2)
           : "N/A";
 
@@ -199,11 +199,11 @@ const ChairReports = () => {
 
       // Convert to CSV string
       const csvContent = csvData.map(row => row.join(",")).join("\n");
-      
+
       // Add BOM for UTF-8
       const BOM = "\uFEFF";
       const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
-      
+
       // Download
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
@@ -213,7 +213,7 @@ const ChairReports = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       alert("Đã xuất báo cáo CSV thành công!");
     } catch (err) {
       console.error("Export error:", err);
@@ -226,10 +226,10 @@ const ChairReports = () => {
   // Export track statistics to CSV
   const exportTrackStatsToCSV = () => {
     setExporting(true);
-    
+
     try {
       const csvData = [];
-      
+
       // Header
       csvData.push([
         "Chủ đề",
@@ -243,12 +243,12 @@ const ChairReports = () => {
       ]);
 
       // Data rows - filter by selected track
-      const tracksToExport = selectedTrackForExport === "ALL" 
+      const tracksToExport = selectedTrackForExport === "ALL"
         ? Object.entries(stats.trackStats)
         : Object.entries(stats.trackStats).filter(([trackName]) => trackName === selectedTrackForExport);
 
       tracksToExport.forEach(([trackName, trackData]) => {
-        const acceptanceRate = trackData.total > 0 
+        const acceptanceRate = trackData.total > 0
           ? ((trackData.accepted / trackData.total) * 100).toFixed(1)
           : "0.0";
 
@@ -266,15 +266,15 @@ const ChairReports = () => {
 
       // Convert to CSV string
       const csvContent = csvData.map(row => row.join(",")).join("\n");
-      
+
       // Add BOM for UTF-8
       const BOM = "\uFEFF";
       const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
-      
+
       // Download
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
-      const fileName = selectedTrackForExport === "ALL" 
+      const fileName = selectedTrackForExport === "ALL"
         ? `thong-ke-tat-ca-chu-de-${Date.now()}.csv`
         : `thong-ke-chu-de-${selectedTrackForExport}-${Date.now()}.csv`;
       link.setAttribute("href", url);
@@ -283,7 +283,7 @@ const ChairReports = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       alert("Đã xuất thống kê chủ đề CSV thành công!");
       setShowTrackExportModal(false);
       setSelectedTrackForExport("ALL");
@@ -297,7 +297,7 @@ const ChairReports = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Program / Track Chair" title="Báo cáo & Thống kê">
+      <DashboardLayout roleLabel="Chair" title="Báo cáo & Thống kê">
         <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
       </DashboardLayout>
     );
@@ -305,7 +305,7 @@ const ChairReports = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Program / Track Chair"
+      roleLabel="Chair"
       title="Báo cáo & Thống kê"
       subtitle="Xem tổng quan và xuất báo cáo chi tiết"
     >
@@ -337,9 +337,9 @@ const ChairReports = () => {
           }}
         >
           <div style={{ flex: 1, maxWidth: "400px" }}>
-            <label style={{ 
+            <label style={{
               display: "block",
-              marginBottom: "0.5rem", 
+              marginBottom: "0.5rem",
               fontWeight: 600,
               color: "#64748b",
               fontSize: "0.875rem",
@@ -408,9 +408,9 @@ const ChairReports = () => {
 
       {/* Overview Statistics */}
       <div style={{ marginBottom: "2rem" }}>
-        <h3 style={{ 
-          fontSize: "1.125rem", 
-          fontWeight: 600, 
+        <h3 style={{
+          fontSize: "1.125rem",
+          fontWeight: 600,
           marginBottom: "1rem",
           color: "#1f2937",
           display: "flex",
@@ -420,9 +420,9 @@ const ChairReports = () => {
           <FiFileText size={20} style={{ color: "#008689" }} />
           Tổng quan bài báo
         </h3>
-        <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: "repeat(6, 1fr)", 
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(6, 1fr)",
           gap: "0.75rem"
         }}>
           <div style={{
@@ -522,9 +522,9 @@ const ChairReports = () => {
 
       {/* Review Progress */}
       <div style={{ marginBottom: "2rem" }}>
-        <h3 style={{ 
-          fontSize: "1.125rem", 
-          fontWeight: 600, 
+        <h3 style={{
+          fontSize: "1.125rem",
+          fontWeight: 600,
           marginBottom: "1rem",
           color: "#1f2937",
           display: "flex",
@@ -534,9 +534,9 @@ const ChairReports = () => {
           <FiTrendingUp size={20} style={{ color: "#008689" }} />
           Tiến độ đánh giá
         </h3>
-        <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: "repeat(4, 1fr)", 
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
           gap: "0.75rem"
         }}>
           <div style={{
@@ -607,9 +607,9 @@ const ChairReports = () => {
       {/* Track Statistics */}
       {Object.keys(stats.trackStats).length > 0 && (
         <div>
-          <h3 style={{ 
-            fontSize: "1.125rem", 
-            fontWeight: 600, 
+          <h3 style={{
+            fontSize: "1.125rem",
+            fontWeight: 600,
             marginBottom: "1rem",
             color: "#1f2937",
             display: "flex",
@@ -635,10 +635,10 @@ const ChairReports = () => {
               </thead>
               <tbody>
                 {Object.entries(stats.trackStats).map(([trackName, trackData]) => {
-                  const acceptanceRate = trackData.total > 0 
+                  const acceptanceRate = trackData.total > 0
                     ? ((trackData.accepted / trackData.total) * 100).toFixed(1)
                     : "0.0";
-                  
+
                   return (
                     <tr key={trackName}>
                       <td><strong>{trackName}</strong></td>
@@ -649,7 +649,7 @@ const ChairReports = () => {
                       <td style={{ color: "#ef4444", fontWeight: 600 }}>{trackData.rejected}</td>
                       <td style={{ color: "#94a3b8" }}>{trackData.withdrawn}</td>
                       <td>
-                        <span style={{ 
+                        <span style={{
                           fontWeight: 600,
                           color: parseFloat(acceptanceRate) >= 50 ? "#10b981" : "#6b7280"
                         }}>

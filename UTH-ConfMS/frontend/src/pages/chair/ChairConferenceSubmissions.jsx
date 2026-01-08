@@ -8,7 +8,7 @@ import { usePagination } from "../../hooks/usePagination";
 const ChairConferenceSubmissions = () => {
   const { conferenceId } = useParams();
   const navigate = useNavigate();
-  
+
   const [conference, setConference] = useState(null);
   const [papers, setPapers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,11 +25,11 @@ const ChairConferenceSubmissions = () => {
     try {
       setLoading(true);
       setError("");
-      
+
       // Fetch conference info
       const confRes = await apiClient.get(`/conferences/${conferenceId}`);
       setConference(confRes.data);
-      
+
       // Fetch all papers for this conference
       const papersRes = await apiClient.get(`/decisions/papers/${conferenceId}`);
       setPapers(papersRes.data || []);
@@ -80,7 +80,7 @@ const ChairConferenceSubmissions = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Chủ tịch Chương trình / Chủ tịch Chuyên đề"
+      roleLabel="Chair"
       title="Bài nộp của hội nghị"
       subtitle="Xem toàn bộ bài báo đã nộp vào hội nghị"
     >

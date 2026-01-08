@@ -21,7 +21,7 @@ const ReviewerCOI = () => {
 
   // Toast notifications
   const [toasts, setToasts] = useState([]);
-  
+
   const addToast = useCallback((message, type = "success") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -57,8 +57,8 @@ const ReviewerCOI = () => {
       console.error("Load error:", err);
       setLoadError(
         err.response?.data?.message ||
-          err.message ||
-          "Không thể tải dữ liệu."
+        err.message ||
+        "Không thể tải dữ liệu."
       );
     } finally {
       setLoading(false);
@@ -67,7 +67,7 @@ const ReviewerCOI = () => {
 
   const handleSubmitCOI = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.reason.trim()) {
       addToast("Vui lòng nhập lý do xung đột", "warning");
       return;
@@ -82,8 +82,7 @@ const ReviewerCOI = () => {
       const reviewerId = currentUser.id;
 
       await apiClient.post(
-        `/conflicts?reviewerId=${reviewerId}&paperId=${
-          formData.paperId
+        `/conflicts?reviewerId=${reviewerId}&paperId=${formData.paperId
         }&reason=${encodeURIComponent(formData.reason.trim())}`
       );
 
@@ -94,9 +93,9 @@ const ReviewerCOI = () => {
     } catch (err) {
       addToast(
         err.response?.data?.message ||
-          err.response?.data ||
-          err.message ||
-          "Lỗi khi khai báo xung đột lợi ích",
+        err.response?.data ||
+        err.message ||
+        "Lỗi khi khai báo xung đột lợi ích",
         "error"
       );
     } finally {
@@ -114,9 +113,9 @@ const ReviewerCOI = () => {
     } catch (err) {
       addToast(
         err.response?.data?.message ||
-          err.response?.data ||
-          err.message ||
-          "Lỗi khi xóa xung đột lợi ích",
+        err.response?.data ||
+        err.message ||
+        "Lỗi khi xóa xung đột lợi ích",
         "error"
       );
     }
@@ -129,7 +128,7 @@ const ReviewerCOI = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Người chấm" title="Quản lý xung đột lợi ích">
+      <DashboardLayout roleLabel="Reviewer" title="Quản lý xung đột lợi ích">
         <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
       </DashboardLayout>
     );
@@ -137,7 +136,7 @@ const ReviewerCOI = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Người chấm"
+      roleLabel="Reviewer"
       title="Quản lý xung đột lợi ích"
       subtitle="Khai báo xung đột lợi ích và xem danh sách bài được phân công"
     >
@@ -188,163 +187,164 @@ const ReviewerCOI = () => {
       </div>
 
       {showForm && (
-              <div style={{
-                marginBottom: "1.5rem",
-                background: "white",
-                borderRadius: "10px",
-                padding: "1rem 1.25rem",
-                boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
-                border: "1px solid #e2e8f0",
-              }}>
-                <div style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  marginBottom: "1rem",
-                  fontWeight: 600,
-                  color: "#64748b",
-                  fontSize: "0.875rem",
-                }}>
-                  <FiAlertTriangle size={16} />
-                  Khai báo xung đột lợi ích mới
-                </div>
-                <form onSubmit={handleSubmitCOI} className="submission-form">
-                  <div className="form-group">
-                    <label className="form-label">Chọn bài báo *</label>
-                    <select
-                      value={formData.paperId}
-                      onChange={(e) =>
-                        setFormData({ ...formData, paperId: e.target.value })
-                      }
-                      required
-                      className="form-input"
-                    >
-                      <option value="">-- Chọn bài báo --</option>
-                      {availablePapers.map((paper) => (
-                        <option key={paper.id} value={paper.id}>
-                          {paper.title} (Chủ đề: {paper.track?.name || "N/A"})
-                        </option>
-                      ))}
-                    </select>
-                    <div className="field-hint">
-                      Chỉ hiển thị các bài chưa khai báo xung đột lợi ích
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Lý do xung đột *</label>
-                    <textarea
-                      value={formData.reason}
-                      onChange={(e) =>
-                        setFormData({ ...formData, reason: e.target.value })
-                      }
-                      required
-                      rows={4}
-                      className="textarea-input"
-                      placeholder="Ví dụ: Cùng cơ quan, đồng nghiệp, cố vấn luận án, quan hệ họ hàng..."
-                      maxLength={500}
-                    />
-                    <div className="char-count">
-                      {formData.reason.length}/500 ký tự
-                    </div>
-                  </div>
-
-                  <div className="form-actions">
-                    <button
-                      type="submit"
-                      className="btn-primary"
-                      disabled={submitting}
-                    >
-                      <FiCheckCircle size={18} style={{ marginRight: "0.5rem" }} />
-                      {submitting ? "Đang gửi..." : "Khai báo xung đột"}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-secondary"
-                      onClick={() => {
-                        setShowForm(false);
-                        setFormData({ paperId: "", reason: "" });
-                      }}
-                    >
-                      <FiX size={18} style={{ marginRight: "0.5rem" }} />
-                      Hủy
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
-
+        <div style={{
+          marginBottom: "1.5rem",
+          background: "white",
+          borderRadius: "10px",
+          padding: "1rem 1.25rem",
+          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+          border: "1px solid #e2e8f0",
+        }}>
           <div style={{
-            marginBottom: "1.5rem",
-            background: "white",
-            borderRadius: "10px",
-            padding: "1rem 1.25rem",
-            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
-            border: "1px solid #e2e8f0",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            marginBottom: "1rem",
+            fontWeight: 600,
+            color: "#64748b",
+            fontSize: "0.875rem",
           }}>
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              marginBottom: "1rem",
-              fontWeight: 600,
-              color: "#64748b",
-              fontSize: "0.875rem",
-            }}>
-              <FiAlertTriangle size={16} />
-              Danh sách xung đột lợi ích đã khai báo ({conflicts.length})
-            </div>
-              {conflicts.length === 0 ? (
-                <div className="empty-state">
-                  <FiAlertTriangle size={48} style={{ color: "#cbd5e1" }} />
-                  <p>Bạn chưa khai báo xung đột lợi ích nào.</p>
-                  <p style={{ fontSize: "0.9rem", color: "#94a3b8" }}>
-                    Nhấn nút "Khai báo xung đột lợi ích mới" để thêm.
-                  </p>
-                </div>
-              ) : (
-                <div className="coi-table-wrapper">
-                  <table className="coi-table">
-                    <thead>
-                      <tr>
-                        <th style={{ width: "60px" }}>ID</th>
-                        <th>Tiêu đề bài báo</th>
-                        <th style={{ width: "150px" }}>Chủ đề</th>
-                        <th style={{ width: "250px" }}>Lý do</th>
-                        <th style={{ width: "120px" }}>Ngày khai báo</th>
-                        <th style={{ width: "100px", textAlign: "center" }}>Thao tác</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {conflicts.map((conflict) => (
-                        <tr key={conflict.id}>
-                          <td>{conflict.paper?.id}</td>
-                          <td>
-                            <strong>{conflict.paper?.title}</strong>
-                          </td>
-                          <td>{conflict.paper?.track?.name || "N/A"}</td>
-                          <td className="reason-cell">{conflict.reason}</td>
-                          <td>
-                            {new Date(conflict.createdAt).toLocaleDateString("vi-VN")}
-                          </td>
-                          <td style={{ textAlign: "center" }}>
-                            <button
-                              className="btn-delete-icon"
-                              onClick={() => handleDeleteCOI(conflict.id)}
-                              title="Xóa xung đột lợi ích"
-                            >
-                              <FiTrash2 size={17} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+            <FiAlertTriangle size={16} />
+            Khai báo xung đột lợi ích mới
           </div>
+          <form onSubmit={handleSubmitCOI} className="submission-form">
+            <div className="form-group">
+              <label className="form-label">Chọn bài báo *</label>
+              <select
+                value={formData.paperId}
+                onChange={(e) =>
+                  setFormData({ ...formData, paperId: e.target.value })
+                }
+                required
+                className="form-input"
+              >
+                <option value="">-- Chọn bài báo --</option>
+                {availablePapers.map((paper) => (
+                  <option key={paper.id} value={paper.id}>
+                    {paper.title} (Chủ đề: {paper.track?.name || "N/A"})
+                  </option>
+                ))}
+              </select>
+              <div className="field-hint">
+                Chỉ hiển thị các bài chưa khai báo xung đột lợi ích
+              </div>
+            </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
+            <div className="form-group">
+              <label className="form-label">Lý do xung đột *</label>
+              <textarea
+                value={formData.reason}
+                onChange={(e) =>
+                  setFormData({ ...formData, reason: e.target.value })
+                }
+                required
+                rows={4}
+                className="textarea-input"
+                placeholder="Ví dụ: Cùng cơ quan, đồng nghiệp, cố vấn luận án, quan hệ họ hàng..."
+                maxLength={500}
+              />
+              <div className="char-count">
+                {formData.reason.length}/500 ký tự
+              </div>
+            </div>
+
+            <div className="form-actions">
+              <button
+                type="submit"
+                className="btn-primary"
+                disabled={submitting}
+              >
+                <FiCheckCircle size={18} style={{ marginRight: "0.5rem" }} />
+                {submitting ? "Đang gửi..." : "Khai báo xung đột"}
+              </button>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => {
+                  setShowForm(false);
+                  setFormData({ paperId: "", reason: "" });
+                }}
+              >
+                <FiX size={18} style={{ marginRight: "0.5rem" }} />
+                Hủy
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      <div style={{
+        marginBottom: "1.5rem",
+        background: "white",
+        borderRadius: "10px",
+        padding: "1rem 1.25rem",
+        boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+        border: "1px solid #e2e8f0",
+      }}>
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          marginBottom: "1rem",
+          fontWeight: 600,
+          color: "#64748b",
+          fontSize: "0.875rem",
+        }}>
+          <FiAlertTriangle size={16} />
+          Danh sách xung đột lợi ích đã khai báo ({conflicts.length})
+        </div>
+        {conflicts.length === 0 ? (
+          <div className="empty-state">
+            <FiAlertTriangle size={48} style={{ color: "#cbd5e1" }} />
+            <p>Bạn chưa khai báo xung đột lợi ích nào.</p>
+            <p style={{ fontSize: "0.9rem", color: "#94a3b8" }}>
+              Nhấn nút "Khai báo xung đột lợi ích mới" để thêm.
+            </p>
+          </div>
+        ) : (
+          <div className="coi-table-wrapper">
+            <table className="coi-table">
+              <thead>
+                <tr>
+                  <th style={{ width: "60px" }}>ID</th>
+                  <th>Tiêu đề bài báo</th>
+                  <th style={{ width: "150px" }}>Chủ đề</th>
+                  <th style={{ width: "250px" }}>Lý do</th>
+                  <th style={{ width: "120px" }}>Ngày khai báo</th>
+                  <th style={{ width: "100px", textAlign: "center" }}>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {conflicts.map((conflict) => (
+                  <tr key={conflict.id}>
+                    <td>{conflict.paper?.id}</td>
+                    <td>
+                      <strong>{conflict.paper?.title}</strong>
+                    </td>
+                    <td>{conflict.paper?.track?.name || "N/A"}</td>
+                    <td className="reason-cell">{conflict.reason}</td>
+                    <td>
+                      {new Date(conflict.createdAt).toLocaleDateString("vi-VN")}
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      <button
+                        className="btn-delete-icon"
+                        onClick={() => handleDeleteCOI(conflict.id)}
+                        title="Xóa xung đột lợi ích"
+                      >
+                        <FiTrash2 size={17} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .coi-tabs {
           display: none;
         }

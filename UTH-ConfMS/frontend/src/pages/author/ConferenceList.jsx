@@ -74,7 +74,7 @@ const ConferenceList = () => {
 
   return (
     <div className="portal-page">
-      <PortalHeader />
+      <PortalHeader title="UTH Conference Portal · Author" />
       {/* HERO SECTION */}
       <section className="conf-hero">
         <div className="conf-hero-content">

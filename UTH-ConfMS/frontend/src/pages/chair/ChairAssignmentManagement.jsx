@@ -29,7 +29,7 @@ const ChairAssignmentManagement = () => {
 
   // Toast notifications
   const [toasts, setToasts] = useState([]);
-  
+
   const addToast = useCallback((message, type = "success") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -149,7 +149,7 @@ const ChairAssignmentManagement = () => {
 
     // Filter by status
     if (statusFilter === 'UNASSIGNED') {
-      result = papers.filter(p => 
+      result = papers.filter(p =>
         (!assignments[p.id] || assignments[p.id].length === 0) &&
         (p.status === 'SUBMITTED' || p.status === 'UNDER_REVIEW')
       );
@@ -164,7 +164,7 @@ const ChairAssignmentManagement = () => {
     // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(p => 
+      result = result.filter(p =>
         p.title?.toLowerCase().includes(query) ||
         p.mainAuthor?.fullName?.toLowerCase().includes(query) ||
         p.track?.name?.toLowerCase().includes(query) ||
@@ -342,7 +342,7 @@ const ChairAssignmentManagement = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Program / Track Chair"
+      roleLabel="Chair"
       title="Quản lý Assignment"
       subtitle="Phân công Reviewer/PC cho các bài báo"
     >
@@ -373,9 +373,9 @@ const ChairAssignmentManagement = () => {
         >
           <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
             <div style={{ flex: 1 }}>
-              <label style={{ 
+              <label style={{
                 display: "block",
-                marginBottom: "0.5rem", 
+                marginBottom: "0.5rem",
                 fontWeight: 600,
                 color: "#64748b",
                 fontSize: "0.875rem",
@@ -405,11 +405,11 @@ const ChairAssignmentManagement = () => {
                 ))}
               </select>
             </div>
-            
+
             <div style={{ flex: 1 }}>
-              <label style={{ 
+              <label style={{
                 display: "block",
-                marginBottom: "0.5rem", 
+                marginBottom: "0.5rem",
                 fontWeight: 600,
                 color: "#64748b",
                 fontSize: "0.875rem",
@@ -456,26 +456,26 @@ const ChairAssignmentManagement = () => {
               <span>Lọc:</span>
             </div>
             <div className="filter-buttons">
-              <button 
+              <button
                 className={`filter-btn ${statusFilter === 'ALL' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('ALL')}
               >
                 Tất cả
                 <span className="filter-count">{papers.length}</span>
               </button>
-              <button 
+              <button
                 className={`filter-btn ${statusFilter === 'UNASSIGNED' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('UNASSIGNED')}
               >
                 Chưa phân công
                 <span className="filter-count">
-                  {papers.filter(p => 
+                  {papers.filter(p =>
                     (!assignments[p.id] || assignments[p.id].length === 0) &&
                     (p.status === 'SUBMITTED' || p.status === 'UNDER_REVIEW')
                   ).length}
                 </span>
               </button>
-              <button 
+              <button
                 className={`filter-btn ${statusFilter === 'UNDER_REVIEW' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('UNDER_REVIEW')}
               >
@@ -484,7 +484,7 @@ const ChairAssignmentManagement = () => {
                   {papers.filter(p => p.status === 'UNDER_REVIEW').length}
                 </span>
               </button>
-              <button 
+              <button
                 className={`filter-btn ${statusFilter === 'WITHDRAWN' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('WITHDRAWN')}
               >
@@ -493,7 +493,7 @@ const ChairAssignmentManagement = () => {
                   {papers.filter(p => p.status === 'WITHDRAWN').length}
                 </span>
               </button>
-              <button 
+              <button
                 className={`filter-btn ${statusFilter === 'COMPLETED' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('COMPLETED')}
               >
@@ -504,13 +504,13 @@ const ChairAssignmentManagement = () => {
               </button>
             </div>
           </div>
-          
+
           <div className="sort-section">
             <div className="sort-label">
               <FiTrendingUp />
               <span>Sắp xếp:</span>
             </div>
-            <select 
+            <select
               className="sort-select"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
@@ -563,9 +563,9 @@ const ChairAssignmentManagement = () => {
                     <td>
                       <strong>{paper.title}</strong>
                       {selectedConference === "ALL" && paper.conference && (
-                        <div style={{ 
-                          fontSize: "0.75rem", 
-                          color: "#6b7280", 
+                        <div style={{
+                          fontSize: "0.75rem",
+                          color: "#6b7280",
                           marginTop: "0.25rem",
                           fontWeight: 500
                         }}>
@@ -619,12 +619,11 @@ const ChairAssignmentManagement = () => {
                             {paperAssignments.length > 0 ? "Thêm reviewer" : "Phân công"}
                           </button>
                         ) : (
-                          <span 
-                            className={`badge ${
-                              paper.status === 'ACCEPTED' ? 'badge-success' : 
-                              paper.status === 'REJECTED' ? 'badge-danger' : 
-                              'badge-secondary'
-                            }`}
+                          <span
+                            className={`badge ${paper.status === 'ACCEPTED' ? 'badge-success' :
+                                paper.status === 'REJECTED' ? 'badge-danger' :
+                                  'badge-secondary'
+                              }`}
                             style={{ minWidth: "140px", display: "inline-block", textAlign: "center" }}
                           >
                             {paper.status === 'ACCEPTED' && 'Đã chấp nhận'}
@@ -729,9 +728,9 @@ const ChairAssignmentManagement = () => {
                 borderRadius: '8px',
                 border: '2px solid #bfdbfe'
               }}>
-                <div style={{ 
-                  fontSize: '0.875rem', 
-                  fontWeight: 600, 
+                <div style={{
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
                   marginBottom: '0.75rem',
                   color: '#1e40af',
                   display: 'flex',
@@ -757,8 +756,8 @@ const ChairAssignmentManagement = () => {
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ 
-                          fontWeight: 700, 
+                        <span style={{
+                          fontWeight: 700,
                           fontSize: '1rem',
                           color: idx === 0 ? '#059669' : idx === 1 ? '#0891b2' : '#6b7280'
                         }}>
@@ -770,10 +769,10 @@ const ChairAssignmentManagement = () => {
                       </div>
                       <div style={{
                         padding: '0.25rem 0.75rem',
-                        background: suggestion.similarityScore >= 0.7 ? '#d1fae5' : 
-                                   suggestion.similarityScore >= 0.5 ? '#fef3c7' : '#fee2e2',
-                        color: suggestion.similarityScore >= 0.7 ? '#065f46' : 
-                               suggestion.similarityScore >= 0.5 ? '#92400e' : '#991b1b',
+                        background: suggestion.similarityScore >= 0.7 ? '#d1fae5' :
+                          suggestion.similarityScore >= 0.5 ? '#fef3c7' : '#fee2e2',
+                        color: suggestion.similarityScore >= 0.7 ? '#065f46' :
+                          suggestion.similarityScore >= 0.5 ? '#92400e' : '#991b1b',
                         borderRadius: '12px',
                         fontSize: '0.75rem',
                         fontWeight: 700

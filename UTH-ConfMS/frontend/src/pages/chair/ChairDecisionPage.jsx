@@ -34,7 +34,7 @@ const ChairDecisionPage = () => {
 
   // Toast notifications
   const [toasts, setToasts] = useState([]);
-  
+
   const addToast = useCallback((message, type = "success") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -97,7 +97,7 @@ const ChairDecisionPage = () => {
         // Load reviews và assignments cho mỗi bài
         const reviewsMap = {};
         const assignmentsMap = {};
-        
+
         for (const paper of underReviewPapers) {
           try {
             const [reviewsRes, assignRes] = await Promise.all([
@@ -133,22 +133,22 @@ const ChairDecisionPage = () => {
       // Bài đã có đủ reviews (tất cả assignments đã COMPLETED)
       result = papers.filter(p => {
         const paperAssignments = assignments[p.id] || [];
-        return paperAssignments.length > 0 && 
-               paperAssignments.every(a => a.status === 'COMPLETED');
+        return paperAssignments.length > 0 &&
+          paperAssignments.every(a => a.status === 'COMPLETED');
       });
     } else if (statusFilter === 'PENDING') {
       // Bài chưa có đủ reviews
       result = papers.filter(p => {
         const paperAssignments = assignments[p.id] || [];
-        return paperAssignments.length === 0 || 
-               paperAssignments.some(a => a.status !== 'COMPLETED');
+        return paperAssignments.length === 0 ||
+          paperAssignments.some(a => a.status !== 'COMPLETED');
       });
     }
 
     // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(p => 
+      result = result.filter(p =>
         p.title?.toLowerCase().includes(query) ||
         p.mainAuthor?.fullName?.toLowerCase().includes(query) ||
         p.track?.name?.toLowerCase().includes(query) ||
@@ -183,10 +183,10 @@ const ChairDecisionPage = () => {
   const getRecommendation = (paperId) => {
     const paperReviews = reviews[paperId] || [];
     if (paperReviews.length === 0) return null;
-    
+
     const accepts = paperReviews.filter(r => r.recommendation === 'ACCEPT').length;
     const rejects = paperReviews.filter(r => r.recommendation === 'REJECT').length;
-    
+
     if (accepts > rejects) return 'ACCEPT';
     if (rejects > accepts) return 'REJECT';
     return 'MIXED';
@@ -194,8 +194,8 @@ const ChairDecisionPage = () => {
 
   const canMakeDecision = (paperId) => {
     const paperAssignments = assignments[paperId] || [];
-    return paperAssignments.length > 0 && 
-           paperAssignments.every(a => a.status === 'COMPLETED');
+    return paperAssignments.length > 0 &&
+      paperAssignments.every(a => a.status === 'COMPLETED');
   };
 
   const submitDecision = async () => {
@@ -203,7 +203,7 @@ const ChairDecisionPage = () => {
       addToast("Vui lòng chọn quyết định!", "warning");
       return;
     }
-    
+
     try {
       setSubmitting(true);
       await apiClient.post("/decisions", {
@@ -226,7 +226,7 @@ const ChairDecisionPage = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Program / Track Chair" title="Ra quyết định">
+      <DashboardLayout roleLabel="Chair" title="Ra quyết định">
         <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
       </DashboardLayout>
     );
@@ -234,7 +234,7 @@ const ChairDecisionPage = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Program / Track Chair"
+      roleLabel="Chair"
       title="Ra quyết định"
       subtitle="Tổng hợp đánh giá và ra quyết định cho bài báo"
     >
@@ -264,9 +264,9 @@ const ChairDecisionPage = () => {
         >
           <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
             <div style={{ flex: 1 }}>
-              <label style={{ 
+              <label style={{
                 display: "block",
-                marginBottom: "0.5rem", 
+                marginBottom: "0.5rem",
                 fontWeight: 600,
                 color: "#64748b",
                 fontSize: "0.875rem",
@@ -296,11 +296,11 @@ const ChairDecisionPage = () => {
                 ))}
               </select>
             </div>
-            
+
             <div style={{ flex: 1 }}>
-              <label style={{ 
+              <label style={{
                 display: "block",
-                marginBottom: "0.5rem", 
+                marginBottom: "0.5rem",
                 fontWeight: 600,
                 color: "#64748b",
                 fontSize: "0.875rem",
@@ -347,14 +347,14 @@ const ChairDecisionPage = () => {
               <span>Lọc:</span>
             </div>
             <div className="filter-buttons">
-              <button 
+              <button
                 className={`filter-btn ${statusFilter === 'ALL' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('ALL')}
               >
                 Tất cả
                 <span className="filter-count">{papers.length}</span>
               </button>
-              <button 
+              <button
                 className={`filter-btn ${statusFilter === 'READY' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('READY')}
               >
@@ -363,7 +363,7 @@ const ChairDecisionPage = () => {
                   {papers.filter(p => canMakeDecision(p.id)).length}
                 </span>
               </button>
-              <button 
+              <button
                 className={`filter-btn ${statusFilter === 'PENDING' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('PENDING')}
               >
@@ -374,13 +374,13 @@ const ChairDecisionPage = () => {
               </button>
             </div>
           </div>
-          
+
           <div className="sort-section">
             <div className="sort-label">
               <FiTrendingUp />
               <span>Sắp xếp:</span>
             </div>
-            <select 
+            <select
               className="sort-select"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
@@ -424,9 +424,9 @@ const ChairDecisionPage = () => {
                     <td>
                       <strong>{paper.title}</strong>
                       {selectedConference === "ALL" && paper.conference && (
-                        <div style={{ 
-                          fontSize: "0.75rem", 
-                          color: "#6b7280", 
+                        <div style={{
+                          fontSize: "0.75rem",
+                          color: "#6b7280",
                           marginTop: "0.25rem",
                           fontWeight: 500
                         }}>
@@ -488,7 +488,7 @@ const ChairDecisionPage = () => {
                         >
                           Ra quyết định
                         </button>
-                        
+
                         {paperReviews.length > 0 && (
                           <>
                             <button
@@ -511,7 +511,7 @@ const ChairDecisionPage = () => {
                             >
                               ✨ Gợi ý
                             </button>
-                            
+
                             <button
                               onClick={() => setAiSummaryModal({ show: true, paper })}
                               style={{
@@ -563,10 +563,10 @@ const ChairDecisionPage = () => {
             <h3 style={{ marginBottom: "1rem" }}>{selectedPaper.title}</h3>
 
             {/* Tổng hợp đánh giá */}
-            <div style={{ 
-              background: "#f8fafc", 
-              padding: "1rem", 
-              borderRadius: "8px", 
+            <div style={{
+              background: "#f8fafc",
+              padding: "1rem",
+              borderRadius: "8px",
               marginBottom: "1.5rem",
               border: "1px solid #e2e8f0"
             }}>
@@ -583,11 +583,11 @@ const ChairDecisionPage = () => {
                   <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "0.25rem" }}>
                     Điểm trung bình
                   </div>
-                  <div style={{ 
-                    fontSize: "1.5rem", 
+                  <div style={{
+                    fontSize: "1.5rem",
                     fontWeight: 700,
-                    color: getAverageScore(selectedPaper.id) >= 1 ? "#10b981" : 
-                           getAverageScore(selectedPaper.id) <= -1 ? "#ef4444" : "#6b7280"
+                    color: getAverageScore(selectedPaper.id) >= 1 ? "#10b981" :
+                      getAverageScore(selectedPaper.id) <= -1 ? "#ef4444" : "#6b7280"
                   }}>
                     {getAverageScore(selectedPaper.id).toFixed(2)}
                   </div>
@@ -616,9 +616,9 @@ const ChairDecisionPage = () => {
                   Chi tiết đánh giá:
                 </div>
                 {(reviews[selectedPaper.id] || []).map((review, idx) => (
-                  <div key={review.id} style={{ 
-                    background: "white", 
-                    padding: "0.75rem", 
+                  <div key={review.id} style={{
+                    background: "white",
+                    padding: "0.75rem",
                     borderRadius: "6px",
                     marginBottom: "0.5rem",
                     border: "1px solid #e5e7eb"
@@ -628,8 +628,8 @@ const ChairDecisionPage = () => {
                         Người chấm #{idx + 1}
                       </span>
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                        <span style={{ 
-                          fontWeight: 600, 
+                        <span style={{
+                          fontWeight: 600,
                           fontSize: "0.9375rem",
                           color: review.score >= 1 ? "#10b981" : review.score <= -1 ? "#ef4444" : "#6b7280"
                         }}>
@@ -687,7 +687,7 @@ const ChairDecisionPage = () => {
               >
                 {submitting ? "Đang xử lý..." : "Xác nhận quyết định"}
               </button>
-              
+
               {decision && (
                 <button
                   onClick={() => {
@@ -717,7 +717,7 @@ const ChairDecisionPage = () => {
                   ✨ Soạn email AI
                 </button>
               )}
-              
+
               <button
                 className="btn-secondary"
                 onClick={() => setSelectedPaper(null)}

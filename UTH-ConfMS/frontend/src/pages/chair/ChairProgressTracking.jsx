@@ -88,7 +88,7 @@ const ChairProgressTracking = () => {
             ]);
             assignmentsMap[paper.id] = assignRes.data || [];
             reviewsMap[paper.id] = reviewsRes.data || [];
-            
+
             totalAssignments += (assignRes.data || []).length;
             completedReviews += (reviewsRes.data || []).length;
           } catch (err) {
@@ -154,7 +154,7 @@ const ChairProgressTracking = () => {
     // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(p => 
+      result = result.filter(p =>
         p.title?.toLowerCase().includes(query) ||
         p.mainAuthor?.fullName?.toLowerCase().includes(query) ||
         p.track?.name?.toLowerCase().includes(query) ||
@@ -187,7 +187,7 @@ const ChairProgressTracking = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Program / Track Chair" title="Theo dõi tiến độ">
+      <DashboardLayout roleLabel="Chair" title="Theo dõi tiến độ">
         <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
       </DashboardLayout>
     );
@@ -195,13 +195,13 @@ const ChairProgressTracking = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Program / Track Chair"
+      roleLabel="Chair"
       title="Theo dõi tiến độ"
       subtitle="Theo dõi tiến độ đánh giá và quyết định của hội nghị"
     >
       <div style={{ marginBottom: "1rem" }}>
-        <button 
-          className="btn-back" 
+        <button
+          className="btn-back"
           onClick={() => navigate(-1)}
           style={{
             padding: "0.5rem 1rem",
@@ -242,11 +242,11 @@ const ChairProgressTracking = () => {
       </div>
 
       {/* Statistics Cards */}
-      <div style={{ 
-        display: "grid", 
-        gridTemplateColumns: "repeat(4, 1fr)", 
-        gap: "1rem", 
-        marginBottom: "1.5rem" 
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(4, 1fr)",
+        gap: "1rem",
+        marginBottom: "1.5rem"
       }}>
         <div style={{
           background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)",
@@ -326,9 +326,9 @@ const ChairProgressTracking = () => {
         >
           <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
             <div style={{ flex: 1 }}>
-              <label style={{ 
+              <label style={{
                 display: "block",
-                marginBottom: "0.5rem", 
+                marginBottom: "0.5rem",
                 fontWeight: 600,
                 color: "#64748b",
                 fontSize: "0.875rem",
@@ -358,11 +358,11 @@ const ChairProgressTracking = () => {
                 ))}
               </select>
             </div>
-            
+
             <div style={{ flex: 1 }}>
-              <label style={{ 
+              <label style={{
                 display: "block",
-                marginBottom: "0.5rem", 
+                marginBottom: "0.5rem",
                 fontWeight: 600,
                 color: "#64748b",
                 fontSize: "0.875rem",
@@ -409,14 +409,14 @@ const ChairProgressTracking = () => {
               <span>Lọc:</span>
             </div>
             <div className="filter-buttons">
-              <button 
+              <button
                 className={`filter-btn ${statusFilter === 'ALL' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('ALL')}
               >
                 Tất cả
                 <span className="filter-count">{papers.length}</span>
               </button>
-              <button 
+              <button
                 className={`filter-btn ${statusFilter === 'COMPLETED' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('COMPLETED')}
               >
@@ -429,7 +429,7 @@ const ChairProgressTracking = () => {
                   }).length}
                 </span>
               </button>
-              <button 
+              <button
                 className={`filter-btn ${statusFilter === 'PENDING' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('PENDING')}
               >
@@ -442,7 +442,7 @@ const ChairProgressTracking = () => {
                   }).length}
                 </span>
               </button>
-              <button 
+              <button
                 className={`filter-btn ${statusFilter === 'NO_ASSIGNMENT' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('NO_ASSIGNMENT')}
               >
@@ -497,9 +497,9 @@ const ChairProgressTracking = () => {
                     <td>
                       <strong>{paper.title}</strong>
                       {selectedConference === "ALL" && paper.conference && (
-                        <div style={{ 
-                          fontSize: "0.75rem", 
-                          color: "#6b7280", 
+                        <div style={{
+                          fontSize: "0.75rem",
+                          color: "#6b7280",
                           marginTop: "0.25rem",
                           fontWeight: 500
                         }}>
@@ -512,9 +512,9 @@ const ChairProgressTracking = () => {
                     <td style={{ whiteSpace: "nowrap" }}>{getStatusBadge(paper.status)}</td>
                     <td>
                       <div style={{ minWidth: "150px" }}>
-                        <div style={{ 
-                          display: "flex", 
-                          alignItems: "center", 
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center",
                           gap: "0.5rem",
                           marginBottom: "0.25rem"
                         }}>
@@ -532,8 +532,8 @@ const ChairProgressTracking = () => {
                               transition: "width 0.3s ease"
                             }} />
                           </div>
-                          <span style={{ 
-                            fontSize: "0.75rem", 
+                          <span style={{
+                            fontSize: "0.75rem",
                             fontWeight: 600,
                             color: progress === 100 ? "#10b981" : "#6b7280",
                             minWidth: "40px"
@@ -554,9 +554,9 @@ const ChairProgressTracking = () => {
                           {paperAssignments.map((assign) => {
                             const hasReview = paperReviews.some(r => r.reviewer?.id === assign.reviewer?.id);
                             return (
-                              <div key={assign.id} style={{ 
-                                display: "flex", 
-                                alignItems: "center", 
+                              <div key={assign.id} style={{
+                                display: "flex",
+                                alignItems: "center",
                                 gap: "0.375rem",
                                 fontSize: "0.8125rem"
                               }}>

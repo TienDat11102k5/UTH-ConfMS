@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 import apiClient from "../../apiClient";
-import logoUth from "../../assets/logoUTH.jpg";
-import UserProfileDropdown from "../../components/UserProfileDropdown";
+import PortalHeader from "../../components/PortalHeader";
 import { ToastContainer } from "../../components/Toast";
 import { FiDownload, FiFilter, FiSearch } from "react-icons/fi";
 import "../../styles/PublicProceedings.css";
@@ -22,7 +21,7 @@ const PublicProceedings = () => {
 
   // Toast notifications
   const [toasts, setToasts] = useState([]);
-  
+
   const addToast = useCallback((message, type = "success") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -36,7 +35,7 @@ const PublicProceedings = () => {
     // Check if user is logged in
     const token = sessionStorage.getItem("accessToken") || localStorage.getItem("accessToken");
     const userStr = sessionStorage.getItem("currentUser") || localStorage.getItem("currentUser");
-    
+
     if (token && userStr) {
       try {
         const user = JSON.parse(userStr);
@@ -62,7 +61,7 @@ const PublicProceedings = () => {
     try {
       const response = await apiClient.get("/conferences", { skipAuth: true });
       setConferences(response.data);
-      
+
       if (conferenceId) {
         setSelectedConference(conferenceId);
         fetchProceedings(conferenceId);
@@ -85,7 +84,7 @@ const PublicProceedings = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const allProceedings = [];
       for (const conf of confs) {
         try {
@@ -97,7 +96,7 @@ const PublicProceedings = () => {
           console.error(`Error fetching proceedings for conference ${conf.id}:`, err);
         }
       }
-      
+
       setProceedings(allProceedings);
     } catch (err) {
       console.error("Error fetching all proceedings:", err);
@@ -112,15 +111,15 @@ const PublicProceedings = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await apiClient.get(`/proceedings/${confId}`, {
         skipAuth: true,
       });
-      
+
       setProceedings(response.data);
     } catch (err) {
       console.error("Error fetching proceedings:", err);
-      
+
       if (err.response?.status === 404) {
         setError("Không tìm thấy hội nghị này.");
       } else {
@@ -173,10 +172,10 @@ const PublicProceedings = () => {
   // Filter proceedings
   const filteredProceedings = proceedings.filter(paper => {
     const matchTrack = selectedTrack === "ALL" || paper.trackName === selectedTrack;
-    const allAuthors = paper.coAuthors 
+    const allAuthors = paper.coAuthors
       ? `${paper.authorName} ${paper.coAuthors}`
       : paper.authorName || "";
-    const matchSearch = !searchQuery.trim() || 
+    const matchSearch = !searchQuery.trim() ||
       paper.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       allAuthors.toLowerCase().includes(searchQuery.toLowerCase());
     return matchTrack && matchSearch;
@@ -195,79 +194,11 @@ const PublicProceedings = () => {
   if (loading) {
     return (
       <div className="proceedings-page-modern">
-        <div style={{
-          background: "white",
-          borderBottom: "1px solid #e5e7eb",
-          position: "sticky",
-          top: 0,
-          zIndex: 100,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)"
-        }}>
-          <header style={{
-            maxWidth: "1400px",
-            margin: "0 auto",
-            padding: "1rem 2rem",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}>
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem"
-            }}>
-              <img
-                src={logoUth}
-                alt="Logo UTH"
-                style={{
-                  height: "60px",
-                  width: "auto",
-                  mixBlendMode: "multiply"
-                }}
-              />
-              <div>
-                <div style={{
-                  fontSize: "1.125rem",
-                  fontWeight: 700,
-                  color: "#0d9488",
-                  lineHeight: 1.2,
-                  marginBottom: "0.25rem"
-                }}>
-                  HỆ THỐNG QUẢN LÝ HỘI NGHỊ KHOA HỌC
-                </div>
-                <div style={{
-                  fontSize: "0.8125rem",
-                  color: "#64748b",
-                  fontWeight: 500
-                }}>
-                  Trường Đại học Giao thông Vận tải
-                </div>
-              </div>
-            </div>
-            <nav style={{
-              display: "flex",
-              gap: "1.5rem",
-              alignItems: "center"
-            }}>
-              <Link to="/" style={{
-                color: "#475569",
-                textDecoration: "none",
-                fontSize: "0.9375rem",
-                fontWeight: 600
-              }}>Trang chủ</Link>
-              {currentUser ? (
-                <UserProfileDropdown />
-              ) : (
-                <Link to="/login" style={{
-                  color: "#475569",
-                  textDecoration: "none",
-                  fontSize: "0.9375rem",
-                  fontWeight: 600
-                }}>Đăng nhập</Link>
-              )}
-            </nav>
-          </header>
-        </div>
+        <PortalHeader
+          title="UTH Conference Portal · Proceedings"
+          ctaHref="/program"
+          ctaText="Xem chương trình"
+        />
 
         <div style={{
           background: "linear-gradient(135deg, rgba(13, 148, 136, 0.05) 0%, rgba(20, 184, 166, 0.08) 100%)",
@@ -324,91 +255,11 @@ const PublicProceedings = () => {
   return (
     <div className="proceedings-page-modern">
       {/* Header */}
-      <div style={{
-        background: "white",
-        borderBottom: "1px solid #e5e7eb",
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)"
-      }}>
-        <header style={{
-          maxWidth: "1400px",
-          margin: "0 auto",
-          padding: "1rem 2rem",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center"
-        }}>
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem"
-          }}>
-            <img
-              src={logoUth}
-              alt="Logo UTH"
-              style={{
-                height: "60px",
-                width: "auto",
-                mixBlendMode: "multiply"
-              }}
-            />
-            <div>
-              <div style={{
-                fontSize: "1.125rem",
-                fontWeight: 700,
-                color: "#0d9488",
-                lineHeight: 1.2,
-                marginBottom: "0.25rem"
-              }}>
-                HỆ THỐNG QUẢN LÝ HỘI NGHỊ KHOA HỌC
-              </div>
-              <div style={{
-                fontSize: "0.8125rem",
-                color: "#64748b",
-                fontWeight: 500
-              }}>
-                Trường Đại học Giao thông Vận tải
-              </div>
-            </div>
-          </div>
-          <nav style={{
-            display: "flex",
-            gap: "1.5rem",
-            alignItems: "center"
-          }}>
-            <Link to="/" style={{
-              color: "#475569",
-              textDecoration: "none",
-              fontSize: "0.9375rem",
-              fontWeight: 600,
-              transition: "color 0.2s ease"
-            }}
-            onMouseOver={(e) => e.currentTarget.style.color = "#0d9488"}
-            onMouseOut={(e) => e.currentTarget.style.color = "#475569"}
-            >
-              Trang chủ
-            </Link>
-            {currentUser ? (
-              <UserProfileDropdown />
-            ) : (
-              <Link to="/login" style={{
-                color: "#475569",
-                textDecoration: "none",
-                fontSize: "0.9375rem",
-                fontWeight: 600,
-                transition: "color 0.2s ease"
-              }}
-              onMouseOver={(e) => e.currentTarget.style.color = "#0d9488"}
-              onMouseOut={(e) => e.currentTarget.style.color = "#475569"}
-              >
-                Đăng nhập
-              </Link>
-            )}
-          </nav>
-        </header>
-      </div>
+      <PortalHeader
+        title="UTH Conference Portal · Proceedings"
+        ctaHref="/program"
+        ctaText="Xem chương trình"
+      />
 
       {/* Hero Banner */}
       <div style={{
@@ -468,9 +319,9 @@ const PublicProceedings = () => {
             boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
             border: "1px solid #e2e8f0",
           }}>
-            <label style={{ 
+            <label style={{
               display: "block",
-              marginBottom: "0.5rem", 
+              marginBottom: "0.5rem",
               fontWeight: 600,
               color: "#64748b",
               fontSize: "0.875rem",
@@ -514,8 +365,8 @@ const PublicProceedings = () => {
           }}>
             <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end", flexWrap: "wrap" }}>
               <div style={{ flex: 1, minWidth: "200px" }}>
-                <label style={{ 
-                  marginBottom: "0.5rem", 
+                <label style={{
+                  marginBottom: "0.5rem",
                   fontWeight: 600,
                   color: "#64748b",
                   fontSize: "0.875rem",
@@ -551,8 +402,8 @@ const PublicProceedings = () => {
               </div>
 
               <div style={{ flex: 1, minWidth: "200px" }}>
-                <label style={{ 
-                  marginBottom: "0.5rem", 
+                <label style={{
+                  marginBottom: "0.5rem",
                   fontWeight: 600,
                   color: "#64748b",
                   fontSize: "0.875rem",
@@ -617,9 +468,9 @@ const PublicProceedings = () => {
               padding: "1.5rem",
               boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
             }}>
-              <div style={{ 
-                marginBottom: "1rem", 
-                fontSize: "0.875rem", 
+              <div style={{
+                marginBottom: "1rem",
+                fontSize: "0.875rem",
                 color: "#6b7280",
                 fontWeight: 600,
                 display: "flex",
@@ -692,18 +543,18 @@ const PublicProceedings = () => {
                       </thead>
                       <tbody>
                         {paginatedProceedings.map((paper, index) => {
-                          const allAuthors = paper.coAuthors 
+                          const allAuthors = paper.coAuthors
                             ? `${paper.authorName}, ${paper.coAuthors}`
                             : paper.authorName || "Không có thông tin tác giả";
                           const globalIndex = startIndex + index + 1;
-                          
+
                           return (
                             <tr key={paper.paperId || index} style={{
                               borderBottom: "1px solid #e5e7eb",
                               transition: "background 0.2s ease"
                             }}
-                            onMouseOver={(e) => e.currentTarget.style.background = "#f9fafb"}
-                            onMouseOut={(e) => e.currentTarget.style.background = "white"}
+                              onMouseOver={(e) => e.currentTarget.style.background = "#f9fafb"}
+                              onMouseOut={(e) => e.currentTarget.style.background = "white"}
                             >
                               <td style={{
                                 padding: "1rem 0.875rem",
@@ -728,8 +579,8 @@ const PublicProceedings = () => {
                                     lineHeight: 1.4,
                                     marginTop: "0.25rem"
                                   }}>
-                                    {paper.abstractText.length > 150 
-                                      ? paper.abstractText.substring(0, 150) + "..." 
+                                    {paper.abstractText.length > 150
+                                      ? paper.abstractText.substring(0, 150) + "..."
                                       : paper.abstractText}
                                   </div>
                                 )}
@@ -852,8 +703,8 @@ const PublicProceedings = () => {
                                   padding: "0.5rem 0.75rem",
                                   borderRadius: "6px",
                                   border: "1px solid #e5e7eb",
-                                  background: currentPage === page 
-                                    ? "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)" 
+                                  background: currentPage === page
+                                    ? "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)"
                                     : "white",
                                   color: currentPage === page ? "white" : "#374151",
                                   fontSize: "0.875rem",

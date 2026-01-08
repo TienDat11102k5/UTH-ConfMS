@@ -73,8 +73,8 @@ const AuthorPaperReviews = () => {
       } catch (err) {
         setError(
           err.response?.data?.message ||
-            err.message ||
-            "Không thể tải thông tin bài báo"
+          err.message ||
+          "Không thể tải thông tin bài báo"
         );
       } finally {
         setLoading(false);
@@ -82,11 +82,11 @@ const AuthorPaperReviews = () => {
     };
 
     if (paperId) loadData();
-    
+
     const handleFocus = () => {
       if (paperId) loadData();
     };
-    
+
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
   }, [paperId]);
@@ -119,10 +119,10 @@ const AuthorPaperReviews = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Tác giả" title="Kết quả chấm bài">
+      <DashboardLayout roleLabel="Author" title="Kết quả chấm bài">
         <div style={{ marginBottom: "1rem" }}>
-          <button 
-            className="btn-back" 
+          <button
+            className="btn-back"
             onClick={() => navigate(-1)}
             style={{
               padding: "0.5rem 1rem",
@@ -149,10 +149,10 @@ const AuthorPaperReviews = () => {
 
   if (error || !paper) {
     return (
-      <DashboardLayout roleLabel="Tác giả" title="Kết quả chấm bài">
+      <DashboardLayout roleLabel="Author" title="Kết quả chấm bài">
         <div style={{ marginBottom: "1rem" }}>
-          <button 
-            className="btn-back" 
+          <button
+            className="btn-back"
             onClick={() => navigate(-1)}
             style={{
               padding: "0.5rem 1rem",
@@ -189,13 +189,13 @@ const AuthorPaperReviews = () => {
     );
   }
 
-  const averageScore = reviews.length > 0 
+  const averageScore = reviews.length > 0
     ? (reviews.reduce((sum, r) => sum + r.score, 0) / reviews.length).toFixed(2)
     : 0;
 
   return (
     <DashboardLayout
-      roleLabel="Tác giả"
+      roleLabel="Author"
       title="Kết quả chấm bài"
       subtitle="Xem đánh giá từ reviewers và quyết định từ Chair"
     >
@@ -204,9 +204,9 @@ const AuthorPaperReviews = () => {
           <h2 className="data-page-title" style={{ marginTop: "0.5rem" }}>
             {paper.title}
           </h2>
-          <div style={{ 
-            display: "flex", 
-            gap: "0.75rem", 
+          <div style={{
+            display: "flex",
+            gap: "0.75rem",
             alignItems: "center",
             marginTop: "0.75rem",
             flexWrap: "wrap"
@@ -289,7 +289,7 @@ const AuthorPaperReviews = () => {
           marginBottom: "1.5rem",
         }}>
           <div style={{ marginBottom: "1rem" }}>
-            <h3 style={{ 
+            <h3 style={{
               margin: "0 0 0.5rem 0",
               color: paper.status === "ACCEPTED" ? "#065f46" : "#991b1b",
               fontSize: "1.25rem",
@@ -297,7 +297,7 @@ const AuthorPaperReviews = () => {
             }}>
               {paper.status === "ACCEPTED" ? "🎉 Chúc mừng! Bài báo được chấp nhận" : "Bài báo chưa được chấp nhận"}
             </h3>
-            <div style={{ 
+            <div style={{
               fontSize: "0.875rem",
               color: paper.status === "ACCEPTED" ? "#047857" : "#b91c1c",
             }}>
@@ -312,7 +312,7 @@ const AuthorPaperReviews = () => {
               borderRadius: "8px",
               border: "1px solid #e5e7eb"
             }}>
-              <div style={{ 
+              <div style={{
                 fontWeight: 600,
                 marginBottom: "0.5rem",
                 color: "#374151",
@@ -427,7 +427,7 @@ const AuthorPaperReviews = () => {
 
                 {review.commentForAuthor && (
                   <div>
-                    <div style={{ 
+                    <div style={{
                       fontWeight: 600,
                       marginBottom: "0.5rem",
                       color: "#64748b",
@@ -435,9 +435,9 @@ const AuthorPaperReviews = () => {
                     }}>
                       Nhận xét:
                     </div>
-                    <p style={{ 
-                      margin: 0, 
-                      color: "#374151", 
+                    <p style={{
+                      margin: 0,
+                      color: "#374151",
                       lineHeight: 1.7,
                       fontSize: "0.9375rem",
                       whiteSpace: "pre-wrap"
@@ -492,7 +492,7 @@ const AuthorPaperReviews = () => {
           </div>
           {(!paper.cameraReadyPath && !paper.cameraReadyDownloadUrl) ? (
             <div>
-              <div style={{ 
+              <div style={{
                 padding: "1rem",
                 background: "#fef3c7",
                 borderRadius: "8px",
@@ -547,14 +547,14 @@ const AuthorPaperReviews = () => {
       )}
 
       {/* Back Button */}
-      <div style={{ 
-        marginTop: "2rem", 
-        paddingTop: "1.5rem", 
+      <div style={{
+        marginTop: "2rem",
+        paddingTop: "1.5rem",
         borderTop: "1px solid #e5e7eb",
         textAlign: "center"
       }}>
-        <button 
-          onClick={() => navigate("/author/submissions")} 
+        <button
+          onClick={() => navigate("/author/submissions")}
           className="btn-secondary"
           onMouseOver={(e) => {
             e.currentTarget.style.background = "#f1f5f9";

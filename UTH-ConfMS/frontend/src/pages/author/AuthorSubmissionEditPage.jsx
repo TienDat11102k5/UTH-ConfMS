@@ -15,7 +15,7 @@ const AuthorSubmissionEditPage = () => {
 
   // Toast notifications
   const [toasts, setToasts] = useState([]);
-  
+
   const addToast = useCallback((message, type = "success") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -55,8 +55,8 @@ const AuthorSubmissionEditPage = () => {
         }
         setLoadError(
           err?.response?.data?.message ||
-            err?.response?.data?.error ||
-            "Không tải được submission."
+          err?.response?.data?.error ||
+          "Không tải được submission."
         );
       } finally {
         if (!ignore) setLoading(false);
@@ -100,8 +100,8 @@ const AuthorSubmissionEditPage = () => {
       }
       addToast(
         err?.response?.data?.message ||
-          err?.response?.data?.error ||
-          "Không thể cập nhật submission.",
+        err?.response?.data?.error ||
+        "Không thể cập nhật submission.",
         "error"
       );
     } finally {
@@ -112,7 +112,7 @@ const AuthorSubmissionEditPage = () => {
   if (loading) {
     return (
       <div className="dash-page">
-        <PortalHeader ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
+        <PortalHeader title="UTH Conference Portal · Author" ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
         <main className="dash-main">
           <section className="dash-section">Đang tải submission...</section>
         </main>
@@ -123,7 +123,7 @@ const AuthorSubmissionEditPage = () => {
   if (loadError) {
     return (
       <div className="dash-page">
-        <PortalHeader ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
+        <PortalHeader title="UTH Conference Portal · Author" ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
         <main className="dash-main">
           <section className="dash-section">
             <div className="auth-error" style={{ marginBottom: "1rem" }}>
@@ -140,7 +140,7 @@ const AuthorSubmissionEditPage = () => {
 
   return (
     <div className="dash-page">
-      <PortalHeader ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
+      <PortalHeader title="UTH Conference Portal · Author" ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
       <main className="dash-main">
         <section className="dash-section">
           <div className="data-page-header">

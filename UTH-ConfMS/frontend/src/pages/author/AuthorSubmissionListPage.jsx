@@ -51,12 +51,10 @@ const AuthorSubmissionListPage = () => {
             "Không tải được danh sách bài nộp.";
           setError(msg);
           setDebugInfo(
-            `Status: ${status || "unknown"}, URL: ${
-              err?.config?.url || "n/a"
-            }, detail: ${
-              err?.response?.data
-                ? JSON.stringify(err.response.data)
-                : err?.message || "no message"
+            `Status: ${status || "unknown"}, URL: ${err?.config?.url || "n/a"
+            }, detail: ${err?.response?.data
+              ? JSON.stringify(err.response.data)
+              : err?.message || "no message"
             }`
           );
         }
@@ -133,10 +131,9 @@ const AuthorSubmissionListPage = () => {
         "Không thể rút bài.";
       setError(msg);
       setDebugInfo(
-        `Withdraw failed. Status: ${status || "unknown"}, detail: ${
-          err?.response?.data
-            ? JSON.stringify(err.response.data)
-            : err?.message || "no message"
+        `Withdraw failed. Status: ${status || "unknown"}, detail: ${err?.response?.data
+          ? JSON.stringify(err.response.data)
+          : err?.message || "no message"
         }`
       );
     } finally {
@@ -167,7 +164,11 @@ const AuthorSubmissionListPage = () => {
 
   return (
     <div className="dash-page">
-      <PortalHeader ctaHref="/author/dashboard" ctaText="Cổng thông tin Tác giả" />
+      <PortalHeader
+        title="UTH Conference Portal · Author"
+        ctaHref="/author/dashboard"
+        ctaText="Cổng thông tin Tác giả"
+      />
 
       <main className="dash-main">
         <section className="dash-section">
@@ -211,9 +212,9 @@ const AuthorSubmissionListPage = () => {
           >
             <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
               <div style={{ flex: 1 }}>
-                <label style={{ 
+                <label style={{
                   display: "block",
-                  marginBottom: "0.5rem", 
+                  marginBottom: "0.5rem",
                   fontWeight: 600,
                   color: "#64748b",
                   fontSize: "0.875rem",
@@ -252,9 +253,9 @@ const AuthorSubmissionListPage = () => {
               </div>
 
               <div style={{ flex: 1 }}>
-                <label style={{ 
+                <label style={{
                   display: "block",
-                  marginBottom: "0.5rem", 
+                  marginBottom: "0.5rem",
                   fontWeight: 600,
                   color: "#64748b",
                   fontSize: "0.875rem",
@@ -312,14 +313,14 @@ const AuthorSubmissionListPage = () => {
                   <span>Lọc:</span>
                 </div>
                 <div className="filter-buttons">
-                  <button 
+                  <button
                     className={`filter-btn ${statusFilter === 'ALL' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('ALL')}
                   >
                     Tất cả
                     <span className="filter-count">{submissions.length}</span>
                   </button>
-                  <button 
+                  <button
                     className={`filter-btn ${statusFilter === 'SUBMITTED' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('SUBMITTED')}
                   >
@@ -328,7 +329,7 @@ const AuthorSubmissionListPage = () => {
                       {submissions.filter(s => s.status === 'SUBMITTED').length}
                     </span>
                   </button>
-                  <button 
+                  <button
                     className={`filter-btn ${statusFilter === 'UNDER_REVIEW' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('UNDER_REVIEW')}
                   >
@@ -337,7 +338,7 @@ const AuthorSubmissionListPage = () => {
                       {submissions.filter(s => s.status === 'UNDER_REVIEW').length}
                     </span>
                   </button>
-                  <button 
+                  <button
                     className={`filter-btn ${statusFilter === 'ACCEPTED' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('ACCEPTED')}
                   >
@@ -346,7 +347,7 @@ const AuthorSubmissionListPage = () => {
                       {submissions.filter(s => s.status === 'ACCEPTED').length}
                     </span>
                   </button>
-                  <button 
+                  <button
                     className={`filter-btn ${statusFilter === 'REJECTED' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('REJECTED')}
                   >
@@ -355,7 +356,7 @@ const AuthorSubmissionListPage = () => {
                       {submissions.filter(s => s.status === 'REJECTED').length}
                     </span>
                   </button>
-                  <button 
+                  <button
                     className={`filter-btn ${statusFilter === 'WITHDRAWN' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('WITHDRAWN')}
                   >
@@ -366,13 +367,13 @@ const AuthorSubmissionListPage = () => {
                   </button>
                 </div>
               </div>
-              
+
               <div className="sort-section">
                 <div className="sort-label">
                   <FiTrendingUp />
                   <span>Sắp xếp:</span>
                 </div>
-                <select 
+                <select
                   className="sort-select"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
@@ -445,72 +446,72 @@ const AuthorSubmissionListPage = () => {
                   return 0;
                 })
                 .map((s) => (
-                <div key={s.id} className="submission-card">
-                  <div className="submission-card-header">
-                    <span className="submission-id">#{s.id}</span>
-                    {getStatusBadge(s.status || s.reviewStatus)}
-                  </div>
+                  <div key={s.id} className="submission-card">
+                    <div className="submission-card-header">
+                      <span className="submission-id">#{s.id}</span>
+                      {getStatusBadge(s.status || s.reviewStatus)}
+                    </div>
 
-                  <h3 className="submission-title">{s.title}</h3>
+                    <h3 className="submission-title">{s.title}</h3>
 
-                  <div className="submission-meta">
-                    <div className="meta-row">
-                      <span className="meta-label">HỘI NGHỊ:</span>
-                      <span className="meta-value">{s.conferenceName || s.conferenceId || "-"}</span>
+                    <div className="submission-meta">
+                      <div className="meta-row">
+                        <span className="meta-label">HỘI NGHỊ:</span>
+                        <span className="meta-value">{s.conferenceName || s.conferenceId || "-"}</span>
+                      </div>
+                      <div className="meta-row">
+                        <span className="meta-label">CHỦ ĐỀ:</span>
+                        <span className="meta-value">{s.trackName || s.trackCode || s.trackId || "-"}</span>
+                      </div>
+                      <div className="meta-row">
+                        <span className="meta-label">NGÀY NỘP:</span>
+                        <span className="meta-value">{formatDate(s.submittedAt || s.createdAt)}</span>
+                      </div>
+                      <div className="meta-row">
+                        <span className="meta-label">CẬP NHẬT:</span>
+                        <span className="meta-value">{formatDate(s.updatedAt)}</span>
+                      </div>
                     </div>
-                    <div className="meta-row">
-                      <span className="meta-label">CHỦ ĐỀ:</span>
-                      <span className="meta-value">{s.trackName || s.trackCode || s.trackId || "-"}</span>
-                    </div>
-                    <div className="meta-row">
-                      <span className="meta-label">NGÀY NỘP:</span>
-                      <span className="meta-value">{formatDate(s.submittedAt || s.createdAt)}</span>
-                    </div>
-                    <div className="meta-row">
-                      <span className="meta-label">CẬP NHẬT:</span>
-                      <span className="meta-value">{formatDate(s.updatedAt)}</span>
-                    </div>
-                  </div>
 
-                  <div className="submission-actions">
-                    <button
-                      type="button"
-                      className="btn-secondary btn-sm"
-                      onClick={() => navigate(`/author/submissions/${s.id}`)}
-                    >
-                      Chi tiết
-                    </button>
-                    {(s.status === "ACCEPTED" || s.status === "REJECTED") && (
-                      <button
-                        type="button"
-                        className="btn-primary btn-sm"
-                        onClick={() => navigate(`/author/submissions/${s.id}/reviews`)}
-                      >
-                        Xem Reviews
-                      </button>
-                    )}
-                    {s.status === "SUBMITTED" && (
+                    <div className="submission-actions">
                       <button
                         type="button"
                         className="btn-secondary btn-sm"
-                        onClick={() => navigate(`/author/submissions/${s.id}/edit`)}
+                        onClick={() => navigate(`/author/submissions/${s.id}`)}
                       >
-                        Sửa
+                        Chi tiết
                       </button>
-                    )}
-                    {(s.status === "SUBMITTED" || s.status === "UNDER_REVIEW") && (
-                      <button
-                        type="button"
-                        className="btn-secondary btn-sm btn-danger"
-                        disabled={withdrawingId === s.id}
-                        onClick={() => handleWithdraw(s.id)}
-                      >
-                        {withdrawingId === s.id ? "Đang rút..." : "Rút bài"}
-                      </button>
-                    )}
+                      {(s.status === "ACCEPTED" || s.status === "REJECTED") && (
+                        <button
+                          type="button"
+                          className="btn-primary btn-sm"
+                          onClick={() => navigate(`/author/submissions/${s.id}/reviews`)}
+                        >
+                          Xem Reviews
+                        </button>
+                      )}
+                      {s.status === "SUBMITTED" && (
+                        <button
+                          type="button"
+                          className="btn-secondary btn-sm"
+                          onClick={() => navigate(`/author/submissions/${s.id}/edit`)}
+                        >
+                          Sửa
+                        </button>
+                      )}
+                      {(s.status === "SUBMITTED" || s.status === "UNDER_REVIEW") && (
+                        <button
+                          type="button"
+                          className="btn-secondary btn-sm btn-danger"
+                          disabled={withdrawingId === s.id}
+                          onClick={() => handleWithdraw(s.id)}
+                        >
+                          {withdrawingId === s.id ? "Đang rút..." : "Rút bài"}
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </section>

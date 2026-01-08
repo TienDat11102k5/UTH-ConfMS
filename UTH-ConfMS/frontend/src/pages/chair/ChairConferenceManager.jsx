@@ -14,12 +14,12 @@ const ChairConferenceManager = () => {
   const [error, setError] = useState("");
 
   // Pagination
-  const { currentPage, setCurrentPage, totalPages, paginatedItems} =
+  const { currentPage, setCurrentPage, totalPages, paginatedItems } =
     usePagination(conferences, 20);
 
   // Toast notifications
   const [toasts, setToasts] = useState([]);
-  
+
   const addToast = useCallback((message, type = "success") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -67,7 +67,7 @@ const ChairConferenceManager = () => {
   const handleToggleHidden = async (id, currentStatus) => {
     const action = currentStatus ? "hiện" : "ẩn";
     if (!confirm(`Bạn có chắc muốn ${action} hội nghị này?`)) return;
-    
+
     try {
       const res = await apiClient.put(`/conferences/${id}/toggle-hidden`);
       setConferences((prev) =>
@@ -83,7 +83,7 @@ const ChairConferenceManager = () => {
 
   return (
     <DashboardLayout
-      roleLabel="Chủ tịch Chương trình / Chủ tịch Chuyên đề"
+      roleLabel="Chair"
       title="Quản lý Hội nghị"
       subtitle="Tạo và quản lý các hội nghị khoa học."
     >
@@ -93,7 +93,7 @@ const ChairConferenceManager = () => {
             <span className="breadcrumb-current">Hội nghị</span>
           </div>
           <h2 className="data-page-title">Danh sách hội nghị</h2>
-          
+
         </div>
 
         <div className="data-page-header-right">
@@ -216,7 +216,7 @@ const ChairConferenceManager = () => {
                       >
                         <FiFileText size={17} />
                       </button>
-                      
+
                       <button
                         type="button"
                         title={c.isLocked ? "Hội nghị đã bị khóa bởi Admin" : "Sửa"}
@@ -247,7 +247,7 @@ const ChairConferenceManager = () => {
                       >
                         <FiEdit size={17} />
                       </button>
-                      
+
                       <button
                         type="button"
                         title={c.isLocked ? "Hội nghị đã bị khóa bởi Admin" : (c.isHidden ? "Hiện" : "Ẩn")}
@@ -278,7 +278,7 @@ const ChairConferenceManager = () => {
                       >
                         {c.isHidden ? <FiEye size={17} /> : <FiEyeOff size={17} />}
                       </button>
-                      
+
                       <button
                         type="button"
                         title={c.isLocked ? "Hội nghị đã bị khóa bởi Admin" : "Xóa"}
