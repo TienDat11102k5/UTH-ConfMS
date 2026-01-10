@@ -3,14 +3,14 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
-import logoUTH from "../../assets/logoUTH.jpg";
 import "../../styles/ConferenceList.css";
-import "../../styles/AuthorPages.css";
+
 const ConferenceList = () => {
   const [conferences, setConferences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
     const fetchConferences = async () => {
@@ -36,265 +36,353 @@ const ConferenceList = () => {
     fetchConferences();
   }, [navigate]);
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString, format = "full") => {
     if (!dateString) return "Sắp diễn ra";
-    return new Date(dateString).toLocaleDateString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
+    const date = new Date(dateString);
+    if (format === "day") return date.getDate();
+    if (format === "my") return `THÁNG ${date.getMonth() + 1}, ${date.getFullYear()}`;
+    return date.toLocaleDateString("vi-VN");
   };
 
   if (loading)
     return (
-      <div
-        style={{
-          height: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <div className="flex justify-center items-center h-screen bg-white">
         Loading...
       </div>
     );
   if (error)
     return (
-      <div
-        style={{
-          height: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <div className="flex justify-center items-center h-screen bg-white text-red-500">
         {error}
       </div>
     );
 
+  // Sorting logic: Prioritize upcoming conferences
+  const now = new Date();
+
+  // Sort by startDate ascending (nearest first)
+  const sorted = [...conferences].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+  const upcoming = sorted.filter(c => new Date(c.startDate) >= now);
+  const past = sorted.filter(c => new Date(c.startDate) < now).reverse(); // Most recent past first
+
+  // Combine for display: Upcoming first, then Past
+  const displayConferences = [...upcoming, ...past];
+
+  // Group into pairs for display layout (Left Big, Right Small)
+  const chunkedConferences = [];
+  for (let i = 0; i < displayConferences.length; i += 2) {
+    chunkedConferences.push(displayConferences.slice(i, i + 2));
+  }
+
   return (
-    <div className="portal-page">
-      <PortalHeader title="UTH Conference Portal · Author" />
+    <div className="bg-white min-h-screen text-slate-900 overflow-x-hidden bg-noise">
+      {/* GLOBAL BACKGROUND DECORATION */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="bg-grid-pattern opacity-60 w-full h-full"></div>
+      </div>
+
+      {/* NAVIGATION */}
+      <PortalHeader
+        title="UTH Conference Portal · Author"
+        subtitle="University of Transport HCMC"
+      />
+
       {/* HERO SECTION */}
-      <section className="conf-hero">
-        <div className="conf-hero-content">
-          <div>
-            <div className="badge-soft">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="badge-icon">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              UTH · Academic Conferences
-            </div>
-            <h1 className="conf-title">
-              Khám phá tri thức
-              <br />
-              <span>Kết nối tương lai</span>
-            </h1>
-            <p className="conf-desc">
-              Nền tảng quản lý hội nghị khoa học của Trường ĐH Giao thông Vận
-              tải TP.HCM. Theo dõi chương trình, nộp bài và kết nối với cộng
-              đồng nghiên cứu.
-            </p>
-            <div className="conf-cta">
-              <Link to="/author/submissions/new" className="btn-primary">
-                Nộp bài ngay
-              </Link>
-              <Link to="/program" className="btn-secondary">
-                Xem chương trình
-              </Link>
-            </div>
-            <div className="conf-meta">
-              <div className="meta-item">
-                <div className="meta-icon-wrapper">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 21H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M5 21V7C5 5.89543 5.89543 5 7 5H17C18.1046 5 19 5.89543 19 7V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M9 10H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M9 14H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <div>
-                  <span className="meta-number">{conferences.length}</span>
-                  <span className="meta-label">Hội nghị đang mở</span>
-                </div>
+      <main className="relative z-10 font-body">
+        <div className="hero-wrapper">
+          <div className="bg-decor-left"></div>
+          <div className="bg-decor-right"></div>
+          <div className="bg-decor-horiz"></div>
+          <div className="bg-blob-1"></div>
+          <div className="bg-blob-2"></div>
+
+          <div className="hero-container">
+            {/* Left Content */}
+            <div className="hero-content">
+              <div className="hero-subtitle-top">
+                <div className="dash-line"></div>
+                <span className="hero-label">Hội nghị Học thuật</span>
               </div>
-              <div className="meta-item">
-                <div className="meta-icon-wrapper">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 6.25278V19.2528M12 6.25278C10.8321 5.47686 9.24649 5 7.5 5C5.75351 5 4.16789 5.47686 3 6.25278V19.2528C4.16789 18.4769 5.75351 18 7.5 18C9.24649 18 10.8321 18.4769 12 19.2528M12 6.25278C13.1679 5.47686 14.7535 5 16.5 5C18.2465 5 19.8321 5.47686 21 6.25278V19.2528C19.8321 18.4769 18.2465 18 16.5 18C14.7535 18 13.1679 18.4769 12 19.2528" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <div>
-                  <span className="meta-number">24+</span>
-                  <span className="meta-label">Chủ đề nghiên cứu</span>
-                </div>
+
+              <div className="hero-title-group">
+                <h1 className="hero-bg-text">KNOWLEDGE</h1>
+                <h1 className="hero-main-text">
+                  KHÁM PHÁ <br />
+                  <span className="text-gradient">TRI THỨC</span>
+                  <span className="hero-italic">Kết nối tương lai</span>
+                </h1>
               </div>
-              <div className="meta-item">
-                <div className="meta-icon-wrapper">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M9 12L11 14L15 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <div>
-                  <span className="meta-number">An toàn</span>
-                  <span className="meta-label">
-                    Quản lý minh bạch
+
+              <p className="hero-desc">
+                Nền tảng quản lý hội nghị khoa học của Trường ĐH Giao thông Vận tải TP.HCM.
+                Nơi hội tụ những nghiên cứu đột phá và đổi mới sáng tạo số.
+              </p>
+
+              <div className="hero-actions">
+                <Link to="/author/submissions/new" className="btn-submit">
+                  <div className="btn-submit-bg"></div>
+                  <span className="relative flex items-center gap-3">
+                    Nộp bài ngay
+                    <span className="material-symbols-outlined text-primary-accent">arrow_forward</span>
                   </span>
+                </Link>
+                <Link to="/program" className="btn-watch">
+                  <div className="play-icon-circle">
+                    <span className="material-symbols-outlined">play_arrow</span>
+                  </div>
+                  <span>Xem Chương trình</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Visual (Abstract Nexus) */}
+            <div className="hidden lg:flex hero-visual justify-center items-center">
+              <div className="nexus-graphic">
+                <div className="nexus-ring-1 animate-spin-slow"></div>
+                <div className="nexus-ring-2 animate-spin-reverse"></div>
+                <div className="nexus-glow animate-pulse-glow"></div>
+                <div className="nexus-center glass-morphism">
+                  <span className="material-symbols-outlined text-6xl text-primary-accent">hub</span>
                 </div>
               </div>
             </div>
+
+
           </div>
-          <div className="conf-hero-card">
-            <div className="hero-card-header">
-              <img src={logoUTH} alt="UTH logo" className="hero-logo" />
+        </div>
+
+        {/* STATS & MARQUEE */}
+        <div className="max-w-[1920px] mx-auto px-6 lg:px-12 relative z-20 pb-12">
+          <div className="stats-marquee-row">
+            <div className="stats-group">
+              <div className="stat-block">
+                <span className="stat-num">{conferences.length}<span className="text-primary-accent">+</span></span>
+                <span className="stat-label">Hội nghị</span>
+              </div>
+              <div className="stat-block">
+                <span className="stat-num">{conferences.reduce((acc, c) => acc + (c.submissionCount || 0), 0)}<span className="text-primary-accent">+</span></span>
+                <span className="stat-label">Bài báo</span>
+              </div>
+            </div>
+
+            <div className="marquee-container mask-image-gradient">
+              <div className="marquee-content">
+                {conferences.length > 0 ? (
+                  [...conferences, ...conferences].map((conf, index) => (
+                    <span key={index} className="marquee-item">
+                      <span className={`text-${index % 2 === 0 ? 'primary-accent' : 'secondary'} mr-2`}>●</span>
+                      {conf.name}: {new Date(conf.startDate) > new Date() ? "Đang mở đăng ký" : "Đã kết thúc"}
+                    </span>
+                  ))
+                ) : (
+                  <span className="marquee-item">Đang cập nhật dữ liệu hội nghị...</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* EVENTS SECTION */}
+        <section className="py-24 relative bg-[#f0fdfd]">
+          <div className="max-w-[1920px] mx-auto px-6 lg:px-12">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6 relative z-10">
               <div>
-                <div className="hero-label">UTH ConfMS</div>
-                <div className="hero-sub">Paper submission &amp; review</div>
+                <h2 className="font-display font-bold text-5xl lg:text-7xl text-secondary mb-4">SỰ KIỆN</h2>
+                <p className="font-serif italic text-2xl text-slate-500">Các hội nghị học thuật sắp tới</p>
+              </div>
+              <div className="hidden md:flex gap-2">
+                {chunkedConferences.length > 1 && chunkedConferences.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentPage(idx)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${currentPage === idx ? 'bg-primary-accent scale-125' : 'bg-slate-300 hover:bg-primary-accent/50'}`}
+                    aria-label={`Trang ${idx + 1}`}
+                  />
+                ))}
               </div>
             </div>
-            <ul className="hero-list">
-              <li>Đăng ký hội nghị và theo dõi timeline</li>
-              <li>Nộp bài, cập nhật camera-ready và metadata</li>
-              <li>Nhận thông báo kết quả và phản biện ẩn danh</li>
-              <li>Quản lý profile, ORCID và thông tin nhóm tác giả</li>
-            </ul>
-            <Link to="/author/submit" className="btn-primary full-width">
-              Nộp bài ngay
-            </Link>
-          </div>
-        </div>
-      </section>
 
-      {/* EVENT SCHEDULE SECTION */}
-      <section className="event-schedule-section">
-        <div className="schedule-header">
-          <div>
-            <div className="schedule-label">LỊCH TRÌNH</div>
-            <h2 className="schedule-title">Sự kiện sắp tới</h2>
-          </div>
-          <Link to="/conferences" className="view-all-link">
-            Xem tất cả <span className="arrow">→</span>
-          </Link>
-        </div>
+            {/* Cards Grid Loop */}
+            <div className="flex flex-col gap-6">
+              {chunkedConferences.map((chunk, index) => {
+                // Only render if it's the current page
+                if (index !== currentPage) return null;
 
-        {conferences.length === 0 ? (
-          <div className="schedule-grid">
-            <div className="event-card placeholder-card">
-              <div className="placeholder-content">
-                <span className="placeholder-icon">
-                  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19 4H5C3.89543 4 3 4.89543 3 6V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V6C21 4.89543 20.1046 4 19 4Z" stroke="#9ca3af" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M16 2V6" stroke="#9ca3af" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M8 2V6" stroke="#9ca3af" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M3 10H21" stroke="#9ca3af" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-                <p>Sự kiện mới đang cập nhật</p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="schedule-grid">
-            {conferences.map((conf) => {
-              const startDate = new Date(conf.startDate);
-              const day = startDate.getDate();
-              const monthYear = `THÁNG ${startDate.getMonth() + 1}, ${startDate.getFullYear()}`;
+                const featuredConf = chunk[0];
+                const upcomingConf = chunk.length > 1 ? chunk[1] : null;
+                const baseIndex = index * 2;
 
-              return (
-                <div key={conf.id} className="event-card">
-                  <div className="event-card-top-bar"></div>
-                  <div className="event-card-body">
-                    <div className="event-date-row">
-                      <div className="date-block">
-                        <span className="date-day">{day}</span>
-                        <span className="date-month-year">{monthYear}</span>
+                return (
+                  <div key={index} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 auto-rows-[minmax(300px,auto)] animate-[fadeIn_0.5s_ease-out]">
+                    {/* FEATURED CARD (Left - Larger) */}
+                    <div className="lg:col-span-7 relative group cursor-pointer overflow-hidden rounded-sm border border-slate-200 hover:border-primary-accent/30 transition-colors duration-500 shadow-xl shadow-secondary/10">
+                      <div className="absolute inset-0 bg-gradient-to-t from-deep-ocean via-secondary to-primary-accent z-10"></div>
+                      <div className="absolute inset-0 bg-secondary group-hover:scale-105 transition-transform duration-700">
+                        <div className="w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-accent/40 via-secondary to-deep-ocean"></div>
                       </div>
-                      <div className="calendar-icon-wrapper">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M19 4H5C3.89543 4 3 4.89543 3 6V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V6C21 4.89543 20.1046 4 19 4Z" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M16 2V6" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M8 2V6" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M3 10H21" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M8 14H8.01" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M12 14H12.01" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M16 14H16.01" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M8 18H8.01" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M12 18H12.01" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M16 18H16.01" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+
+                      <div className="relative z-20 p-8 h-full flex flex-col justify-end">
+                        <div className="mb-auto flex justify-between w-full">
+                          <span className="inline-flex items-center justify-center px-3 py-1 border border-white/20 text-white text-[10px] font-bold uppercase tracking-widest bg-white/10 backdrop-blur-md leading-none pt-1.5 pb-1">Nổi bật</span>
+                          <span className="font-display font-bold text-4xl text-white/10 group-hover:text-white/30 transition-colors">
+                            {baseIndex + 1 < 10 ? `0${baseIndex + 1}` : baseIndex + 1}
+                          </span>
+                        </div>
+
+                        <h3 className="font-display font-bold text-3xl md:text-5xl text-white mb-4 leading-none group-hover:text-secondary-dim transition-colors">
+                          {featuredConf.name}
+                        </h3>
+
+                        <p className="text-slate-300 font-light max-w-lg mb-6 line-clamp-2">
+                          {featuredConf.description || "Khám phá sự giao thoa giữa trí tuệ nhân tạo, máy học và cơ sở hạ tầng logistics hiện đại."}
+                        </p>
+
+                        <div className="flex items-center gap-6 text-sm font-mono text-slate-400 border-t border-white/10 pt-6 mt-2">
+                          <span className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-lg">calendar_month</span>
+                            {formatDate(featuredConf.startDate, "full")}
+                          </span>
+                          <span className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-lg">location_on</span>
+                            {featuredConf.location || "Hội trường A"}
+                          </span>
+                          <Link
+                            to={`/conferences/${featuredConf.id}`}
+                            className="ml-auto text-white group-hover:translate-x-2 transition-transform"
+                          >
+                            Chi tiết →
+                          </Link>
+                        </div>
                       </div>
                     </div>
 
-                    <h3 className="event-title">{conf.name}</h3>
-                    <p className="event-desc">
-                      {conf.description ||
-                        "Hội nghị thường niên về các giải pháp giao thông thông minh và phát triển bền vững..."}
-                    </p>
+                    {/* UPCOMING CARD (Right - Smaller) */}
+                    <div className="lg:col-span-5 relative group cursor-pointer overflow-hidden rounded-sm bg-white border border-slate-200 hover:border-primary-accent/30 transition-colors shadow-lg">
+                      {upcomingConf ? (
+                        <div className="p-8 h-full flex flex-col">
+                          <div className="flex justify-between items-start mb-8">
+                            <div>
+                              <span className="block text-primary-accent text-xs font-bold uppercase tracking-widest mb-2">Sắp diễn ra</span>
+                              <h3 className="font-display font-bold text-3xl text-secondary leading-tight">
+                                {upcomingConf.name}
+                              </h3>
+                            </div>
+                            <span className="font-display font-bold text-4xl text-slate-100 group-hover:text-slate-200 transition-colors">
+                              {baseIndex + 2 < 10 ? `0${baseIndex + 2}` : baseIndex + 2}
+                            </span>
+                          </div>
 
-                    <div className="event-stats-row">
-                      <div className="stat-pill">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '4px' }}>
-                          <path d="M13 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V9L13 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M13 2V9H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        {conf.submissionCount || 0} Bài viết
-                      </div>
-                      <div className="stat-pill">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '4px' }}>
-                          <path d="M8 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M8 12H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M8 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M3 6H3.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M3 12H3.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                          <path d="M3 18H3.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        {conf.tracks?.length || 1} Chủ đề
-                      </div>
-                    </div>
+                          <div className="mt-auto space-y-6">
+                            {upcomingConf.chairs ? (
+                              upcomingConf.chairs.split(',').slice(0, 2).map((chair, idx) => (
+                                <div key={idx} className="flex items-start gap-4">
+                                  <img
+                                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(chair)}&background=random`}
+                                    alt="Speaker"
+                                    className="w-12 h-12 grayscale group-hover:grayscale-0 transition-all rounded object-cover"
+                                  />
+                                  <div>
+                                    <p className="text-slate-900 font-bold text-sm">{chair.trim()}</p>
+                                    <p className="text-slate-500 text-xs mt-1">Diễn giả</p>
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="prose prose-sm">
+                                <p className="text-slate-500 text-sm leading-relaxed line-clamp-3 mb-0">
+                                  {upcomingConf.description || "Nội dung tóm tắt hội nghị đang được cập nhật."}
+                                </p>
+                              </div>
+                            )}
 
-                    <div className="event-actions">
-                      <Link
-                        to={`/conferences/${conf.id}`}
-                        className="btn-event-detail"
-                      >
-                        Xem chi tiết
-                      </Link>
-                      <Link
-                        to={`/author/submissions/new?confId=${conf.id}`}
-                        className="btn-event-submit"
-                      >
-                        Nộp bài
-                      </Link>
+                            <Link
+                              to={`/conferences/${upcomingConf.id}`}
+                              className="w-full py-3 mt-4 border border-slate-200 text-slate-900 text-xs font-bold uppercase tracking-widest hover:bg-secondary hover:text-white transition-all block text-center"
+                            >
+                              XEM CHI TIẾT
+                            </Link>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="h-full bg-white rounded-sm p-8 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 text-slate-400 min-h-[480px]">
+                          <span className="material-symbols-outlined text-5xl mb-3 opacity-20">event_busy</span>
+                          <p className="italic text-sm">Hết danh sách</p>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              )
-            })}
+                );
+              })}
 
-            {/* Always show a placeholder card at the end if needed, or just keep it simple */}
-            <div className="event-card placeholder-card">
-              <div className="placeholder-content">
-                <div className="placeholder-icon-box">
-                  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19 4H5C3.89543 4 3 4.89543 3 6V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V6C21 4.89543 20.1046 4 19 4Z" stroke="#9ca3af" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M16 2V6" stroke="#9ca3af" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M8 2V6" stroke="#9ca3af" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M3 10H21" stroke="#9ca3af" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <p>Sự kiện mới đang cập nhật</p>
-              </div>
+
+
             </div>
           </div>
-        )}
-      </section>
-      <footer className="portal-footer">
-        © 2025 UTH-ConfMS. Hệ thống quản lý hội nghị nghiên cứu khoa học UTH.
+        </section>
+
+
+      </main>
+
+      {/* FOOTER */}
+      <footer className="footer-ocean font-body">
+        <div className="footer-watermark">
+          <h2 className="text-watermark">UTH PORTAL UTH PORTAL</h2>
+        </div>
+        <div className="footer-content">
+          <div className="footer-grid">
+            <div className="col-span-1">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-8 h-8 rounded border border-primary-accent flex items-center justify-center text-primary-accent">
+                  <span className="material-symbols-outlined text-sm">hub</span>
+                </div>
+                <span className="font-display font-bold text-xl text-white tracking-widest">UTH CONF</span>
+              </div>
+              <p className="text-slate-400 text-sm leading-relaxed max-w-md font-light">
+                Cổng thông tin hội nghị khoa học chính thức của Trường ĐH Giao thông Vận tải TP.HCM.
+                Thúc đẩy trao đổi tri thức thông qua hệ thống nộp bài và phản biện số tiên tiến.
+              </p>
+              <div className="mt-8 flex gap-4">
+                <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white hover:text-deep-ocean transition-colors">
+                  <span className="material-symbols-outlined text-lg">public</span>
+                </a>
+                <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white hover:text-deep-ocean transition-colors">
+                  <span className="material-symbols-outlined text-lg">mail</span>
+                </a>
+              </div>
+            </div>
+            {/* Links and Contact - Simplified for responsiveness */}
+            <div>
+              <h4 className="font-mono font-bold text-primary-accent mb-6 text-xs uppercase tracking-widest">Điều hướng</h4>
+              <ul className="space-y-4 text-sm text-slate-400">
+                <li><a href="#" className="hover:text-white transition-colors">Giới thiệu</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Quy trình phản biện</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Hướng dẫn tác giả</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-mono font-bold text-primary-accent mb-6 text-xs uppercase tracking-widest">Liên hệ</h4>
+              <ul className="space-y-4 text-sm text-slate-400">
+                <li className="flex gap-3">
+                  <span className="material-symbols-outlined text-base text-primary-accent">location_on</span>
+                  70 Đường Tô Ký, Phường Trung Mỹ Tây, Quận 12, Thành phố Hồ Chí Minh
+                </li>
+                <li className="flex gap-3">
+                  <span className="material-symbols-outlined text-base text-primary-accent">alternate_email</span>
+                  conference@ut.edu.vn
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-xs text-slate-500 font-mono">© 2026 UNIVERSITY OF TRANSPORT HCMC.</p>
+            <div className="flex gap-8 text-xs text-slate-500 font-mono">
+              <a href="#" className="hover:text-primary-accent">CHÍNH SÁCH BẢO MẬT</a>
+              <a href="#" className="hover:text-primary-accent">ĐIỀU KHOẢN SỬ DỤNG</a>
+            </div>
+          </div>
+        </div>
       </footer>
-    </div>
+    </div >
   );
 };
 
