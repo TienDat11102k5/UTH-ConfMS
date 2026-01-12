@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import EmptyState from "../../components/EmptyState";
 import { FiDownload, FiEye, FiFilter } from "react-icons/fi";
 import "../../styles/PublicProceedings.css";
 
@@ -336,12 +337,15 @@ const ChairProceedingsPreview = () => {
         <div style={{
           background: "white",
           borderRadius: "12px",
-          padding: "3rem",
-          textAlign: "center",
-          color: "#6b7280",
+          padding: "2rem",
           boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
         }}>
-          {selectedConference ? "Chưa có bài báo nào trong kỷ yếu." : "Vui lòng chọn hội nghị."}
+          <EmptyState
+            icon={selectedConference ? "file" : "search"}
+            title={selectedConference ? "Chưa có bài báo nào trong kỷ yếu" : "Vui lòng chọn hội nghị"}
+            description={selectedConference ? "Các bài báo được chấp nhận sẽ xuất hiện trong kỷ yếu." : "Chọn một hội nghị từ dropdown ở trên để xem kỷ yếu."}
+            size="large"
+          />
         </div>
       ) : (
         <div style={{

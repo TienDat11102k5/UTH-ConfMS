@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import EmptyState from "../../components/EmptyState";
 import "../../styles/PublicAcceptedPapers.css";
 
 const PublicAcceptedPapers = () => {
@@ -14,26 +15,12 @@ const PublicAcceptedPapers = () => {
       </section>
 
       <section className="accepted-content">
-        <div className="accepted-table-wrapper">
-          <table className="accepted-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Tên bài báo</th>
-                <th>Tác giả</th>
-                <th>Đơn vị</th>
-                <th>Chủ đề</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colSpan="5" className="empty-row">
-                  Chưa có bài báo được công bố.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <EmptyState
+          icon="file"
+          title="Chưa có bài báo được công bố"
+          description="Danh sách các bài báo được chấp nhận sẽ được cập nhật sau khi hội nghị kết thúc."
+          size="large"
+        />
 
         <div style={{ marginTop: "2rem", textAlign: "center" }}>
           <Link to="/" className="btn-secondary">

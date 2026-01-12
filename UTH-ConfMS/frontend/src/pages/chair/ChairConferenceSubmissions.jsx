@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
+import EmptyState from "../../components/EmptyState";
 import { usePagination } from "../../hooks/usePagination";
 
 const ChairConferenceSubmissions = () => {
@@ -209,8 +210,13 @@ const ChairConferenceSubmissions = () => {
               </tr>
             ) : papers.length === 0 ? (
               <tr>
-                <td colSpan={7} className="table-empty">
-                  Chưa có bài nộp nào cho hội nghị này.
+                <td colSpan={7} style={{ padding: 0, border: 'none' }}>
+                  <EmptyState
+                    icon="inbox"
+                    title="Chưa có bài nộp nào"
+                    description="Các bài nộp cho hội nghị này sẽ hiển thị ở đây."
+                    size="medium"
+                  />
                 </td>
               </tr>
             ) : (

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from '../../components/Pagination';
+import EmptyState from '../../components/EmptyState';
 import { usePagination } from '../../hooks/usePagination';
 import { FiFileText, FiEdit, FiEye, FiEyeOff, FiTrash2, FiLock } from 'react-icons/fi';
 import { ToastContainer } from "../../components/Toast";
@@ -138,8 +139,13 @@ const ChairConferenceManager = () => {
               </tr>
             ) : conferences.length === 0 ? (
               <tr>
-                <td colSpan={7} className="table-empty">
-                  Chưa có hội nghị nào. Nhấn "Tạo hội nghị" để thêm mới.
+                <td colSpan={7} style={{ padding: 0, border: 'none' }}>
+                  <EmptyState
+                    icon="inbox"
+                    title="Chưa có hội nghị nào"
+                    description='Nhấn "Tạo hội nghị" ở trên để bắt đầu tạo hội nghị mới.'
+                    size="medium"
+                  />
                 </td>
               </tr>
             ) : (

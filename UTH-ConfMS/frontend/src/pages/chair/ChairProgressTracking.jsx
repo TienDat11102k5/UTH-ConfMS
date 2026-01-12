@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
+import EmptyState from "../../components/EmptyState";
 import { usePagination } from "../../hooks/usePagination";
 import { FiFilter, FiSearch, FiCheckCircle, FiClock, FiXCircle, FiAlertCircle } from "react-icons/fi";
 import "../../styles/ReviewerAssignments.css";
@@ -471,9 +472,12 @@ const ChairProgressTracking = () => {
 
       <div className="table-wrapper">
         {papers.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "3rem", color: "#666" }}>
-            Chưa có bài báo nào.
-          </div>
+          <EmptyState
+            icon="file"
+            title="Chưa có bài báo nào"
+            description="Các bài báo sẽ hiển thị ở đây sau khi có submissions."
+            size="large"
+          />
         ) : (
           <table className="simple-table">
             <thead>

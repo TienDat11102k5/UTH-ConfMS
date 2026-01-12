@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
+import EmptyState from "../../components/EmptyState";
 import { usePagination } from "../../hooks/usePagination";
 import { FiFilter, FiTrendingUp, FiSearch, FiCheckCircle, FiXCircle, FiRefreshCw } from "react-icons/fi";
 import EmailDraftModal from "../../components/EmailDraftModal";
@@ -395,9 +396,12 @@ const ChairDecisionPage = () => {
 
       <div className="table-wrapper">
         {papers.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "3rem", color: "#666" }}>
-            Không có bài nào đang chờ quyết định.
-          </div>
+          <EmptyState
+            icon="check"
+            title="Không có bài nào đang chờ quyết định"
+            description="Các bài báo đã được đánh giá đầy đủ sẽ hiển thị ở đây để bạn ra quyết định."
+            size="large"
+          />
         ) : (
           <table className="simple-table">
             <thead>
