@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
-import { FiCalendar, FiClock, FiMapPin } from "react-icons/fi";
+import { FiCalendar, FiClock, FiMapPin, FiLayers, FiSearch } from "react-icons/fi";
 import "../../styles/PublicProgram.css";
 
 const PublicProgram = () => {
@@ -13,6 +13,7 @@ const PublicProgram = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     // Check if user is logged in
@@ -174,21 +175,45 @@ const PublicProgram = () => {
 
       {/* Hero Banner */}
       <div style={{
-        background: "linear-gradient(135deg, rgba(13, 148, 136, 0.05) 0%, rgba(20, 184, 166, 0.08) 100%)",
-        padding: "3rem 2rem",
-        borderBottom: "3px solid #14b8a6",
+        background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #2dd4bf 100%)",
+        padding: "4rem 2rem",
         position: "relative",
-        overflow: "hidden"
+        overflow: "hidden",
+        boxShadow: "0 4px 20px rgba(13, 148, 136, 0.2)"
       }}>
+        {/* Decorative circles */}
+        <div style={{
+          position: "absolute",
+          top: "-50px",
+          right: "-50px",
+          width: "200px",
+          height: "200px",
+          borderRadius: "50%",
+          background: "rgba(255, 255, 255, 0.1)",
+          filter: "blur(40px)"
+        }}></div>
+        <div style={{
+          position: "absolute",
+          bottom: "-30px",
+          left: "-30px",
+          width: "150px",
+          height: "150px",
+          borderRadius: "50%",
+          background: "rgba(255, 255, 255, 0.08)",
+          filter: "blur(30px)"
+        }}></div>
+        
+        {/* Pattern overlay */}
         <div style={{
           position: "absolute",
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
-          background: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%2314b8a6\" fill-opacity=\"0.03\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
-          opacity: 0.4
+          backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
+          opacity: 0.3
         }}></div>
+
         <div style={{
           maxWidth: "1200px",
           margin: "0 auto",
@@ -196,30 +221,179 @@ const PublicProgram = () => {
           position: "relative",
           zIndex: 1
         }}>
+          {/* Icon */}
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "80px",
+            height: "80px",
+            borderRadius: "20px",
+            background: "rgba(255, 255, 255, 0.2)",
+            backdropFilter: "blur(10px)",
+            marginBottom: "1.5rem",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)"
+          }}>
+            <FiCalendar size={40} style={{ color: "white" }} />
+          </div>
+
           <h1 style={{
-            fontSize: "2.25rem",
-            fontWeight: 700,
-            color: "#0d9488",
-            marginBottom: "0.75rem",
-            letterSpacing: "-0.02em",
-            textShadow: "0 2px 4px rgba(13, 148, 136, 0.1)"
+            fontSize: "3rem",
+            fontWeight: 800,
+            color: "white",
+            marginBottom: "1rem",
+            letterSpacing: "-0.03em",
+            textShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+            lineHeight: 1.2
           }}>
             Chương trình hội nghị
           </h1>
-          <p style={{
-            fontSize: "1.0625rem",
-            color: "#64748b",
-            fontWeight: 500,
-            margin: 0,
-            letterSpacing: "0.01em"
+          
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            background: "rgba(255, 255, 255, 0.15)",
+            backdropFilter: "blur(10px)",
+            padding: "0.75rem 1.5rem",
+            borderRadius: "50px",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)"
           }}>
-            Lịch trình các phiên trình bày và hoạt động
-          </p>
+            <div style={{
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%",
+              background: "#fbbf24",
+              boxShadow: "0 0 10px #fbbf24"
+            }}></div>
+            <p style={{
+              fontSize: "1.0625rem",
+              color: "white",
+              fontWeight: 600,
+              margin: 0,
+              letterSpacing: "0.02em"
+            }}>
+              Lịch trình các phiên trình bày và hoạt động
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="program-container">
+        {/* Statistics Summary */}
+        {program.length > 0 && (
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "1rem",
+            marginBottom: "1.5rem"
+          }}>
+            <div style={{
+              background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)",
+              borderRadius: "12px",
+              padding: "1.5rem",
+              color: "white",
+              boxShadow: "0 4px 6px rgba(13, 148, 136, 0.15)"
+            }}>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+                marginBottom: "0.5rem"
+              }}>
+                <FiLayers size={24} />
+                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>Tổng số phiên</span>
+              </div>
+              <div style={{ fontSize: "2rem", fontWeight: 700 }}>{program.length}</div>
+            </div>
+
+            <div style={{
+              background: "linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)",
+              borderRadius: "12px",
+              padding: "1.5rem",
+              color: "white",
+              boxShadow: "0 4px 6px rgba(139, 92, 246, 0.15)"
+            }}>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+                marginBottom: "0.5rem"
+              }}>
+                <FiCalendar size={24} />
+                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>Tổng số bài báo</span>
+              </div>
+              <div style={{ fontSize: "2rem", fontWeight: 700 }}>
+                {program.reduce((total, session) => total + session.papers.length, 0)}
+              </div>
+            </div>
+
+            <div style={{
+              background: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
+              borderRadius: "12px",
+              padding: "1.5rem",
+              color: "white",
+              boxShadow: "0 4px 6px rgba(245, 158, 11, 0.15)"
+            }}>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+                marginBottom: "0.5rem"
+              }}>
+                <FiMapPin size={24} />
+                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>Địa điểm</span>
+              </div>
+              <div style={{ fontSize: "1.125rem", fontWeight: 700 }}>
+                {[...new Set(program.map(s => s.room).filter(Boolean))].length || "N/A"} phòng
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Search Bar */}
+        {program.length > 0 && (
+          <div style={{
+            marginBottom: "1.5rem",
+            background: "white",
+            borderRadius: "10px",
+            padding: "1rem 1.25rem",
+            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+            border: "1px solid #e2e8f0",
+          }}>
+            <label style={{
+              display: "block",
+              marginBottom: "0.5rem",
+              fontWeight: 600,
+              color: "#64748b",
+              fontSize: "0.875rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.375rem"
+            }}>
+              <FiSearch size={14} />
+              Tìm kiếm bài báo:
+            </label>
+            <input
+              type="text"
+              placeholder="Nhập tiêu đề bài báo hoặc tên tác giả..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "0.625rem 0.875rem",
+                borderRadius: "8px",
+                border: "1.5px solid #e2e8f0",
+                fontSize: "0.875rem",
+                background: "white",
+                color: "#475569",
+              }}
+            />
+          </div>
+        )}
+
         {/* Conference Selector */}
         {conferences.length > 1 && (
           <div style={{
@@ -278,7 +452,26 @@ const PublicProgram = () => {
 
         {!error && program.length > 0 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            {program.map((session, index) => (
+            {program.filter(session => {
+              if (!searchQuery.trim()) return true;
+              const query = searchQuery.toLowerCase();
+              return session.papers.some(paper => 
+                paper.title?.toLowerCase().includes(query) ||
+                paper.authorName?.toLowerCase().includes(query) ||
+                paper.coAuthors?.toLowerCase().includes(query)
+              );
+            }).map((session, index) => {
+              // Filter papers within session
+              const filteredPapers = searchQuery.trim() 
+                ? session.papers.filter(paper => {
+                    const query = searchQuery.toLowerCase();
+                    return paper.title?.toLowerCase().includes(query) ||
+                      paper.authorName?.toLowerCase().includes(query) ||
+                      paper.coAuthors?.toLowerCase().includes(query);
+                  })
+                : session.papers;
+
+              return (
               <div key={index} style={{
                 background: "white",
                 borderRadius: "12px",
@@ -370,11 +563,16 @@ const PublicProgram = () => {
                     color: "#6b7280",
                     fontWeight: 600
                   }}>
-                    {session.papers.length} bài báo
+                    {filteredPapers.length} bài báo
+                    {searchQuery.trim() && filteredPapers.length !== session.papers.length && (
+                      <span style={{ color: "#0d9488", marginLeft: "0.5rem" }}>
+                        (đã lọc từ {session.papers.length})
+                      </span>
+                    )}
                   </div>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    {session.papers.map((paper, paperIndex) => (
+                    {filteredPapers.map((paper, paperIndex) => (
                       <div key={paper.paperId} style={{
                         padding: "1rem",
                         background: "#f9fafb",
@@ -422,7 +620,8 @@ const PublicProgram = () => {
                   </div>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
 
