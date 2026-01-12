@@ -151,7 +151,7 @@ const AuthorSubmissionEditPage = () => {
                 </Link>
                 <span className="breadcrumb-separator">/</span>
                 <Link to="/author/submissions" className="breadcrumb-link">
-                  Author submissions
+                  Bài nộp của tôi
                 </Link>
                 <span className="breadcrumb-separator">/</span>
                 <span className="breadcrumb-current">Sửa bài báo #{id}</span>

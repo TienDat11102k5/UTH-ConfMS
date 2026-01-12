@@ -174,13 +174,13 @@ const AuthorSubmissionListPage = () => {
                   Portal
                 </Link>
                 <span className="breadcrumb-separator">/</span>
-                <span className="breadcrumb-current">Author submissions</span>
+                <span className="breadcrumb-current">Bài nộp của tôi </span>
               </div>
               <h1 className="data-page-title">Bài nộp của tôi</h1>
               <p className="data-page-subtitle">
                 {confId
                   ? `Đang lọc theo hội nghị: ${conferences.find(c => c.id === parseInt(confId))?.name || `ID #${confId}`}`
-                  : "Xem danh sách bài nộp, trạng thái review và quyết định."}
+                  : "Xem danh sách bài nộp, trạng thái chấm bài và quyết định."}
               </p>
             </div>
             <div className="data-page-header-right">
@@ -269,7 +269,7 @@ const AuthorSubmissionListPage = () => {
                   }} />
                   <input
                     type="text"
-                    placeholder="Tìm theo tiêu đề, tác giả, track..."
+                    placeholder="Tìm theo tiêu đề, tác giả, chủ đề..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     style={{
@@ -404,7 +404,7 @@ const AuthorSubmissionListPage = () => {
             <div className="empty-state">
               <div className="empty-icon">📄</div>
               <h3>Chưa có bài nộp nào</h3>
-              <p>Hãy bấm "Nộp bài mới" để tạo submission đầu tiên của bạn.</p>
+              <p>Hãy bấm "Nộp bài mới" đầu tiên của bạn.</p>
               <button
                 type="button"
                 className="btn-primary"

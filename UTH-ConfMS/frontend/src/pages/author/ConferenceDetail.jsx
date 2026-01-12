@@ -125,13 +125,13 @@ const ConferenceDetail = () => {
               </span>
             </div>
             <div className="meta-item">
-              <span className="meta-label">Hạn review</span>
+              <span className="meta-label">Hạn chấm bài</span>
               <span className="meta-value">
                 {formatDateTime(reviewDeadline)}
               </span>
             </div>
             <div className="meta-item">
-              <span className="meta-label">Hạn camera-ready</span>
+              <span className="meta-label">Hạn nộp bản cuối </span>
               <span className="meta-value">
                 {formatDateTime(cameraReadyDeadline)}
               </span>

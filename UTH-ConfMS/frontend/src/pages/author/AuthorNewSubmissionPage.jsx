@@ -599,7 +599,7 @@ const AuthorNewSubmissionPage = () => {
                       onChange={handleChange}
                       disabled={!conference || tracks.length === 0}
                     >
-                      <option value="">-- Chọn Track --</option>
+                      <option value="">-- Chọn chủ đề --</option>
                       {tracks.map((track) => (
                         <option key={track.id} value={track.id}>
                           {track.name}

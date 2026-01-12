@@ -117,7 +117,7 @@ const AuthorCameraReadyList = () => {
   });
 
   return (
-    <DashboardLayout roleLabel="Author" title="Quản lý Camera-ready">
+    <DashboardLayout roleLabel="Author" title="Nộp bản hoàn chỉnh ">
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
@@ -129,12 +129,12 @@ const AuthorCameraReadyList = () => {
               Dashboard
             </Link>
             <span className="breadcrumb-separator">/</span>
-            <span className="breadcrumb-current">Camera-ready</span>
+            <span className="breadcrumb-current">Bản hoàn chỉnh </span>
           </div>
 
           <p className="data-page-subtitle">
-            Danh sách các bài báo được chấp nhận. Tải lên bản camera-ready cho
-            từng submission trước deadline.
+            Danh sách các bài báo được chấp nhận. Tải lên bản hoàn chỉnh cho
+            từng bài nộp trước khi kết thúc.
           </p>
         </div>
       </div>
