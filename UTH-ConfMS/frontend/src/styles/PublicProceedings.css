@@ -7,6 +7,30 @@
   flex-direction: column;
 }
 
+/* ===== RESPONSIVE IMPROVEMENTS ===== */
+@media (max-width: 768px) {
+  .proceedings-container {
+    padding: 1rem !important;
+  }
+
+  /* Make stats cards stack on mobile */
+  .proceedings-container > div[style*="grid"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Adjust card grid for mobile */
+  .proceedings-container div[style*="minmax(350px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Hide table view on very small screens */
+  @media (max-width: 640px) {
+    button[style*="Table"] {
+      display: none !important;
+    }
+  }
+}
+
 /* ===== HEADER (Using portal-header style) ===== */
 .portal-header-container {
   background: white;

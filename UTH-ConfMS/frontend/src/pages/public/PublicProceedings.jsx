@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
 import { ToastContainer } from "../../components/Toast";
-import { FiDownload, FiFilter, FiSearch } from "react-icons/fi";
+import { FiDownload, FiFilter, FiSearch, FiGrid, FiList, FiBook, FiUsers, FiFolder } from "react-icons/fi";
 import "../../styles/PublicProceedings.css";
 
 const PublicProceedings = () => {
@@ -18,6 +18,7 @@ const PublicProceedings = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const [currentUser, setCurrentUser] = useState(null);
+  const [viewMode, setViewMode] = useState("cards"); // "cards" or "table"
 
   // Toast notifications
   const [toasts, setToasts] = useState([]);
@@ -261,21 +262,45 @@ const PublicProceedings = () => {
 
       {/* Hero Banner */}
       <div style={{
-        background: "linear-gradient(135deg, rgba(13, 148, 136, 0.05) 0%, rgba(20, 184, 166, 0.08) 100%)",
-        padding: "3rem 2rem",
-        borderBottom: "3px solid #14b8a6",
+        background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #2dd4bf 100%)",
+        padding: "4rem 2rem",
         position: "relative",
-        overflow: "hidden"
+        overflow: "hidden",
+        boxShadow: "0 4px 20px rgba(13, 148, 136, 0.2)"
       }}>
+        {/* Decorative circles */}
+        <div style={{
+          position: "absolute",
+          top: "-50px",
+          right: "-50px",
+          width: "200px",
+          height: "200px",
+          borderRadius: "50%",
+          background: "rgba(255, 255, 255, 0.1)",
+          filter: "blur(40px)"
+        }}></div>
+        <div style={{
+          position: "absolute",
+          bottom: "-30px",
+          left: "-30px",
+          width: "150px",
+          height: "150px",
+          borderRadius: "50%",
+          background: "rgba(255, 255, 255, 0.08)",
+          filter: "blur(30px)"
+        }}></div>
+        
+        {/* Pattern overlay */}
         <div style={{
           position: "absolute",
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
-          background: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%2314b8a6\" fill-opacity=\"0.03\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
-          opacity: 0.4
+          backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
+          opacity: 0.3
         }}></div>
+
         <div style={{
           maxWidth: "1200px",
           margin: "0 auto",
@@ -283,30 +308,142 @@ const PublicProceedings = () => {
           position: "relative",
           zIndex: 1
         }}>
+          {/* Icon */}
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "80px",
+            height: "80px",
+            borderRadius: "20px",
+            background: "rgba(255, 255, 255, 0.2)",
+            backdropFilter: "blur(10px)",
+            marginBottom: "1.5rem",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)"
+          }}>
+            <FiBook size={40} style={{ color: "white" }} />
+          </div>
+
           <h1 style={{
-            fontSize: "2.25rem",
-            fontWeight: 700,
-            color: "#0d9488",
-            marginBottom: "0.75rem",
-            letterSpacing: "-0.02em",
-            textShadow: "0 2px 4px rgba(13, 148, 136, 0.1)"
+            fontSize: "3rem",
+            fontWeight: 800,
+            color: "white",
+            marginBottom: "1rem",
+            letterSpacing: "-0.03em",
+            textShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+            lineHeight: 1.2
           }}>
             Kỷ yếu hội nghị khoa học
           </h1>
-          <p style={{
-            fontSize: "1.0625rem",
-            color: "#64748b",
-            fontWeight: 500,
-            margin: 0,
-            letterSpacing: "0.01em"
+          
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            background: "rgba(255, 255, 255, 0.15)",
+            backdropFilter: "blur(10px)",
+            padding: "0.75rem 1.5rem",
+            borderRadius: "50px",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)"
           }}>
-            Danh sách các bài báo đã được chấp nhận công bố
-          </p>
+            <div style={{
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%",
+              background: "#fbbf24",
+              boxShadow: "0 0 10px #fbbf24"
+            }}></div>
+            <p style={{
+              fontSize: "1.0625rem",
+              color: "white",
+              fontWeight: 600,
+              margin: 0,
+              letterSpacing: "0.02em"
+            }}>
+              Danh sách các bài báo đã được chấp nhận công bố
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="proceedings-container">
+        {/* Statistics Summary */}
+        {proceedings.length > 0 && (
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "1rem",
+            marginBottom: "1.5rem"
+          }}>
+            <div style={{
+              background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)",
+              borderRadius: "12px",
+              padding: "1.5rem",
+              color: "white",
+              boxShadow: "0 4px 6px rgba(13, 148, 136, 0.15)"
+            }}>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+                marginBottom: "0.5rem"
+              }}>
+                <FiBook size={24} />
+                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>Tổng số bài báo</span>
+              </div>
+              <div style={{ fontSize: "2rem", fontWeight: 700 }}>{proceedings.length}</div>
+            </div>
+
+            <div style={{
+              background: "linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)",
+              borderRadius: "12px",
+              padding: "1.5rem",
+              color: "white",
+              boxShadow: "0 4px 6px rgba(139, 92, 246, 0.15)"
+            }}>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+                marginBottom: "0.5rem"
+              }}>
+                <FiFolder size={24} />
+                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>Số chủ đề</span>
+              </div>
+              <div style={{ fontSize: "2rem", fontWeight: 700 }}>{tracks.length}</div>
+            </div>
+
+            <div style={{
+              background: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
+              borderRadius: "12px",
+              padding: "1.5rem",
+              color: "white",
+              boxShadow: "0 4px 6px rgba(245, 158, 11, 0.15)"
+            }}>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+                marginBottom: "0.5rem"
+              }}>
+                <FiUsers size={24} />
+                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>Tác giả</span>
+              </div>
+              <div style={{ fontSize: "2rem", fontWeight: 700 }}>
+                {new Set(proceedings.flatMap(p => {
+                  const authors = [p.authorName];
+                  if (p.coAuthors) {
+                    authors.push(...p.coAuthors.split(',').map(a => a.trim()));
+                  }
+                  return authors.filter(Boolean);
+                })).size}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Conference Selector */}
         {conferences.length > 1 && (
           <div style={{
@@ -428,6 +565,61 @@ const PublicProceedings = () => {
                   }}
                 />
               </div>
+
+              {/* View Mode Toggle */}
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-end" }}>
+                <div style={{ flex: "0 0 auto" }}>
+                  <label style={{
+                    display: "block",
+                    marginBottom: "0.5rem",
+                    fontWeight: 600,
+                    color: "#64748b",
+                    fontSize: "0.875rem",
+                  }}>Kiểu hiển thị:</label>
+                  <div style={{ display: "flex", gap: "0.25rem" }}>
+                    <button
+                      onClick={() => setViewMode("cards")}
+                      style={{
+                        padding: "0.5rem 0.875rem",
+                        borderRadius: "8px",
+                        border: "1.5px solid #e2e8f0",
+                        fontSize: "0.8125rem",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        background: viewMode === "cards" ? "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)" : "white",
+                        color: viewMode === "cards" ? "white" : "#475569",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.375rem",
+                        transition: "all 0.2s ease"
+                      }}
+                    >
+                      <FiGrid size={16} />
+                      Cards
+                    </button>
+                    <button
+                      onClick={() => setViewMode("table")}
+                      style={{
+                        padding: "0.5rem 0.875rem",
+                        borderRadius: "8px",
+                        border: "1.5px solid #e2e8f0",
+                        fontSize: "0.8125rem",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        background: viewMode === "table" ? "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)" : "white",
+                        color: viewMode === "table" ? "white" : "#475569",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.375rem",
+                        transition: "all 0.2s ease"
+                      }}
+                    >
+                      <FiList size={16} />
+                      Table
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -488,6 +680,180 @@ const PublicProceedings = () => {
                 </div>
               ) : (
                 <>
+                  {/* Card View */}
+                  {viewMode === "cards" && (
+                    <div style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
+                      gap: "1.25rem",
+                      marginBottom: "1.5rem"
+                    }}>
+                      {paginatedProceedings.map((paper, index) => {
+                        const allAuthors = paper.coAuthors
+                          ? `${paper.authorName}, ${paper.coAuthors}`
+                          : paper.authorName || "Không có thông tin tác giả";
+                        const globalIndex = startIndex + index + 1;
+
+                        return (
+                          <div key={paper.paperId || index} style={{
+                            background: "white",
+                            borderRadius: "12px",
+                            border: "1px solid #e5e7eb",
+                            overflow: "hidden",
+                            transition: "all 0.3s ease",
+                            cursor: "pointer",
+                            display: "flex",
+                            flexDirection: "column"
+                          }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.transform = "translateY(-4px)";
+                              e.currentTarget.style.boxShadow = "0 12px 24px rgba(13, 148, 136, 0.15)";
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.transform = "translateY(0)";
+                              e.currentTarget.style.boxShadow = "none";
+                            }}
+                          >
+                            {/* Card Header */}
+                            <div style={{
+                              background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)",
+                              padding: "1rem 1.25rem",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center"
+                            }}>
+                              <div style={{
+                                background: "rgba(255, 255, 255, 0.2)",
+                                color: "white",
+                                padding: "0.25rem 0.75rem",
+                                borderRadius: "6px",
+                                fontSize: "0.875rem",
+                                fontWeight: 700
+                              }}>
+                                #{globalIndex}
+                              </div>
+                              <div style={{
+                                background: "rgba(255, 255, 255, 0.95)",
+                                color: "#00695c",
+                                padding: "0.375rem 0.75rem",
+                                borderRadius: "6px",
+                                fontSize: "0.75rem",
+                                fontWeight: 600
+                              }}>
+                                {paper.trackName || "N/A"}
+                              </div>
+                            </div>
+
+                            {/* Card Body */}
+                            <div style={{ padding: "1.25rem", flex: 1, display: "flex", flexDirection: "column" }}>
+                              <h3 style={{
+                                fontSize: "1.0625rem",
+                                fontWeight: 700,
+                                color: "#1f2937",
+                                marginBottom: "0.75rem",
+                                lineHeight: 1.4,
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden"
+                              }}>
+                                {paper.title}
+                              </h3>
+
+                              <div style={{
+                                fontSize: "0.875rem",
+                                color: "#6b7280",
+                                marginBottom: "0.75rem",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.5rem"
+                              }}>
+                                <FiUsers size={14} style={{ flexShrink: 0 }} />
+                                <span style={{
+                                  display: "-webkit-box",
+                                  WebkitLineClamp: 1,
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden"
+                                }}>{allAuthors}</span>
+                              </div>
+
+                              {paper.abstractText && (
+                                <p style={{
+                                  fontSize: "0.8125rem",
+                                  color: "#9ca3af",
+                                  lineHeight: 1.5,
+                                  marginBottom: "1rem",
+                                  display: "-webkit-box",
+                                  WebkitLineClamp: 3,
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                  flex: 1
+                                }}>
+                                  {paper.abstractText}
+                                </p>
+                              )}
+
+                              {/* Card Footer */}
+                              <div style={{
+                                marginTop: "auto",
+                                paddingTop: "1rem",
+                                borderTop: "1px solid #f3f4f6"
+                              }}>
+                                {paper.pdfUrl && paper.pdfUrl.trim() !== "" ? (
+                                  <button
+                                    onClick={() => handleDownload(paper.paperId, paper.title)}
+                                    style={{
+                                      width: "100%",
+                                      padding: "0.625rem 1rem",
+                                      background: "linear-gradient(135deg, #008689 0%, #00a8ac 100%)",
+                                      color: "white",
+                                      borderRadius: "8px",
+                                      fontSize: "0.875rem",
+                                      fontWeight: 600,
+                                      border: "none",
+                                      cursor: "pointer",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      gap: "0.5rem",
+                                      transition: "all 0.2s ease"
+                                    }}
+                                    onMouseOver={(e) => {
+                                      e.currentTarget.style.transform = "scale(1.02)";
+                                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 134, 137, 0.3)";
+                                    }}
+                                    onMouseOut={(e) => {
+                                      e.currentTarget.style.transform = "scale(1)";
+                                      e.currentTarget.style.boxShadow = "none";
+                                    }}
+                                  >
+                                    <FiDownload size={16} />
+                                    Tải xuống PDF
+                                  </button>
+                                ) : (
+                                  <div style={{
+                                    width: "100%",
+                                    padding: "0.625rem 1rem",
+                                    background: "#f3f4f6",
+                                    color: "#9ca3af",
+                                    borderRadius: "8px",
+                                    fontSize: "0.875rem",
+                                    fontWeight: 600,
+                                    textAlign: "center"
+                                  }}>
+                                    PDF chưa có sẵn
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Table View */}
+                  {viewMode === "table" && (
                   <div style={{ overflowX: "auto" }}>
                     <table style={{
                       width: "100%",
@@ -565,23 +931,10 @@ const PublicProceedings = () => {
                                 <div style={{
                                   fontWeight: 600,
                                   color: "#008689",
-                                  marginBottom: "0.25rem",
                                   lineHeight: 1.4
                                 }}>
                                   {paper.title}
                                 </div>
-                                {paper.abstractText && (
-                                  <div style={{
-                                    fontSize: "0.75rem",
-                                    color: "#9ca3af",
-                                    lineHeight: 1.4,
-                                    marginTop: "0.25rem"
-                                  }}>
-                                    {paper.abstractText.length > 150
-                                      ? paper.abstractText.substring(0, 150) + "..."
-                                      : paper.abstractText}
-                                  </div>
-                                )}
                               </td>
                               <td style={{
                                 padding: "1rem 0.875rem",
@@ -653,8 +1006,9 @@ const PublicProceedings = () => {
                       </tbody>
                     </table>
                   </div>
+                  )}
 
-                  {/* Pagination */}
+                  {/* Pagination - Shared by both views */}
                   {totalPages > 1 && (
                     <div style={{
                       marginTop: "1.5rem",
