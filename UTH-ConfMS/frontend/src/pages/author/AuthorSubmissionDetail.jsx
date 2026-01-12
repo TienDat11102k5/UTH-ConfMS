@@ -3,11 +3,24 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { formatDateTime } from "../../utils/dateUtils";
 
 const formatDate = (value) => {
   if (!value) return "";
   try {
-    return new Date(value).toLocaleString("vi-VN");
+    // Use formatDateTime from dateUtils.js for UTC+7 consistency
+    const date = typeof value === 'string' ? new Date(value) : value;
+    if (isNaN(date.getTime())) return "";
+    
+    // Add 7 hours for Vietnam timezone
+    const vietnamDate = new Date(date.getTime() + (7 * 60 * 60 * 1000));
+    const day = String(vietnamDate.getDate()).padStart(2, '0');
+    const month = String(vietnamDate.getMonth() + 1).padStart(2, '0');
+    const year = vietnamDate.getFullYear();
+    const hour = String(vietnamDate.getHours()).padStart(2, '0');
+    const minute = String(vietnamDate.getMinutes()).padStart(2, '0');
+    const second = String(vietnamDate.getSeconds()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hour}:${minute}:${second}`;
   } catch {
     return value;
   }

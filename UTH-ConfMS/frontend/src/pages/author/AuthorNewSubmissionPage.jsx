@@ -4,6 +4,7 @@ import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
 import { ToastContainer } from "../../components/Toast";
+import { formatDateTime } from "../../utils/dateUtils";
 
 // Modal component for simple AI capabilities (internal use here)
 const AIModal = ({ isOpen, title, onClose, children }) => {
@@ -82,20 +83,7 @@ const AIModal = ({ isOpen, title, onClose, children }) => {
   );
 };
 
-const formatDateTime = (value) => {
-  if (!value) return "Đang cập nhật";
-  try {
-    return new Date(value).toLocaleString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  } catch {
-    return value;
-  }
-};
+
 
 const AuthorNewSubmissionPage = () => {
   const navigate = useNavigate();

@@ -79,10 +79,20 @@ const AuthorCameraReadyList = () => {
     };
   }, [navigate]);
 
+  // Import formatDateTime from dateUtils for consistent UTC+7 display
   const formatDate = (value) => {
     if (!value) return "";
     try {
-      return new Date(value).toLocaleDateString("vi-VN");
+      // Use formatDateTime from dateUtils.js for UTC+7 consistency
+      const date = typeof value === 'string' ? new Date(value) : value;
+      if (isNaN(date.getTime())) return "";
+      
+      // Add 7 hours for Vietnam timezone
+      const vietnamDate = new Date(date.getTime() + (7 * 60 * 60 * 1000));
+      const day = String(vietnamDate.getDate()).padStart(2, '0');
+      const month = String(vietnamDate.getMonth() + 1).padStart(2, '0');
+      const year = vietnamDate.getFullYear();
+      return `${day}/${month}/${year}`;
     } catch {
       return value;
     }

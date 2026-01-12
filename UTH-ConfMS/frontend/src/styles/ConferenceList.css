@@ -818,12 +818,14 @@
 @media (min-width: 768px) {
   .grid-bento {
     grid-template-columns: 1fr 1fr;
+    grid-auto-rows: minmax(350px, auto); /* Consistent height */
   }
 }
 
 @media (min-width: 1024px) {
   .grid-bento {
-    grid-template-columns: 7fr 5fr 8fr 4fr;
+    grid-template-columns: 1fr 1fr; /* Changed to equal columns */
+    grid-auto-rows: minmax(400px, auto); /* Consistent height */
   }
 }
 
@@ -855,11 +857,7 @@
   pointer-events: none;
 }
 
-@media (min-width: 1024px) {
-  .card-featured {
-    grid-column: span 2;
-  }
-}
+/* Removed span 2 rule to make all cards equal size */
 
 /* 7+5=12 equivalent? No, let's span differently or use explicit classes in JSX */
 /* Let's simplify and follow the class names in JSX */

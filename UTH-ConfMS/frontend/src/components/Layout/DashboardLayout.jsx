@@ -62,7 +62,7 @@ const DashboardLayout = ({
 
           <nav className="dash-header-right">
             <Link to="/conferences" className="nav-link">
-              Trang chủ
+              Trang hội nghị
             </Link>
 
             {showAdminNav && (

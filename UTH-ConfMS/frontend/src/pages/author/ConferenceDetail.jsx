@@ -3,22 +3,10 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
+import { formatDateTime } from "../../utils/dateUtils";
 import "../../styles/ConferenceDetail.css";
 
-const formatDateTime = (dateString) => {
-  if (!dateString) return "Đang cập nhật";
-  try {
-    return new Date(dateString).toLocaleString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  } catch {
-    return dateString;
-  }
-};
+
 
 const ConferenceDetail = () => {
   const { id } = useParams();

@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
+import logoUTH from "../../assets/logoUTH.jpg";
+import { formatDate } from "../../utils/dateUtils";
 import "../../styles/ConferenceList.css";
 
 const ConferenceList = () => {
@@ -36,12 +38,17 @@ const ConferenceList = () => {
     fetchConferences();
   }, [navigate]);
 
-  const formatDate = (dateString, format = "full") => {
+  // Custom formatDate function for ConferenceList with special formats
+  const formatDateCustom = (dateString, format = "full") => {
     if (!dateString) return "Sắp diễn ra";
+    
+    // Add 7 hours for Vietnam timezone consistency
     const date = new Date(dateString);
-    if (format === "day") return date.getDate();
-    if (format === "my") return `THÁNG ${date.getMonth() + 1}, ${date.getFullYear()}`;
-    return date.toLocaleDateString("vi-VN");
+    const vietnamDate = new Date(date.getTime() + (7 * 60 * 60 * 1000));
+    
+    if (format === "day") return vietnamDate.getDate();
+    if (format === "my") return `THÁNG ${vietnamDate.getMonth() + 1}, ${vietnamDate.getFullYear()}`;
+    return formatDate(dateString); // Use dateUtils for standard formatting
   };
 
   if (loading)
@@ -195,7 +202,7 @@ const ConferenceList = () => {
                   <button
                     key={idx}
                     onClick={() => setCurrentPage(idx)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${currentPage === idx ? 'bg-primary-accent scale-125' : 'bg-slate-300 hover:bg-primary-accent/50'}`}
+                    className={`w-4 h-4 rounded-full transition-all duration-300 cursor-pointer hover:scale-110 ${currentPage === idx ? 'bg-primary-accent scale-125 shadow-lg' : 'bg-slate-300 hover:bg-primary-accent/50'}`}
                     aria-label={`Trang ${idx + 1}`}
                   />
                 ))}
@@ -213,7 +220,7 @@ const ConferenceList = () => {
                 const baseIndex = index * 2;
 
                 return (
-                  <div key={index} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 auto-rows-[minmax(300px,auto)] animate-[fadeIn_0.5s_ease-out]">
+                  <div key={index} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 auto-rows-[380px] animate-[fadeIn_0.5s_ease-out]">
                     {/* FEATURED CARD (Left - Larger) */}
                     <div className="lg:col-span-7 relative group cursor-pointer overflow-hidden rounded-sm border border-slate-200 hover:border-primary-accent/30 transition-colors duration-500 shadow-xl shadow-secondary/10">
                       <div className="absolute inset-0 bg-gradient-to-t from-deep-ocean via-secondary to-primary-accent z-10"></div>
@@ -221,37 +228,39 @@ const ConferenceList = () => {
                         <div className="w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-accent/40 via-secondary to-deep-ocean"></div>
                       </div>
 
-                      <div className="relative z-20 p-8 h-full flex flex-col justify-end">
-                        <div className="mb-auto flex justify-between w-full">
+                      <div className="relative z-20 p-8 h-full flex flex-col justify-between">
+                        <div className="flex justify-between w-full">
                           <span className="inline-flex items-center justify-center px-3 py-1 border border-white/20 text-white text-[10px] font-bold uppercase tracking-widest bg-white/10 backdrop-blur-md leading-none pt-1.5 pb-1">Nổi bật</span>
                           <span className="font-display font-bold text-4xl text-white/10 group-hover:text-white/30 transition-colors">
                             {baseIndex + 1 < 10 ? `0${baseIndex + 1}` : baseIndex + 1}
                           </span>
                         </div>
 
-                        <h3 className="font-display font-bold text-3xl md:text-5xl text-white mb-4 leading-none group-hover:text-secondary-dim transition-colors">
-                          {featuredConf.name}
-                        </h3>
+                        <div>
+                          <h3 className="font-display font-bold text-3xl md:text-4xl text-white mb-4 leading-tight">
+                            {featuredConf.name}
+                          </h3>
 
-                        <p className="text-slate-300 font-light max-w-lg mb-6 line-clamp-2">
-                          {featuredConf.description || "Khám phá sự giao thoa giữa trí tuệ nhân tạo, máy học và cơ sở hạ tầng logistics hiện đại."}
-                        </p>
+                          <p className="text-slate-300 font-light max-w-lg mb-6 line-clamp-2">
+                            {featuredConf.description || "Khám phá sự giao thoa giữa trí tuệ nhân tạo, máy học và cơ sở hạ tầng logistics hiện đại."}
+                          </p>
 
-                        <div className="flex items-center gap-6 text-sm font-mono text-slate-400 border-t border-white/10 pt-6 mt-2">
-                          <span className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-lg">calendar_month</span>
-                            {formatDate(featuredConf.startDate, "full")}
-                          </span>
-                          <span className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-lg">location_on</span>
-                            {featuredConf.location || "Hội trường A"}
-                          </span>
-                          <Link
-                            to={`/conferences/${featuredConf.id}`}
-                            className="ml-auto text-white group-hover:translate-x-2 transition-transform"
-                          >
-                            Chi tiết →
-                          </Link>
+                          <div className="flex items-center gap-6 text-sm font-mono text-slate-400 border-t border-white/10 pt-6 mt-2">
+                            <span className="flex items-center gap-2">
+                              <span className="material-symbols-outlined text-lg">calendar_month</span>
+                              {formatDateCustom(featuredConf.startDate, "full")}
+                            </span>
+                            <span className="flex items-center gap-2">
+                              <span className="material-symbols-outlined text-lg">location_on</span>
+                              {featuredConf.location || "Hội trường A"}
+                            </span>
+                            <Link
+                              to={`/conferences/${featuredConf.id}`}
+                              className="ml-auto text-white group-hover:translate-x-2 transition-transform"
+                            >
+                              Chi tiết →
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -259,45 +268,48 @@ const ConferenceList = () => {
                     {/* UPCOMING CARD (Right - Smaller) */}
                     <div className="lg:col-span-5 relative group cursor-pointer overflow-hidden rounded-sm bg-white border border-slate-200 hover:border-primary-accent/30 transition-colors shadow-lg">
                       {upcomingConf ? (
-                        <div className="p-8 h-full flex flex-col">
-                          <div className="flex justify-between items-start mb-8">
+                        <div className="p-8 h-full flex flex-col justify-between">
+                          <div className="flex justify-between items-start">
                             <div>
                               <span className="block text-primary-accent text-xs font-bold uppercase tracking-widest mb-2">Sắp diễn ra</span>
-                              <h3 className="font-display font-bold text-3xl text-secondary leading-tight">
-                                {upcomingConf.name}
-                              </h3>
+                              <span className="font-display font-bold text-4xl text-slate-100 group-hover:text-slate-200 transition-colors">
+                                {baseIndex + 2 < 10 ? `0${baseIndex + 2}` : baseIndex + 2}
+                              </span>
                             </div>
-                            <span className="font-display font-bold text-4xl text-slate-100 group-hover:text-slate-200 transition-colors">
-                              {baseIndex + 2 < 10 ? `0${baseIndex + 2}` : baseIndex + 2}
-                            </span>
                           </div>
 
-                          <div className="mt-auto space-y-6">
-                            {upcomingConf.chairs ? (
-                              upcomingConf.chairs.split(',').slice(0, 2).map((chair, idx) => (
-                                <div key={idx} className="flex items-start gap-4">
-                                  <img
-                                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(chair)}&background=random`}
-                                    alt="Speaker"
-                                    className="w-12 h-12 grayscale group-hover:grayscale-0 transition-all rounded object-cover"
-                                  />
-                                  <div>
-                                    <p className="text-slate-900 font-bold text-sm">{chair.trim()}</p>
-                                    <p className="text-slate-500 text-xs mt-1">Diễn giả</p>
+                          <div>
+                            <h3 className="font-display font-bold text-3xl md:text-4xl text-secondary leading-tight mb-4">
+                              {upcomingConf.name}
+                            </h3>
+
+                            <div className="space-y-4 mb-6">
+                              {upcomingConf.chairs ? (
+                                upcomingConf.chairs.split(',').slice(0, 1).map((chair, idx) => (
+                                  <div key={idx} className="flex items-start gap-4">
+                                    <img
+                                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(chair)}&background=random`}
+                                      alt="Speaker"
+                                      className="w-12 h-12 grayscale group-hover:grayscale-0 transition-all rounded object-cover"
+                                    />
+                                    <div>
+                                      <p className="text-slate-900 font-bold text-sm">{chair.trim()}</p>
+                                      <p className="text-slate-500 text-xs mt-1">Diễn giả</p>
+                                    </div>
                                   </div>
+                                ))
+                              ) : (
+                                <div className="prose prose-sm">
+                                  <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-0">
+                                    {upcomingConf.description || "Hội nghị test chức năng nộp bài"}
+                                  </p>
                                 </div>
-                              ))
-                            ) : (
-                              <div className="prose prose-sm">
-                                <p className="text-slate-500 text-sm leading-relaxed line-clamp-3 mb-0">
-                                  {upcomingConf.description || "Nội dung tóm tắt hội nghị đang được cập nhật."}
-                                </p>
-                              </div>
-                            )}
+                              )}
+                            </div>
 
                             <Link
                               to={`/conferences/${upcomingConf.id}`}
-                              className="w-full py-3 mt-4 border border-slate-200 text-slate-900 text-xs font-bold uppercase tracking-widest hover:bg-secondary hover:text-white transition-all block text-center"
+                              className="w-full py-3 border border-slate-200 text-slate-900 text-xs font-bold uppercase tracking-widest hover:bg-secondary hover:text-white transition-all block text-center"
                             >
                               XEM CHI TIẾT
                             </Link>

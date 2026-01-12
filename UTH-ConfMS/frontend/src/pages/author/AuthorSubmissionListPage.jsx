@@ -4,6 +4,7 @@ import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
 import { FiSearch, FiFilter, FiTrendingUp } from "react-icons/fi";
+import { formatDateTime } from "../../utils/dateUtils";
 import "../../styles/AuthorPages.css";
 
 const AuthorSubmissionListPage = () => {
@@ -34,7 +35,8 @@ const AuthorSubmissionListPage = () => {
           confId ? `/submissions?conferenceId=${confId}` : "/submissions"
         );
         if (!ignore) {
-          setSubmissions(Array.isArray(res.data) ? res.data : []);
+          const submissions = Array.isArray(res.data) ? res.data : [];
+          setSubmissions(submissions);
           setDebugInfo("");
         }
       } catch (err) {
@@ -141,14 +143,7 @@ const AuthorSubmissionListPage = () => {
     }
   };
 
-  const formatDate = (value) => {
-    if (!value) return "";
-    try {
-      return new Date(value).toLocaleString("vi-VN");
-    } catch {
-      return value;
-    }
-  };
+
 
   const getStatusBadge = (status) => {
     const statusMap = {
@@ -465,11 +460,11 @@ const AuthorSubmissionListPage = () => {
                       </div>
                       <div className="meta-row">
                         <span className="meta-label">NGÀY NỘP:</span>
-                        <span className="meta-value">{formatDate(s.submittedAt || s.createdAt)}</span>
+                        <span className="meta-value">{formatDateTime(s.submittedAt || s.createdAt, false)}</span>
                       </div>
                       <div className="meta-row">
                         <span className="meta-label">CẬP NHẬT:</span>
-                        <span className="meta-value">{formatDate(s.updatedAt)}</span>
+                        <span className="meta-value">{formatDateTime(s.updatedAt, false)}</span>
                       </div>
                     </div>
 

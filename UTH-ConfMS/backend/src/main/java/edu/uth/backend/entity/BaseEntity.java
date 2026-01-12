@@ -23,4 +23,18 @@ public abstract class BaseEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    @PrePersist
+    protected void onCreate() {
+        // Đảm bảo createdAt được set theo timezone Vietnam
+        if (createdAt == null) {
+            createdAt = edu.uth.backend.util.DateTimeUtil.nowVietnam();
+        }
+    }
+    
+    @PreUpdate
+    protected void onUpdate() {
+        // Đảm bảo updatedAt được set theo timezone Vietnam
+        updatedAt = edu.uth.backend.util.DateTimeUtil.nowVietnam();
+    }
 }

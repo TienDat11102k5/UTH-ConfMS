@@ -13,37 +13,23 @@ export const formatDateTime = (dateInput, includeTime = true) => {
     if (!dateInput) return '';
     
     try {
-        const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+        let date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
         
         // Kiểm tra date hợp lệ
         if (isNaN(date.getTime())) return '';
         
-        // Format theo timezone Việt Nam
-        const options = {
-            timeZone: 'Asia/Ho_Chi_Minh',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-        };
+        // FORCE thêm 7 giờ để chuyển từ UTC sang UTC+7
+        const vietnamDate = new Date(date.getTime() + (7 * 60 * 60 * 1000));
+        
+        // Dùng getDate(), getMonth(), getFullYear() để lấy local time
+        const day = String(vietnamDate.getDate()).padStart(2, '0');
+        const month = String(vietnamDate.getMonth() + 1).padStart(2, '0');
+        const year = vietnamDate.getFullYear();
         
         if (includeTime) {
-            options.hour = '2-digit';
-            options.minute = '2-digit';
-            options.second = '2-digit';
-            options.hour12 = false;
-        }
-        
-        const formatter = new Intl.DateTimeFormat('vi-VN', options);
-        const parts = formatter.formatToParts(date);
-        
-        const day = parts.find(p => p.type === 'day').value;
-        const month = parts.find(p => p.type === 'month').value;
-        const year = parts.find(p => p.type === 'year').value;
-        
-        if (includeTime) {
-            const hour = parts.find(p => p.type === 'hour').value;
-            const minute = parts.find(p => p.type === 'minute').value;
-            const second = parts.find(p => p.type === 'second').value;
+            const hour = String(vietnamDate.getHours()).padStart(2, '0');
+            const minute = String(vietnamDate.getMinutes()).padStart(2, '0');
+            const second = String(vietnamDate.getSeconds()).padStart(2, '0');
             return `${day}/${month}/${year} ${hour}:${minute}:${second}`;
         }
         
