@@ -94,7 +94,7 @@ const PublicHomePage = () => {
 
             <div className="portal-actions">
               {currentUser ? (
-                <Link to={getDashboardLink()} className="btn-primary">
+                <Link to="/author" className="btn-primary">
                   Trang hội nghị
                 </Link>
               ) : (
