@@ -1,6 +1,7 @@
 // src/pages/author/AuthorSubmissionDetail.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import { CardSkeleton } from "../../components/LoadingSkeleton";
@@ -9,11 +10,8 @@ import { formatDateTime } from "../../utils/dateUtils";
 const formatDate = (value) => {
   if (!value) return "";
   try {
-    // Use formatDateTime from dateUtils.js for UTC+7 consistency
     const date = typeof value === 'string' ? new Date(value) : value;
     if (isNaN(date.getTime())) return "";
-    
-    // Add 7 hours for Vietnam timezone
     const vietnamDate = new Date(date.getTime() + (7 * 60 * 60 * 1000));
     const day = String(vietnamDate.getDate()).padStart(2, '0');
     const month = String(vietnamDate.getMonth() + 1).padStart(2, '0');
@@ -28,6 +26,7 @@ const formatDate = (value) => {
 };
 
 const AuthorSubmissionDetail = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -46,22 +45,14 @@ const AuthorSubmissionDetail = () => {
         const res = await apiClient.get(`/submissions/${id}`);
         if (!ignore) {
           setSubmission(res.data || null);
-
-          // Load reviews
           try {
             const rev = await apiClient.get(`/reviews/paper/${id}/for-author`);
             if (!ignore) setReviews(Array.isArray(rev.data) ? rev.data : []);
-          } catch (e) {
-            // ignore
-          }
-
-          // Load decision
+          } catch (e) {}
           try {
             const dec = await apiClient.get(`/decisions/paper/${id}`);
             if (!ignore) setDecision(dec.data || null);
-          } catch (e) {
-            // ignore
-          }
+          } catch (e) {}
         }
       } catch (err) {
         if (!ignore) {
@@ -70,21 +61,19 @@ const AuthorSubmissionDetail = () => {
             navigate("/login");
             return;
           }
-          setError(err?.response?.data?.message || err?.message || "Không thể tải submission.");
+          setError(err?.response?.data?.message || err?.message || t('app.error'));
         }
       } finally {
         if (!ignore) setLoading(false);
       }
     };
     if (id) load();
-    return () => {
-      ignore = true;
-    };
-  }, [id, navigate]);
+    return () => { ignore = true; };
+  }, [id, navigate, t]);
 
   const handleWithdraw = async () => {
     if (!submission?.id) return;
-    if (!window.confirm("Bạn chắc chắn muốn rút bài này?")) return;
+    if (!window.confirm(t('author.submissions.confirmDelete'))) return;
     try {
       setWithdrawing(true);
       await apiClient.post(`/submissions/${submission.id}/withdraw`);
@@ -95,7 +84,7 @@ const AuthorSubmissionDetail = () => {
         navigate("/login");
         return;
       }
-      setError(err?.response?.data?.message || err?.message || "Rút bài thất bại.");
+      setError(err?.response?.data?.message || err?.message || t('app.error'));
     } finally {
       setWithdrawing(false);
     }
@@ -103,24 +92,18 @@ const AuthorSubmissionDetail = () => {
 
   const getStatusBadge = (status) => {
     const statusMap = {
-      SUBMITTED: { label: "Đã nộp", color: "#3b82f6" },
-      UNDER_REVIEW: { label: "Đang review", color: "#f59e0b" },
-      ACCEPTED: { label: "Chấp nhận", color: "#10b981" },
-      REJECTED: { label: "Từ chối", color: "#ef4444" },
-      WITHDRAWN: { label: "Đã rút", color: "#6b7280" },
+      SUBMITTED: { label: t('status.submitted'), color: "#3b82f6" },
+      UNDER_REVIEW: { label: t('status.underReview'), color: "#f59e0b" },
+      ACCEPTED: { label: t('status.accepted'), color: "#10b981" },
+      REJECTED: { label: t('status.rejected'), color: "#ef4444" },
+      WITHDRAWN: { label: t('status.withdrawn'), color: "#6b7280" },
     };
     const statusInfo = statusMap[status] || { label: status, color: "#6b7280" };
     return (
       <span style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "0.375rem",
-        padding: "0.375rem 0.75rem",
-        borderRadius: "6px",
-        fontSize: "0.875rem",
-        fontWeight: 600,
-        background: `${statusInfo.color}15`,
-        color: statusInfo.color,
+        display: "inline-flex", alignItems: "center", gap: "0.375rem",
+        padding: "0.375rem 0.75rem", borderRadius: "6px", fontSize: "0.875rem",
+        fontWeight: 600, background: `${statusInfo.color}15`, color: statusInfo.color,
         border: `1px solid ${statusInfo.color}30`
       }}>
         {statusInfo.label}
@@ -130,7 +113,7 @@ const AuthorSubmissionDetail = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Author" title="Chi tiết bài báo">
+      <DashboardLayout roleLabel="Author" title={t('author.submissions.viewDetails')}>
         <CardSkeleton count={1} />
       </DashboardLayout>
     );
@@ -138,23 +121,13 @@ const AuthorSubmissionDetail = () => {
 
   if (error || !submission) {
     return (
-      <DashboardLayout roleLabel="Author" title="Chi tiết bài báo">
-        <div style={{
-          background: "white",
-          borderRadius: "12px",
-          padding: "3rem",
-          textAlign: "center",
-          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
-        }}>
-          <h3 style={{ marginBottom: "0.5rem", color: "#1f2937" }}>Không thể tải submission</h3>
-          <p style={{ color: "#6b7280", marginBottom: "1.5rem" }}>{error || "Không tìm thấy submission."}</p>
+      <DashboardLayout roleLabel="Author" title={t('author.submissions.viewDetails')}>
+        <div style={{ background: "white", borderRadius: "12px", padding: "3rem", textAlign: "center", boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)" }}>
+          <h3 style={{ marginBottom: "0.5rem", color: "#1f2937" }}>{t('app.error')}</h3>
+          <p style={{ color: "#6b7280", marginBottom: "1.5rem" }}>{error || t('author.submissions.noSubmissions')}</p>
           <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
-            <button className="btn-secondary" onClick={() => navigate(-1)}>
-              ← Quay lại
-            </button>
-            <button className="btn-primary" onClick={() => window.location.reload()}>
-              Thử lại
-            </button>
+            <button className="btn-secondary" onClick={() => navigate(-1)}>← {t('app.back')}</button>
+            <button className="btn-primary" onClick={() => window.location.reload()}>{t('errors.tryAgain')}</button>
           </div>
         </div>
       </DashboardLayout>
@@ -162,423 +135,137 @@ const AuthorSubmissionDetail = () => {
   }
 
   return (
-    <DashboardLayout
-      roleLabel="Author"
-      title="Chi tiết bài báo"
-      subtitle="Xem thông tin chi tiết, trạng thái và đánh giá của bài báo"
-    >
+    <DashboardLayout roleLabel="Author" title={t('author.submissions.viewDetails')} subtitle={t('author.submissions.subtitle')}>
       <div style={{ marginBottom: "1rem" }}>
-        <button
-          className="btn-back"
-          onClick={() => navigate(-1)}
-          style={{
-            padding: "0.5rem 1rem",
-            background: "transparent",
-            border: "1.5px solid #e2e8f0",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontSize: "0.875rem",
-            fontWeight: 600,
-            color: "#475569",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            transition: "all 0.2s"
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.background = "#f8fafc";
-            e.currentTarget.style.borderColor = "#cbd5e1";
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.background = "transparent";
-            e.currentTarget.style.borderColor = "#e2e8f0";
-          }}
-        >
-          ← Quay lại
+        <button className="btn-back" onClick={() => navigate(-1)} style={{ padding: "0.5rem 1rem", background: "transparent", border: "1.5px solid #e2e8f0", borderRadius: "8px", cursor: "pointer", fontSize: "0.875rem", fontWeight: 600, color: "#475569", display: "flex", alignItems: "center", gap: "0.5rem", transition: "all 0.2s" }}>
+          ← {t('app.back')}
         </button>
       </div>
+      
       <div className="data-page-header">
         <div className="data-page-header-left">
-          <h2 className="data-page-title" style={{ marginTop: "0.5rem" }}>
-            {submission.title}
-          </h2>
-          <div style={{
-            display: "flex",
-            gap: "0.75rem",
-            alignItems: "center",
-            marginTop: "0.75rem",
-            flexWrap: "wrap"
-          }}>
+          <h2 className="data-page-title" style={{ marginTop: "0.5rem" }}>{submission.title}</h2>
+          <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", marginTop: "0.75rem", flexWrap: "wrap" }}>
             {getStatusBadge(submission.status || submission.reviewStatus)}
-            <span style={{
-              padding: "0.25rem 0.625rem",
-              background: "#e0f2f1",
-              color: "#00695c",
-              borderRadius: "6px",
-              fontSize: "0.8125rem",
-              fontWeight: 600
-            }}>
+            <span style={{ padding: "0.25rem 0.625rem", background: "#e0f2f1", color: "#00695c", borderRadius: "6px", fontSize: "0.8125rem", fontWeight: 600 }}>
               {submission.trackName || submission.trackId}
             </span>
           </div>
         </div>
         <div className="data-page-header-right" style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
           {submission.status === "SUBMITTED" && (
-            <button
-              className="btn-secondary"
-              onClick={() => navigate(`/author/submissions/${submission.id}/edit`)}
-            >
-              Chỉnh sửa
-            </button>
+            <button className="btn-secondary" onClick={() => navigate(`/author/submissions/${submission.id}/edit`)}>{t('app.edit')}</button>
           )}
-
           {submission.status === "ACCEPTED" && !submission.cameraReadyPath && !submission.cameraReadyDownloadUrl && (
-            <button
-              className="btn-primary"
-              onClick={() => navigate(`/author/submissions/${submission.id}/camera-ready`)}
-            >
-              Upload Camera-Ready
-            </button>
+            <button className="btn-primary" onClick={() => navigate(`/author/submissions/${submission.id}/camera-ready`)}>{t('author.cameraReady.uploadFinal')}</button>
           )}
-
           {(submission.status === "SUBMITTED" || submission.status === "UNDER_REVIEW") && (
-            <button
-              className="btn-secondary"
-              style={{ color: "#ef4444", borderColor: "#ef4444" }}
-              disabled={withdrawing}
-              onClick={handleWithdraw}
-            >
-              {withdrawing ? "Đang rút..." : "Rút bài"}
+            <button className="btn-secondary" style={{ color: "#ef4444", borderColor: "#ef4444" }} disabled={withdrawing} onClick={handleWithdraw}>
+              {withdrawing ? t('app.loading') : t('status.withdrawn')}
             </button>
           )}
         </div>
       </div>
 
-      {error && (
-        <div style={{
-          background: "#fef2f2",
-          border: "1px solid #fecaca",
-          padding: "1rem 1.25rem",
-          borderRadius: "8px",
-          marginBottom: "1.5rem",
-          color: "#991b1b",
-        }}>
-          {error}
-        </div>
-      )}
+      {error && <div style={{ background: "#fef2f2", border: "1px solid #fecaca", padding: "1rem 1.25rem", borderRadius: "8px", marginBottom: "1.5rem", color: "#991b1b" }}>{error}</div>}
 
-      {/* Decision Alert */}
       {decision && (decision.status === "ACCEPTED" || decision.status === "REJECTED") && (
-        <div style={{
-          background: decision.status === "ACCEPTED" ? "#ecfdf5" : "#fef2f2",
-          border: `2px solid ${decision.status === "ACCEPTED" ? "#10b981" : "#ef4444"}`,
-          padding: "1.5rem",
-          borderRadius: "12px",
-          marginBottom: "1.5rem",
-        }}>
-          <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
-            <div style={{ flex: 1 }}>
-              <h3 style={{
-                margin: "0 0 0.5rem 0",
-                color: decision.status === "ACCEPTED" ? "#065f46" : "#991b1b",
-                fontSize: "1.125rem",
-                fontWeight: 700
-              }}>
-                {decision.status === "ACCEPTED" ? "🎉 Chúc mừng! Bài báo được chấp nhận" : "Bài báo chưa được chấp nhận"}
-              </h3>
-              <div style={{
-                fontSize: "0.875rem",
-                color: decision.status === "ACCEPTED" ? "#047857" : "#b91c1c",
-                marginBottom: "0.75rem"
-              }}>
-                {formatDate(decision.decidedAt)}
-              </div>
-              {decision.comment && (
-                <div style={{
-                  marginTop: "1rem",
-                  padding: "1rem",
-                  background: "white",
-                  borderRadius: "8px",
-                  border: "1px solid #e5e7eb"
-                }}>
-                  <div style={{
-                    fontWeight: 600,
-                    marginBottom: "0.5rem",
-                    color: "#374151",
-                    fontSize: "0.875rem"
-                  }}>
-                    Nhận xét từ Chair:
-                  </div>
-                  <p style={{ margin: 0, color: "#6b7280", lineHeight: 1.6 }}>{decision.comment}</p>
-                </div>
-              )}
+        <div style={{ background: decision.status === "ACCEPTED" ? "#ecfdf5" : "#fef2f2", border: `2px solid ${decision.status === "ACCEPTED" ? "#10b981" : "#ef4444"}`, padding: "1.5rem", borderRadius: "12px", marginBottom: "1.5rem" }}>
+          <h3 style={{ margin: "0 0 0.5rem 0", color: decision.status === "ACCEPTED" ? "#065f46" : "#991b1b", fontSize: "1.125rem", fontWeight: 700 }}>
+            {decision.status === "ACCEPTED" ? `🎉 ${t('status.accepted')}` : t('status.rejected')}
+          </h3>
+          <div style={{ fontSize: "0.875rem", color: decision.status === "ACCEPTED" ? "#047857" : "#b91c1c", marginBottom: "0.75rem" }}>{formatDate(decision.decidedAt)}</div>
+          {decision.comment && (
+            <div style={{ marginTop: "1rem", padding: "1rem", background: "white", borderRadius: "8px", border: "1px solid #e5e7eb" }}>
+              <div style={{ fontWeight: 600, marginBottom: "0.5rem", color: "#374151", fontSize: "0.875rem" }}>{t('common.comments')}:</div>
+              <p style={{ margin: 0, color: "#6b7280", lineHeight: 1.6 }}>{decision.comment}</p>
             </div>
-          </div>
+          )}
         </div>
       )}
 
-      {/* Main Content Grid */}
       <div style={{ display: "grid", gap: "1.5rem" }}>
         {/* File Downloads */}
-        <div style={{
-          background: "white",
-          borderRadius: "12px",
-          padding: "1.5rem",
-          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
-          border: "1px solid #e5e7eb"
-        }}>
-          <div style={{
-            marginBottom: "1rem",
-            fontWeight: 600,
-            color: "#64748b",
-            fontSize: "0.875rem",
-          }}>
-            Tệp đính kèm
-          </div>
+        <div style={{ background: "white", borderRadius: "12px", padding: "1.5rem", boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)", border: "1px solid #e5e7eb" }}>
+          <div style={{ marginBottom: "1rem", fontWeight: 600, color: "#64748b", fontSize: "0.875rem" }}>{t('common.files')}</div>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {submission.downloadUrl && (
-              <div style={{
-                padding: "1rem",
-                background: "#f8fafc",
-                borderRadius: "8px",
-                border: "1px solid #e2e8f0",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center"
-              }}>
+              <div style={{ padding: "1rem", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontWeight: 600, color: "#1f2937", marginBottom: "0.25rem" }}>
-                    Bản thảo gốc (để chấm)
-                  </div>
-                  <div style={{ fontSize: "0.8125rem", color: "#6b7280" }}>
-                    File PDF đã nộp lúc submit
-                  </div>
+                  <div style={{ fontWeight: 600, color: "#1f2937", marginBottom: "0.25rem" }}>{t('common.file')} PDF</div>
+                  <div style={{ fontSize: "0.8125rem", color: "#6b7280" }}>{t('author.submissions.submittedAt')}</div>
                 </div>
-                <a
-                  href={submission.downloadUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-secondary"
-                  style={{ textDecoration: "none", whiteSpace: "nowrap" }}
-                >
-                  Tải PDF
-                </a>
+                <a href={submission.downloadUrl} target="_blank" rel="noreferrer" className="btn-secondary" style={{ textDecoration: "none", whiteSpace: "nowrap" }}>{t('app.download')}</a>
               </div>
             )}
-
             {(submission.cameraReadyDownloadUrl || submission.cameraReadyPath) && (
-              <div style={{
-                padding: "1rem",
-                background: "#f0fdf4",
-                borderRadius: "8px",
-                border: "1px solid #bbf7d0",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center"
-              }}>
+              <div style={{ padding: "1rem", background: "#f0fdf4", borderRadius: "8px", border: "1px solid #bbf7d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontWeight: 600, color: "#1f2937", marginBottom: "0.25rem" }}>
-                    Bản Camera-Ready (bản cuối)
-                  </div>
-                  <div style={{ fontSize: "0.8125rem", color: "#15803d" }}>
-                    File PDF đã được chỉnh sửa sau khi chấp nhận
-                  </div>
+                  <div style={{ fontWeight: 600, color: "#1f2937", marginBottom: "0.25rem" }}>{t('author.cameraReady.title')}</div>
+                  <div style={{ fontSize: "0.8125rem", color: "#15803d" }}>{t('author.cameraReady.alreadySubmitted')}</div>
                 </div>
-                <a
-                  href={submission.cameraReadyDownloadUrl || submission.cameraReadyPath}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-primary"
-                  style={{ textDecoration: "none", whiteSpace: "nowrap" }}
-                >
-                  Tải PDF
-                </a>
+                <a href={submission.cameraReadyDownloadUrl || submission.cameraReadyPath} target="_blank" rel="noreferrer" className="btn-primary" style={{ textDecoration: "none", whiteSpace: "nowrap" }}>{t('app.download')}</a>
               </div>
             )}
-
             {!submission.downloadUrl && !submission.cameraReadyDownloadUrl && !submission.cameraReadyPath && (
-              <div style={{
-                padding: "1rem",
-                textAlign: "center",
-                color: "#94a3b8",
-                fontSize: "0.875rem"
-              }}>
-                Chưa có file đính kèm
-              </div>
+              <div style={{ padding: "1rem", textAlign: "center", color: "#94a3b8", fontSize: "0.875rem" }}>{t('app.noData')}</div>
             )}
           </div>
         </div>
 
         {/* Abstract */}
-        <div style={{
-          background: "white",
-          borderRadius: "12px",
-          padding: "1.5rem",
-          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
-          border: "1px solid #e5e7eb"
-        }}>
-          <div style={{
-            marginBottom: "1rem",
-            fontWeight: 600,
-            color: "#64748b",
-            fontSize: "0.875rem",
-          }}>
-            Tóm tắt nghiên cứu
-          </div>
-          <p style={{
-            margin: 0,
-            color: "#374151",
-            lineHeight: 1.7,
-            fontSize: "0.9375rem"
-          }}>
-            {submission.abstractText || submission.abstract}
-          </p>
+        <div style={{ background: "white", borderRadius: "12px", padding: "1.5rem", boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)", border: "1px solid #e5e7eb" }}>
+          <div style={{ marginBottom: "1rem", fontWeight: 600, color: "#64748b", fontSize: "0.875rem" }}>{t('common.abstract')}</div>
+          <p style={{ margin: 0, color: "#374151", lineHeight: 1.7, fontSize: "0.9375rem" }}>{submission.abstractText || submission.abstract}</p>
         </div>
 
         {/* Info Grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem" }}>
           {/* Authors */}
-          <div style={{
-            background: "white",
-            borderRadius: "12px",
-            padding: "1.5rem",
-            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
-            border: "1px solid #e5e7eb"
-          }}>
-            <div style={{
-              marginBottom: "1rem",
-              fontWeight: 600,
-              color: "#64748b",
-              fontSize: "0.875rem",
-            }}>
-              Tác giả
-            </div>
+          <div style={{ background: "white", borderRadius: "12px", padding: "1.5rem", boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)", border: "1px solid #e5e7eb" }}>
+            <div style={{ marginBottom: "1rem", fontWeight: 600, color: "#64748b", fontSize: "0.875rem" }}>{t('common.authors')}</div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              <div style={{
-                padding: "0.75rem",
-                background: "#f8fafc",
-                borderRadius: "8px",
-                border: "1px solid #e2e8f0"
-              }}>
-                <div style={{ fontWeight: 600, color: "#1f2937", marginBottom: "0.25rem" }}>
-                  {submission.authorName || submission.ownerName || "Bạn"}
-                </div>
-                <div style={{ fontSize: "0.8125rem", color: "#0d9488", fontWeight: 600 }}>
-                  Tác giả chính
-                </div>
+              <div style={{ padding: "0.75rem", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                <div style={{ fontWeight: 600, color: "#1f2937", marginBottom: "0.25rem" }}>{submission.authorName || submission.ownerName || t('common.author')}</div>
+                <div style={{ fontSize: "0.8125rem", color: "#0d9488", fontWeight: 600 }}>{t('author.form.correspondingAuthor')}</div>
               </div>
-              {submission.coAuthors && submission.coAuthors.length > 0 && (
-                <>
-                  {submission.coAuthors.map((c, i) => (
-                    <div key={i} style={{
-                      padding: "0.75rem",
-                      background: "#fafbfc",
-                      borderRadius: "8px",
-                      border: "1px solid #e5e7eb"
-                    }}>
-                      <div style={{ fontWeight: 600, color: "#374151", marginBottom: "0.25rem" }}>
-                        {c.name || c.fullName}
-                      </div>
-                      {c.email && (
-                        <div style={{ fontSize: "0.8125rem", color: "#6b7280" }}>
-                          {c.email}
-                        </div>
-                      )}
-                      {c.affiliation && (
-                        <div style={{ fontSize: "0.8125rem", color: "#94a3b8", marginTop: "0.125rem" }}>
-                          {c.affiliation}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </>
-              )}
+              {submission.coAuthors && submission.coAuthors.length > 0 && submission.coAuthors.map((c, i) => (
+                <div key={i} style={{ padding: "0.75rem", background: "#fafbfc", borderRadius: "8px", border: "1px solid #e5e7eb" }}>
+                  <div style={{ fontWeight: 600, color: "#374151", marginBottom: "0.25rem" }}>{c.name || c.fullName}</div>
+                  {c.email && <div style={{ fontSize: "0.8125rem", color: "#6b7280" }}>{c.email}</div>}
+                  {c.affiliation && <div style={{ fontSize: "0.8125rem", color: "#94a3b8", marginTop: "0.125rem" }}>{c.affiliation}</div>}
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Keywords & Info */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            {/* Keywords */}
             {submission.keywords && (
-              <div style={{
-                background: "white",
-                borderRadius: "12px",
-                padding: "1.5rem",
-                boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
-                border: "1px solid #e5e7eb"
-              }}>
-                <div style={{
-                  marginBottom: "1rem",
-                  fontWeight: 600,
-                  color: "#64748b",
-                  fontSize: "0.875rem",
-                }}>
-                  Từ khóa
-                </div>
+              <div style={{ background: "white", borderRadius: "12px", padding: "1.5rem", boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)", border: "1px solid #e5e7eb" }}>
+                <div style={{ marginBottom: "1rem", fontWeight: 600, color: "#64748b", fontSize: "0.875rem" }}>{t('common.keywords')}</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                  {(submission.keywords || "")
-                    .toString()
-                    .split(/[;,]+/)
-                    .map((k) => k.trim())
-                    .filter(Boolean)
-                    .slice(0, 10)
-                    .map((k, i) => (
-                      <span key={i} style={{
-                        padding: "0.375rem 0.75rem",
-                        background: "#f0fdfa",
-                        color: "#0d9488",
-                        borderRadius: "6px",
-                        fontSize: "0.8125rem",
-                        fontWeight: 600,
-                        border: "1px solid #ccfbf1"
-                      }}>
-                        {k}
-                      </span>
-                    ))}
+                  {(submission.keywords || "").toString().split(/[;,]+/).map((k) => k.trim()).filter(Boolean).slice(0, 10).map((k, i) => (
+                    <span key={i} style={{ padding: "0.375rem 0.75rem", background: "#f0fdfa", color: "#0d9488", borderRadius: "6px", fontSize: "0.8125rem", fontWeight: 600, border: "1px solid #ccfbf1" }}>{k}</span>
+                  ))}
                 </div>
               </div>
             )}
 
-            {/* Stats */}
-            <div style={{
-              background: "white",
-              borderRadius: "12px",
-              padding: "1.5rem",
-              boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
-              border: "1px solid #e5e7eb"
-            }}>
-              <div style={{
-                marginBottom: "1rem",
-                fontWeight: 600,
-                color: "#64748b",
-                fontSize: "0.875rem",
-              }}>
-                Thông tin
-              </div>
+            <div style={{ background: "white", borderRadius: "12px", padding: "1.5rem", boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)", border: "1px solid #e5e7eb" }}>
+              <div style={{ marginBottom: "1rem", fontWeight: 600, color: "#64748b", fontSize: "0.875rem" }}>{t('app.details')}</div>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                 <div>
-                  <div style={{ fontSize: "0.8125rem", color: "#94a3b8", marginBottom: "0.25rem" }}>
-                    Hội nghị
-                  </div>
-                  <div style={{ fontWeight: 600, color: "#1f2937" }}>
-                    {submission.conferenceName || submission.conferenceId}
-                  </div>
+                  <div style={{ fontSize: "0.8125rem", color: "#94a3b8", marginBottom: "0.25rem" }}>{t('common.conference')}</div>
+                  <div style={{ fontWeight: 600, color: "#1f2937" }}>{submission.conferenceName || submission.conferenceId}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: "0.8125rem", color: "#94a3b8", marginBottom: "0.25rem" }}>
-                    Ngày nộp
-                  </div>
-                  <div style={{ fontWeight: 600, color: "#1f2937" }}>
-                    {formatDate(submission.submittedAt || submission.createdAt)}
-                  </div>
+                  <div style={{ fontSize: "0.8125rem", color: "#94a3b8", marginBottom: "0.25rem" }}>{t('author.submissions.submittedAt')}</div>
+                  <div style={{ fontWeight: 600, color: "#1f2937" }}>{formatDate(submission.submittedAt || submission.createdAt)}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: "0.8125rem", color: "#94a3b8", marginBottom: "0.25rem" }}>
-                    Cập nhật lần cuối
-                  </div>
-                  <div style={{ fontWeight: 600, color: "#1f2937" }}>
-                    {formatDate(submission.updatedAt)}
-                  </div>
+                  <div style={{ fontSize: "0.8125rem", color: "#94a3b8", marginBottom: "0.25rem" }}>{t('author.submissions.lastUpdated')}</div>
+                  <div style={{ fontWeight: 600, color: "#1f2937" }}>{formatDate(submission.updatedAt)}</div>
                 </div>
               </div>
             </div>
@@ -587,87 +274,26 @@ const AuthorSubmissionDetail = () => {
 
         {/* Reviews */}
         {reviews && reviews.length > 0 && (
-          <div style={{
-            background: "white",
-            borderRadius: "12px",
-            padding: "1.5rem",
-            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
-            border: "1px solid #e5e7eb"
-          }}>
-            <div style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "1rem"
-            }}>
-              <div style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                fontWeight: 600,
-                color: "#64748b",
-                fontSize: "0.875rem",
-              }}>
-                Đánh giá từ Reviewers
-                <span style={{
-                  padding: "0.125rem 0.5rem",
-                  background: "#f1f5f9",
-                  color: "#475569",
-                  borderRadius: "12px",
-                  fontSize: "0.75rem",
-                  fontWeight: 700
-                }}>
-                  {reviews.length}
-                </span>
+          <div style={{ background: "white", borderRadius: "12px", padding: "1.5rem", boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)", border: "1px solid #e5e7eb" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: 600, color: "#64748b", fontSize: "0.875rem" }}>
+                {t('common.reviews')}
+                <span style={{ padding: "0.125rem 0.5rem", background: "#f1f5f9", color: "#475569", borderRadius: "12px", fontSize: "0.75rem", fontWeight: 700 }}>{reviews.length}</span>
               </div>
               {reviews.length > 2 && (
-                <button
-                  className="btn-secondary"
-                  style={{ fontSize: "0.8125rem", padding: "0.375rem 0.75rem" }}
-                  onClick={() => navigate(`/author/submissions/${submission.id}/reviews`)}
-                >
-                  Xem tất cả →
+                <button className="btn-secondary" style={{ fontSize: "0.8125rem", padding: "0.375rem 0.75rem" }} onClick={() => navigate(`/author/submissions/${submission.id}/reviews`)}>
+                  {t('app.view')} →
                 </button>
               )}
             </div>
             <div style={{ display: "grid", gap: "1rem" }}>
               {reviews.slice(0, 2).map((r, idx) => (
-                <div key={r.id || idx} style={{
-                  padding: "1rem",
-                  background: "#fafbfc",
-                  borderRadius: "8px",
-                  border: "1px solid #e5e7eb"
-                }}>
-                  <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "0.75rem"
-                  }}>
-                    <span style={{ fontWeight: 600, color: "#475569", fontSize: "0.875rem" }}>
-                      Review #{idx + 1}
-                    </span>
-                    <span style={{
-                      padding: "0.25rem 0.75rem",
-                      background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)",
-                      color: "white",
-                      borderRadius: "6px",
-                      fontSize: "0.875rem",
-                      fontWeight: 700
-                    }}>
-                      {r.score}/10
-                    </span>
+                <div key={r.id || idx} style={{ padding: "1rem", background: "#fafbfc", borderRadius: "8px", border: "1px solid #e5e7eb" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                    <span style={{ fontWeight: 600, color: "#475569", fontSize: "0.875rem" }}>Review #{idx + 1}</span>
+                    <span style={{ padding: "0.25rem 0.75rem", background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)", color: "white", borderRadius: "6px", fontSize: "0.875rem", fontWeight: 700 }}>{r.score}/10</span>
                   </div>
-                  {r.commentForAuthor && (
-                    <p style={{
-                      margin: 0,
-                      color: "#6b7280",
-                      lineHeight: 1.6,
-                      fontSize: "0.875rem"
-                    }}>
-                      {r.commentForAuthor}
-                    </p>
-                  )}
+                  {r.commentForAuthor && <p style={{ margin: 0, color: "#6b7280", lineHeight: 1.6, fontSize: "0.875rem" }}>{r.commentForAuthor}</p>}
                 </div>
               ))}
             </div>
@@ -675,42 +301,12 @@ const AuthorSubmissionDetail = () => {
         )}
       </div>
 
-      {/* Back Button at Bottom */}
-      <div style={{
-        marginTop: "2rem",
-        paddingTop: "1.5rem",
-        borderTop: "1px solid #e5e7eb",
-        textAlign: "center"
-      }}>
-        <button
-          onClick={() => navigate(-1)}
-          className="btn-secondary"
-          onMouseOver={(e) => {
-            e.currentTarget.style.background = "#f1f5f9";
-            e.currentTarget.style.transform = "translateX(-4px)";
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.background = "white";
-            e.currentTarget.style.transform = "translateX(0)";
-          }}
-          style={{
-            transition: "all 0.2s ease"
-          }}
-        >
-          ← Quay lại danh sách
-        </button>
+      <div style={{ marginTop: "2rem", paddingTop: "1.5rem", borderTop: "1px solid #e5e7eb", textAlign: "center" }}>
+        <button onClick={() => navigate(-1)} className="btn-secondary">← {t('app.back')}</button>
       </div>
 
-      {/* Footer */}
-      <footer style={{
-        marginTop: "3rem",
-        paddingTop: "1.5rem",
-        borderTop: "1px solid #e5e7eb",
-        textAlign: "center",
-        color: "#6b7280",
-        fontSize: "0.875rem"
-      }}>
-        © {new Date().getFullYear()} Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải
+      <footer style={{ marginTop: "3rem", paddingTop: "1.5rem", borderTop: "1px solid #e5e7eb", textAlign: "center", color: "#6b7280", fontSize: "0.875rem" }}>
+        © {new Date().getFullYear()} {t('public.home.footer')}
       </footer>
     </DashboardLayout>
   );

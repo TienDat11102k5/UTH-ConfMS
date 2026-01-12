@@ -122,6 +122,8 @@
     "authorPortal": "Cổng thông tin Tác giả",
     "conferenceList": "Trang hội nghị",
     "proceedings": "Kỷ yếu hội nghị",
+    "conferences": "Hội nghị",
+    "portal": "Cổng thông tin Hội nghị",
     "managementPage": "Trang quản lý",
     "personalInfo": "Thông tin cá nhân",
     "activityHistory": "Lịch sử hoạt động"
@@ -273,10 +275,38 @@
       "uploadFinal": "Tải lên bản cuối",
       "copyrightForm": "Mẫu bản quyền",
       "uploadCopyright": "Tải lên mẫu bản quyền",
-      "submitCameraReady": "Nộp Camera-Ready",
-      "submissionSuccess": "Nộp camera-ready thành công!",
-      "alreadySubmitted": "Camera-ready đã được nộp",
-      "viewSubmitted": "Xem bản đã nộp"
+    "viewSubmitted": "Xem bản đã nộp"
+    },
+    "conferenceList": {
+      "loadError": "Không thể tải danh sách hội nghị.",
+      "comingSoon": "Sắp diễn ra",
+      "academicConference": "Hội nghị Học thuật",
+      "discover": "KHÁM PHÁ",
+      "knowledge": "TRI THỨC",
+      "connectFuture": "Kết nối tương lai",
+      "heroDesc": "Nền tảng quản lý hội nghị khoa học của Trường ĐH Giao thông Vận tải TP.HCM. Nơi hội tụ những nghiên cứu đột phá và đổi mới sáng tạo số.",
+      "submitNow": "Nộp bài ngay",
+      "viewProgram": "Xem Chương trình",
+      "openRegistration": "Đang mở đăng ký",
+      "ended": "Đã kết thúc",
+      "updatingData": "Đang cập nhật dữ liệu hội nghị...",
+      "events": "Sự kiện",
+      "upcomingConferences": "Các hội nghị học thuật sắp tới",
+      "page": "Trang",
+      "featured": "Nổi bật",
+      "defaultDesc": "Khám phá sự giao thoa giữa trí tuệ nhân tạo, máy học và cơ sở hạ tầng logistics hiện đại.",
+      "hallA": "Hội trường A",
+      "speaker": "Diễn giả",
+      "testDesc": "Hội nghị test chức năng nộp bài",
+      "endOfList": "Hết danh sách",
+      "footerDesc": "Cổng thông tin hội nghị khoa học chính thức của Trường ĐH Giao thông Vận tải TP.HCM. Thúc đẩy trao đổi tri thức thông qua hệ thống nộp bài và phản biện số tiên tiến.",
+      "navigation": "Điều hướng",
+      "about": "Giới thiệu",
+      "reviewProcess": "Quy trình phản biện",
+      "authorGuide": "Hướng dẫn tác giả",
+      "contact": "Liên hệ",
+      "privacyPolicy": "CHÍNH SÁCH BẢO MẬT",
+      "termsOfUse": "ĐIỀU KHOẢN SỬ DỤNG"
     },
     "conference": {
       "list": {
@@ -646,28 +676,30 @@
     "home": {
       "badge": "Portal Hội nghị Nghiên cứu khoa học UTH",
       "title": "Quản lý CFP, nộp bài, phản biện và chương trình hội nghị trong một hệ thống.",
+      "subtitle": "Hệ thống quản lý bài báo Hội nghị Khoa học UTH",
       "description": "Hệ thống UTH-ConfMS hỗ trợ luồng EasyChair-style: Call for Papers → Submission → Review → Decision → Camera-ready → Program & Proceedings, với RBAC, SSO, audit log và AI hỗ trợ (tùy chọn).",
       "loginSystem": "Đăng nhập hệ thống",
       "registerAuthor": "Đăng ký Author mới",
       "conferenceList": "Trang hội nghị",
       "roleNote": "Vai trò Reviewer / PC / Chair / Admin sẽ được gán bởi Ban tổ chức sau khi bạn có tài khoản.",
-      "authorCard": {
-        "label": "Author",
-        "title": "Nộp bài & Camera-ready",
-        "description": "Nộp bài, cập nhật metadata, thêm đồng tác giả, theo dõi kết quả, tải lên bản camera-ready và xem nhận xét ẩn danh."
+      "cards": {
+        "author": {
+          "title": "Nộp bài & Camera-ready",
+          "description": "Nộp bài, cập nhật metadata, thêm đồng tác giả, theo dõi kết quả, tải lên bản camera-ready và xem nhận xét ẩn danh."
+        },
+        "reviewer": {
+          "label": "Reviewer / PC",
+          "title": "Phản biện & thảo luận nội bộ",
+          "description": "Nhận bài được phân công, gửi điểm & nhận xét, tham gia thảo luận nội bộ PC, xử lý COI và thời hạn review."
+        },
+        "admin": {
+          "label": "Chair & Admin",
+          "title": "Quản lý hội nghị & AI governance",
+          "description": "Cấu hình conference, tracks, deadlines, phân công bài, quyết định Accept / Reject, gửi email hàng loạt, quản lý SMTP, quota và audit log AI."
+        }
       },
-      "reviewerCard": {
-        "label": "Reviewer / PC",
-        "title": "Phản biện & thảo luận nội bộ",
-        "description": "Nhận bài được phân công, gửi điểm & nhận xét, tham gia thảo luận nội bộ PC, xử lý COI và thời hạn review."
-      },
-      "chairCard": {
-        "label": "Chair & Admin",
-        "title": "Quản lý hội nghị & AI governance",
-        "description": "Cấu hình conference, tracks, deadlines, phân công bài, quyết định Accept / Reject, gửi email hàng loạt, quản lý SMTP, quota và audit log AI."
-      },
-      "workflowTitle": "Luồng hội nghị (tóm tắt)",
       "workflow": {
+        "title": "Luồng hội nghị (tóm tắt)",
         "cfp": {
           "title": "Call for Papers (CFP)",
           "description": "Tạo trang CFP, chủ đề, tracks, deadline và mẫu email."

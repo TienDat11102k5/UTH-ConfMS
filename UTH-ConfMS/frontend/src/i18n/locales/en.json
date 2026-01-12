@@ -122,6 +122,8 @@
     "authorPortal": "Author Portal",
     "conferenceList": "Conference List",
     "proceedings": "Proceedings",
+    "conferences": "Conferences",
+    "portal": "Conference Portal",
     "managementPage": "Management Page",
     "personalInfo": "Personal Information",
     "activityHistory": "Activity History"
@@ -218,19 +220,26 @@
       "deleteSuccess": "Submission deleted successfully!"
     },
     "form": {
+      "title": "New Submission",
+      "subtitle": "Enter paper information and upload PDF following conference guidelines.",
+      "newSubmission": "New Submission",
       "paperInfo": "Paper Information",
-      "title": "Paper Title",
+      "paperTitle": "Paper Title",
+      "paperTitlePlaceholder": "e.g. A Study on Smart Transportation at UTH",
       "titlePlaceholder": "Enter your paper title",
       "abstract": "Abstract",
-      "abstractPlaceholder": "Enter paper abstract (max 500 words)",
+      "abstractPlaceholder": "Enter abstract 150-250 words as required by the conference...",
       "keywords": "Keywords",
       "keywordsPlaceholder": "Enter keywords separated by commas",
-      "selectTrack": "Select Track",
+      "selectConference": "Select conference",
+      "selectTrack": "Select track",
       "selectTopics": "Select Topics",
       "uploadPdf": "Upload PDF",
       "uploadPdfHint": "Upload your paper in PDF format (max 10MB)",
       "dragDropFile": "Drag and drop file here or click to browse",
       "coAuthors": "Co-Authors",
+      "coAuthorNamePlaceholder": "Co-author name",
+      "affiliationPlaceholder": "Organization",
       "addCoAuthor": "Add Co-Author",
       "removeCoAuthor": "Remove Co-Author",
       "authorName": "Author Name",
@@ -239,20 +248,56 @@
       "correspondingAuthor": "Corresponding Author",
       "titleRequired": "Paper title is required",
       "abstractRequired": "Abstract is required",
-      "trackRequired": "Track selection is required",
-      "fileRequired": "PDF file is required",
-      "fileTooLarge": "File size exceeds 10MB limit",
+      "trackRequired": "Please select a Track for the paper",
+      "fileRequired": "Please select a PDF file to submit",
+      "pdfFile": "PDF File",
+      "fileHint": "Only PDF files accepted, max 25MB. File must be a real PDF, not a renamed file.",
+      "pdfOnly": "Only PDF files accepted",
+      "fileTooLarge": "File size exceeds 25MB",
+      "fileTooSmall": "File too small, may be corrupted",
       "invalidFileType": "Only PDF files are allowed",
+      "coAuthorRequired": "Please enter co-author name and email",
+      "loadConferencesError": "Unable to load conference list",
       "saveDraft": "Save as Draft",
-      "submitPaper": "Submit Paper"
+      "submitPaper": "Submit Paper",
+      "submitSuccess": "Paper submitted successfully! Redirecting...",
+      "submitError": "Error submitting paper. Please try again.",
+      "cancelAndBack": "Cancel & back to list"
     },
     "reviews": {
-      "title": "Paper Reviews",
-      "subtitle": "View reviewer feedback for your submissions",
-      "noReviews": "No reviews available yet",
+      "title": "Review Results",
+      "subtitle": "View reviews from reviewers and decision from Chair",
+      "loadError": "Unable to load paper information",
+      "loadErrorTitle": "Cannot load information",
+      "notFound": "Paper not found",
+      "backToList": "Back to list",
+      "submittedOn": "Submitted",
+      "viewSubmission": "View submission details",
+      "submittedSuccess": "Paper has been submitted successfully",
+      "awaitingReview": "Your paper is waiting to be assigned to reviewers. You will receive notification when results are available.",
+      "underReview": "Paper is being reviewed",
+      "underReviewDesc": "Your paper is being reviewed by reviewers. Please wait for results.",
+      "acceptedCongrats": "Congratulations! Paper accepted",
+      "rejectedMessage": "Paper not accepted",
+      "decisionDate": "Decision date",
+      "chairComment": "Comment from Chair",
+      "reviewResults": "Review Results",
+      "reviews": "reviews",
+      "avgScore": "Avg Score",
+      "review": "Review",
+      "reviewDate": "Review date",
+      "confidence": "Confidence",
+      "comment": "Comment",
+      "noReviews": "No reviews displayed yet",
+      "noReviewsHidden": "Reviews may be hidden according to conference policy.",
+      "cameraReady": "Final Submission",
+      "cameraReadyRequired": "Your paper has been accepted. Please submit the final version to complete the process.",
+      "uploadCameraReady": "Upload final version",
+      "cameraReadySubmitted": "Final version submitted",
+      "fileUploaded": "File uploaded successfully",
+      "noReviewsYet": "No reviews available yet",
       "reviewerScore": "Reviewer Score",
       "overallScore": "Overall Score",
-      "confidence": "Confidence",
       "recommendation": "Recommendation",
       "strengths": "Strengths",
       "weaknesses": "Weaknesses",
@@ -267,7 +312,8 @@
     },
     "cameraReady": {
       "title": "Camera-Ready Submission",
-      "subtitle": "Submit your final camera-ready version",
+      "subtitle": "Upload final PDF version for accepted submission.",
+      "backToDetails": "Back to paper details",
       "instructions": "Please upload your final camera-ready version following the conference format guidelines",
       "deadline": "Camera-Ready Deadline",
       "uploadFinal": "Upload Final Version",
@@ -275,8 +321,47 @@
       "uploadCopyright": "Upload Copyright Form",
       "submitCameraReady": "Submit Camera-Ready",
       "submissionSuccess": "Camera-ready submitted successfully!",
-      "alreadySubmitted": "Camera-ready already submitted",
-      "viewSubmitted": "View Submitted Version"
+      "alreadySubmitted": "Camera-ready already submitted.",
+      "viewSubmitted": "View Submitted Version",
+      "downloadCameraReady": "Download camera-ready version",
+      "fileLabel": "Camera-ready file (PDF)",
+      "fileHint": "Only PDF accepted. Max size per conference rules.",
+      "pdfOnly": "Only PDF files accepted for camera-ready.",
+      "fileRequired": "Please select camera-ready PDF file.",
+      "uploadSuccess": "Camera-ready uploaded successfully! Redirecting to reviews...",
+      "uploadFailed": "Upload failed.",
+      "loadError": "Unable to load submission."
+    },
+    "conferenceList": {
+      "loadError": "Unable to load conference list.",
+      "comingSoon": "Coming soon",
+      "academicConference": "Academic Conference",
+      "discover": "DISCOVER",
+      "knowledge": "KNOWLEDGE",
+      "connectFuture": "Connect the future",
+      "heroDesc": "Scientific conference management platform of the University of Transport HCMC. Where breakthrough research and digital innovation converge.",
+      "submitNow": "Submit Now",
+      "viewProgram": "View Program",
+      "openRegistration": "Registration Open",
+      "ended": "Ended",
+      "updatingData": "Updating conference data...",
+      "events": "Events",
+      "upcomingConferences": "Upcoming academic conferences",
+      "page": "Page",
+      "featured": "Featured",
+      "defaultDesc": "Explore the intersection of artificial intelligence, machine learning, and modern logistics infrastructure.",
+      "hallA": "Hall A",
+      "speaker": "Speaker",
+      "testDesc": "Conference submission function test",
+      "endOfList": "End of list",
+      "footerDesc": "Official scientific conference portal of the University of Transport HCMC. Promoting knowledge exchange through advanced digital submission and review systems.",
+      "navigation": "Navigation",
+      "about": "About",
+      "reviewProcess": "Review Process",
+      "authorGuide": "Author Guide",
+      "contact": "Contact",
+      "privacyPolicy": "PRIVACY POLICY",
+      "termsOfUse": "TERMS OF USE"
     },
     "conference": {
       "list": {
@@ -645,47 +730,49 @@
   "public": {
     "home": {
       "badge": "UTH Scientific Research Conference Portal",
-      "title": "Manage CFP, submissions, reviews and conference programs in one system.",
-      "description": "The UTH-ConfMS system supports EasyChair-style workflow: Call for Papers → Submission → Review → Decision → Camera-ready → Program & Proceedings, with RBAC, SSO, audit log and AI support (optional).",
-      "loginSystem": "Login to System",
-      "registerAuthor": "Register as New Author",
-      "conferenceList": "Conference List",
-      "roleNote": "Reviewer / PC / Chair / Admin roles will be assigned by the Organizing Committee after you have an account.",
-      "authorCard": {
-        "label": "Author",
+    "title": "Manage CFP, submissions, reviews and conference programs in one system.",
+    "subtitle": "UTH Scientific Conference Paper Management System",
+    "description": "The UTH-ConfMS system supports EasyChair-style workflow: Call for Papers → Submission → Review → Decision → Camera-ready → Program & Proceedings, with RBAC, SSO, audit log and AI support (optional).",
+    "loginSystem": "Login to System",
+    "registerAuthor": "Register as New Author",
+    "conferenceList": "Conference List",
+    "roleNote": "Reviewer / PC / Chair / Admin roles will be assigned by the Organizing Committee after you have an account.",
+    "cards": {
+      "author": {
         "title": "Submit & Camera-ready",
         "description": "Submit papers, update metadata, add co-authors, track results, upload camera-ready version and view anonymous reviews."
       },
-      "reviewerCard": {
+      "reviewer": {
         "label": "Reviewer / PC",
         "title": "Review & Internal Discussion",
         "description": "Receive assigned papers, submit scores & reviews, participate in internal PC discussions, handle COI and review deadlines."
       },
-      "chairCard": {
+      "admin": {
         "label": "Chair & Admin",
         "title": "Conference Management & AI Governance",
         "description": "Configure conference, tracks, deadlines, assign papers, Accept/Reject decisions, bulk email, manage SMTP, quota and AI audit log."
+      }
+    },
+    "workflow": {
+      "title": "Conference Workflow (Summary)",
+      "cfp": {
+        "title": "Call for Papers (CFP)",
+        "description": "Create CFP page, topics, tracks, deadlines and email templates."
       },
-      "workflowTitle": "Conference Workflow (Summary)",
-      "workflow": {
-        "cfp": {
-          "title": "Call for Papers (CFP)",
-          "description": "Create CFP page, topics, tracks, deadlines and email templates."
-        },
-        "submission": {
-          "title": "Submission",
-          "description": "Author submits papers, edits before deadline; format and COI check."
-        },
-        "review": {
-          "title": "Review & Discussion",
-          "description": "PC assigns papers, Reviewers review, internal discussion, rebuttal (if enabled)."
-        },
-        "decision": {
-          "title": "Decision & Camera-ready",
-          "description": "Accept/Reject decisions, send emails, open camera-ready round and export program."
-        }
+      "submission": {
+        "title": "Submission",
+        "description": "Author submits papers, edits before deadline; format and COI check."
       },
-      "footer": "UTH Scientific Research Conference Management System"
+      "review": {
+        "title": "Review & Discussion",
+        "description": "PC assigns papers, Reviewers review, internal discussion, rebuttal (if enabled)."
+      },
+      "decision": {
+        "title": "Decision & Camera-ready",
+        "description": "Accept/Reject decisions, send emails, open camera-ready round and export program."
+      }
+    },
+    "footer": "UTH Scientific Research Conference Management System"
     },
     "cfp": {
       "title": "Call for Papers",

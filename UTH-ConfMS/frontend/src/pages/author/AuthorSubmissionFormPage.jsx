@@ -1,16 +1,17 @@
 // src/pages/author/AuthorSubmissionFormPage.jsx
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import DashboardLayout from "../../components/Layout/DashboardLayout.jsx";
 import { getConferencesAPI } from "../../api/conferenceAPI";
 import { submitPaperAPI } from "../../api/submissionAPI";
 import { ToastContainer } from "../../components/Toast";
 
 const AuthorSubmissionFormPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // Toast notifications
   const [toasts, setToasts] = useState([]);
   
   const addToast = useCallback((message, type = "success") => {
@@ -40,7 +41,6 @@ const AuthorSubmissionFormPage = () => {
     affiliation: ""
   });
 
-  // Load conferences on mount
   useEffect(() => {
     loadConferences();
   }, []);
@@ -51,7 +51,7 @@ const AuthorSubmissionFormPage = () => {
       setConferences(data);
     } catch (err) {
       console.error("Error loading conferences:", err);
-      addToast("Không thể tải danh sách hội nghị", "error");
+      addToast(t('author.form.loadConferencesError'), "error");
     }
   };
 
@@ -80,21 +80,20 @@ const AuthorSubmissionFormPage = () => {
       return;
     }
 
-    // Validate file
     if (!file.type.includes('pdf')) {
-      setFileError("Chỉ chấp nhận file PDF");
+      setFileError(t('author.form.pdfOnly'));
       e.target.value = null;
       return;
     }
 
     if (file.size > 25 * 1024 * 1024) {
-      setFileError("Kích thước file vượt quá 25MB");
+      setFileError(t('author.form.fileTooLarge'));
       e.target.value = null;
       return;
     }
 
     if (file.size < 1024) {
-      setFileError("File quá nhỏ, có thể bị hỏng");
+      setFileError(t('author.form.fileTooSmall'));
       e.target.value = null;
       return;
     }
@@ -109,14 +108,13 @@ const AuthorSubmissionFormPage = () => {
 
   const addCoAuthor = () => {
     if (!coAuthorForm.name || !coAuthorForm.email) {
-      addToast("Vui lòng nhập tên và email của đồng tác giả", "warning");
+      addToast(t('author.form.coAuthorRequired'), "warning");
       return;
     }
 
-    // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(coAuthorForm.email)) {
-      addToast("Email không hợp lệ", "error");
+      addToast(t('validation.emailInvalid'), "error");
       return;
     }
 
@@ -139,12 +137,12 @@ const AuthorSubmissionFormPage = () => {
     e.preventDefault();
 
     if (!form.file) {
-      addToast("Vui lòng chọn file PDF để nộp", "error");
+      addToast(t('author.form.fileRequired'), "error");
       return;
     }
 
     if (!form.trackId) {
-      addToast("Vui lòng chọn Track cho bài báo", "error");
+      addToast(t('author.form.trackRequired'), "error");
       return;
     }
 
@@ -163,14 +161,14 @@ const AuthorSubmissionFormPage = () => {
 
       await submitPaperAPI(formData);
       
-      addToast("Bài báo đã được nộp thành công! Đang chuyển hướng...", "success");
+      addToast(t('author.form.submitSuccess'), "success");
       setTimeout(() => {
         navigate('/author/submissions');
       }, 2000);
 
     } catch (err) {
       console.error("Submission error:", err);
-      addToast(err.response?.data?.message || err.message || "Lỗi khi nộp bài. Vui lòng thử lại.", "error");
+      addToast(err.response?.data?.message || err.message || t('author.form.submitError'), "error");
     } finally {
       setLoading(false);
     }
@@ -179,21 +177,21 @@ const AuthorSubmissionFormPage = () => {
   return (
     <DashboardLayout
       roleLabel="Author"
-      title="Nộp bài mới"
-      subtitle="Nhập thông tin bài báo và tải lên file PDF theo hướng dẫn của hội nghị."
+      title={t('author.form.title')}
+      subtitle={t('author.form.subtitle')}
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
             <Link to="/author" className="breadcrumb-link">
-              Author Dashboard
+              {t('author.dashboard.title')}
             </Link>
             <span className="breadcrumb-separator">/</span>
             <Link to="/author/submissions" className="breadcrumb-link">
-              Submissions
+              {t('common.submissions')}
             </Link>
             <span className="breadcrumb-separator">/</span>
-            <span className="breadcrumb-current">Nộp bài mới</span>
+            <span className="breadcrumb-current">{t('author.form.newSubmission')}</span>
           </div>
         </div>
       </div>
@@ -202,7 +200,7 @@ const AuthorSubmissionFormPage = () => {
         <form onSubmit={handleSubmit} className="submission-form">
           <div className="form-grid">
             <div className="form-group">
-              <label htmlFor="conferenceId">Hội nghị *</label>
+              <label htmlFor="conferenceId">{t('common.conference')} *</label>
               <select
                 id="conferenceId"
                 name="conferenceId"
@@ -212,7 +210,7 @@ const AuthorSubmissionFormPage = () => {
                 className="select-input"
                 disabled={loading}
               >
-                <option value="">-- Chọn hội nghị --</option>
+                <option value="">-- {t('author.form.selectConference')} --</option>
                 {conferences.map(conf => (
                   <option key={conf.id} value={conf.id}>
                     {conf.name}
@@ -222,7 +220,7 @@ const AuthorSubmissionFormPage = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="trackId">Track / Chủ đề *</label>
+              <label htmlFor="trackId">{t('common.track')} *</label>
               <select
                 id="trackId"
                 name="trackId"
@@ -232,7 +230,7 @@ const AuthorSubmissionFormPage = () => {
                 className="select-input"
                 disabled={loading || tracks.length === 0}
               >
-                <option value="">-- Chọn track --</option>
+                <option value="">-- {t('author.form.selectTrack')} --</option>
                 {tracks.map(track => (
                   <option key={track.id} value={track.id}>
                     {track.name}
@@ -243,12 +241,12 @@ const AuthorSubmissionFormPage = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="title">Tiêu đề bài báo *</label>
+            <label htmlFor="title">{t('author.form.paperTitle')} *</label>
             <input
               id="title"
               name="title"
               type="text"
-              placeholder="Ví dụ: A Study on Smart Transportation at UTH"
+              placeholder={t('author.form.paperTitlePlaceholder')}
               value={form.title}
               onChange={handleChange}
               required
@@ -257,12 +255,12 @@ const AuthorSubmissionFormPage = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="abstract">Tóm tắt (abstract) *</label>
+            <label htmlFor="abstract">{t('common.abstract')} *</label>
             <textarea
               id="abstract"
               name="abstract"
               rows={5}
-              placeholder="Nhập tóm tắt 150–250 từ theo yêu cầu của hội nghị..."
+              placeholder={t('author.form.abstractPlaceholder')}
               value={form.abstract}
               onChange={handleChange}
               required
@@ -271,11 +269,9 @@ const AuthorSubmissionFormPage = () => {
             />
           </div>
 
-          {/* Co-Authors Section */}
           <div className="form-group">
-            <label>Đồng tác giả (Co-Authors)</label>
+            <label>{t('author.form.coAuthors')}</label>
             
-            {/* Display added co-authors */}
             {form.coAuthors.length > 0 && (
               <div style={{ marginBottom: '1rem' }}>
                 {form.coAuthors.map((author, index) => (
@@ -305,30 +301,29 @@ const AuthorSubmissionFormPage = () => {
                       }}
                       disabled={loading}
                     >
-                      Xóa
+                      {t('app.delete')}
                     </button>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* Add co-author form */}
             <div style={{ border: '1px solid #ddd', padding: '1rem', borderRadius: '4px' }}>
               <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
                 <div>
-                  <label htmlFor="coAuthorName">Tên *</label>
+                  <label htmlFor="coAuthorName">{t('common.name')} *</label>
                   <input
                     id="coAuthorName"
                     name="name"
                     type="text"
-                    placeholder="Tên đồng tác giả"
+                    placeholder={t('author.form.coAuthorNamePlaceholder')}
                     value={coAuthorForm.name}
                     onChange={handleCoAuthorChange}
                     disabled={loading}
                   />
                 </div>
                 <div>
-                  <label htmlFor="coAuthorEmail">Email *</label>
+                  <label htmlFor="coAuthorEmail">{t('common.email')} *</label>
                   <input
                     id="coAuthorEmail"
                     name="email"
@@ -341,12 +336,12 @@ const AuthorSubmissionFormPage = () => {
                 </div>
               </div>
               <div style={{ marginTop: '0.5rem' }}>
-                <label htmlFor="coAuthorAffiliation">Đơn vị/Trường</label>
+                <label htmlFor="coAuthorAffiliation">{t('common.affiliation')}</label>
                 <input
                   id="coAuthorAffiliation"
                   name="affiliation"
                   type="text"
-                  placeholder="Đơn vị công tác"
+                  placeholder={t('author.form.affiliationPlaceholder')}
                   value={coAuthorForm.affiliation}
                   onChange={handleCoAuthorChange}
                   disabled={loading}
@@ -366,13 +361,13 @@ const AuthorSubmissionFormPage = () => {
                 }}
                 disabled={loading}
               >
-                + Thêm đồng tác giả
+                + {t('author.form.addCoAuthor')}
               </button>
             </div>
           </div>
 
           <div className="form-group">
-            <label htmlFor="file">File PDF *</label>
+            <label htmlFor="file">{t('author.form.pdfFile')} *</label>
             <input
               id="file"
               name="file"
@@ -383,7 +378,7 @@ const AuthorSubmissionFormPage = () => {
               disabled={loading}
             />
             <div className="field-hint">
-              Chỉ chấp nhận file PDF, tối đa 25MB. File phải là PDF thực sự, không phải file đổi tên.
+              {t('author.form.fileHint')}
             </div>
             {fileError && (
               <div style={{ color: 'red', fontSize: '0.875rem', marginTop: '0.25rem' }}>
@@ -392,101 +387,17 @@ const AuthorSubmissionFormPage = () => {
             )}
           </div>
 
-          {/* Co-Authors Section */}
-          <div className="form-section">
-            <h3>Đồng tác giả (Co-Authors)</h3>
-            <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="coAuthorName">Tên đồng tác giả</label>
-                <input
-                  id="coAuthorName"
-                  name="name"
-                  type="text"
-                  placeholder="Họ và tên"
-                  value={coAuthorForm.name}
-                  onChange={handleCoAuthorChange}
-                  disabled={loading}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="coAuthorEmail">Email</label>
-                <input
-                  id="coAuthorEmail"
-                  name="email"
-                  type="email"
-                  placeholder="email@example.com"
-                  value={coAuthorForm.email}
-                  onChange={handleCoAuthorChange}
-                  disabled={loading}
-                />
-              </div>
-            </div>
-            <div className="form-group">
-              <label htmlFor="coAuthorAffiliation">Cơ quan / Trường</label>
-              <input
-                id="coAuthorAffiliation"
-                name="affiliation"
-                type="text"
-                placeholder="Tên cơ quan / trường"
-                value={coAuthorForm.affiliation}
-                onChange={handleCoAuthorChange}
-                disabled={loading}
-              />
-            </div>
-            <button 
-              type="button" 
-              onClick={addCoAuthor}
-              className="btn-secondary"
-              disabled={loading}
-              style={{ marginBottom: '1rem' }}
-            >
-              + Thêm đồng tác giả
-            </button>
-
-            {form.coAuthors.length > 0 && (
-              <div className="coauthors-list">
-                <h4>Danh sách đồng tác giả:</h4>
-                {form.coAuthors.map((coAuthor, index) => (
-                  <div key={index} className="coauthor-item" style={{ 
-                    padding: '0.75rem', 
-                    border: '1px solid #ddd', 
-                    borderRadius: '4px',
-                    marginBottom: '0.5rem',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}>
-                    <div>
-                      <strong>{coAuthor.name}</strong> - {coAuthor.email}
-                      {coAuthor.affiliation && <div style={{ fontSize: '0.875rem', color: '#666' }}>{coAuthor.affiliation}</div>}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeCoAuthor(index)}
-                      className="btn-danger"
-                      disabled={loading}
-                      style={{ padding: '0.25rem 0.75rem' }}
-                    >
-                      Xóa
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
           <div className="form-actions">
             <Link to="/author/submissions" className="btn-secondary">
-              Hủy &amp; quay lại danh sách
+              {t('author.form.cancelAndBack')}
             </Link>
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Đang gửi...' : 'Gửi submission'}
+              {loading ? t('app.loading') : t('author.form.submitPaper')}
             </button>
           </div>
         </form>
       </div>
 
-      {/* Toast Notifications */}
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </DashboardLayout>
   );

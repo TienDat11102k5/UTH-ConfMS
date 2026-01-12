@@ -1,6 +1,7 @@
 // src/pages/author/AuthorSubmissionListPage.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
 import { CardSkeleton } from "../../components/LoadingSkeleton";
@@ -9,6 +10,7 @@ import { formatDateTime } from "../../utils/dateUtils";
 import "../../styles/AuthorPages.css";
 
 const AuthorSubmissionListPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const confId = searchParams.get("confId");
@@ -51,7 +53,7 @@ const AuthorSubmissionListPage = () => {
           const msg =
             err.response?.data?.message ||
             err.response?.data?.error ||
-            "Không tải được danh sách bài nộp.";
+            t('author.submissions.noSubmissions');
           setError(msg);
           setDebugInfo(
             `Status: ${status || "unknown"}, URL: ${err?.config?.url || "n/a"
@@ -70,7 +72,7 @@ const AuthorSubmissionListPage = () => {
     return () => {
       ignore = true;
     };
-  }, [confId, navigate]);
+  }, [confId, navigate, t]);
 
   useEffect(() => {
     let ignore = false;
@@ -93,9 +95,7 @@ const AuthorSubmissionListPage = () => {
             navigate("/login");
             return;
           }
-          setConfError(
-            "Không tải được danh sách hội nghị. Bạn vẫn có thể xem tất cả bài nộp."
-          );
+          setConfError(t('app.error'));
         }
       } finally {
         if (!ignore) setLoadingConfs(false);
@@ -106,11 +106,11 @@ const AuthorSubmissionListPage = () => {
     return () => {
       ignore = true;
     };
-  }, [navigate]);
+  }, [navigate, t]);
 
   const handleWithdraw = async (id) => {
     if (!id) return;
-    const confirm = window.confirm("Bạn chắc chắn muốn rút bài này?");
+    const confirm = window.confirm(t('author.submissions.confirmDelete'));
     if (!confirm) return;
     try {
       setWithdrawingId(id);
@@ -131,7 +131,7 @@ const AuthorSubmissionListPage = () => {
       const msg =
         err.response?.data?.message ||
         err.response?.data?.error ||
-        "Không thể rút bài.";
+        t('app.error');
       setError(msg);
       setDebugInfo(
         `Withdraw failed. Status: ${status || "unknown"}, detail: ${err?.response?.data
@@ -144,15 +144,13 @@ const AuthorSubmissionListPage = () => {
     }
   };
 
-
-
   const getStatusBadge = (status) => {
     const statusMap = {
-      SUBMITTED: { class: "submitted", label: "ĐÃ NỘP" },
-      UNDER_REVIEW: { class: "under-review", label: "ĐANG REVIEW" },
-      ACCEPTED: { class: "accepted", label: "CHẤP NHẬN" },
-      REJECTED: { class: "rejected", label: "TỪ CHỐI" },
-      WITHDRAWN: { class: "withdrawn", label: "ĐÃ RÚT" },
+      SUBMITTED: { class: "submitted", label: t('status.submitted').toUpperCase() },
+      UNDER_REVIEW: { class: "under-review", label: t('status.underReview').toUpperCase() },
+      ACCEPTED: { class: "accepted", label: t('status.accepted').toUpperCase() },
+      REJECTED: { class: "rejected", label: t('status.rejected').toUpperCase() },
+      WITHDRAWN: { class: "withdrawn", label: t('status.withdrawn').toUpperCase() },
     };
     const statusInfo = statusMap[status] || { class: "submitted", label: status };
     return <span className={`status-badge-compact ${statusInfo.class}`}>{statusInfo.label}</span>;
@@ -163,7 +161,6 @@ const AuthorSubmissionListPage = () => {
       <PortalHeader
         title="UTH Conference Portal · Author"
         ctaHref="/author/dashboard"
-        ctaText="Cổng thông tin Tác giả"
       />
 
       <main className="dash-main">
@@ -175,13 +172,13 @@ const AuthorSubmissionListPage = () => {
                   Portal
                 </Link>
                 <span className="breadcrumb-separator">/</span>
-                <span className="breadcrumb-current">Bài nộp của tôi </span>
+                <span className="breadcrumb-current">{t('author.submissions.title')}</span>
               </div>
-              <h1 className="data-page-title">Bài nộp của tôi</h1>
+              <h1 className="data-page-title">{t('author.submissions.title')}</h1>
               <p className="data-page-subtitle">
                 {confId
-                  ? `Đang lọc theo hội nghị: ${conferences.find(c => c.id === parseInt(confId))?.name || `ID #${confId}`}`
-                  : "Xem danh sách bài nộp, trạng thái chấm bài và quyết định."}
+                  ? `${t('common.conference')}: ${conferences.find(c => c.id === parseInt(confId))?.name || `ID #${confId}`}`
+                  : t('author.submissions.subtitle')}
               </p>
             </div>
             <div className="data-page-header-right">
@@ -190,12 +187,12 @@ const AuthorSubmissionListPage = () => {
                 className="btn-primary"
                 onClick={() => navigate("/author/submissions/new")}
               >
-                + Nộp bài mới
+                + {t('author.submissions.newSubmission')}
               </button>
             </div>
           </div>
 
-          {/* New Filter Style - giống chair/reviewer */}
+          {/* Filter Style */}
           <div
             style={{
               marginBottom: "1.25rem",
@@ -215,7 +212,7 @@ const AuthorSubmissionListPage = () => {
                   color: "#64748b",
                   fontSize: "0.875rem",
                 }}>
-                  Chọn hội nghị:
+                  {t('common.conference')}:
                 </label>
                 <select
                   value={confId || ""}
@@ -239,7 +236,7 @@ const AuthorSubmissionListPage = () => {
                     color: "#475569",
                   }}
                 >
-                  <option value="">Tất cả hội nghị</option>
+                  <option value="">{t('common.all')} {t('common.conferences').toLowerCase()}</option>
                   {conferences.map((conf) => (
                     <option key={conf.id} value={conf.id}>
                       {conf.name}
@@ -256,7 +253,7 @@ const AuthorSubmissionListPage = () => {
                   color: "#64748b",
                   fontSize: "0.875rem",
                 }}>
-                  Tìm kiếm:
+                  {t('app.search')}:
                 </label>
                 <div style={{ position: "relative" }}>
                   <FiSearch style={{
@@ -270,7 +267,7 @@ const AuthorSubmissionListPage = () => {
                   }} />
                   <input
                     type="text"
-                    placeholder="Tìm theo tiêu đề, tác giả, chủ đề..."
+                    placeholder={t('app.search')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     style={{
@@ -289,7 +286,7 @@ const AuthorSubmissionListPage = () => {
 
             {loadingConfs && (
               <div style={{ marginTop: "0.5rem", fontSize: "0.8125rem", color: "#6b7280" }}>
-                Đang tải danh sách hội nghị...
+                {t('app.loading')}
               </div>
             )}
           </div>
@@ -306,21 +303,21 @@ const AuthorSubmissionListPage = () => {
               <div className="filter-section">
                 <div className="filter-label">
                   <FiFilter />
-                  <span>Lọc:</span>
+                  <span>{t('app.filter')}:</span>
                 </div>
                 <div className="filter-buttons">
                   <button
                     className={`filter-btn ${statusFilter === 'ALL' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('ALL')}
                   >
-                    Tất cả
+                    {t('common.all')}
                     <span className="filter-count">{submissions.length}</span>
                   </button>
                   <button
                     className={`filter-btn ${statusFilter === 'SUBMITTED' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('SUBMITTED')}
                   >
-                    Đã nộp
+                    {t('status.submitted')}
                     <span className="filter-count">
                       {submissions.filter(s => s.status === 'SUBMITTED').length}
                     </span>
@@ -329,7 +326,7 @@ const AuthorSubmissionListPage = () => {
                     className={`filter-btn ${statusFilter === 'UNDER_REVIEW' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('UNDER_REVIEW')}
                   >
-                    Đang review
+                    {t('status.underReview')}
                     <span className="filter-count">
                       {submissions.filter(s => s.status === 'UNDER_REVIEW').length}
                     </span>
@@ -338,7 +335,7 @@ const AuthorSubmissionListPage = () => {
                     className={`filter-btn ${statusFilter === 'ACCEPTED' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('ACCEPTED')}
                   >
-                    Chấp nhận
+                    {t('status.accepted')}
                     <span className="filter-count">
                       {submissions.filter(s => s.status === 'ACCEPTED').length}
                     </span>
@@ -347,7 +344,7 @@ const AuthorSubmissionListPage = () => {
                     className={`filter-btn ${statusFilter === 'REJECTED' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('REJECTED')}
                   >
-                    Từ chối
+                    {t('status.rejected')}
                     <span className="filter-count">
                       {submissions.filter(s => s.status === 'REJECTED').length}
                     </span>
@@ -356,7 +353,7 @@ const AuthorSubmissionListPage = () => {
                     className={`filter-btn ${statusFilter === 'WITHDRAWN' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('WITHDRAWN')}
                   >
-                    Đã rút
+                    {t('status.withdrawn')}
                     <span className="filter-count">
                       {submissions.filter(s => s.status === 'WITHDRAWN').length}
                     </span>
@@ -367,16 +364,16 @@ const AuthorSubmissionListPage = () => {
               <div className="sort-section">
                 <div className="sort-label">
                   <FiTrendingUp />
-                  <span>Sắp xếp:</span>
+                  <span>{t('app.sort')}:</span>
                 </div>
                 <select
                   className="sort-select"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
-                  <option value="newest">Mới nhất</option>
-                  <option value="oldest">Cũ nhất</option>
-                  <option value="title">Theo tiêu đề</option>
+                  <option value="newest">{t('app.next')}</option>
+                  <option value="oldest">{t('app.previous')}</option>
+                  <option value="title">{t('common.title')}</option>
                 </select>
               </div>
             </div>
@@ -396,7 +393,7 @@ const AuthorSubmissionListPage = () => {
           )}
           {loading && (
             <div style={{ marginBottom: "1rem", color: "#525252" }}>
-              Đang tải dữ liệu...
+              {t('app.loading')}
             </div>
           )}
 
@@ -404,25 +401,23 @@ const AuthorSubmissionListPage = () => {
           {!loading && submissions.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">📄</div>
-              <h3>Chưa có bài nộp nào</h3>
-              <p>Hãy bấm "Nộp bài mới" đầu tiên của bạn.</p>
+              <h3>{t('author.submissions.noSubmissions')}</h3>
+              <p>{t('author.dashboard.startSubmitting')}</p>
               <button
                 type="button"
                 className="btn-primary"
                 onClick={() => navigate("/author/submissions/new")}
               >
-                + Nộp bài mới
+                + {t('author.submissions.newSubmission')}
               </button>
             </div>
           ) : (
             <div className="submission-grid">
               {submissions
                 .filter((s) => {
-                  // Filter by status
                   if (statusFilter !== 'ALL' && s.status !== statusFilter) {
                     return false;
                   }
-                  // Filter by search query
                   if (!searchQuery.trim()) return true;
                   const query = searchQuery.toLowerCase();
                   return (
@@ -452,19 +447,19 @@ const AuthorSubmissionListPage = () => {
 
                     <div className="submission-meta">
                       <div className="meta-row">
-                        <span className="meta-label">HỘI NGHỊ:</span>
+                        <span className="meta-label">{t('common.conference').toUpperCase()}:</span>
                         <span className="meta-value">{s.conferenceName || s.conferenceId || "-"}</span>
                       </div>
                       <div className="meta-row">
-                        <span className="meta-label">CHỦ ĐỀ:</span>
+                        <span className="meta-label">{t('common.track').toUpperCase()}:</span>
                         <span className="meta-value">{s.trackName || s.trackCode || s.trackId || "-"}</span>
                       </div>
                       <div className="meta-row">
-                        <span className="meta-label">NGÀY NỘP:</span>
+                        <span className="meta-label">{t('author.submissions.submittedAt').toUpperCase()}:</span>
                         <span className="meta-value">{formatDateTime(s.submittedAt || s.createdAt, false)}</span>
                       </div>
                       <div className="meta-row">
-                        <span className="meta-label">CẬP NHẬT:</span>
+                        <span className="meta-label">{t('author.submissions.lastUpdated').toUpperCase()}:</span>
                         <span className="meta-value">{formatDateTime(s.updatedAt, false)}</span>
                       </div>
                     </div>
@@ -475,7 +470,7 @@ const AuthorSubmissionListPage = () => {
                         className="btn-secondary btn-sm"
                         onClick={() => navigate(`/author/submissions/${s.id}`)}
                       >
-                        Chi tiết
+                        {t('app.details')}
                       </button>
                       {(s.status === "ACCEPTED" || s.status === "REJECTED") && (
                         <button
@@ -483,7 +478,7 @@ const AuthorSubmissionListPage = () => {
                           className="btn-primary btn-sm"
                           onClick={() => navigate(`/author/submissions/${s.id}/reviews`)}
                         >
-                          Xem Reviews
+                          {t('author.submissions.viewReviews')}
                         </button>
                       )}
                       {s.status === "SUBMITTED" && (
@@ -492,7 +487,7 @@ const AuthorSubmissionListPage = () => {
                           className="btn-secondary btn-sm"
                           onClick={() => navigate(`/author/submissions/${s.id}/edit`)}
                         >
-                          Sửa
+                          {t('app.edit')}
                         </button>
                       )}
                       {(s.status === "SUBMITTED" || s.status === "UNDER_REVIEW") && (
@@ -502,7 +497,7 @@ const AuthorSubmissionListPage = () => {
                           disabled={withdrawingId === s.id}
                           onClick={() => handleWithdraw(s.id)}
                         >
-                          {withdrawingId === s.id ? "Đang rút..." : "Rút bài"}
+                          {withdrawingId === s.id ? t('app.loading') : t('status.withdrawn')}
                         </button>
                       )}
                     </div>
@@ -521,7 +516,7 @@ const AuthorSubmissionListPage = () => {
           color: "#6b7280",
           fontSize: "0.875rem"
         }}>
-          © {new Date().getFullYear()} Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải
+          © {new Date().getFullYear()} {t('public.home.footer')}
         </footer>
       </main>
     </div>

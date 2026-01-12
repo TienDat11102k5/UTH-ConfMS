@@ -1,14 +1,16 @@
 // src/pages/public/PublicHomePage.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import logoUth from "../../assets/logoUTH.jpg";
 import UserProfileDropdown from "../../components/UserProfileDropdown";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
 
 const PublicHomePage = () => {
+  const { t } = useTranslation();
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    // Check if user is logged in
     const token = sessionStorage.getItem("accessToken") || localStorage.getItem("accessToken");
     const userStr = sessionStorage.getItem("currentUser") || localStorage.getItem("currentUser");
     
@@ -31,6 +33,7 @@ const PublicHomePage = () => {
     if (role === "reviewer") return "/reviewer/dashboard";
     return "/author/dashboard";
   };
+
   return (
     <div className="portal-page">
       <div className="portal-header-container">
@@ -51,24 +54,25 @@ const PublicHomePage = () => {
             <div className="portal-logo-text">
               <div className="portal-logo-title">UTH-CONFMS</div>
               <div className="portal-logo-subtitle">
-                UTH Scientific Conference Paper Management System
+                {t('public.home.subtitle')}
               </div>
             </div>
           </div>
 
           <nav className="portal-nav">
             <Link to="/proceedings" className="nav-link">
-              Kỷ yếu hội nghị
+              {t('public.proceedings.title')}
             </Link>
+            <LanguageSwitcher />
             {currentUser ? (
               <UserProfileDropdown />
             ) : (
               <>
                 <Link to="/login" className="nav-link">
-                  Đăng nhập
+                  {t('auth.login')}
                 </Link>
                 <Link to="/register" className="nav-link nav-link-primary">
-                  Đăng ký
+                  {t('auth.register')}
                 </Link>
               </>
             )}
@@ -80,74 +84,66 @@ const PublicHomePage = () => {
         <section className="portal-hero">
           <div className="portal-hero-left">
             <div className="portal-badge">
-              Portal Hội nghị Nghiên cứu khoa học UTH
+              {t('public.home.badge')}
             </div>
             <h1 className="portal-title">
-              Quản lý CFP, nộp bài, phản biện và chương trình hội nghị trong một
-              hệ thống.
+              {t('public.home.title')}
             </h1>
             <p className="portal-description">
-              Hệ thống UTH-ConfMS hỗ trợ luồng EasyChair-style: Call for Papers
-              → Submission → Review → Decision → Camera-ready → Program &amp;
-              Proceedings, với RBAC, SSO, audit log và AI hỗ trợ (tùy chọn).
+              {t('public.home.description')}
             </p>
 
             <div className="portal-actions">
               {currentUser ? (
                 <Link to="/author" className="btn-primary">
-                  Trang hội nghị
+                  {t('nav.conferences')}
                 </Link>
               ) : (
                 <>
                   <Link to="/login" className="btn-primary">
-                    Đăng nhập hệ thống
+                    {t('auth.loginSystem')}
                   </Link>
                   <Link to="/register" className="btn-secondary">
-                    Đăng ký Author mới
+                    {t('auth.registerAuthor')}
                   </Link>
                 </>
               )}
             </div>
 
             <p className="portal-note">
-              Vai trò Reviewer / PC / Chair / Admin sẽ được gán bởi Ban tổ chức
-              sau khi bạn có tài khoản.
+              {t('public.home.roleNote')}
             </p>
           </div>
 
           <div className="portal-hero-right">
             <div className="portal-card-grid">
               <div className="portal-card">
-                <div className="portal-card-label">Author</div>
+                <div className="portal-card-label">{t('common.author')}</div>
                 <h3 className="portal-card-title">
-                  Nộp bài &amp; Camera-ready
+                  {t('public.home.cards.author.title')}
                 </h3>
                 <p className="portal-card-text">
-                  Nộp bài, cập nhật metadata, thêm đồng tác giả, theo dõi kết
-                  quả, tải lên bản camera-ready và xem nhận xét ẩn danh.
+                  {t('public.home.cards.author.description')}
                 </p>
               </div>
 
               <div className="portal-card">
-                <div className="portal-card-label">Reviewer / PC</div>
+                <div className="portal-card-label">{t('public.home.cards.reviewer.label')}</div>
                 <h3 className="portal-card-title">
-                  Phản biện &amp; thảo luận nội bộ
+                  {t('public.home.cards.reviewer.title')}
                 </h3>
                 <p className="portal-card-text">
-                  Nhận bài được phân công, gửi điểm &amp; nhận xét, tham gia
-                  thảo luận nội bộ PC, xử lý COI và thời hạn review.
+                  {t('public.home.cards.reviewer.description')}
                 </p>
               </div>
 
               <div className="portal-card">
-                <div className="portal-card-label">Chair &amp; Admin</div>
+                <div className="portal-card-label">{t('public.home.cards.admin.label')}</div>
                 <h3 className="portal-card-title">
-                  Quản lý hội nghị &amp; AI governance
+                  {t('public.home.cards.admin.title')}
                 </h3>
                 <p className="portal-card-text">
-                  Cấu hình conference, tracks, deadlines, phân công bài, quyết
-                  định Accept / Reject, gửi email hàng loạt, quản lý SMTP, quota
-                  và audit log AI.
+                  {t('public.home.cards.admin.description')}
                 </p>
               </div>
             </div>
@@ -155,43 +151,34 @@ const PublicHomePage = () => {
         </section>
 
         <section className="portal-section">
-          <h2 className="portal-section-title">Luồng hội nghị (tóm tắt)</h2>
+          <h2 className="portal-section-title">{t('public.home.workflow.title')}</h2>
           <div className="portal-timeline">
             <div className="portal-timeline-item">
               <div className="portal-timeline-badge">1</div>
               <div className="portal-timeline-content">
-                <h3>Call for Papers (CFP)</h3>
-                <p>Tạo trang CFP, chủ đề, tracks, deadline và mẫu email.</p>
+                <h3>{t('public.home.workflow.cfp.title')}</h3>
+                <p>{t('public.home.workflow.cfp.description')}</p>
               </div>
             </div>
             <div className="portal-timeline-item">
               <div className="portal-timeline-badge">2</div>
               <div className="portal-timeline-content">
-                <h3>Submission</h3>
-                <p>
-                  Author nộp bài, chỉnh sửa trước hạn; kiểm tra định dạng và
-                  COI.
-                </p>
+                <h3>{t('public.home.workflow.submission.title')}</h3>
+                <p>{t('public.home.workflow.submission.description')}</p>
               </div>
             </div>
             <div className="portal-timeline-item">
               <div className="portal-timeline-badge">3</div>
               <div className="portal-timeline-content">
-                <h3>Review &amp; Discussion</h3>
-                <p>
-                  PC assign bài, Reviewer phản biện, thảo luận nội bộ, rebuttal
-                  (nếu bật).
-                </p>
+                <h3>{t('public.home.workflow.review.title')}</h3>
+                <p>{t('public.home.workflow.review.description')}</p>
               </div>
             </div>
             <div className="portal-timeline-item">
               <div className="portal-timeline-badge">4</div>
               <div className="portal-timeline-content">
-                <h3>Decision &amp; Camera-ready</h3>
-                <p>
-                  Quyết định Accept/Reject, gửi email, mở vòng camera-ready và
-                  export chương trình.
-                </p>
+                <h3>{t('public.home.workflow.decision.title')}</h3>
+                <p>{t('public.home.workflow.decision.description')}</p>
               </div>
             </div>
           </div>
@@ -200,8 +187,7 @@ const PublicHomePage = () => {
 
       <footer className="portal-footer">
         <span>
-          © {new Date().getFullYear()} UTH-ConfMS. Hệ thống quản lý hội nghị
-          nghiên cứu khoa học UTH.
+          © {new Date().getFullYear()} UTH-ConfMS. {t('public.home.footer')}
         </span>
       </footer>
     </div>

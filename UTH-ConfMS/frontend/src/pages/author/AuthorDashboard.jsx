@@ -1,12 +1,14 @@
 // src/pages/author/AuthorDashboard.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout.jsx";
 import { StatsSkeleton } from "../../components/LoadingSkeleton";
 import "../../styles/AuthorPages.css";
 
 const AuthorDashboard = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     underReview: 0,
@@ -36,7 +38,7 @@ const AuthorDashboard = () => {
           total: submissions.length,
         });
       } catch (err) {
-        console.error("Lỗi khi tải thống kê", err);
+        console.error("Error loading stats", err);
         const status = err?.response?.status;
         if (status === 401 || status === 403) {
           navigate("/login");
@@ -52,80 +54,74 @@ const AuthorDashboard = () => {
   return (
     <DashboardLayout
       roleLabel="Author"
-      title="Cổng thông tin Tác giả"
-      subtitle="Quản lý bài nộp khoa học, theo dõi quá trình phản biện và nộp bản hoàn chỉnh cho hội nghị."
+      title={t('author.dashboard.title')}
+      subtitle={t('author.dashboard.subtitle')}
       showGreeting={true}
     >
       <div className="dash-grid">
         <div className="dash-card author-card-primary">
           <div className="card-number">01</div>
-          <h3>Nộp bài khoa học mới</h3>
+          <h3>{t('author.dashboard.newSubmission')}</h3>
           <p>
-            Tạo bài nộp mới với hỗ trợ trí tuệ nhân tạo: kiểm tra ngữ pháp,
-            cải thiện văn phong học thuật và gợi ý từ khóa phù hợp. Tải lên
-            tệp PDF theo đúng định dạng quy định của hội nghị.
+            {t('author.form.uploadPdfHint')}
           </p>
           <Link to="/author/submit" className="btn-primary btn-card-action">
-            Mở biểu mẫu nộp bài
+            {t('author.submissions.newSubmission')}
           </Link>
         </div>
 
         <div className="dash-card author-card-secondary">
           <div className="card-number">02</div>
-          <h3>Danh sách bài đã nộp</h3>
+          <h3>{t('author.submissions.title')}</h3>
           <p>
-            Xem toàn bộ các bài báo mà bạn là tác giả hoặc đồng tác giả. Theo dõi
-            trạng thái xử lý theo thời gian thực: đã nộp, đang phản biện,
-            có quyết định và bản hoàn chỉnh.
+            {t('author.submissions.subtitle')}
           </p>
           <Link to="/author/submissions" className="btn-secondary btn-card-action">
-            Xem danh sách bài nộp
+            {t('author.dashboard.viewSubmissions')}
           </Link>
         </div>
 
         <div className="dash-card author-card-accent">
           <div className="card-number">03</div>
-          <h3>Kết quả &amp; phản biện ẩn danh</h3>
+          <h3>{t('author.reviews.title')}</h3>
           <p>
-            Xem quyết định Chấp nhận / Từ chối và các nhận xét phản biện ẩn danh
-            từ Reviewer để cải thiện chất lượng bài báo.
+            {t('author.reviews.subtitle')}
           </p>
           <Link to="/author/submissions" className="btn-secondary btn-card-action">
-            Xem kết quả đánh giá
+            {t('author.submissions.viewReviews')}
           </Link>
         </div>
 
         <div className="dash-card author-card-success">
           <div className="card-number">04</div>
-          <h3>Bản hoàn chỉnh </h3>
+          <h3>{t('author.cameraReady.title')}</h3>
           <p>
-            Tải lên bản camera-ready và cập nhật thông tin cuối cùng cho các
-            bài được chấp nhận trước khi xuất bản kỷ yếu hội nghị.
+            {t('author.cameraReady.instructions')}
           </p>
           <Link to="/author/camera-ready" className="btn-secondary btn-card-action">
-            Nộp bản cuối
+            {t('author.cameraReady.submitCameraReady')}
           </Link>
         </div>
       </div>
 
       {/* Quick Stats Section */}
       <div className="author-stats-section">
-        <h2 className="section-title">Thống kê nhanh</h2>
+        <h2 className="section-title">{t('admin.dashboard.quickStats')}</h2>
         {loading ? (
           <StatsSkeleton count={3} />
         ) : (
           <div className="stats-grid">
             <div className="stat-card stat-card-warning">
               <div className="stat-value">{stats.underReview}</div>
-              <div className="stat-label">Bài đang chấm </div>
+              <div className="stat-label">{t('common.underReview')}</div>
             </div>
             <div className="stat-card stat-card-success">
               <div className="stat-value">{stats.accepted}</div>
-              <div className="stat-label">Bài được chấp nhận</div>
+              <div className="stat-label">{t('author.dashboard.acceptedPapers')}</div>
             </div>
             <div className="stat-card stat-card-primary">
               <div className="stat-value">{stats.total}</div>
-              <div className="stat-label">Tổng số bài đã nộp</div>
+              <div className="stat-label">{t('author.dashboard.totalSubmissions')}</div>
             </div>
           </div>
         )}
