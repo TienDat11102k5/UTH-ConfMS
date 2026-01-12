@@ -38,6 +38,22 @@ public class ProceedingsController {
         }
     }
 
+    // API: Lấy tất cả kỷ yếu từ mọi hội nghị (kể cả bị ẩn) - chỉ bài ACCEPTED
+    // GET /api/proceedings/all
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllProceedings() {
+        try {
+            logger.info("GET /api/proceedings/all - Fetching all proceedings");
+            var proceedings = proceedingsService.getAllAcceptedProceedings();
+            logger.info("Successfully fetched {} proceedings from all conferences", proceedings.size());
+            return ResponseEntity.ok(proceedings);
+        } catch (Exception e) {
+            logger.error("Error fetching all proceedings: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error fetching all proceedings: " + e.getMessage());
+        }
+    }
+
     // API: Test endpoint
     @GetMapping("/test")
     public ResponseEntity<?> test() {

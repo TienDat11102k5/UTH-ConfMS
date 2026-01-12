@@ -42,6 +42,18 @@ public class ConferenceController {
         return ResponseEntity.ok(conferences);
     }
 
+    // GET /api/conferences/all - Lấy tất cả hội nghị (kể cả bị ẩn) cho proceedings
+    @GetMapping("/all")
+    public ResponseEntity<List<Conference>> getAllConferencesForProceedings() {
+        log.info("GET /api/conferences/all - For proceedings");
+
+        List<Conference> conferences = conferenceService.getAllConferences();
+        
+        log.info("Fetched all conferences for proceedings | count={}", conferences.size());
+
+        return ResponseEntity.ok(conferences);
+    }
+
     // GET /api/conferences/{id}
     @GetMapping("/{id}")
     public ResponseEntity<?> getConferenceById(@PathVariable Long id) {

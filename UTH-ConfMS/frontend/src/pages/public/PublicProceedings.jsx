@@ -59,16 +59,20 @@ const PublicProceedings = () => {
 
   const fetchConferences = async () => {
     try {
-      const response = await apiClient.get("/conferences", { skipAuth: true });
-      setConferences(response.data);
+      const response = await apiClient.get("/conferences/all", { skipAuth: true });
+      // Lấy tất cả hội nghị (kể cả bị ẩn) để có thể lọc theo hội nghị cụ thể
+      const allConferences = response.data;
+      
+      // Hiển thị TẤT CẢ hội nghị trong dropdown (kể cả bị ẩn)
+      setConferences(allConferences);
 
       if (conferenceId) {
         setSelectedConference(conferenceId);
         fetchProceedings(conferenceId);
-      } else if (response.data && response.data.length > 0) {
-        // Load all conferences by default
+      } else if (allConferences && allConferences.length > 0) {
+        // Load proceedings từ TẤT CẢ hội nghị (kể cả bị ẩn) sử dụng endpoint /all
         setSelectedConference("");
-        fetchAllProceedings(response.data);
+        fetchAllProceedings();
       } else {
         setLoading(false);
         setError("Chưa có hội nghị nào trong hệ thống.");
@@ -85,19 +89,12 @@ const PublicProceedings = () => {
       setLoading(true);
       setError(null);
 
-      const allProceedings = [];
-      for (const conf of confs) {
-        try {
-          const response = await apiClient.get(`/proceedings/${conf.id}`, {
-            skipAuth: true,
-          });
-          allProceedings.push(...response.data);
-        } catch (err) {
-          console.error(`Error fetching proceedings for conference ${conf.id}:`, err);
-        }
-      }
-
-      setProceedings(allProceedings);
+      // Sử dụng endpoint /all để lấy tất cả bài ACCEPTED từ mọi hội nghị (kể cả bị ẩn)
+      const response = await apiClient.get("/proceedings/all", {
+        skipAuth: true,
+      });
+      
+      setProceedings(response.data);
     } catch (err) {
       console.error("Error fetching all proceedings:", err);
       setError("Không thể tải danh sách kỷ yếu. Vui lòng thử lại sau.");
@@ -116,6 +113,7 @@ const PublicProceedings = () => {
         skipAuth: true,
       });
 
+      // Backend đã filter ACCEPTED rồi, không cần filter thêm
       setProceedings(response.data);
     } catch (err) {
       console.error("Error fetching proceedings:", err);
@@ -140,8 +138,8 @@ const PublicProceedings = () => {
     if (confId) {
       fetchProceedings(confId);
     } else {
-      // Load all conferences
-      fetchAllProceedings(conferences);
+      // Load all proceedings using /all endpoint
+      fetchAllProceedings();
     }
   };
 

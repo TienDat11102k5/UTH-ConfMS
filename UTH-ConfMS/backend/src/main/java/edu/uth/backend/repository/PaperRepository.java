@@ -79,4 +79,16 @@ public interface PaperRepository extends JpaRepository<Paper, Long> {
             @Param("status") PaperStatus status
     );
 
+    // 8. Lấy tất cả bài theo trạng thái với eager loading (cho All Proceedings)
+    @Query("""
+        select distinct p
+        from Paper p
+        left join fetch p.coAuthors ca
+        left join fetch p.track t
+        left join fetch t.conference c
+        left join fetch p.mainAuthor a
+        where p.status = :status
+    """)
+    List<Paper> findAllWithDetailsByStatus(@Param("status") PaperStatus status);
+
 }

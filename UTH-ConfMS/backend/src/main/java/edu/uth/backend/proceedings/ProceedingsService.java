@@ -43,8 +43,23 @@ public class ProceedingsService {
 
         logger.info("Found {} accepted papers for conference {}", acceptedPapers.size(), conferenceId);
 
+        return convertToProceedingsDTO(acceptedPapers);
+    }
+
+    public List<ProceedingsDTO> getAllAcceptedProceedings() {
+        logger.info("Fetching all accepted proceedings from all conferences");
+        
+        // Lấy tất cả bài ACCEPTED từ mọi hội nghị (kể cả bị ẩn)
+        List<Paper> acceptedPapers = paperRepo.findAllWithDetailsByStatus(PaperStatus.ACCEPTED);
+        
+        logger.info("Found {} accepted papers from all conferences", acceptedPapers.size());
+        
+        return convertToProceedingsDTO(acceptedPapers);
+    }
+
+    private List<ProceedingsDTO> convertToProceedingsDTO(List<Paper> papers) {
         // 2. Chuyển đổi sang DTO
-        return acceptedPapers.stream().map(paper -> {
+        return papers.stream().map(paper -> {
             // Lấy danh sách đồng tác giả
             String coAuthors = paper.getCoAuthors() != null 
                 ? paper.getCoAuthors().stream()

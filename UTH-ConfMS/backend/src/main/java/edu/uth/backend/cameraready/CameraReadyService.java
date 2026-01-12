@@ -4,7 +4,10 @@ import edu.uth.backend.common.FileStorageUtil;
 import edu.uth.backend.entity.*;
 import edu.uth.backend.repository.PaperRepository;
 import edu.uth.backend.email.EmailService;
+import edu.uth.backend.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,19 +32,32 @@ public class CameraReadyService {
         Paper paper = paperRepo.findById(paperId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy bài báo"));
 
-        // 2. Chỉ ACCEPTED mới được nộp
+        // 2. Kiểm tra quyền: chỉ tác giả mới được upload camera-ready
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+            Long currentUserId = userDetails.getUser().getId();
+            
+            boolean isAuthor = paper.getMainAuthor().getId().equals(currentUserId);
+            
+            if (!isAuthor) {
+                throw new RuntimeException("Chỉ tác giả mới có quyền upload camera-ready cho bài báo này");
+            }
+        }
+
+        // 3. Chỉ ACCEPTED mới được nộp
         if (paper.getStatus() != PaperStatus.ACCEPTED) {
             throw new RuntimeException("Chỉ bài ACCEPTED mới được nộp camera-ready");
         }
 
-        // 3. Check deadline
+        // 4. Check deadline
         Conference conf = paper.getTrack().getConference();
         if (conf.getCameraReadyDeadline() != null &&
                 LocalDateTime.now().isAfter(conf.getCameraReadyDeadline())) {
             throw new RuntimeException("Đã quá hạn nộp camera-ready");
         }
 
-        // 4. Validate file
+        // 5. Validate file
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("File không được để trống");
         }
@@ -50,16 +66,16 @@ public class CameraReadyService {
             throw new RuntimeException("Chỉ chấp nhận file PDF");
         }
 
-        // 5. Cho phép nộp lại (ghi đè file cũ) - COMMENTED OUT
+        // 6. Cho phép nộp lại (ghi đè file cũ) - COMMENTED OUT
         // if (paper.getCameraReadyPath() != null) {
         //     throw new RuntimeException("Bài báo đã nộp camera-ready rồi");
         // }
 
-        // 6. Lưu file
+        // 7. Lưu file
         String filePath = fileStorageUtil.saveFile(file, "camera-ready");
         System.out.println("Camera-ready file saved: " + filePath);
 
-        // 7. Cập nhật DB
+        // 8. Cập nhật DB
         paper.setCameraReadyPath(filePath);
         Paper savedPaper = paperRepo.save(paper);
         System.out.println("Paper updated with camera_ready_path: " + savedPaper.getCameraReadyPath());
