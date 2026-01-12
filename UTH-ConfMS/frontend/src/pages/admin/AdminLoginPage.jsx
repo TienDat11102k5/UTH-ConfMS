@@ -1,75 +1,54 @@
 // src/pages/admin/AdminLoginPage.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import { setToken, setCurrentUser } from "../../auth";
 import Toast, { toastStyles } from "../../components/Toast";
-
 import { signInWithPopup } from "firebase/auth";
 import { firebaseAuth, googleProvider } from "../../firebase";
 
 const normalizeRole = (user) => {
-  // hỗ trợ nhiều dạng trả về từ backend
-  const raw =
-    user?.role ||
-    user?.primaryRole ||
-    user?.roles?.[0]?.name ||
-    user?.roles?.[0] ||
-    "";
-
+  const raw = user?.role || user?.primaryRole || user?.roles?.[0]?.name || user?.roles?.[0] || "";
   if (!raw) return "";
-  return raw.startsWith("ROLE_") ? raw.substring(5) : raw; // ROLE_ADMIN -> ADMIN
+  return raw.startsWith("ROLE_") ? raw.substring(5) : raw;
 };
 
 const AdminLoginPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
-
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
   const [toast, setToast] = useState(null);
 
-  // Kiểm tra logout success từ navigation state
   useEffect(() => {
     if (location.state?.logoutSuccess) {
-      setToast({ message: "Đăng xuất thành công!", type: "success" });
+      setToast({ message: t('admin.login.logoutSuccess'), type: "success" });
       window.history.replaceState({}, document.title);
     }
-  }, [location.state]);
+  }, [location.state, t]);
 
   const saveAuthAndRedirect = (data) => {
     const { accessToken, user } = data || {};
+    if (accessToken) setToken(accessToken, { remember: rememberMe });
+    if (user) setCurrentUser(user, { remember: rememberMe });
 
-    if (accessToken) {
-      setToken(accessToken, { remember: rememberMe });
-    }
-    if (user) {
-      setCurrentUser(user, { remember: rememberMe });
-    }
-
-    // Kiểm tra role ADMIN
     const role = normalizeRole(user);
     if (role !== "ADMIN") {
-      setToast({
-        message: "Tài khoản này không có quyền truy cập trang quản trị.",
-        type: "error",
-      });
-      // Xóa token và user nếu không phải admin
+      setToast({ message: t('admin.login.noAdminAccess'), type: "error" });
       setToken(null);
       setCurrentUser(null);
       return;
     }
 
-    // Nếu là admin, hiển thị thông báo và redirect
-    setToast({ message: "Đăng nhập Admin thành công!", type: "success" });
-    setTimeout(() => {
-      navigate("/admin", { replace: true });
-    }, 1500);
+    setToast({ message: t('admin.login.loginSuccess'), type: "success" });
+    setTimeout(() => { navigate("/admin", { replace: true }); }, 1500);
   };
 
   const handleSubmit = async (e) => {
@@ -82,14 +61,9 @@ const AdminLoginPage = () => {
       const res = await apiClient.post("/auth/login", { email, password });
       saveAuthAndRedirect(res.data);
     } catch (err) {
-      const message =
-        err?.response?.data?.message ||
-        err?.response?.data?.error ||
-        "Đăng nhập thất bại. Vui lòng kiểm tra email/mật khẩu.";
+      const message = err?.response?.data?.message || err?.response?.data?.error || t('admin.login.loginFailed');
       setToast({ message, type: "error" });
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   const handleGoogleLogin = async () => {
@@ -100,148 +74,77 @@ const AdminLoginPage = () => {
     try {
       const cred = await signInWithPopup(firebaseAuth, googleProvider);
       const idToken = await cred.user.getIdToken();
-
       const res = await apiClient.post("/auth/firebase/google", { idToken });
       saveAuthAndRedirect(res.data);
     } catch (err) {
-      const message =
-        err?.response?.data?.message ||
-        err?.response?.data?.error ||
-        err?.message ||
-        "Đăng nhập Google thất bại.";
+      const message = err?.response?.data?.message || err?.response?.data?.error || err?.message || t('admin.login.googleFailed');
       setToast({ message, type: "error" });
-    } finally {
-      setGoogleLoading(false);
-    }
+    } finally { setGoogleLoading(false); }
   };
 
   return (
     <>
-      {/* Toast Notification */}
       {toast && (
         <div style={toastStyles.container}>
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            onClose={() => setToast(null)}
-          />
+          <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
         </div>
       )}
       
       <div className="auth-page">
-      <div className="auth-card">
-        <h1 className="auth-title">Đăng nhập Admin</h1>
-        <p className="auth-subtitle">Trang quản trị hệ thống UTH-ConfMS</p>
+        <div className="auth-card">
+          <h1 className="auth-title">{t('admin.login.title')}</h1>
+          <p className="auth-subtitle">{t('admin.login.subtitle')}</p>
 
-        {error && <div className="auth-error">{error}</div>}
+          {error && <div className="auth-error">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="auth-form" autoComplete="on">
-          <div className="form-group">
-            <label htmlFor="email">Email *</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="username"
-              inputMode="email"
-              autoCapitalize="none"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@example.com"
-              required
-            />
+          <form onSubmit={handleSubmit} className="auth-form" autoComplete="on">
+            <div className="form-group">
+              <label htmlFor="email">{t('common.email')} *</label>
+              <input id="email" name="email" type="email" autoComplete="username" inputMode="email" autoCapitalize="none" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@example.com" required />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">{t('common.password')} *</label>
+              <input id="password" name="password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
+            </div>
+
+            <div className="form-row">
+              <label className="checkbox">
+                <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
+                <span>{t('auth.rememberMe')}</span>
+              </label>
+              <Link to="/forgot-password" className="link-inline">{t('auth.forgotPassword')}</Link>
+            </div>
+
+            <button type="submit" className="btn-primary" disabled={loading || googleLoading}>
+              {loading ? t('admin.login.loggingIn') : t('admin.login.loginButton')}
+            </button>
+
+            <div className="auth-divider">{t('auth.orLoginWith')}</div>
+
+            <button type="button" className="btn-google" onClick={handleGoogleLogin} disabled={loading || googleLoading}>
+              <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                <path fill="none" d="M0 0h48v48H0z" />
+              </svg>
+              {googleLoading ? t('admin.login.googleLoggingIn') : t('admin.login.googleLogin')}
+            </button>
+          </form>
+
+          <div className="auth-footer">
+            <span>{t('admin.login.backTo')} </span>
+            <Link to="/login" className="link-inline">{t('admin.login.normalLogin')}</Link>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Mật khẩu *</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-            />
+          <div className="auth-footer">
+            <span>{t('admin.login.orBackTo')} </span>
+            <Link to="/" className="link-inline">{t('admin.login.conferencePortal')}</Link>
           </div>
-
-          <div className="form-row">
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              <span>Ghi nhớ đăng nhập</span>
-            </label>
-
-            <Link to="/forgot-password" className="link-inline">
-              Quên mật khẩu?
-            </Link>
-          </div>
-
-          <button
-            type="submit"
-            className="btn-primary"
-            disabled={loading || googleLoading}
-          >
-            {loading ? "Đang đăng nhập..." : "Đăng nhập Admin"}
-          </button>
-
-          <div className="auth-divider">Hoặc đăng nhập bằng</div>
-
-          <button
-            type="button"
-            className="btn-google"
-            onClick={handleGoogleLogin}
-            disabled={loading || googleLoading}
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 48 48"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill="#EA4335"
-                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
-              />
-              <path
-                fill="#4285F4"
-                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
-              />
-              <path
-                fill="#34A853"
-                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
-              />
-              <path fill="none" d="M0 0h48v48H0z" />
-            </svg>
-            {googleLoading
-              ? "Đang đăng nhập Google..."
-              : "Đăng nhập bằng Google"}
-          </button>
-        </form>
-
-        <div className="auth-footer">
-          <span>Quay lại </span>
-          <Link to="/login" className="link-inline">
-            Trang đăng nhập thông thường
-          </Link>
-        </div>
-
-        <div className="auth-footer">
-          <span>Hoặc quay lại </span>
-          <Link to="/" className="link-inline">
-            Cổng thông tin hội nghị (CFP)
-          </Link>
         </div>
       </div>
-    </div>
     </>
   );
 };

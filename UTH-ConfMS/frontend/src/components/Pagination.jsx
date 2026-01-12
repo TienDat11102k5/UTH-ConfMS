@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const Pagination = ({
     currentPage,
@@ -6,17 +7,20 @@ const Pagination = ({
     totalItems,
     itemsPerPage,
     onPageChange,
-    itemName = "mục"
+    itemName
 }) => {
+    const { t } = useTranslation();
+    
     if (totalItems === 0) return null;
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+    const displayItemName = itemName || t('pagination.items');
 
     return (
         <div className="pagination-wrapper">
             <div className="pagination-info">
-                Hiển thị {startIndex + 1}-{endIndex} trong tổng số {totalItems} {itemName}
+                {t('pagination.showing')} {startIndex + 1}-{endIndex} {t('pagination.of')} {totalItems} {displayItemName}
             </div>
             <div className="pagination-controls">
                 <button
@@ -24,14 +28,14 @@ const Pagination = ({
                     onClick={() => onPageChange(1)}
                     disabled={currentPage === 1}
                 >
-                    Đầu
+                    {t('pagination.first')}
                 </button>
                 <button
                     className="pagination-btn"
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                 >
-                    Trước
+                    {t('pagination.prev')}
                 </button>
 
                 {Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -60,14 +64,14 @@ const Pagination = ({
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                 >
-                    Sau
+                    {t('pagination.next')}
                 </button>
                 <button
                     className="pagination-btn"
                     onClick={() => onPageChange(totalPages)}
                     disabled={currentPage === totalPages}
                 >
-                    Cuối
+                    {t('pagination.last')}
                 </button>
             </div>
         </div>

@@ -1,8 +1,10 @@
 // src/components/Layout/DashboardLayout.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import UserProfileDropdown from "../UserProfileDropdown";
 import NavDropdown from "../NavDropdown";
+import LanguageSwitcher from "../LanguageSwitcher";
 import logoUTH from "../../assets/logoUTH.jpg";
 import { getCurrentUser } from "../../auth";
 import "../../styles/PortalHeader.css";
@@ -18,6 +20,7 @@ const DashboardLayout = ({
   showChairNav = false,
   showGreeting = false
 }) => {
+  const { t } = useTranslation();
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
@@ -26,18 +29,18 @@ const DashboardLayout = ({
   }, []);
 
   const adminMenuItems = [
-    { icon: "FiUsers", text: "Quản lý người dùng", link: "/admin/users" },
-    { icon: "FiSettings", text: "Quản lý hội nghị", link: "/admin/conferences" },
-    { icon: "FiShield", text: "AI Governance", link: "/admin/ai-governance" },
-    { icon: "FiFileText", text: "Backup & Restore", link: "/admin/backup" }
+    { icon: "FiUsers", text: t('admin.menu.userManagement'), link: "/admin/users" },
+    { icon: "FiSettings", text: t('admin.menu.conferenceManagement'), link: "/admin/conferences" },
+    { icon: "FiShield", text: t('admin.menu.aiGovernance'), link: "/admin/ai-governance" },
+    { icon: "FiFileText", text: t('admin.menu.backupRestore'), link: "/admin/backup" }
   ];
 
   const chairMenuItems = [
-    { icon: "FiSettings", text: "Cấu hình CFP", link: "/chair/conferences" },
-    { icon: "FiUsers", text: "Phân công phản biện", link: "/chair/assignments" },
-    { icon: "FiFileText", text: "Quyết định kết quả", link: "/chair/decisions" },
-    { icon: "FiTrendingUp", text: "Tiến độ phản biện", link: "/chair/progress" },
-    { icon: "FiBook", text: "Kỷ yếu hội nghị", link: "/chair/proceedings" }
+    { icon: "FiSettings", text: t('chair.menu.cfpConfig'), link: "/chair/conferences" },
+    { icon: "FiUsers", text: t('chair.menu.reviewerAssignment'), link: "/chair/assignments" },
+    { icon: "FiFileText", text: t('chair.menu.decisionResult'), link: "/chair/decisions" },
+    { icon: "FiTrendingUp", text: t('chair.menu.reviewProgress'), link: "/chair/progress" },
+    { icon: "FiBook", text: t('chair.menu.conferenceProceedings'), link: "/chair/proceedings" }
   ];
 
   return (
@@ -62,7 +65,7 @@ const DashboardLayout = ({
 
           <nav className="dash-header-right">
             <Link to="/conferences" className="nav-link">
-              Trang hội nghị
+              {t('nav.conferenceList')}
             </Link>
 
             {showAdminNav && (
@@ -70,9 +73,10 @@ const DashboardLayout = ({
             )}
 
             {showChairNav && (
-              <NavDropdown label="Hội nghị" items={chairMenuItems} />
+              <NavDropdown label={t('common.conference')} items={chairMenuItems} />
             )}
 
+            <LanguageSwitcher />
             <UserProfileDropdown />
           </nav>
         </header>
@@ -82,10 +86,10 @@ const DashboardLayout = ({
           <section className="author-greeting">
             <div className="greeting-content">
               <h2 className="greeting-title">
-                Chào bạn, <span className="greeting-name">{currentUser.fullName || currentUser.name || currentUser.email}</span>! 👋
+                {t('greeting.hello')}, <span className="greeting-name">{currentUser.fullName || currentUser.name || currentUser.email}</span>! 👋
               </h2>
               <p className="greeting-subtitle">
-                Chúc bạn một ngày làm việc hiệu quả và tràn đầy cảm hứng nghiên cứu
+                {t('greeting.goodDay')}
               </p>
             </div>
           </section>

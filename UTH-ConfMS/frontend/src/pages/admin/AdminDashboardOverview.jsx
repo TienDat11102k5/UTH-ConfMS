@@ -1,5 +1,6 @@
 // src/pages/admin/AdminDashboardOverview.jsx
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import AdminLayout from "../../components/Layout/AdminLayout";
 import {
     FiUsers,
@@ -26,6 +27,7 @@ import {
 } from "../../api/admin/dashboardAPI";
 
 const AdminDashboardOverview = () => {
+    const { t } = useTranslation();
     const [stats, setStats] = useState({
         totalUsers: 0,
         todayActiveUsers: 0,
@@ -38,14 +40,12 @@ const AdminDashboardOverview = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch data from API
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
                 setLoading(true);
                 setError(null);
 
-                // Fetch all data in parallel
                 const [statsData, monthlyStats, weeklyStats] = await Promise.all([
                     getDashboardStats(),
                     getMonthlyUserStats(),
@@ -57,23 +57,20 @@ const AdminDashboardOverview = () => {
                 setWeeklyData(weeklyStats);
             } catch (err) {
                 console.error("Error fetching dashboard data:", err);
-                setError("Không thể tải dữ liệu dashboard. Vui lòng thử lại.");
+                setError(t('app.error'));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchDashboardData();
-    }, []);
+    }, [t]);
 
     if (loading) {
         return (
-            <AdminLayout
-                title="Tổng quan Hệ thống"
-                subtitle="Thống kê và phân tích hoạt động người dùng"
-            >
+            <AdminLayout title={t('admin.dashboard.title')} subtitle={t('admin.dashboard.subtitle')}>
                 <div style={{ textAlign: "center", padding: "3rem" }}>
-                    <p>Đang tải dữ liệu...</p>
+                    <p>{t('app.loading')}</p>
                 </div>
             </AdminLayout>
         );
@@ -81,69 +78,42 @@ const AdminDashboardOverview = () => {
 
     if (error) {
         return (
-            <AdminLayout
-                title="Tổng quan Hệ thống"
-                subtitle="Thống kê và phân tích hoạt động người dùng"
-            >
-                <div className="auth-error" style={{ marginBottom: "2rem" }}>
-                    {error}
-                </div>
+            <AdminLayout title={t('admin.dashboard.title')} subtitle={t('admin.dashboard.subtitle')}>
+                <div className="auth-error" style={{ marginBottom: "2rem" }}>{error}</div>
             </AdminLayout>
         );
     }
 
     return (
-        <AdminLayout
-            title="TỔNG QUAN HỆ THỐNG"
-        >
+        <AdminLayout title={t('admin.dashboard.title')}>
             {/* Statistics Cards */}
             <div className="stats-grid">
-                {/* Tổng người dùng */}
+                {/* Total Users */}
                 <div className="stat-card">
                     <div className="stat-icon total-users">
                         <FiUsers />
                     </div>
                     <div className="stat-content">
-                        <h3 className="stat-label">Tổng người dùng</h3>
+                        <h3 className="stat-label">{t('admin.dashboard.totalUsers')}</h3>
                         <div className="stat-value">{stats.totalUsers.toLocaleString()}</div>
-                        <div
-                            className={`stat-trend ${stats.totalUsersTrend >= 0 ? "positive" : "negative"
-                                }`}
-                        >
-                            {stats.totalUsersTrend >= 0 ? (
-                                <FiTrendingUp />
-                            ) : (
-                                <FiTrendingDown />
-                            )}
-                            <span>
-                                {Math.abs(stats.totalUsersTrend)}% so với tháng trước
-                            </span>
+                        <div className={`stat-trend ${stats.totalUsersTrend >= 0 ? "positive" : "negative"}`}>
+                            {stats.totalUsersTrend >= 0 ? <FiTrendingUp /> : <FiTrendingDown />}
+                            <span>{Math.abs(stats.totalUsersTrend)}% {t('admin.dashboard.vsLastMonth')}</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Người dùng hôm nay */}
+                {/* Today's Users */}
                 <div className="stat-card">
                     <div className="stat-icon active-users">
                         <FiUserCheck />
                     </div>
                     <div className="stat-content">
-                        <h3 className="stat-label">Người dùng hôm nay</h3>
-                        <div className="stat-value">
-                            {stats.todayActiveUsers.toLocaleString()}
-                        </div>
-                        <div
-                            className={`stat-trend ${stats.todayUsersTrend >= 0 ? "positive" : "negative"
-                                }`}
-                        >
-                            {stats.todayUsersTrend >= 0 ? (
-                                <FiTrendingUp />
-                            ) : (
-                                <FiTrendingDown />
-                            )}
-                            <span>
-                                {Math.abs(stats.todayUsersTrend).toFixed(1)}% so với hôm qua
-                            </span>
+                        <h3 className="stat-label">{t('admin.dashboard.todayUsers')}</h3>
+                        <div className="stat-value">{stats.todayActiveUsers.toLocaleString()}</div>
+                        <div className={`stat-trend ${stats.todayUsersTrend >= 0 ? "positive" : "negative"}`}>
+                            {stats.todayUsersTrend >= 0 ? <FiTrendingUp /> : <FiTrendingDown />}
+                            <span>{Math.abs(stats.todayUsersTrend).toFixed(1)}% {t('admin.dashboard.vsYesterday')}</span>
                         </div>
                     </div>
                 </div>
@@ -151,18 +121,14 @@ const AdminDashboardOverview = () => {
 
             {/* Charts Section */}
             <div className="charts-grid">
-                {/* Người dùng theo tháng */}
+                {/* Monthly Users */}
                 <div className="chart-card">
-                    <h3 className="chart-title">Người dùng theo tháng</h3>
-                    <p className="chart-subtitle">12 tháng gần nhất</p>
+                    <h3 className="chart-title">{t('admin.dashboard.monthlyUsers')}</h3>
+                    <p className="chart-subtitle">{t('admin.dashboard.last12Months')}</p>
                     <ResponsiveContainer width="100%" height={300}>
                         <LineChart data={monthlyData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis
-                                dataKey="month"
-                                stroke="#666"
-                                style={{ fontSize: "0.875rem" }}
-                            />
+                            <XAxis dataKey="month" stroke="#666" style={{ fontSize: "0.875rem" }} />
                             <YAxis stroke="#666" style={{ fontSize: "0.875rem" }} />
                             <Tooltip
                                 contentStyle={{
@@ -176,7 +142,7 @@ const AdminDashboardOverview = () => {
                             <Line
                                 type="monotone"
                                 dataKey="users"
-                                name="Số người dùng"
+                                name={t('admin.users.title')}
                                 stroke="#007173"
                                 strokeWidth={3}
                                 dot={{ fill: "#007173", r: 5 }}
@@ -186,18 +152,14 @@ const AdminDashboardOverview = () => {
                     </ResponsiveContainer>
                 </div>
 
-                {/* Truy cập theo tuần */}
+                {/* Weekly Access */}
                 <div className="chart-card">
-                    <h3 className="chart-title">Truy cập theo tuần</h3>
-                    <p className="chart-subtitle">7 ngày gần nhất</p>
+                    <h3 className="chart-title">{t('admin.dashboard.weeklyAccess')}</h3>
+                    <p className="chart-subtitle">{t('admin.dashboard.last7Days')}</p>
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={weeklyData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis
-                                dataKey="day"
-                                stroke="#666"
-                                style={{ fontSize: "0.875rem" }}
-                            />
+                            <XAxis dataKey="day" stroke="#666" style={{ fontSize: "0.875rem" }} />
                             <YAxis stroke="#666" style={{ fontSize: "0.875rem" }} />
                             <Tooltip
                                 contentStyle={{
@@ -210,7 +172,7 @@ const AdminDashboardOverview = () => {
                             <Legend />
                             <Bar
                                 dataKey="visits"
-                                name="Lượt truy cập"
+                                name={t('admin.dashboard.visits')}
                                 fill="#007173"
                                 radius={[8, 8, 0, 0]}
                             />
