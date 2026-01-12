@@ -1273,6 +1273,7 @@ button {
 .table-action {
   padding: 0.4rem 0.75rem;
   font-size: 0.8rem;
+  white-space: nowrap;
 }
 
 /* FORM CARD */
@@ -1436,6 +1437,7 @@ button {
   border-radius: 999px;
   font-weight: 600;
   font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .badge-danger {
@@ -1447,24 +1449,43 @@ button {
   border-radius: 999px;
   font-weight: 600;
   font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .badge-warning {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
   background-color: #fff3cd;
   color: #856404;
   border: 1px solid #ffeaa7;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .badge-info {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
   background-color: #d1ecf1;
   color: #0c5460;
   border: 1px solid #bee5eb;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .badge-secondary {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
   background-color: #e2e3e5;
   color: #383d41;
   border: 1px solid #d6d8db;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 /* Responsive */
