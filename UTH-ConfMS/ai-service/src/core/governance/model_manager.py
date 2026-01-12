@@ -52,7 +52,7 @@ class ModelManager:
             if api_key:
                 genai.configure(api_key=api_key)
                 # Khởi tạo model mặc định, sẽ được override trong _call_gemini nếu cần
-                model_name = self.settings.model_name or "gemini-2.0-flash"
+                model_name = self.settings.model_name or "gemini-1.5-flash"
                 self.gemini_client = genai.GenerativeModel(model_name)
                 logger.info(f"Gemini client initialized with model: {model_name}")
             else:
@@ -64,7 +64,7 @@ class ModelManager:
             logger.warning(f"Unknown provider: {provider}, defaulting to Gemini")
             if self.settings.gemini_api_key:
                 genai.configure(api_key=self.settings.gemini_api_key)
-                model_name = self.settings.model_name or "gemini-2.0-flash"
+                model_name = self.settings.model_name or "gemini-1.5-flash"
                 self.gemini_client = genai.GenerativeModel(model_name)
                 logger.info(f"Gemini client initialized with model: {model_name}")
     

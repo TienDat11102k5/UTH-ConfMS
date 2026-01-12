@@ -1,0 +1,46 @@
+/* ===================================
+   LANGUAGE SWITCHER - STYLES
+   =================================== */
+
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4b5563;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+}
+
+.language-switcher:hover {
+  background: rgba(0, 134, 137, 0.08);
+  color: #008689;
+}
+
+.lang-active {
+  color: #008689;
+  font-weight: 700;
+}
+
+.lang-inactive {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.lang-separator {
+  color: #d1d5db;
+  font-weight: 300;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .language-switcher {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.8rem;
+  }
+}
