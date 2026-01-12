@@ -1,13 +1,14 @@
 // src/pages/author/ConferenceList.jsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
-import logoUTH from "../../assets/logoUTH.jpg";
 import { formatDate } from "../../utils/dateUtils";
 import "../../styles/ConferenceList.css";
 
 const ConferenceList = () => {
+  const { t, i18n } = useTranslation();
   const [conferences, setConferences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,32 +30,33 @@ const ConferenceList = () => {
           localStorage.removeItem("currentUser");
           navigate("/login");
         } else {
-          setError("Không thể tải danh sách hội nghị.");
+          setError(t('author.conferenceList.loadError'));
         }
       } finally {
         setLoading(false);
       }
     };
     fetchConferences();
-  }, [navigate]);
+  }, [navigate, t]);
 
-  // Custom formatDate function for ConferenceList with special formats
   const formatDateCustom = (dateString, format = "full") => {
-    if (!dateString) return "Sắp diễn ra";
+    if (!dateString) return t('author.conferenceList.comingSoon');
     
-    // Add 7 hours for Vietnam timezone consistency
     const date = new Date(dateString);
     const vietnamDate = new Date(date.getTime() + (7 * 60 * 60 * 1000));
     
     if (format === "day") return vietnamDate.getDate();
-    if (format === "my") return `THÁNG ${vietnamDate.getMonth() + 1}, ${vietnamDate.getFullYear()}`;
-    return formatDate(dateString); // Use dateUtils for standard formatting
+    if (format === "my") {
+      const monthLabel = i18n.language === 'vi' ? 'THÁNG' : 'MONTH';
+      return `${monthLabel} ${vietnamDate.getMonth() + 1}, ${vietnamDate.getFullYear()}`;
+    }
+    return formatDate(dateString);
   };
 
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen bg-white">
-        Loading...
+        {t('app.loading')}
       </div>
     );
   if (error)
@@ -64,18 +66,12 @@ const ConferenceList = () => {
       </div>
     );
 
-  // Sorting logic: Prioritize upcoming conferences
   const now = new Date();
-
-  // Sort by startDate ascending (nearest first)
   const sorted = [...conferences].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
   const upcoming = sorted.filter(c => new Date(c.startDate) >= now);
-  const past = sorted.filter(c => new Date(c.startDate) < now).reverse(); // Most recent past first
-
-  // Combine for display: Upcoming first, then Past
+  const past = sorted.filter(c => new Date(c.startDate) < now).reverse();
   const displayConferences = [...upcoming, ...past];
 
-  // Group into pairs for display layout (Left Big, Right Small)
   const chunkedConferences = [];
   for (let i = 0; i < displayConferences.length; i += 2) {
     chunkedConferences.push(displayConferences.slice(i, i + 2));
@@ -83,18 +79,15 @@ const ConferenceList = () => {
 
   return (
     <div className="bg-white min-h-screen text-slate-900 overflow-x-hidden bg-noise">
-      {/* GLOBAL BACKGROUND DECORATION */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="bg-grid-pattern opacity-60 w-full h-full"></div>
       </div>
 
-      {/* NAVIGATION */}
       <PortalHeader
         title="UTH Conference Portal · Author"
         subtitle="University of Transport HCMC"
       />
 
-      {/* HERO SECTION */}
       <main className="relative z-10 font-body">
         <div className="hero-wrapper">
           <div className="bg-decor-left"></div>
@@ -104,32 +97,30 @@ const ConferenceList = () => {
           <div className="bg-blob-2"></div>
 
           <div className="hero-container">
-            {/* Left Content */}
             <div className="hero-content">
               <div className="hero-subtitle-top">
                 <div className="dash-line"></div>
-                <span className="hero-label">Hội nghị Học thuật</span>
+                <span className="hero-label">{t('author.conferenceList.academicConference')}</span>
               </div>
 
               <div className="hero-title-group">
                 <h1 className="hero-bg-text">KNOWLEDGE</h1>
                 <h1 className="hero-main-text">
-                  KHÁM PHÁ <br />
-                  <span className="text-gradient">TRI THỨC</span>
-                  <span className="hero-italic">Kết nối tương lai</span>
+                  {t('author.conferenceList.discover')} <br />
+                  <span className="text-gradient">{t('author.conferenceList.knowledge')}</span>
+                  <span className="hero-italic">{t('author.conferenceList.connectFuture')}</span>
                 </h1>
               </div>
 
               <p className="hero-desc">
-                Nền tảng quản lý hội nghị khoa học của Trường ĐH Giao thông Vận tải TP.HCM.
-                Nơi hội tụ những nghiên cứu đột phá và đổi mới sáng tạo số.
+                {t('author.conferenceList.heroDesc')}
               </p>
 
               <div className="hero-actions">
                 <Link to="/author/submissions/new" className="btn-submit">
                   <div className="btn-submit-bg"></div>
                   <span className="relative flex items-center gap-3">
-                    Nộp bài ngay
+                    {t('author.conferenceList.submitNow')}
                     <span className="material-symbols-outlined text-primary-accent">arrow_forward</span>
                   </span>
                 </Link>
@@ -137,12 +128,11 @@ const ConferenceList = () => {
                   <div className="play-icon-circle">
                     <span className="material-symbols-outlined">play_arrow</span>
                   </div>
-                  <span>Xem Chương trình</span>
+                  <span>{t('author.conferenceList.viewProgram')}</span>
                 </Link>
               </div>
             </div>
 
-            {/* Right Visual (Abstract Nexus) */}
             <div className="hidden lg:flex hero-visual justify-center items-center">
               <div className="nexus-graphic">
                 <div className="nexus-ring-1 animate-spin-slow"></div>
@@ -153,22 +143,19 @@ const ConferenceList = () => {
                 </div>
               </div>
             </div>
-
-
           </div>
         </div>
 
-        {/* STATS & MARQUEE */}
         <div className="max-w-[1920px] mx-auto px-6 lg:px-12 relative z-20 pb-12">
           <div className="stats-marquee-row">
             <div className="stats-group">
               <div className="stat-block">
                 <span className="stat-num">{conferences.length}<span className="text-primary-accent">+</span></span>
-                <span className="stat-label">Hội nghị</span>
+                <span className="stat-label">{t('common.conferences')}</span>
               </div>
               <div className="stat-block">
                 <span className="stat-num">{conferences.reduce((acc, c) => acc + (c.submissionCount || 0), 0)}<span className="text-primary-accent">+</span></span>
-                <span className="stat-label">Bài báo</span>
+                <span className="stat-label">{t('common.papers')}</span>
               </div>
             </div>
 
@@ -178,24 +165,23 @@ const ConferenceList = () => {
                   [...conferences, ...conferences].map((conf, index) => (
                     <span key={index} className="marquee-item">
                       <span className={`text-${index % 2 === 0 ? 'primary-accent' : 'secondary'} mr-2`}>●</span>
-                      {conf.name}: {new Date(conf.startDate) > new Date() ? "Đang mở đăng ký" : "Đã kết thúc"}
+                      {conf.name}: {new Date(conf.startDate) > new Date() ? t('author.conferenceList.openRegistration') : t('author.conferenceList.ended')}
                     </span>
                   ))
                 ) : (
-                  <span className="marquee-item">Đang cập nhật dữ liệu hội nghị...</span>
+                  <span className="marquee-item">{t('author.conferenceList.updatingData')}</span>
                 )}
               </div>
             </div>
           </div>
         </div>
 
-        {/* EVENTS SECTION */}
         <section className="py-24 relative bg-[#f0fdfd]">
           <div className="max-w-[1920px] mx-auto px-6 lg:px-12">
             <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6 relative z-10">
               <div>
-                <h2 className="font-display font-bold text-5xl lg:text-7xl text-secondary mb-4">SỰ KIỆN</h2>
-                <p className="font-serif italic text-2xl text-slate-500">Các hội nghị học thuật sắp tới</p>
+                <h2 className="font-display font-bold text-5xl lg:text-7xl text-secondary mb-4">{t('author.conferenceList.events').toUpperCase()}</h2>
+                <p className="font-serif italic text-2xl text-slate-500">{t('author.conferenceList.upcomingConferences')}</p>
               </div>
               <div className="hidden md:flex gap-2">
                 {chunkedConferences.length > 1 && chunkedConferences.map((_, idx) => (
@@ -203,16 +189,14 @@ const ConferenceList = () => {
                     key={idx}
                     onClick={() => setCurrentPage(idx)}
                     className={`w-4 h-4 rounded-full transition-all duration-300 cursor-pointer hover:scale-110 ${currentPage === idx ? 'bg-primary-accent scale-125 shadow-lg' : 'bg-slate-300 hover:bg-primary-accent/50'}`}
-                    aria-label={`Trang ${idx + 1}`}
+                    aria-label={`${t('author.conferenceList.page')} ${idx + 1}`}
                   />
                 ))}
               </div>
             </div>
 
-            {/* Cards Grid Loop */}
             <div className="flex flex-col gap-6">
               {chunkedConferences.map((chunk, index) => {
-                // Only render if it's the current page
                 if (index !== currentPage) return null;
 
                 const featuredConf = chunk[0];
@@ -221,7 +205,6 @@ const ConferenceList = () => {
 
                 return (
                   <div key={index} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 auto-rows-[380px] animate-[fadeIn_0.5s_ease-out]">
-                    {/* FEATURED CARD (Left - Larger) */}
                     <div className="lg:col-span-7 relative group cursor-pointer overflow-hidden rounded-sm border border-slate-200 hover:border-primary-accent/30 transition-colors duration-500 shadow-xl shadow-secondary/10">
                       <div className="absolute inset-0 bg-gradient-to-t from-deep-ocean via-secondary to-primary-accent z-10"></div>
                       <div className="absolute inset-0 bg-secondary group-hover:scale-105 transition-transform duration-700">
@@ -230,7 +213,7 @@ const ConferenceList = () => {
 
                       <div className="relative z-20 p-8 h-full flex flex-col justify-between">
                         <div className="flex justify-between w-full">
-                          <span className="inline-flex items-center justify-center px-3 py-1 border border-white/20 text-white text-[10px] font-bold uppercase tracking-widest bg-white/10 backdrop-blur-md leading-none pt-1.5 pb-1">Nổi bật</span>
+                          <span className="inline-flex items-center justify-center px-3 py-1 border border-white/20 text-white text-[10px] font-bold uppercase tracking-widest bg-white/10 backdrop-blur-md leading-none pt-1.5 pb-1">{t('author.conferenceList.featured')}</span>
                           <span className="font-display font-bold text-4xl text-white/10 group-hover:text-white/30 transition-colors">
                             {baseIndex + 1 < 10 ? `0${baseIndex + 1}` : baseIndex + 1}
                           </span>
@@ -242,7 +225,7 @@ const ConferenceList = () => {
                           </h3>
 
                           <p className="text-slate-300 font-light max-w-lg mb-6 line-clamp-2">
-                            {featuredConf.description || "Khám phá sự giao thoa giữa trí tuệ nhân tạo, máy học và cơ sở hạ tầng logistics hiện đại."}
+                            {featuredConf.description || t('author.conferenceList.defaultDesc')}
                           </p>
 
                           <div className="flex items-center gap-6 text-sm font-mono text-slate-400 border-t border-white/10 pt-6 mt-2">
@@ -252,26 +235,25 @@ const ConferenceList = () => {
                             </span>
                             <span className="flex items-center gap-2">
                               <span className="material-symbols-outlined text-lg">location_on</span>
-                              {featuredConf.location || "Hội trường A"}
+                              {featuredConf.location || t('author.conferenceList.hallA')}
                             </span>
                             <Link
                               to={`/conferences/${featuredConf.id}`}
                               className="ml-auto text-white group-hover:translate-x-2 transition-transform"
                             >
-                              Chi tiết →
+                              {t('app.details')} →
                             </Link>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* UPCOMING CARD (Right - Smaller) */}
                     <div className="lg:col-span-5 relative group cursor-pointer overflow-hidden rounded-sm bg-white border border-slate-200 hover:border-primary-accent/30 transition-colors shadow-lg">
                       {upcomingConf ? (
                         <div className="p-8 h-full flex flex-col justify-between">
                           <div className="flex justify-between items-start">
                             <div>
-                              <span className="block text-primary-accent text-xs font-bold uppercase tracking-widest mb-2">Sắp diễn ra</span>
+                              <span className="block text-primary-accent text-xs font-bold uppercase tracking-widest mb-2">{t('author.conferenceList.comingSoon')}</span>
                               <span className="font-display font-bold text-4xl text-slate-100 group-hover:text-slate-200 transition-colors">
                                 {baseIndex + 2 < 10 ? `0${baseIndex + 2}` : baseIndex + 2}
                               </span>
@@ -294,14 +276,14 @@ const ConferenceList = () => {
                                     />
                                     <div>
                                       <p className="text-slate-900 font-bold text-sm">{chair.trim()}</p>
-                                      <p className="text-slate-500 text-xs mt-1">Diễn giả</p>
+                                      <p className="text-slate-500 text-xs mt-1">{t('author.conferenceList.speaker')}</p>
                                     </div>
                                   </div>
                                 ))
                               ) : (
                                 <div className="prose prose-sm">
                                   <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-0">
-                                    {upcomingConf.description || "Hội nghị test chức năng nộp bài"}
+                                    {upcomingConf.description || t('author.conferenceList.testDesc')}
                                   </p>
                                 </div>
                               )}
@@ -311,31 +293,25 @@ const ConferenceList = () => {
                               to={`/conferences/${upcomingConf.id}`}
                               className="w-full py-3 border border-slate-200 text-slate-900 text-xs font-bold uppercase tracking-widest hover:bg-secondary hover:text-white transition-all block text-center"
                             >
-                              XEM CHI TIẾT
+                              {t('app.details').toUpperCase()}
                             </Link>
                           </div>
                         </div>
                       ) : (
                         <div className="h-full bg-white rounded-sm p-8 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 text-slate-400 min-h-[480px]">
                           <span className="material-symbols-outlined text-5xl mb-3 opacity-20">event_busy</span>
-                          <p className="italic text-sm">Hết danh sách</p>
+                          <p className="italic text-sm">{t('author.conferenceList.endOfList')}</p>
                         </div>
                       )}
                     </div>
                   </div>
                 );
               })}
-
-
-
             </div>
           </div>
         </section>
-
-
       </main>
 
-      {/* FOOTER */}
       <footer className="footer-ocean font-body">
         <div className="footer-watermark">
           <h2 className="text-watermark">UTH PORTAL UTH PORTAL</h2>
@@ -350,8 +326,7 @@ const ConferenceList = () => {
                 <span className="font-display font-bold text-xl text-white tracking-widest">UTH CONF</span>
               </div>
               <p className="text-slate-400 text-sm leading-relaxed max-w-md font-light">
-                Cổng thông tin hội nghị khoa học chính thức của Trường ĐH Giao thông Vận tải TP.HCM.
-                Thúc đẩy trao đổi tri thức thông qua hệ thống nộp bài và phản biện số tiên tiến.
+                {t('author.conferenceList.footerDesc')}
               </p>
               <div className="mt-8 flex gap-4">
                 <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white hover:text-deep-ocean transition-colors">
@@ -362,17 +337,16 @@ const ConferenceList = () => {
                 </a>
               </div>
             </div>
-            {/* Links and Contact - Simplified for responsiveness */}
             <div>
-              <h4 className="font-mono font-bold text-primary-accent mb-6 text-xs uppercase tracking-widest">Điều hướng</h4>
+              <h4 className="font-mono font-bold text-primary-accent mb-6 text-xs uppercase tracking-widest">{t('author.conferenceList.navigation')}</h4>
               <ul className="space-y-4 text-sm text-slate-400">
-                <li><a href="#" className="hover:text-white transition-colors">Giới thiệu</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Quy trình phản biện</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Hướng dẫn tác giả</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t('author.conferenceList.about')}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t('author.conferenceList.reviewProcess')}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t('author.conferenceList.authorGuide')}</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-mono font-bold text-primary-accent mb-6 text-xs uppercase tracking-widest">Liên hệ</h4>
+              <h4 className="font-mono font-bold text-primary-accent mb-6 text-xs uppercase tracking-widest">{t('author.conferenceList.contact')}</h4>
               <ul className="space-y-4 text-sm text-slate-400">
                 <li className="flex gap-3">
                   <span className="material-symbols-outlined text-base text-primary-accent">location_on</span>
@@ -388,13 +362,13 @@ const ConferenceList = () => {
           <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-xs text-slate-500 font-mono">© 2026 UNIVERSITY OF TRANSPORT HCMC.</p>
             <div className="flex gap-8 text-xs text-slate-500 font-mono">
-              <a href="#" className="hover:text-primary-accent">CHÍNH SÁCH BẢO MẬT</a>
-              <a href="#" className="hover:text-primary-accent">ĐIỀU KHOẢN SỬ DỤNG</a>
+              <a href="#" className="hover:text-primary-accent">{t('author.conferenceList.privacyPolicy')}</a>
+              <a href="#" className="hover:text-primary-accent">{t('author.conferenceList.termsOfUse')}</a>
             </div>
           </div>
         </div>
       </footer>
-    </div >
+    </div>
   );
 };
 

@@ -1,11 +1,13 @@
 // src/pages/author/AuthorSubmissionEditPage.jsx
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
 import { ToastContainer } from "../../components/Toast";
 
 const AuthorSubmissionEditPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -13,7 +15,6 @@ const AuthorSubmissionEditPage = () => {
   const [saving, setSaving] = useState(false);
   const [loadError, setLoadError] = useState("");
 
-  // Toast notifications
   const [toasts, setToasts] = useState([]);
 
   const addToast = useCallback((message, type = "success") => {
@@ -53,20 +54,14 @@ const AuthorSubmissionEditPage = () => {
           navigate("/login");
           return;
         }
-        setLoadError(
-          err?.response?.data?.message ||
-          err?.response?.data?.error ||
-          "Không tải được submission."
-        );
+        setLoadError(err?.response?.data?.message || err?.response?.data?.error || t('author.edit.loadError'));
       } finally {
         if (!ignore) setLoading(false);
       }
     };
     load();
-    return () => {
-      ignore = true;
-    };
-  }, [id, navigate]);
+    return () => { ignore = true; };
+  }, [id, navigate, t]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -90,7 +85,7 @@ const AuthorSubmissionEditPage = () => {
         formData.append("file", file);
       }
       await apiClient.put(`/submissions/${id}`, formData);
-      addToast("Cập nhật submission thành công.", "success");
+      addToast(t('author.edit.updateSuccess'), "success");
       setTimeout(() => navigate("/author/submissions"), 800);
     } catch (err) {
       const status = err?.response?.status;
@@ -98,12 +93,7 @@ const AuthorSubmissionEditPage = () => {
         navigate("/login");
         return;
       }
-      addToast(
-        err?.response?.data?.message ||
-        err?.response?.data?.error ||
-        "Không thể cập nhật submission.",
-        "error"
-      );
+      addToast(err?.response?.data?.message || err?.response?.data?.error || t('author.edit.updateError'), "error");
     } finally {
       setSaving(false);
     }
@@ -112,9 +102,9 @@ const AuthorSubmissionEditPage = () => {
   if (loading) {
     return (
       <div className="dash-page">
-        <PortalHeader title="UTH Conference Portal · Author" ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
+        <PortalHeader title="UTH Conference Portal · Author" ctaHref="/author/dashboard" ctaText={t('author.dashboard.title')} />
         <main className="dash-main">
-          <section className="dash-section">Đang tải submission...</section>
+          <section className="dash-section">{t('author.edit.loading')}</section>
         </main>
       </div>
     );
@@ -123,15 +113,11 @@ const AuthorSubmissionEditPage = () => {
   if (loadError) {
     return (
       <div className="dash-page">
-        <PortalHeader title="UTH Conference Portal · Author" ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
+        <PortalHeader title="UTH Conference Portal · Author" ctaHref="/author/dashboard" ctaText={t('author.dashboard.title')} />
         <main className="dash-main">
           <section className="dash-section">
-            <div className="auth-error" style={{ marginBottom: "1rem" }}>
-              {loadError}
-            </div>
-            <button className="btn-secondary" onClick={() => navigate(-1)}>
-              Quay lại
-            </button>
+            <div className="auth-error" style={{ marginBottom: "1rem" }}>{loadError}</div>
+            <button className="btn-secondary" onClick={() => navigate(-1)}>{t('app.back')}</button>
           </section>
         </main>
       </div>
@@ -140,50 +126,30 @@ const AuthorSubmissionEditPage = () => {
 
   return (
     <div className="dash-page">
-      <PortalHeader title="UTH Conference Portal · Author" ctaHref="/author/dashboard" ctaText="Dashboard tác giả" />
+      <PortalHeader title="UTH Conference Portal · Author" ctaHref="/author/dashboard" ctaText={t('author.dashboard.title')} />
       <main className="dash-main">
         <section className="dash-section">
           <div className="data-page-header">
             <div className="data-page-header-left">
               <div className="breadcrumb">
-                <Link to="/" className="breadcrumb-link">
-                  Portal
-                </Link>
+                <Link to="/" className="breadcrumb-link">Portal</Link>
                 <span className="breadcrumb-separator">/</span>
-                <Link to="/author/submissions" className="breadcrumb-link">
-                  Bài nộp của tôi
-                </Link>
+                <Link to="/author/submissions" className="breadcrumb-link">{t('author.submissions.title')}</Link>
                 <span className="breadcrumb-separator">/</span>
-                <span className="breadcrumb-current">Sửa bài báo #{id}</span>
+                <span className="breadcrumb-current">{t('author.edit.editPaper')} #{id}</span>
               </div>
-              <h1 className="data-page-title">Sửa bài báo</h1>
-              <p className="data-page-subtitle">
-                Chỉ cho phép sửa tiêu đề, tóm tắt và file trước deadline khi
-                trạng thái còn SUBMITTED.
-              </p>
+              <h1 className="data-page-title">{t('author.edit.title')}</h1>
+              <p className="data-page-subtitle">{t('author.edit.subtitle')}</p>
             </div>
           </div>
 
-
           {meta && (
-            <div
-              style={{
-                marginBottom: "1rem",
-                padding: "12px 14px",
-                border: "1px solid #e5e7eb",
-                borderRadius: "10px",
-                background: "#fafafa",
-              }}
-            >
-              <div style={{ fontWeight: 600, marginBottom: 6 }}>
-                {meta.title || "Submission"}
-              </div>
+            <div style={{ marginBottom: "1rem", padding: "12px 14px", border: "1px solid #e5e7eb", borderRadius: "10px", background: "#fafafa" }}>
+              <div style={{ fontWeight: 600, marginBottom: 6 }}>{meta.title || "Submission"}</div>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                <span>Track: {meta.trackName || meta.trackId || "-"}</span>
-                <span>Hội nghị: {meta.conferenceName || "-"}</span>
-                <span>
-                  Trạng thái: {meta.status || meta.reviewStatus || "-"}
-                </span>
+                <span>{t('common.track')}: {meta.trackName || meta.trackId || "-"}</span>
+                <span>{t('common.conference')}: {meta.conferenceName || "-"}</span>
+                <span>{t('common.status')}: {meta.status || meta.reviewStatus || "-"}</span>
               </div>
             </div>
           )}
@@ -191,69 +157,30 @@ const AuthorSubmissionEditPage = () => {
           <div className="form-card">
             <form className="submission-form" onSubmit={handleSubmit}>
               <div className="form-group">
-                <label htmlFor="title">
-                  Tiêu đề bài báo <span style={{ color: "red" }}>*</span>
-                </label>
-                <input
-                  id="title"
-                  name="title"
-                  type="text"
-                  className="text-input"
-                  required
-                  value={form.title}
-                  onChange={handleChange}
-                />
+                <label htmlFor="title">{t('author.form.paperTitle')} <span style={{ color: "red" }}>*</span></label>
+                <input id="title" name="title" type="text" className="text-input" required value={form.title} onChange={handleChange} />
               </div>
 
               <div className="form-group">
-                <label htmlFor="abstractText">
-                  Tóm tắt (Abstract) <span style={{ color: "red" }}>*</span>
-                </label>
-                <textarea
-                  id="abstractText"
-                  name="abstractText"
-                  className="textarea-input"
-                  required
-                  value={form.abstractText}
-                  onChange={handleChange}
-                  rows={6}
-                />
+                <label htmlFor="abstractText">{t('common.abstract')} <span style={{ color: "red" }}>*</span></label>
+                <textarea id="abstractText" name="abstractText" className="textarea-input" required value={form.abstractText} onChange={handleChange} rows={6} />
               </div>
 
               <div className="form-group">
-                <label htmlFor="file">File bài báo (PDF) (tùy chọn)</label>
-                <input
-                  id="file"
-                  name="file"
-                  type="file"
-                  accept="application/pdf"
-                  onChange={handleFileChange}
-                />
-                <div className="field-hint">
-                  Để trống nếu không muốn thay file. File mới sẽ thay thế file
-                  cũ.
-                </div>
+                <label htmlFor="file">{t('author.edit.fileOptional')}</label>
+                <input id="file" name="file" type="file" accept="application/pdf" onChange={handleFileChange} />
+                <div className="field-hint">{t('author.edit.fileHint')}</div>
                 {meta?.downloadUrl && (
                   <div className="field-hint">
-                    File hiện tại:{" "}
-                    <a href={meta.downloadUrl} target="_blank" rel="noreferrer">
-                      Tải xuống
-                    </a>
+                    {t('author.edit.currentFile')}: <a href={meta.downloadUrl} target="_blank" rel="noreferrer">{t('app.download')}</a>
                   </div>
                 )}
               </div>
 
               <div className="form-actions">
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => navigate("/author/submissions")}
-                  disabled={saving}
-                >
-                  Hủy
-                </button>
+                <button type="button" className="btn-secondary" onClick={() => navigate("/author/submissions")} disabled={saving}>{t('app.cancel')}</button>
                 <button type="submit" className="btn-primary" disabled={saving}>
-                  {saving ? "Đang lưu..." : "Lưu thay đổi"}
+                  {saving ? t('app.loading') : t('app.save')}
                 </button>
               </div>
             </form>
@@ -261,7 +188,6 @@ const AuthorSubmissionEditPage = () => {
         </section>
       </main>
 
-      {/* Toast Notifications */}
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
   );
