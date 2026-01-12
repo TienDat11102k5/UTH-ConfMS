@@ -5,6 +5,7 @@ import apiClient from "../../apiClient";
 import { getToken } from "../../auth";  // ✅ IMPORT getToken
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import PaperSynopsisModal from "../../components/PaperSynopsisModal";
+import { CardSkeleton } from "../../components/LoadingSkeleton";
 import { ToastContainer } from "../../components/Toast";
 
 const ReviewerReviewForm = () => {
@@ -216,7 +217,7 @@ const ReviewerReviewForm = () => {
   if (loading) {
     return (
       <DashboardLayout roleLabel="Reviewer / PC" title="Form Review">
-        <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
+        <CardSkeleton count={1} />
       </DashboardLayout>
     );
   }

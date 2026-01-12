@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout.jsx";
+import { StatsSkeleton } from "../../components/LoadingSkeleton";
 import "../../styles/AuthorPages.css";
 
 const AuthorDashboard = () => {
@@ -111,9 +112,7 @@ const AuthorDashboard = () => {
       <div className="author-stats-section">
         <h2 className="section-title">Thống kê nhanh</h2>
         {loading ? (
-          <div style={{ textAlign: "center", padding: "2rem", color: "#6b7280" }}>
-            Đang tải dữ liệu thống kê...
-          </div>
+          <StatsSkeleton count={3} />
         ) : (
           <div className="stats-grid">
             <div className="stat-card stat-card-warning">

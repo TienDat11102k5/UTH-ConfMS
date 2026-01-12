@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { CardSkeleton } from "../../components/LoadingSkeleton";
 import { formatDateTime } from "../../utils/dateUtils";
 
 const formatDate = (value) => {
@@ -164,7 +165,9 @@ const AuthorPaperReviews = () => {
             ← Quay lại
           </button>
         </div>
-        <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
+        <div style={{ textAlign: "center", padding: "3rem" }}>
+          <CardSkeleton count={2} />
+        </div>
       </DashboardLayout>
     );
   }

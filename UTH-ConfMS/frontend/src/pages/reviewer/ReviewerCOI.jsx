@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { ListSkeleton } from "../../components/LoadingSkeleton";
 import { ToastContainer } from "../../components/Toast";
 import { FiAlertTriangle, FiPlus, FiX, FiTrash2, FiCheckCircle, FiXCircle } from 'react-icons/fi';
 
@@ -129,7 +130,7 @@ const ReviewerCOI = () => {
   if (loading) {
     return (
       <DashboardLayout roleLabel="Reviewer" title="Quản lý xung đột lợi ích">
-        <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
+        <ListSkeleton items={5} />
       </DashboardLayout>
     );
   }

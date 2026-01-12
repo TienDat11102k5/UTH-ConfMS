@@ -3,6 +3,7 @@ import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
 import EmptyState from "../../components/EmptyState";
+import { TableSkeleton } from "../../components/LoadingSkeleton";
 import { usePagination } from "../../hooks/usePagination";
 import { FiFilter, FiTrendingUp, FiSearch, FiCheckCircle, FiXCircle, FiRefreshCw } from "react-icons/fi";
 import EmailDraftModal from "../../components/EmailDraftModal";
@@ -228,7 +229,7 @@ const ChairDecisionPage = () => {
   if (loading) {
     return (
       <DashboardLayout roleLabel="Chair" title="Ra quyết định">
-        <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
+        <TableSkeleton rows={6} columns={7} />
       </DashboardLayout>
     );
   }

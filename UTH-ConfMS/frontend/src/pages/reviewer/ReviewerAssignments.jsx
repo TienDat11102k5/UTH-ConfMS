@@ -5,6 +5,7 @@ import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import PaperSynopsisModal from "../../components/PaperSynopsisModal";
 import Pagination from "../../components/Pagination";
+import { CardSkeleton } from "../../components/LoadingSkeleton";
 import { usePagination } from "../../hooks/usePagination";
 import { ToastContainer } from "../../components/Toast";
 import { 
@@ -205,7 +206,7 @@ const ReviewerAssignments = () => {
   if (loading) {
     return (
       <DashboardLayout roleLabel="Reviewer / PC" title="Bài được phân công">
-        <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
+        <CardSkeleton count={6} />
       </DashboardLayout>
     );
   }

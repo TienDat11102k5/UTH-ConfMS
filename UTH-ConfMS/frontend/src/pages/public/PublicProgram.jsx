@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
+import { CardSkeleton } from "../../components/LoadingSkeleton";
 import { FiCalendar, FiClock, FiMapPin, FiLayers, FiSearch } from "react-icons/fi";
 import "../../styles/PublicProgram.css";
 
@@ -158,7 +159,7 @@ const PublicProgram = () => {
         </div>
 
         <div className="program-container">
-          <div className="loading-state">Đang tải...</div>
+          <CardSkeleton count={4} />
         </div>
       </div>
     );

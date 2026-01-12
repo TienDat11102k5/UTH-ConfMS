@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
+import { TableSkeleton } from "../../components/LoadingSkeleton";
 import { usePagination } from "../../hooks/usePagination";
 import { FiFilter, FiTrendingUp, FiSearch } from "react-icons/fi";
 import { ToastContainer } from "../../components/Toast";
@@ -335,7 +336,7 @@ const ChairAssignmentManagement = () => {
   if (loading) {
     return (
       <DashboardLayout roleLabel="Chair" title="Quản lý Assignment">
-        <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
+        <TableSkeleton rows={8} columns={7} />
       </DashboardLayout>
     );
   }

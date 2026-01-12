@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { ListSkeleton } from "../../components/LoadingSkeleton";
 import { ToastContainer } from "../../components/Toast";
 import { FiMessageSquare, FiSend, FiX, FiCornerDownRight, FiClock } from 'react-icons/fi';
 
@@ -322,10 +323,7 @@ const ReviewerDiscussions = () => {
             </div>
             <div style={{ padding: "0.5rem 0" }}>
               {loading ? (
-                <div className="empty-state">
-                  <FiClock size={48} style={{ color: "#cbd5e1" }} />
-                  <p>Đang tải...</p>
-                </div>
+                <ListSkeleton items={3} />
               ) : organizedDiscussions.length === 0 ? (
                 <div className="empty-state">
                   <FiMessageSquare size={48} style={{ color: "#cbd5e1" }} />

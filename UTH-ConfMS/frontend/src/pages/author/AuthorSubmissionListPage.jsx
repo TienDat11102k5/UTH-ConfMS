@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
+import { CardSkeleton } from "../../components/LoadingSkeleton";
 import { FiSearch, FiFilter, FiTrendingUp } from "react-icons/fi";
 import { formatDateTime } from "../../utils/dateUtils";
 import "../../styles/AuthorPages.css";

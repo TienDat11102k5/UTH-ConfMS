@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { CardSkeleton } from "../../components/LoadingSkeleton";
 import { formatDateTime } from "../../utils/dateUtils";
 
 const formatDate = (value) => {
@@ -130,7 +131,7 @@ const AuthorSubmissionDetail = () => {
   if (loading) {
     return (
       <DashboardLayout roleLabel="Author" title="Chi tiết bài báo">
-        <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
+        <CardSkeleton count={1} />
       </DashboardLayout>
     );
   }

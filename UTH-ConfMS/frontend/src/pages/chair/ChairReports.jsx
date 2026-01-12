@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
+import { StatsSkeleton } from "../../components/LoadingSkeleton";
 import { FiDownload, FiFileText, FiBarChart2, FiTrendingUp } from "react-icons/fi";
 import "../../styles/ReviewerAssignments.css";
 import "../../styles/ChairReports.css";
@@ -298,7 +299,7 @@ const ChairReports = () => {
   if (loading) {
     return (
       <DashboardLayout roleLabel="Chair" title="Báo cáo & Thống kê">
-        <div style={{ textAlign: "center", padding: "3rem" }}>Đang tải...</div>
+        <StatsSkeleton count={4} />
       </DashboardLayout>
     );
   }

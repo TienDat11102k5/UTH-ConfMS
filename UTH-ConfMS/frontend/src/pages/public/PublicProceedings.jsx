@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
 import { ToastContainer } from "../../components/Toast";
+import { CardSkeleton } from "../../components/LoadingSkeleton";
 import { FiDownload, FiFilter, FiSearch, FiGrid, FiList, FiBook, FiUsers, FiFolder } from "react-icons/fi";
 import "../../styles/PublicProceedings.css";
 
@@ -245,7 +246,7 @@ const PublicProceedings = () => {
         </div>
 
         <div className="proceedings-container">
-          <div className="loading-state">Đang tải...</div>
+          <CardSkeleton count={6} />
         </div>
       </div>
     );

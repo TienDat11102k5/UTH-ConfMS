@@ -3,6 +3,7 @@ import { useAuth } from '../auth';
 import { FiActivity, FiFileText, FiMessageSquare, FiLock } from 'react-icons/fi';
 import DashboardLayout from '../components/Layout/DashboardLayout';
 import HistoryItem from '../components/HistoryItem';
+import { ListSkeleton } from '../components/LoadingSkeleton';
 import * as historyApi from '../api/historyApi';
 import Pagination from '../components/Pagination';
 import { usePagination } from '../hooks/usePagination';
@@ -344,9 +345,7 @@ const HistoryPage = () => {
             {/* Timeline */}
             <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
                 {loading && (
-                    <div style={{ textAlign: 'center', padding: '3rem' }}>
-                        <p style={{ color: '#6b7280' }}>Đang tải lịch sử...</p>
-                    </div>
+                    <ListSkeleton items={5} />
                 )}
 
                 {error && (
