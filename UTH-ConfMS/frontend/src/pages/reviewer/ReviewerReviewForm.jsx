@@ -1,6 +1,7 @@
 // src/pages/reviewer/ReviewerReviewForm.jsx
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import { getToken } from "../../auth";  // ✅ IMPORT getToken
 import DashboardLayout from "../../components/Layout/DashboardLayout";
@@ -9,6 +10,7 @@ import { CardSkeleton } from "../../components/LoadingSkeleton";
 import { ToastContainer } from "../../components/Toast";
 
 const ReviewerReviewForm = () => {
+  const { t } = useTranslation();
   const { assignmentId } = useParams();
   const navigate = useNavigate();
   const [assignment, setAssignment] = useState(null);
@@ -85,7 +87,7 @@ const ReviewerReviewForm = () => {
         }
       } catch (err) {
         console.error("Load error:", err);
-        setError("Không thể tải thông tin assignment.");
+        setError(t('reviewer.reviewForm.loadError'));
       } finally {
         setLoading(false);
       }
@@ -102,21 +104,18 @@ const ReviewerReviewForm = () => {
     console.log("Form data:", formData);
 
     if (assignment?.status !== "ACCEPTED") {
-      addToast(
-        "Chỉ có thể chấm bài khi đã chấp nhận assignment (status = ACCEPTED)!",
-        "warning"
-      );
+      addToast(t('reviewer.reviewForm.acceptedStatusRequired'), "warning");
       return;
     }
 
     if (existingReview) {
-      addToast("Bạn đã chấm bài này rồi. Không thể sửa đổi.", "warning");
+      addToast(t('reviewer.reviewForm.alreadyReviewed'), "warning");
       return;
     }
 
     // Validate form data
     if (!formData.commentForAuthor || !formData.commentForPC) {
-      addToast("Vui lòng điền đầy đủ các nhận xét!", "warning");
+      addToast(t('reviewer.reviewForm.fillAllComments'), "warning");
       return;
     }
 
@@ -138,13 +137,13 @@ const ReviewerReviewForm = () => {
 
       console.log("Response:", response.data);
 
-      addToast("Gửi review thành công!", "success");
+      addToast(t('reviewer.reviewForm.submitSuccess'), "success");
       setTimeout(() => navigate("/reviewer/assignments"), 800);
     } catch (err) {
       console.error("Submit error:", err);
       console.error("Error response:", err.response?.data);
       setError(
-        err.response?.data?.message || err.message || "Lỗi khi gửi review"
+        err.response?.data?.message || err.message || t('reviewer.reviewForm.submitError')
       );
     } finally {
       setSubmitting(false);
@@ -160,7 +159,7 @@ const ReviewerReviewForm = () => {
       console.log("Paper ID:", assignment.paper.id);
       
       if (!token) {
-        addToast("Vui lòng đăng nhập lại", "warning");
+        addToast(t('reviewer.reviewForm.pleaseLogin'), "warning");
         return;
       }
 
@@ -181,13 +180,13 @@ const ReviewerReviewForm = () => {
 
       if (!response.ok) {
         if (response.status === 403) {
-          addToast("Bạn không có quyền xem file này", "error");
+          addToast(t('reviewer.reviewForm.noPermission'), "error");
         } else if (response.status === 404) {
-          addToast("Không tìm thấy file", "error");
+          addToast(t('reviewer.reviewForm.fileNotFound'), "error");
         } else {
           const errorText = await response.text();
           console.error("Error response:", errorText);
-          addToast("Lỗi khi tải file: " + response.statusText, "error");
+          addToast(t('reviewer.reviewForm.downloadError') + ": " + response.statusText, "error");
         }
         return;
       }
@@ -210,13 +209,13 @@ const ReviewerReviewForm = () => {
       }, 1000);
     } catch (err) {
       console.error("Download error:", err);
-      addToast("Lỗi khi mở file: " + err.message, "error");
+      addToast(t('reviewer.reviewForm.openFileError') + ": " + err.message, "error");
     }
   };
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Reviewer / PC" title="Form Review">
+      <DashboardLayout roleLabel="Reviewer / PC" title={t('reviewer.reviewForm.title')}>
         <CardSkeleton count={1} />
       </DashboardLayout>
     );
@@ -224,9 +223,9 @@ const ReviewerReviewForm = () => {
 
   if (!assignment) {
     return (
-      <DashboardLayout roleLabel="Reviewer / PC" title="Form Review">
+      <DashboardLayout roleLabel="Reviewer / PC" title={t('reviewer.reviewForm.title')}>
         <div style={{ color: "#d32f2f", padding: "1rem" }}>
-          Không tìm thấy assignment.
+          {t('reviewer.reviewForm.notFound')}
         </div>
       </DashboardLayout>
     );
@@ -235,8 +234,8 @@ const ReviewerReviewForm = () => {
   return (
     <DashboardLayout
       roleLabel="Reviewer / PC"
-      title="Form Review"
-      subtitle={`Chấm bài: ${assignment.paper?.title || "N/A"}`}
+      title={t('reviewer.reviewForm.title')}
+      subtitle={`${t('reviewer.reviewForm.reviewPaper')}: ${assignment.paper?.title || "N/A"}`}
     >
       <div style={{ marginBottom: "1rem" }}>
         <button 
@@ -265,7 +264,7 @@ const ReviewerReviewForm = () => {
             e.currentTarget.style.borderColor = "#e2e8f0";
           }}
         >
-          ← Quay lại danh sách assignment
+          ← {t('reviewer.reviewForm.backToAssignments')}
         </button>
       </div>
       <div className="data-page-header">
@@ -273,7 +272,7 @@ const ReviewerReviewForm = () => {
           <div className="breadcrumb">
             <span className="breadcrumb-current">Reviewer</span>
           </div>
-          <h2 className="data-page-title">Form Review</h2>
+          <h2 className="data-page-title">{t('reviewer.reviewForm.title')}</h2>
         </div>
       </div>
 
@@ -287,7 +286,7 @@ const ReviewerReviewForm = () => {
             marginBottom: "1.5rem",
           }}
         >
-          <strong>Lưu ý:</strong> Bạn đã chấm bài này rồi. Không thể sửa đổi.
+          <strong>{t('reviewer.reviewForm.noteLabel')}</strong> {t('reviewer.reviewForm.alreadyReviewedMsg')}
         </div>
       )}
 
@@ -309,7 +308,7 @@ const ReviewerReviewForm = () => {
       <div className="form-card">
         <div style={{ marginBottom: "1.5rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-            <h3 style={{ margin: 0 }}>Thông tin bài báo</h3>
+            <h3 style={{ margin: 0 }}>{t('reviewer.reviewForm.paperInfo')}</h3>
             <button
               type="button"
               onClick={() => setSynopsisModal({ show: true, paper: assignment.paper })}
@@ -336,7 +335,7 @@ const ReviewerReviewForm = () => {
                 e.currentTarget.style.boxShadow = "none";
               }}
             >
-              ✨ Tóm tắt AI
+              ✨ {t('reviewer.reviewForm.aiSummary')}
             </button>
           </div>
 
@@ -349,22 +348,22 @@ const ReviewerReviewForm = () => {
             }}
           >
             <p style={{ marginBottom: "1rem" }}>
-              <strong>Tiêu đề:</strong> {assignment.paper?.title}
+              <strong>{t('reviewer.reviewForm.paperTitle')}:</strong> {assignment.paper?.title}
             </p>
             <p style={{ marginBottom: "1rem" }}>
-              <strong>Track:</strong> {assignment.paper?.track?.name}
+              <strong>{t('reviewer.reviewForm.track')}:</strong> {assignment.paper?.track?.name}
             </p>
             <p style={{ marginBottom: "1rem" }}>
-              <strong>Tác giả chính:</strong>{" "}
+              <strong>{t('reviewer.reviewForm.mainAuthor')}:</strong>{" "}
               {assignment.paper?.mainAuthor?.fullName}
             </p>
             <p style={{ marginBottom: "1rem" }}>
-              <strong>Email tác giả:</strong>{" "}
+              <strong>{t('reviewer.reviewForm.authorEmail')}:</strong>{" "}
               {assignment.paper?.mainAuthor?.email}
             </p>
             {assignment.paper?.keywords && (
               <p style={{ marginBottom: "1rem" }}>
-                <strong>Từ khóa:</strong> {assignment.paper.keywords}
+                <strong>{t('reviewer.reviewForm.keywords')}:</strong> {assignment.paper.keywords}
               </p>
             )}
             {assignment.paper?.abstractText && (
@@ -392,7 +391,7 @@ const ReviewerReviewForm = () => {
                 }}
               >
                 <strong style={{ display: "block", marginBottom: "0.5rem" }}>
-                  📄 File bài báo đã nộp:
+                  📄 {t('reviewer.reviewForm.submittedFile')}:
                 </strong>
                 <button
                   onClick={handleDownloadPaper}
@@ -409,7 +408,7 @@ const ReviewerReviewForm = () => {
                     cursor: "pointer",
                   }}
                 >
-                  � XemT file bài báo
+                  🔍 {t('reviewer.reviewForm.viewPaperFile')}
                 </button>
                 <p
                   style={{
@@ -418,8 +417,7 @@ const ReviewerReviewForm = () => {
                     color: "#666",
                   }}
                 >
-                  Click vào link trên để xem hoặc tải file PDF/DOC của bài báo
-                  để chấm
+                  {t('reviewer.reviewForm.clickToViewHint')}
                 </p>
                 <p
                   style={{
@@ -438,9 +436,9 @@ const ReviewerReviewForm = () => {
         <form onSubmit={handleSubmit} className="submission-form">
           <div className="form-group">
             <label className="form-label">
-              Điểm số (Score) *{" "}
+              {t('reviewer.reviewForm.scoreLabel')} *{" "}
               <span style={{ fontSize: "0.9em", color: "#666" }}>
-                (-3 đến +3)
+                {t('reviewer.reviewForm.scoreRange')}
               </span>
             </label>
             <select
@@ -452,19 +450,19 @@ const ReviewerReviewForm = () => {
               disabled={existingReview !== null}
               className="form-input"
             >
-              <option value="-3">-3 (Rất không phù hợp)</option>
-              <option value="-2">-2 (Không phù hợp)</option>
-              <option value="-1">-1 (Hơi không phù hợp)</option>
-              <option value="0">0 (Trung lập)</option>
-              <option value="1">+1 (Hơi phù hợp)</option>
-              <option value="2">+2 (Phù hợp)</option>
-              <option value="3">+3 (Rất phù hợp)</option>
+              <option value="-3">-3 ({t('reviewer.reviewForm.scoreVeryInappropriate')})</option>
+              <option value="-2">-2 ({t('reviewer.reviewForm.scoreInappropriate')})</option>
+              <option value="-1">-1 ({t('reviewer.reviewForm.scoreSomewhatInappropriate')})</option>
+              <option value="0">0 ({t('reviewer.reviewForm.scoreNeutral')})</option>
+              <option value="1">+1 ({t('reviewer.reviewForm.scoreSomewhatAppropriate')})</option>
+              <option value="2">+2 ({t('reviewer.reviewForm.scoreAppropriate')})</option>
+              <option value="3">+3 ({t('reviewer.reviewForm.scoreVeryAppropriate')})</option>
             </select>
           </div>
 
           <div className="form-group">
             <label className="form-label">
-              Mức độ tự tin (Confidence Level) *{" "}
+              {t('reviewer.reviewForm.confidenceLabel')} *{" "}
               <span style={{ fontSize: "0.9em", color: "#666" }}>(1-5)</span>
             </label>
             <select
@@ -476,17 +474,17 @@ const ReviewerReviewForm = () => {
               disabled={existingReview !== null}
               className="form-input"
             >
-              <option value="1">1 - Rất không chắc</option>
-              <option value="2">2 - Không chắc</option>
-              <option value="3">3 - Trung bình</option>
-              <option value="4">4 - Chắc chắn</option>
-              <option value="5">5 - Rất chắc chắn</option>
+              <option value="1">1 - {t('reviewer.reviewForm.confVeryNotConfident')}</option>
+              <option value="2">2 - {t('reviewer.reviewForm.confNotConfident')}</option>
+              <option value="3">3 - {t('reviewer.reviewForm.confMedium')}</option>
+              <option value="4">4 - {t('reviewer.reviewForm.confConfident')}</option>
+              <option value="5">5 - {t('reviewer.reviewForm.confVeryConfident')}</option>
             </select>
           </div>
 
           <div className="form-group">
             <label className="form-label">
-              Nhận xét cho tác giả (Comment for Author) *
+              {t('reviewer.reviewForm.commentForAuthorLabel')} *
             </label>
             <textarea
               value={formData.commentForAuthor}
@@ -497,16 +495,16 @@ const ReviewerReviewForm = () => {
               disabled={existingReview !== null}
               rows={6}
               className="textarea-input"
-              placeholder="Nhận xét chi tiết về bài báo, điểm mạnh, điểm yếu, đề xuất cải thiện..."
+              placeholder={t('reviewer.reviewForm.commentForAuthorPlaceholder')}
             />
             <div className="field-hint">
-              Nhận xét này sẽ được gửi cho tác giả (ẩn danh nếu double-blind)
+              {t('reviewer.reviewForm.commentForAuthorHint')}
             </div>
           </div>
 
           <div className="form-group">
             <label className="form-label">
-              Nhận xét cho PC (Comment for PC) *
+              {t('reviewer.reviewForm.commentForPCLabel')} *
             </label>
             <textarea
               value={formData.commentForPC}
@@ -517,10 +515,10 @@ const ReviewerReviewForm = () => {
               disabled={existingReview !== null}
               rows={6}
               className="textarea-input"
-              placeholder="Nhận xét nội bộ cho Program Committee, khuyến nghị Accept/Reject..."
+              placeholder={t('reviewer.reviewForm.commentForPCPlaceholder')}
             />
             <div className="field-hint">
-              Nhận xét này chỉ dành cho PC và Chair, tác giả không được xem
+              {t('reviewer.reviewForm.commentForPCHint')}
             </div>
           </div>
 
@@ -531,17 +529,17 @@ const ReviewerReviewForm = () => {
               disabled={submitting || existingReview !== null}
             >
               {submitting
-                ? "Đang gửi..."
+                ? t('reviewer.reviewForm.submitting')
                 : existingReview
-                ? "Đã chấm"
-                : "Gửi Review"}
+                ? t('reviewer.reviewForm.alreadySubmitted')
+                : t('reviewer.reviewForm.submitReview')}
             </button>
             <button
               type="button"
               className="btn-secondary"
               onClick={() => navigate("/reviewer/assignments")}
             >
-              Hủy
+              {t('common.cancel')}
             </button>
           </div>
         </form>

@@ -1,6 +1,7 @@
 // src/pages/reviewer/ReviewerDiscussions.jsx
 import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import { ListSkeleton } from "../../components/LoadingSkeleton";
@@ -8,6 +9,7 @@ import { ToastContainer } from "../../components/Toast";
 import { FiMessageSquare, FiSend, FiX, FiCornerDownRight, FiClock } from 'react-icons/fi';
 
 const ReviewerDiscussions = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const paperIdFromUrl = searchParams.get("paperId");
@@ -65,7 +67,7 @@ const ReviewerDiscussions = () => {
       }
     } catch (err) {
       console.error("Load papers error:", err);
-      addToast("Không thể tải danh sách bài báo.", "error");
+      addToast(t('reviewer.discussionsPage.loadPapersError'), "error");
     }
   };
 
@@ -76,7 +78,7 @@ const ReviewerDiscussions = () => {
       setDiscussions(res.data || []);
     } catch (err) {
       console.error("Load discussions error:", err);
-      addToast("Không thể tải discussions.", "error");
+      addToast(t('reviewer.discussionsPage.loadDiscussionsError'), "error");
     } finally {
       setLoading(false);
     }
@@ -87,12 +89,12 @@ const ReviewerDiscussions = () => {
 
     const trimmedComment = newComment.trim();
     if (!trimmedComment) {
-      addToast("Nội dung không được để trống", "warning");
+      addToast(t('reviewer.discussionsPage.emptyContent'), "warning");
       return;
     }
 
     if (trimmedComment.length > 10000) {
-      addToast("Nội dung quá dài (tối đa 10000 ký tự)", "warning");
+      addToast(t('reviewer.discussionsPage.contentTooLong'), "warning");
       return;
     }
 
@@ -117,7 +119,7 @@ const ReviewerDiscussions = () => {
         err.response?.data?.message ||
         err.response?.data ||
         err.message ||
-        "Lỗi khi gửi bình luận",
+        t('reviewer.discussionsPage.commentError'),
         "error"
       );
     } finally {
@@ -128,12 +130,12 @@ const ReviewerDiscussions = () => {
   const handleSubmitReply = async (parentId) => {
     const trimmedReply = replyContent.trim();
     if (!trimmedReply) {
-      addToast("Nội dung trả lời không được để trống", "warning");
+      addToast(t('reviewer.discussionsPage.emptyReply'), "warning");
       return;
     }
 
     if (trimmedReply.length > 10000) {
-      addToast("Nội dung quá dài (tối đa 10000 ký tự)", "warning");
+      addToast(t('reviewer.discussionsPage.contentTooLong'), "warning");
       return;
     }
 
@@ -159,7 +161,7 @@ const ReviewerDiscussions = () => {
         err.response?.data?.message ||
         err.response?.data ||
         err.message ||
-        "Lỗi khi gửi trả lời",
+        t('reviewer.discussionsPage.replyError'),
         "error"
       );
     } finally {
@@ -188,25 +190,25 @@ const ReviewerDiscussions = () => {
   return (
     <DashboardLayout
       roleLabel="Reviewer"
-      title="Thảo luận nội bộ"
-      subtitle="Trao đổi ý kiến về bài báo với các thành viên khác trước khi Chair đưa ra quyết định cuối"
+      title={t('reviewer.discussionsPage.title')}
+      subtitle={t('reviewer.discussionsPage.subtitle')}
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <span className="breadcrumb-current">Người chấm</span>
+            <span className="breadcrumb-current">{t('reviewer.discussionsPage.breadcrumb')}</span>
           </div>
           <h2 className="data-page-title">
             <FiMessageSquare style={{ marginRight: "0.5rem", verticalAlign: "middle" }} />
-            Thảo luận nội bộ
+            {t('reviewer.discussionsPage.title')}
           </h2>
           <p className="data-page-subtitle">
-            Trao đổi ý kiến về bài báo với các thành viên khác trước khi Chair đưa ra quyết định cuối.
+            {t('reviewer.discussionsPage.description')}
           </p>
         </div>
         <div className="data-page-header-right">
           <button className="btn-secondary" onClick={() => navigate(-1)}>
-            ← Quay lại
+            ← {t('common.back')}
           </button>
         </div>
       </div>
@@ -228,7 +230,7 @@ const ReviewerDiscussions = () => {
           color: "#64748b",
           fontSize: "0.875rem",
         }}>
-          Chọn bài báo để thảo luận:
+          {t('reviewer.discussionsPage.selectPaper')}:
         </label>
         <select
           value={selectedPaperId}
@@ -245,10 +247,10 @@ const ReviewerDiscussions = () => {
             color: "#475569",
           }}
         >
-          <option value="">-- Chọn bài báo --</option>
+          <option value="">-- {t('reviewer.discussionsPage.selectPaper')} --</option>
           {papers.map((paper) => (
             <option key={paper.id} value={paper.id}>
-              {paper.title} (Chủ đề: {paper.track?.name})
+              {paper.title} ({t('reviewer.discussionsPage.topic')}: {paper.track?.name})
             </option>
           ))}
         </select>
@@ -275,7 +277,7 @@ const ReviewerDiscussions = () => {
               fontSize: "0.875rem",
             }}>
               <FiSend size={16} />
-              Thêm bình luận mới
+              {t('reviewer.discussionsPage.addComment')}
             </div>
             <form onSubmit={handleSubmitComment} className="comment-form">
               <textarea
@@ -283,19 +285,19 @@ const ReviewerDiscussions = () => {
                 onChange={(e) => setNewComment(e.target.value)}
                 rows={4}
                 className="comment-textarea"
-                placeholder="Nhập bình luận của bạn về bài báo này..."
+                placeholder={t('reviewer.discussionsPage.commentPlaceholder')}
                 disabled={submitting}
                 maxLength={10000}
               />
               <div className="textarea-footer">
-                <span className="char-count">{newComment.length}/10000 ký tự</span>
+                <span className="char-count">{newComment.length}/10000 {t('reviewer.discussionsPage.characters')}</span>
                 <button
                   type="submit"
                   className="btn-primary"
                   disabled={submitting || !newComment.trim()}
                 >
                   <FiSend size={16} style={{ marginRight: "0.5rem" }} />
-                  {submitting ? "Đang gửi..." : "Gửi bình luận"}
+                  {submitting ? t('app.loading') : t('reviewer.discussionsPage.sendComment')}
                 </button>
               </div>
             </form>
@@ -319,7 +321,7 @@ const ReviewerDiscussions = () => {
               fontSize: "0.875rem",
             }}>
               <FiMessageSquare size={16} />
-              Danh sách thảo luận ({organizedDiscussions.length})
+              {t('reviewer.discussionsPage.discussionList')} ({organizedDiscussions.length})
             </div>
             <div style={{ padding: "0.5rem 0" }}>
               {loading ? (
@@ -327,8 +329,8 @@ const ReviewerDiscussions = () => {
               ) : organizedDiscussions.length === 0 ? (
                 <div className="empty-state">
                   <FiMessageSquare size={48} style={{ color: "#cbd5e1" }} />
-                  <p>Chưa có thảo luận nào cho bài này.</p>
-                  <p style={{ fontSize: "0.9rem", color: "#94a3b8" }}>Hãy là người đầu tiên!</p>
+                  <p>{t('reviewer.discussionsPage.noDiscussions')}</p>
+                  <p style={{ fontSize: "0.9rem", color: "#94a3b8" }}>{t('reviewer.discussionsPage.beFirst')}</p>
                 </div>
               ) : (
                 <div className="discussions-list">
@@ -353,7 +355,7 @@ const ReviewerDiscussions = () => {
                           onClick={() => setReplyTo(discussion.id)}
                         >
                           <FiCornerDownRight size={16} />
-                          Trả lời
+                          {t('reviewer.discussionsPage.reply')}
                         </button>
                       </div>
 
@@ -388,19 +390,19 @@ const ReviewerDiscussions = () => {
                         <div className="reply-form">
                           <div className="reply-form-header">
                             <FiCornerDownRight size={16} />
-                            <span>Trả lời {discussion.authorName}</span>
+                            <span>{t('reviewer.discussionsPage.replyTo')} {discussion.authorName}</span>
                           </div>
                           <textarea
                             value={replyContent}
                             onChange={(e) => setReplyContent(e.target.value)}
                             rows={3}
                             className="comment-textarea"
-                            placeholder="Nhập câu trả lời..."
+                            placeholder={t('reviewer.discussionsPage.replyPlaceholder')}
                             disabled={submitting}
                             maxLength={10000}
                           />
                           <div className="textarea-footer">
-                            <span className="char-count">{replyContent.length}/10000 ký tự</span>
+                            <span className="char-count">{replyContent.length}/10000 {t('reviewer.discussionsPage.characters')}</span>
                             <div className="form-actions">
                               <button
                                 className="btn-secondary"
@@ -410,7 +412,7 @@ const ReviewerDiscussions = () => {
                                 }}
                               >
                                 <FiX size={16} style={{ marginRight: "0.5rem" }} />
-                                Hủy
+                                {t('common.cancel')}
                               </button>
                               <button
                                 className="btn-primary"
@@ -418,7 +420,7 @@ const ReviewerDiscussions = () => {
                                 disabled={submitting || !replyContent.trim()}
                               >
                                 <FiSend size={16} style={{ marginRight: "0.5rem" }} />
-                                {submitting ? "Đang gửi..." : "Gửi"}
+                                {submitting ? t('app.loading') : t('reviewer.discussionsPage.send')}
                               </button>
                             </div>
                           </div>

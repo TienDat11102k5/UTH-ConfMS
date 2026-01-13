@@ -1,6 +1,7 @@
 // src/pages/reviewer/ReviewerCOI.jsx
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import { ListSkeleton } from "../../components/LoadingSkeleton";
@@ -8,6 +9,7 @@ import { ToastContainer } from "../../components/Toast";
 import { FiAlertTriangle, FiPlus, FiX, FiTrash2, FiCheckCircle, FiXCircle } from 'react-icons/fi';
 
 const ReviewerCOI = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [conflicts, setConflicts] = useState([]);
   const [papers, setPapers] = useState([]);
@@ -59,7 +61,7 @@ const ReviewerCOI = () => {
       setLoadError(
         err.response?.data?.message ||
         err.message ||
-        "Không thể tải dữ liệu."
+        t('reviewer.coiPage.loadError')
       );
     } finally {
       setLoading(false);
@@ -70,7 +72,7 @@ const ReviewerCOI = () => {
     e.preventDefault();
 
     if (!formData.reason.trim()) {
-      addToast("Vui lòng nhập lý do xung đột", "warning");
+      addToast(t('reviewer.coiPage.enterReason'), "warning");
       return;
     }
 
@@ -87,7 +89,7 @@ const ReviewerCOI = () => {
         }&reason=${encodeURIComponent(formData.reason.trim())}`
       );
 
-      addToast("Khai báo xung đột lợi ích thành công!", "success");
+      addToast(t('reviewer.coiPage.declareSuccess'), "success");
       setShowForm(false);
       setFormData({ paperId: "", reason: "" });
       await loadData(); // Reload data
@@ -96,7 +98,7 @@ const ReviewerCOI = () => {
         err.response?.data?.message ||
         err.response?.data ||
         err.message ||
-        "Lỗi khi khai báo xung đột lợi ích",
+        t('reviewer.coiPage.declareError'),
         "error"
       );
     } finally {
@@ -105,18 +107,18 @@ const ReviewerCOI = () => {
   };
 
   const handleDeleteCOI = async (coiId) => {
-    if (!confirm("Bạn có chắc muốn xóa khai báo xung đột lợi ích này?")) return;
+    if (!confirm(t('reviewer.coiPage.confirmDelete'))) return;
 
     try {
       await apiClient.delete(`/conflicts/${coiId}`);
-      addToast("Đã xóa xung đột lợi ích thành công", "success");
+      addToast(t('reviewer.coiPage.deleteSuccess'), "success");
       await loadData();
     } catch (err) {
       addToast(
         err.response?.data?.message ||
         err.response?.data ||
         err.message ||
-        "Lỗi khi xóa xung đột lợi ích",
+        t('reviewer.coiPage.deleteError'),
         "error"
       );
     }
@@ -129,7 +131,7 @@ const ReviewerCOI = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Reviewer" title="Quản lý xung đột lợi ích">
+      <DashboardLayout roleLabel="Reviewer" title={t('reviewer.coiPage.title')}>
         <ListSkeleton items={5} />
       </DashboardLayout>
     );
@@ -138,25 +140,25 @@ const ReviewerCOI = () => {
   return (
     <DashboardLayout
       roleLabel="Reviewer"
-      title="Quản lý xung đột lợi ích"
-      subtitle="Khai báo xung đột lợi ích và xem danh sách bài được phân công"
+      title={t('reviewer.coiPage.title')}
+      subtitle={t('reviewer.coiPage.subtitle')}
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <span className="breadcrumb-current">Người chấm</span>
+            <span className="breadcrumb-current">{t('reviewer.coiPage.breadcrumb')}</span>
           </div>
           <h2 className="data-page-title">
             <FiAlertTriangle style={{ marginRight: "0.5rem", verticalAlign: "middle", color: "#f59e0b" }} />
-            Quản lý xung đột lợi ích
+            {t('reviewer.coiPage.title')}
           </h2>
           <p className="data-page-subtitle">
-            Khai báo xung đột lợi ích để tránh được phân công chấm các bài không phù hợp.
+            {t('reviewer.coiPage.description')}
           </p>
         </div>
         <div className="data-page-header-right">
           <button className="btn-secondary" onClick={() => navigate(-1)}>
-            ← Quay lại
+            ← {t('common.back')}
           </button>
         </div>
       </div>
@@ -176,12 +178,12 @@ const ReviewerCOI = () => {
           {showForm ? (
             <>
               <FiX size={18} style={{ marginRight: "0.5rem" }} />
-              Đóng form
+              {t('reviewer.coiPage.closeForm')}
             </>
           ) : (
             <>
               <FiPlus size={18} style={{ marginRight: "0.5rem" }} />
-              Khai báo xung đột lợi ích mới
+              {t('reviewer.coiPage.declareNew')}
             </>
           )}
         </button>
@@ -206,11 +208,11 @@ const ReviewerCOI = () => {
             fontSize: "0.875rem",
           }}>
             <FiAlertTriangle size={16} />
-            Khai báo xung đột lợi ích mới
+            {t('reviewer.coiPage.declareNew')}
           </div>
           <form onSubmit={handleSubmitCOI} className="submission-form">
             <div className="form-group">
-              <label className="form-label">Chọn bài báo *</label>
+              <label className="form-label">{t('reviewer.coiPage.selectPaper')} *</label>
               <select
                 value={formData.paperId}
                 onChange={(e) =>
@@ -219,20 +221,20 @@ const ReviewerCOI = () => {
                 required
                 className="form-input"
               >
-                <option value="">-- Chọn bài báo --</option>
+                <option value="">-- {t('reviewer.coiPage.selectPaper')} --</option>
                 {availablePapers.map((paper) => (
                   <option key={paper.id} value={paper.id}>
-                    {paper.title} (Chủ đề: {paper.track?.name || "N/A"})
+                    {paper.title} ({t('reviewer.coiPage.topic')}: {paper.track?.name || "N/A"})
                   </option>
                 ))}
               </select>
               <div className="field-hint">
-                Chỉ hiển thị các bài chưa khai báo xung đột lợi ích
+                {t('reviewer.coiPage.onlyUndeclaredPapers')}
               </div>
             </div>
 
             <div className="form-group">
-              <label className="form-label">Lý do xung đột *</label>
+              <label className="form-label">{t('reviewer.coiPage.reasonLabel')} *</label>
               <textarea
                 value={formData.reason}
                 onChange={(e) =>
@@ -241,11 +243,11 @@ const ReviewerCOI = () => {
                 required
                 rows={4}
                 className="textarea-input"
-                placeholder="Ví dụ: Cùng cơ quan, đồng nghiệp, cố vấn luận án, quan hệ họ hàng..."
+                placeholder={t('reviewer.coiPage.reasonPlaceholder')}
                 maxLength={500}
               />
               <div className="char-count">
-                {formData.reason.length}/500 ký tự
+                {formData.reason.length}/500 {t('reviewer.coiPage.characters')}
               </div>
             </div>
 
@@ -256,7 +258,7 @@ const ReviewerCOI = () => {
                 disabled={submitting}
               >
                 <FiCheckCircle size={18} style={{ marginRight: "0.5rem" }} />
-                {submitting ? "Đang gửi..." : "Khai báo xung đột"}
+                {submitting ? t('app.loading') : t('reviewer.coiPage.declareConflict')}
               </button>
               <button
                 type="button"
@@ -267,7 +269,7 @@ const ReviewerCOI = () => {
                 }}
               >
                 <FiX size={18} style={{ marginRight: "0.5rem" }} />
-                Hủy
+                {t('common.cancel')}
               </button>
             </div>
           </form>
@@ -292,14 +294,14 @@ const ReviewerCOI = () => {
           fontSize: "0.875rem",
         }}>
           <FiAlertTriangle size={16} />
-          Danh sách xung đột lợi ích đã khai báo ({conflicts.length})
+          {t('reviewer.coiPage.listTitle')} ({conflicts.length})
         </div>
         {conflicts.length === 0 ? (
           <div className="empty-state">
             <FiAlertTriangle size={48} style={{ color: "#cbd5e1" }} />
-            <p>Bạn chưa khai báo xung đột lợi ích nào.</p>
+            <p>{t('reviewer.coiPage.noConflicts')}</p>
             <p style={{ fontSize: "0.9rem", color: "#94a3b8" }}>
-              Nhấn nút "Khai báo xung đột lợi ích mới" để thêm.
+              {t('reviewer.coiPage.noConflictsHint')}
             </p>
           </div>
         ) : (
@@ -308,11 +310,11 @@ const ReviewerCOI = () => {
               <thead>
                 <tr>
                   <th style={{ width: "60px" }}>ID</th>
-                  <th>Tiêu đề bài báo</th>
-                  <th style={{ width: "150px" }}>Chủ đề</th>
-                  <th style={{ width: "250px" }}>Lý do</th>
-                  <th style={{ width: "120px" }}>Ngày khai báo</th>
-                  <th style={{ width: "100px", textAlign: "center" }}>Thao tác</th>
+                  <th>{t('reviewer.coiPage.paperTitle')}</th>
+                  <th style={{ width: "150px" }}>{t('reviewer.coiPage.topic')}</th>
+                  <th style={{ width: "250px" }}>{t('reviewer.coiPage.reason')}</th>
+                  <th style={{ width: "120px" }}>{t('reviewer.coiPage.declareDate')}</th>
+                  <th style={{ width: "100px", textAlign: "center" }}>{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -331,7 +333,7 @@ const ReviewerCOI = () => {
                       <button
                         className="btn-delete-icon"
                         onClick={() => handleDeleteCOI(conflict.id)}
-                        title="Xóa xung đột lợi ích"
+                        title={t('reviewer.coiPage.deleteConflict')}
                       >
                         <FiTrash2 size={17} />
                       </button>

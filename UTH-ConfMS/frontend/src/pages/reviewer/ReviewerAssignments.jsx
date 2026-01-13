@@ -1,6 +1,7 @@
 // src/pages/reviewer/ReviewerAssignments.jsx
 import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import PaperSynopsisModal from "../../components/PaperSynopsisModal";
@@ -23,6 +24,7 @@ import {
 import "../../styles/ReviewerAssignments.css";
 
 const ReviewerAssignments = () => {
+  const { t } = useTranslation();
   const [assignments, setAssignments] = useState([]);
   const [filteredAssignments, setFilteredAssignments] = useState([]);
   const [conferences, setConferences] = useState([]);
@@ -72,7 +74,7 @@ const ReviewerAssignments = () => {
         const reviewerId = currentUser.id;
 
         if (!reviewerId) {
-          setError("Không tìm thấy thông tin reviewer");
+          setError(t('reviewer.assignments.reviewerNotFound'));
           return;
         }
 
@@ -91,7 +93,7 @@ const ReviewerAssignments = () => {
         setAssignments(assignmentsData);
       } catch (err) {
         console.error("Load assignments error:", err);
-        setError("Không thể tải danh sách bài được phân công.");
+        setError(t('reviewer.assignments.loadError'));
       } finally {
         setLoading(false);
       }
@@ -145,12 +147,12 @@ const ReviewerAssignments = () => {
         )
       );
     } catch (err) {
-      addToast("Lỗi: " + (err.response?.data?.message || err.message), "error");
+      addToast(t('app.error') + ": " + (err.response?.data?.message || err.message), "error");
     }
   };
 
   const handleDecline = async (assignmentId) => {
-    if (!confirm("Bạn có chắc chắn muốn từ chối assignment này?")) return;
+    if (!confirm(t('reviewer.assignments.confirmDecline'))) return;
 
     try {
       await apiClient.put(`/assignments/${assignmentId}/decline`);
@@ -160,34 +162,34 @@ const ReviewerAssignments = () => {
         )
       );
     } catch (err) {
-      addToast("Lỗi: " + (err.response?.data?.message || err.message), "error");
+      addToast(t('app.error') + ": " + (err.response?.data?.message || err.message), "error");
     }
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return "Chưa đặt";
+    if (!dateString) return t('reviewer.assignments.notSet');
     return new Date(dateString).toLocaleString("vi-VN");
   };
 
   const getStatusBadge = (status) => {
     const badges = {
       PENDING: { 
-        text: "Chờ xác nhận", 
+        text: t('reviewer.assignments.statusPending'), 
         className: "status-badge status-pending",
         icon: <FiClock />
       },
       ACCEPTED: { 
-        text: "Đã chấp nhận", 
+        text: t('reviewer.assignments.statusAccepted'), 
         className: "status-badge status-accepted",
         icon: <FiCheckCircle />
       },
       DECLINED: { 
-        text: "Đã từ chối", 
+        text: t('reviewer.assignments.statusDeclined'), 
         className: "status-badge status-declined",
         icon: <FiXCircle />
       },
       COMPLETED: { 
-        text: "Đã hoàn thành", 
+        text: t('reviewer.assignments.statusCompleted'), 
         className: "status-badge status-completed",
         icon: <FiCheckCircle />
       },
@@ -205,7 +207,7 @@ const ReviewerAssignments = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Reviewer / PC" title="Bài được phân công">
+      <DashboardLayout roleLabel="Reviewer / PC" title={t('reviewer.assignments.title')}>
         <CardSkeleton count={6} />
       </DashboardLayout>
     );
@@ -213,7 +215,7 @@ const ReviewerAssignments = () => {
 
   if (error) {
     return (
-      <DashboardLayout roleLabel="Reviewer / PC" title="Bài được phân công">
+      <DashboardLayout roleLabel="Reviewer / PC" title={t('reviewer.assignments.title')}>
         <div style={{ color: "#d32f2f", padding: "1rem" }}>{error}</div>
       </DashboardLayout>
     );
@@ -222,38 +224,38 @@ const ReviewerAssignments = () => {
   return (
     <DashboardLayout
       roleLabel="Reviewer / PC"
-      title="Bài được phân công"
+      title={t('reviewer.assignments.title')}
     >
       <div className="assignments-header">
         <div className="assignments-header-content">
           <div className="assignments-breadcrumb">
             <span className="breadcrumb-item">Reviewer</span>
           </div>
-          <h2 className="assignments-title">Bài được phân công</h2>
+          <h2 className="assignments-title">{t('reviewer.assignments.title')}</h2>
         </div>
         
         <div className="assignments-stats">
           <div className="stat-item">
             <span className="stat-number">{assignments.length}</span>
-            <span className="stat-label">Tổng số bài</span>
+            <span className="stat-label">{t('reviewer.assignments.totalPapers')}</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">
               {assignments.filter(a => a.status === 'PENDING').length}
             </span>
-            <span className="stat-label">Chờ xác nhận</span>
+            <span className="stat-label">{t('reviewer.assignments.pendingCount')}</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">
               {assignments.filter(a => a.status === 'ACCEPTED').length}
             </span>
-            <span className="stat-label">Đang review</span>
+            <span className="stat-label">{t('reviewer.assignments.reviewingCount')}</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">
               {assignments.filter(a => a.status === 'COMPLETED').length}
             </span>
-            <span className="stat-label">Hoàn thành</span>
+            <span className="stat-label">{t('reviewer.assignments.completedCount')}</span>
           </div>
         </div>
       </div>
@@ -279,7 +281,7 @@ const ReviewerAssignments = () => {
                 color: "#64748b",
                 fontSize: "0.875rem",
               }}>
-                Chọn hội nghị:
+                {t('reviewer.assignments.selectConference')}:
               </label>
               <select
                 value={selectedConference}
@@ -296,7 +298,7 @@ const ReviewerAssignments = () => {
                   color: "#475569",
                 }}
               >
-                <option value="ALL">Tất cả hội nghị</option>
+                <option value="ALL">{t('reviewer.assignments.allConferences')}</option>
                 {conferences.map((conf) => (
                   <option key={conf.id} value={conf.id}>
                     {conf.name}
@@ -313,7 +315,7 @@ const ReviewerAssignments = () => {
                 color: "#64748b",
                 fontSize: "0.875rem",
               }}>
-                Tìm kiếm:
+                {t('reviewer.assignments.search')}:
               </label>
               <div style={{ position: "relative" }}>
                 <FiFilter style={{
@@ -327,7 +329,7 @@ const ReviewerAssignments = () => {
                 }} />
                 <input
                   type="text"
-                  placeholder="Tìm theo tiêu đề, track, tác giả..."
+                  placeholder={t('reviewer.assignments.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{
@@ -351,42 +353,42 @@ const ReviewerAssignments = () => {
         <div className="filter-section">
           <div className="filter-label">
             <FiFilter />
-            <span>Lọc:</span>
+            <span>{t('reviewer.assignments.filterLabel')}</span>
           </div>
           <div className="filter-buttons">
             <button 
               className={`filter-btn ${filterStatus === 'ALL' ? 'active' : ''}`}
               onClick={() => setFilterStatus('ALL')}
             >
-              Tất cả
+              {t('reviewer.assignments.filterAll')}
               <span className="filter-count">{filteredAssignments.length}</span>
             </button>
             <button 
               className={`filter-btn ${filterStatus === 'PENDING' ? 'active' : ''}`}
               onClick={() => setFilterStatus('PENDING')}
             >
-              Chờ xác nhận
+              {t('reviewer.assignments.statusPending')}
               <span className="filter-count">{filteredAssignments.filter(a => a.status === 'PENDING').length}</span>
             </button>
             <button 
               className={`filter-btn ${filterStatus === 'ACCEPTED' ? 'active' : ''}`}
               onClick={() => setFilterStatus('ACCEPTED')}
             >
-              Đang review
+              {t('reviewer.assignments.filterReviewing')}
               <span className="filter-count">{filteredAssignments.filter(a => a.status === 'ACCEPTED').length}</span>
             </button>
             <button 
               className={`filter-btn ${filterStatus === 'COMPLETED' ? 'active' : ''}`}
               onClick={() => setFilterStatus('COMPLETED')}
             >
-              Hoàn thành
+              {t('reviewer.assignments.filterCompleted')}
               <span className="filter-count">{filteredAssignments.filter(a => a.status === 'COMPLETED').length}</span>
             </button>
             <button 
               className={`filter-btn ${filterStatus === 'DECLINED' ? 'active' : ''}`}
               onClick={() => setFilterStatus('DECLINED')}
             >
-              Đã từ chối
+              {t('reviewer.assignments.statusDeclined')}
               <span className="filter-count">{filteredAssignments.filter(a => a.status === 'DECLINED').length}</span>
             </button>
           </div>
@@ -395,15 +397,15 @@ const ReviewerAssignments = () => {
         <div className="sort-section">
           <div className="sort-label">
             <FiTrendingUp />
-            <span>Sắp xếp:</span>
+            <span>{t('reviewer.assignments.sortLabel')}</span>
           </div>
           <select 
             className="sort-select"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
           >
-            <option value="NEWEST">Mới phân công nhất</option>
-            <option value="DEADLINE">Deadline gần nhất</option>
+            <option value="NEWEST">{t('reviewer.assignments.sortNewest')}</option>
+            <option value="DEADLINE">{t('reviewer.assignments.sortDeadline')}</option>
           </select>
         </div>
       </div>
@@ -412,8 +414,8 @@ const ReviewerAssignments = () => {
         {filteredAssignments.length === 0 ? (
           <div className="assignments-empty">
             <FiFileText className="empty-icon" />
-            <h3>{assignments.length === 0 ? 'Chưa có bài phân công' : 'Không có kết quả phù hợp'}</h3>
-            <p>{assignments.length === 0 ? 'Bạn chưa có bài nào được phân công phản biện.' : 'Thử thay đổi bộ lọc để xem thêm.'}</p>
+            <h3>{assignments.length === 0 ? t('reviewer.assignments.noAssignments') : t('reviewer.assignments.noMatchingResults')}</h3>
+            <p>{assignments.length === 0 ? t('reviewer.assignments.noAssignmentsDesc') : t('reviewer.assignments.noMatchingResultsDesc')}</p>
           </div>
         ) : (
           <div className="assignments-grid">
@@ -448,7 +450,7 @@ const ReviewerAssignments = () => {
                     <div className="date-item">
                       <FiCalendar className="date-icon" />
                       <div className="date-content">
-                        <span className="date-label">Ngày phân công</span>
+                        <span className="date-label">{t('reviewer.assignments.assignedDate')}</span>
                         <span className="date-value">
                           {formatDate(assignment.assignedDate)}
                         </span>
@@ -457,7 +459,7 @@ const ReviewerAssignments = () => {
                     <div className="date-item">
                       <FiClock className="date-icon deadline" />
                       <div className="date-content">
-                        <span className="date-label">Hạn chấm</span>
+                        <span className="date-label">{t('reviewer.assignments.dueDate')}</span>
                         <span className="date-value deadline">
                           {formatDate(assignment.dueDate)}
                         </span>
@@ -478,14 +480,14 @@ const ReviewerAssignments = () => {
                         onClick={() => handleAccept(assignment.id)}
                       >
                         <FiCheckCircle />
-                        <span>Chấp nhận</span>
+                        <span>{t('reviewer.assignments.acceptBtn')}</span>
                       </button>
                       <button
                         className="assignment-btn btn-decline"
                         onClick={() => handleDecline(assignment.id)}
                       >
                         <FiXCircle />
-                        <span>Từ chối</span>
+                        <span>{t('reviewer.assignments.declineBtn')}</span>
                       </button>
                     </>
                   )}
@@ -496,14 +498,14 @@ const ReviewerAssignments = () => {
                         className="assignment-btn btn-primary"
                       >
                         <FiFileText />
-                        <span>Chấm bài</span>
+                        <span>{t('reviewer.assignments.reviewBtn')}</span>
                       </Link>
                       <Link
                         to={`/reviewer/discussions?paperId=${assignment.paper?.id}`}
                         className="assignment-btn btn-discussion"
                       >
                         <FiMessageSquare />
-                        <span>Thảo luận</span>
+                        <span>{t('reviewer.assignments.discussionBtn')}</span>
                       </Link>
                     </>
                   )}
@@ -513,7 +515,7 @@ const ReviewerAssignments = () => {
                       className="assignment-btn btn-view"
                     >
                       <FiEye />
-                      <span>Xem review</span>
+                      <span>{t('reviewer.assignments.viewReviewBtn')}</span>
                     </Link>
                   )}
                 </div>
@@ -531,7 +533,7 @@ const ReviewerAssignments = () => {
           totalItems={filteredAssignments.length}
           itemsPerPage={12}
           onPageChange={setCurrentPage}
-          itemName="bài phân công"
+          itemName={t('reviewer.assignments.assignmentsLabel')}
         />
       )}
 
