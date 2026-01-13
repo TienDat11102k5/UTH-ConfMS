@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
 import { ToastContainer } from "../../components/Toast";
@@ -8,6 +9,7 @@ import { FiDownload, FiFilter, FiSearch, FiGrid, FiList, FiBook, FiUsers, FiFold
 import "../../styles/PublicProceedings.css";
 
 const PublicProceedings = () => {
+  const { t } = useTranslation();
   const { conferenceId } = useParams();
   const [conferences, setConferences] = useState([]);
   const [selectedConference, setSelectedConference] = useState("");
@@ -77,11 +79,11 @@ const PublicProceedings = () => {
         fetchAllProceedings();
       } else {
         setLoading(false);
-        setError("Chưa có hội nghị nào trong hệ thống.");
+        setError(t('public.proceedingsPage.noConferences'));
       }
     } catch (err) {
       console.error("Error fetching conferences:", err);
-      setError("Không thể tải danh sách hội nghị.");
+      setError(t('public.proceedingsPage.loadConferencesError'));
       setLoading(false);
     }
   };
@@ -99,7 +101,7 @@ const PublicProceedings = () => {
       setProceedings(response.data);
     } catch (err) {
       console.error("Error fetching all proceedings:", err);
-      setError("Không thể tải danh sách kỷ yếu. Vui lòng thử lại sau.");
+      setError(t('public.proceedingsPage.loadProceedingsError'));
       setProceedings([]);
     } finally {
       setLoading(false);
@@ -121,9 +123,9 @@ const PublicProceedings = () => {
       console.error("Error fetching proceedings:", err);
 
       if (err.response?.status === 404) {
-        setError("Không tìm thấy hội nghị này.");
+        setError(t('public.proceedingsPage.conferenceNotFound'));
       } else {
-        setError("Không thể tải danh sách kỷ yếu. Vui lòng thử lại sau.");
+        setError(t('public.proceedingsPage.loadProceedingsError'));
       }
       setProceedings([]);
     } finally {
@@ -162,7 +164,7 @@ const PublicProceedings = () => {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Error downloading paper:", err);
-      addToast("Không thể tải xuống file. Vui lòng thử lại sau.", "error");
+      addToast(t('public.proceedingsPage.downloadError'), "error");
     }
   };
 
@@ -197,7 +199,7 @@ const PublicProceedings = () => {
         <PortalHeader
           title="UTH Conference Portal · Proceedings"
           ctaHref="/program"
-          ctaText="Xem chương trình"
+          ctaText={t('public.proceedingsPage.viewProgram')}
         />
 
         <div style={{
@@ -231,7 +233,7 @@ const PublicProceedings = () => {
               letterSpacing: "-0.02em",
               textShadow: "0 2px 4px rgba(13, 148, 136, 0.1)"
             }}>
-              Kỷ yếu hội nghị khoa học
+              {t('public.proceedingsPage.title')}
             </h1>
             <p style={{
               fontSize: "1.0625rem",
@@ -240,7 +242,7 @@ const PublicProceedings = () => {
               margin: 0,
               letterSpacing: "0.01em"
             }}>
-              Danh sách các bài báo đã được chấp nhận công bố
+              {t('public.proceedingsPage.subtitle')}
             </p>
           </div>
         </div>
@@ -258,7 +260,7 @@ const PublicProceedings = () => {
       <PortalHeader
         title="UTH Conference Portal · Proceedings"
         ctaHref="/program"
-        ctaText="Xem chương trình"
+        ctaText={t('public.proceedingsPage.viewProgram')}
       />
 
       {/* Hero Banner */}
@@ -334,7 +336,7 @@ const PublicProceedings = () => {
             textShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
             lineHeight: 1.2
           }}>
-            Kỷ yếu hội nghị khoa học
+            {t('public.proceedingsPage.title')}
           </h1>
           
           <div style={{
@@ -362,7 +364,7 @@ const PublicProceedings = () => {
               margin: 0,
               letterSpacing: "0.02em"
             }}>
-              Danh sách các bài báo đã được chấp nhận công bố
+              {t('public.proceedingsPage.subtitle')}
             </p>
           </div>
         </div>
@@ -392,7 +394,7 @@ const PublicProceedings = () => {
                 marginBottom: "0.5rem"
               }}>
                 <FiBook size={24} />
-                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>Tổng số bài báo</span>
+                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>{t('public.proceedingsPage.totalPapers')}</span>
               </div>
               <div style={{ fontSize: "2rem", fontWeight: 700 }}>{proceedings.length}</div>
             </div>
@@ -411,7 +413,7 @@ const PublicProceedings = () => {
                 marginBottom: "0.5rem"
               }}>
                 <FiFolder size={24} />
-                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>Số chủ đề</span>
+                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>{t('public.proceedingsPage.numTracks')}</span>
               </div>
               <div style={{ fontSize: "2rem", fontWeight: 700 }}>{tracks.length}</div>
             </div>
@@ -430,7 +432,7 @@ const PublicProceedings = () => {
                 marginBottom: "0.5rem"
               }}>
                 <FiUsers size={24} />
-                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>Tác giả</span>
+                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>{t('public.proceedingsPage.authors')}</span>
               </div>
               <div style={{ fontSize: "2rem", fontWeight: 700 }}>
                 {new Set(proceedings.flatMap(p => {
@@ -462,7 +464,7 @@ const PublicProceedings = () => {
               color: "#64748b",
               fontSize: "0.875rem",
             }}>
-              Chọn hội nghị:
+              {t('public.proceedingsPage.selectConference')}:
             </label>
             <select
               value={selectedConference}
@@ -479,7 +481,7 @@ const PublicProceedings = () => {
                 color: "#475569",
               }}
             >
-              <option value="">Tất cả hội nghị</option>
+              <option value="">{t('public.proceedingsPage.allConferences')}</option>
               {conferences.map((conf) => (
                 <option key={conf.id} value={conf.id}>
                   {conf.name}
@@ -511,7 +513,7 @@ const PublicProceedings = () => {
                   gap: "0.375rem"
                 }}>
                   <FiFilter size={14} />
-                  Lọc theo chủ đề:
+                  {t('public.proceedingsPage.filterByTrack')}:
                 </label>
                 <select
                   value={selectedTrack}
@@ -528,7 +530,7 @@ const PublicProceedings = () => {
                     color: "#475569",
                   }}
                 >
-                  <option value="ALL">Tất cả chủ đề ({proceedings.length})</option>
+                  <option value="ALL">{t('public.proceedingsPage.allTracks')} ({proceedings.length})</option>
                   {tracks.map((track) => (
                     <option key={track} value={track}>
                       {track} ({proceedings.filter(p => p.trackName === track).length})
@@ -548,11 +550,11 @@ const PublicProceedings = () => {
                   gap: "0.375rem"
                 }}>
                   <FiSearch size={14} />
-                  Tìm kiếm:
+                  {t('public.proceedingsPage.search')}:
                 </label>
                 <input
                   type="text"
-                  placeholder="Tìm theo tiêu đề, tác giả..."
+                  placeholder={t('public.proceedingsPage.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{
@@ -576,7 +578,7 @@ const PublicProceedings = () => {
                     fontWeight: 600,
                     color: "#64748b",
                     fontSize: "0.875rem",
-                  }}>Kiểu hiển thị:</label>
+                  }}>{t('public.proceedingsPage.viewMode')}:</label>
                   <div style={{ display: "flex", gap: "0.25rem" }}>
                     <button
                       onClick={() => setViewMode("cards")}
@@ -647,7 +649,7 @@ const PublicProceedings = () => {
             color: "#6b7280",
             boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
           }}>
-            Chưa có bài báo nào được công bố trong kỷ yếu.
+            {t('public.proceedingsPage.noPapersPublished')}
           </div>
         )}
 
@@ -668,7 +670,7 @@ const PublicProceedings = () => {
                 justifyContent: "space-between",
                 alignItems: "center"
               }}>
-                <span>Hiển thị {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredProceedings.length)} / {filteredProceedings.length} bài báo</span>
+                <span>{t('public.proceedingsPage.showing')} {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredProceedings.length)} / {filteredProceedings.length} {t('public.proceedingsPage.papers')}</span>
               </div>
 
               {filteredProceedings.length === 0 ? (
@@ -677,7 +679,7 @@ const PublicProceedings = () => {
                   textAlign: "center",
                   color: "#6b7280",
                 }}>
-                  Không tìm thấy bài báo phù hợp với tiêu chí tìm kiếm.
+                  {t('public.proceedingsPage.noMatchingPapers')}
                 </div>
               ) : (
                 <>
@@ -692,7 +694,7 @@ const PublicProceedings = () => {
                       {paginatedProceedings.map((paper, index) => {
                         const allAuthors = paper.coAuthors
                           ? `${paper.authorName}, ${paper.coAuthors}`
-                          : paper.authorName || "Không có thông tin tác giả";
+                          : paper.authorName || t('public.proceedingsPage.noAuthorInfo');
                         const globalIndex = startIndex + index + 1;
 
                         return (
@@ -829,7 +831,7 @@ const PublicProceedings = () => {
                                     }}
                                   >
                                     <FiDownload size={16} />
-                                    Tải xuống PDF
+                                    {t('public.proceedingsPage.downloadPdf')}
                                   </button>
                                 ) : (
                                   <div style={{
@@ -842,7 +844,7 @@ const PublicProceedings = () => {
                                     fontWeight: 600,
                                     textAlign: "center"
                                   }}>
-                                    PDF chưa có sẵn
+                                    {t('public.proceedingsPage.pdfNotAvailable')}
                                   </div>
                                 )}
                               </div>
@@ -880,14 +882,14 @@ const PublicProceedings = () => {
                             fontWeight: 700,
                             fontSize: "0.8125rem",
                             minWidth: "300px"
-                          }}>Tiêu đề</th>
+                          }}>{t('public.proceedingsPage.tableTitle')}</th>
                           <th style={{
                             padding: "0.875rem",
                             textAlign: "left",
                             fontWeight: 700,
                             fontSize: "0.8125rem",
                             minWidth: "200px"
-                          }}>Tác giả</th>
+                          }}>{t('public.proceedingsPage.tableAuthor')}</th>
                           <th style={{
                             padding: "0.875rem",
                             textAlign: "left",
@@ -895,7 +897,7 @@ const PublicProceedings = () => {
                             fontSize: "0.8125rem",
                             width: "150px",
                             whiteSpace: "nowrap"
-                          }}>Chủ đề</th>
+                          }}>{t('public.proceedingsPage.tableTrack')}</th>
                           <th style={{
                             padding: "0.875rem",
                             textAlign: "center",
@@ -903,14 +905,14 @@ const PublicProceedings = () => {
                             fontSize: "0.8125rem",
                             width: "100px",
                             whiteSpace: "nowrap"
-                          }}>Tải xuống</th>
+                          }}>{t('public.proceedingsPage.tableDownload')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {paginatedProceedings.map((paper, index) => {
                           const allAuthors = paper.coAuthors
                             ? `${paper.authorName}, ${paper.coAuthors}`
-                            : paper.authorName || "Không có thông tin tác giả";
+                            : paper.authorName || t('public.proceedingsPage.noAuthorInfo');
                           const globalIndex = startIndex + index + 1;
 
                           return (
@@ -997,7 +999,7 @@ const PublicProceedings = () => {
                                     display: "inline-block",
                                     whiteSpace: "nowrap"
                                   }}>
-                                    Chưa có
+                                    {t('public.proceedingsPage.notAvailable')}
                                   </span>
                                 )}
                               </td>
@@ -1033,7 +1035,7 @@ const PublicProceedings = () => {
                           transition: "all 0.2s ease"
                         }}
                       >
-                        Trước
+                        {t('public.proceedingsPage.previous')}
                       </button>
 
                       <div style={{
@@ -1095,7 +1097,7 @@ const PublicProceedings = () => {
                           transition: "all 0.2s ease"
                         }}
                       >
-                        Sau
+                        {t('public.proceedingsPage.next')}
                       </button>
                     </div>
                   )}
@@ -1107,7 +1109,7 @@ const PublicProceedings = () => {
 
         <div className="back-link-container">
           <Link to="/" className="back-link">
-            ← Quay lại trang chủ
+            ← {t('public.proceedingsPage.backToHome')}
           </Link>
         </div>
       </div>
@@ -1115,7 +1117,7 @@ const PublicProceedings = () => {
       {/* Footer */}
       <footer className="proceedings-footer">
         <span>
-          © {new Date().getFullYear()} Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải
+          © {new Date().getFullYear()} {t('public.proceedingsPage.footer')}
         </span>
       </footer>
 

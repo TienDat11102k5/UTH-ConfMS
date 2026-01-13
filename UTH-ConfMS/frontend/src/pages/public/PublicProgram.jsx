@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
 import { CardSkeleton } from "../../components/LoadingSkeleton";
@@ -7,6 +8,7 @@ import { FiCalendar, FiClock, FiMapPin, FiLayers, FiSearch } from "react-icons/f
 import "../../styles/PublicProgram.css";
 
 const PublicProgram = () => {
+  const { t } = useTranslation();
   const { conferenceId } = useParams();
   const [conferences, setConferences] = useState([]);
   const [selectedConference, setSelectedConference] = useState("");
@@ -53,11 +55,11 @@ const PublicProgram = () => {
         fetchProgram(firstConfId);
       } else if (!conferenceId && (!response.data || response.data.length === 0)) {
         setLoading(false);
-        setError("Chưa có hội nghị nào trong hệ thống.");
+        setError(t('public.programPage.noConferences'));
       }
     } catch (err) {
       console.error("Error fetching conferences:", err);
-      setError("Không thể tải danh sách hội nghị.");
+      setError(t('public.programPage.loadConferencesError'));
       setLoading(false);
     }
   };
@@ -76,9 +78,9 @@ const PublicProgram = () => {
       console.error("Error fetching program:", err);
 
       if (err.response?.status === 404) {
-        setError("Không tìm thấy chương trình hội nghị.");
+        setError(t('public.programPage.programNotFound'));
       } else {
-        setError("Không thể tải chương trình. Vui lòng thử lại sau.");
+        setError(t('public.programPage.loadProgramError'));
       }
       setProgram([]);
     } finally {
@@ -110,7 +112,7 @@ const PublicProgram = () => {
         <PortalHeader
           title="UTH Conference Portal · Program"
           ctaHref="/proceedings"
-          ctaText="Xem kỷ yếu"
+          ctaText={t('public.programPage.viewProceedings')}
         />
 
         <div style={{
@@ -144,7 +146,7 @@ const PublicProgram = () => {
               letterSpacing: "-0.02em",
               textShadow: "0 2px 4px rgba(13, 148, 136, 0.1)"
             }}>
-              Chương trình hội nghị
+              {t('public.programPage.title')}
             </h1>
             <p style={{
               fontSize: "1.0625rem",
@@ -153,7 +155,7 @@ const PublicProgram = () => {
               margin: 0,
               letterSpacing: "0.01em"
             }}>
-              Lịch trình các phiên trình bày và hoạt động
+              {t('public.programPage.subtitle')}
             </p>
           </div>
         </div>
@@ -171,7 +173,7 @@ const PublicProgram = () => {
       <PortalHeader
         title="UTH Conference Portal · Program"
         ctaHref="/proceedings"
-        ctaText="Xem kỷ yếu"
+        ctaText={t('public.programPage.viewProceedings')}
       />
 
       {/* Hero Banner */}
@@ -247,7 +249,7 @@ const PublicProgram = () => {
             textShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
             lineHeight: 1.2
           }}>
-            Chương trình hội nghị
+            {t('public.programPage.title')}
           </h1>
           
           <div style={{
@@ -275,7 +277,7 @@ const PublicProgram = () => {
               margin: 0,
               letterSpacing: "0.02em"
             }}>
-              Lịch trình các phiên trình bày và hoạt động
+              {t('public.programPage.subtitle')}
             </p>
           </div>
         </div>
@@ -305,7 +307,7 @@ const PublicProgram = () => {
                 marginBottom: "0.5rem"
               }}>
                 <FiLayers size={24} />
-                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>Tổng số phiên</span>
+                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>{t('public.programPage.totalSessions')}</span>
               </div>
               <div style={{ fontSize: "2rem", fontWeight: 700 }}>{program.length}</div>
             </div>
@@ -324,7 +326,7 @@ const PublicProgram = () => {
                 marginBottom: "0.5rem"
               }}>
                 <FiCalendar size={24} />
-                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>Tổng số bài báo</span>
+                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>{t('public.programPage.totalPapers')}</span>
               </div>
               <div style={{ fontSize: "2rem", fontWeight: 700 }}>
                 {program.reduce((total, session) => total + session.papers.length, 0)}
@@ -345,10 +347,10 @@ const PublicProgram = () => {
                 marginBottom: "0.5rem"
               }}>
                 <FiMapPin size={24} />
-                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>Địa điểm</span>
+                <span style={{ fontSize: "0.875rem", opacity: 0.9, fontWeight: 500 }}>{t('public.programPage.location')}</span>
               </div>
               <div style={{ fontSize: "1.125rem", fontWeight: 700 }}>
-                {[...new Set(program.map(s => s.room).filter(Boolean))].length || "N/A"} phòng
+                {[...new Set(program.map(s => s.room).filter(Boolean))].length || "N/A"} {t('public.programPage.rooms')}
               </div>
             </div>
           </div>
@@ -375,11 +377,11 @@ const PublicProgram = () => {
               gap: "0.375rem"
             }}>
               <FiSearch size={14} />
-              Tìm kiếm bài báo:
+              {t('public.programPage.searchPapers')}:
             </label>
             <input
               type="text"
-              placeholder="Nhập tiêu đề bài báo hoặc tên tác giả..."
+              placeholder={t('public.programPage.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -412,7 +414,7 @@ const PublicProgram = () => {
               color: "#64748b",
               fontSize: "0.875rem",
             }}>
-              Chọn hội nghị:
+              {t('public.programPage.selectConference')}:
             </label>
             <select
               value={selectedConference}
@@ -564,10 +566,10 @@ const PublicProgram = () => {
                     color: "#6b7280",
                     fontWeight: 600
                   }}>
-                    {filteredPapers.length} bài báo
+                    {filteredPapers.length} {t('public.programPage.papers')}
                     {searchQuery.trim() && filteredPapers.length !== session.papers.length && (
                       <span style={{ color: "#0d9488", marginLeft: "0.5rem" }}>
-                        (đã lọc từ {session.papers.length})
+                        ({t('public.programPage.filteredFrom')} {session.papers.length})
                       </span>
                     )}
                   </div>
@@ -612,7 +614,7 @@ const PublicProgram = () => {
                             color: "#6b7280",
                             lineHeight: 1.5
                           }}>
-                            <span style={{ fontWeight: 600, color: "#475569" }}>Tác giả:</span> {paper.authorName}
+                            <span style={{ fontWeight: 600, color: "#475569" }}>{t('public.programPage.author')}:</span> {paper.authorName}
                             {paper.coAuthors && `, ${paper.coAuthors}`}
                           </div>
                         </div>
@@ -635,7 +637,7 @@ const PublicProgram = () => {
             color: "#6b7280",
             boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
           }}>
-            Chưa có chương trình nào được công bố.
+            {t('public.programPage.noProgramPublished')}
           </div>
         )}
 
@@ -656,7 +658,7 @@ const PublicProgram = () => {
             onMouseOver={(e) => e.currentTarget.style.color = "#14b8a6"}
             onMouseOut={(e) => e.currentTarget.style.color = "#0d9488"}
           >
-            ← Quay lại trang chủ
+            ← {t('public.programPage.backToHome')}
           </Link>
         </div>
       </div>
@@ -673,7 +675,7 @@ const PublicProgram = () => {
           fontSize: "0.875rem",
           color: "#6b7280"
         }}>
-          © {new Date().getFullYear()} Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải
+          © {new Date().getFullYear()} {t('public.programPage.footer')}
         </span>
       </footer>
     </div>

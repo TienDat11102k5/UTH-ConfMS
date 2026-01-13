@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import "../../styles/PublicHome.css";
 
 const conferences = [
@@ -17,26 +18,28 @@ const news = [
 ];
 
 function PublicHome() {
+  const { t } = useTranslation();
+
   return (
     <div className="public-home">
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
-          <h1>Welcome to UTH Conference Management System</h1>
-          <p>Explore upcoming conferences, programs, and news!</p>
-          <a href="#conferences" className="btn">View Conferences</a>
+          <h1>{t('public.publicHome.welcome')}</h1>
+          <p>{t('public.publicHome.explore')}</p>
+          <a href="#conferences" className="btn">{t('public.publicHome.viewConferences')}</a>
         </div>
       </section>
 
       {/* Conferences Section */}
       <section id="conferences" className="section">
-        <h2>Upcoming Conferences</h2>
+        <h2>{t('public.publicHome.upcomingConferences')}</h2>
         <div className="cards">
           {conferences.map(c => (
             <div key={c.id} className="card">
               <h3>{c.title}</h3>
-              <p><strong>Date:</strong> {c.date}</p>
-              <p><strong>Location:</strong> {c.location}</p>
+              <p><strong>{t('public.publicHome.date')}:</strong> {c.date}</p>
+              <p><strong>{t('public.publicHome.location')}:</strong> {c.location}</p>
             </div>
           ))}
         </div>
@@ -44,13 +47,13 @@ function PublicHome() {
 
       {/* Programs Section */}
       <section id="programs" className="section">
-        <h2>Public Programs</h2>
+        <h2>{t('public.publicHome.publicPrograms')}</h2>
         <div className="cards">
           {programs.map(p => (
             <div key={p.id} className="card">
               <h3>{p.title}</h3>
-              <p><strong>Speaker:</strong> {p.speaker}</p>
-              <p><strong>Time:</strong> {p.time}</p>
+              <p><strong>{t('public.publicHome.speaker')}:</strong> {p.speaker}</p>
+              <p><strong>{t('public.publicHome.time')}:</strong> {p.time}</p>
             </div>
           ))}
         </div>
@@ -58,7 +61,7 @@ function PublicHome() {
 
       {/* News Section */}
       <section id="news" className="section">
-        <h2>News & Announcements</h2>
+        <h2>{t('public.publicHome.newsAnnouncements')}</h2>
         <ul className="news-list">
           {news.map(n => (
             <li key={n.id}>
@@ -70,11 +73,12 @@ function PublicHome() {
 
       {/* Footer */}
       <footer className="footer">
-        <p>© 2025 UTH Conference Management System. All rights reserved.</p>
-        <p>Contact: info@uth.edu.vn | Phone: +84 123 456 789</p>
+        <p>© {new Date().getFullYear()} {t('public.publicHome.footerText')}</p>
+        <p>{t('public.publicHome.contact')}</p>
       </footer>
     </div>
   );
 }
 
 export default PublicHome;
+

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { 
   FiCalendar, 
   FiFileText, 
@@ -13,6 +14,7 @@ import {
 import "../../styles/PublicCfp.css";
 
 const PublicCfp = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const isLoggedIn = !!localStorage.getItem("accessToken");
 
@@ -31,23 +33,23 @@ const PublicCfp = () => {
 
   // Statistics data
   const stats = [
-    { icon: FiFileText, label: "Topics", value: "5+", color: "#0d9488" },
-    { icon: FiUsers, label: "Expected Authors", value: "100+", color: "#8b5cf6" },
-    { icon: FiClock, label: "Days Remaining", value: daysRemaining > 0 ? daysRemaining : "Closed", color: "#f59e0b" }
+    { icon: FiFileText, label: t('public.cfpPage.topics'), value: "5+", color: "#0d9488" },
+    { icon: FiUsers, label: t('public.cfpPage.expectedAuthors'), value: "100+", color: "#8b5cf6" },
+    { icon: FiClock, label: t('public.cfpPage.daysRemaining'), value: daysRemaining > 0 ? daysRemaining : t('public.cfpPage.closed'), color: "#f59e0b" }
   ];
 
   const topics = [
-    "Trí tuệ nhân tạo & Machine Learning",
-    "Khoa học dữ liệu & Big Data",
-    "Công nghệ phần mềm",
-    "An toàn thông tin",
-    "Hệ thống thông tin & ERP"
+    t('public.cfpPage.topicAI'),
+    t('public.cfpPage.topicDataScience'),
+    t('public.cfpPage.topicSoftwareEngineering'),
+    t('public.cfpPage.topicCybersecurity'),
+    t('public.cfpPage.topicInfoSystems')
   ];
 
   const timeline = [
-    { date: "30/08/2025", event: "Hạn nộp bài", icon: FiSend },
-    { date: "20/09/2025", event: "Thông báo kết quả", icon: FiCheckCircle },
-    { date: "15/10/2025", event: "Hội nghị diễn ra", icon: FiAward }
+    { date: "30/08/2025", event: t('public.cfpPage.submissionDeadline'), icon: FiSend },
+    { date: "20/09/2025", event: t('public.cfpPage.resultNotification'), icon: FiCheckCircle },
+    { date: "15/10/2025", event: t('public.cfpPage.conferenceDate'), icon: FiAward }
   ];
 
   return (
@@ -90,7 +92,7 @@ const PublicCfp = () => {
               color: 'white',
               margin: 0
             }}>
-              Call for Papers
+              {t('public.cfpPage.title')}
             </h1>
           </div>
           <p style={{ 
@@ -100,8 +102,7 @@ const PublicCfp = () => {
             lineHeight: '1.6',
             marginBottom: '1.5rem'
           }}>
-            Hội nghị Khoa học Công nghệ UTH 2025 trân trọng kính mời các giảng viên,
-            nhà nghiên cứu và sinh viên gửi bài tham gia.
+            {t('public.cfpPage.heroDescription')}
           </p>
           <button 
             onClick={handleSubmitPaper}
@@ -129,7 +130,7 @@ const PublicCfp = () => {
               e.target.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
             }}
           >
-            <FiSend /> Nộp bài ngay
+            <FiSend /> {t('public.cfpPage.submitNow')}
           </button>
         </div>
       </div>
@@ -225,7 +226,7 @@ const PublicCfp = () => {
               color: '#1e293b',
               margin: 0
             }}>
-              Chủ đề (Topics)
+              {t('public.cfpPage.topicsTitle')}
             </h2>
           </div>
           <div style={{ display: 'grid', gap: '0.75rem' }}>
@@ -282,7 +283,7 @@ const PublicCfp = () => {
               color: '#1e293b',
               margin: 0
             }}>
-              Thời hạn quan trọng
+              {t('public.cfpPage.importantDates')}
             </h2>
           </div>
           <div style={{ display: 'grid', gap: '1rem' }}>
@@ -364,7 +365,7 @@ const PublicCfp = () => {
               color: '#1e293b',
               margin: 0
             }}>
-              Hướng dẫn nộp bài
+              {t('public.cfpPage.guidelinesTitle')}
             </h2>
           </div>
           <div style={{ 
@@ -375,12 +376,10 @@ const PublicCfp = () => {
             color: '#334155'
           }}>
             <p style={{ marginBottom: '1rem' }}>
-              Bài viết phải là công trình nghiên cứu gốc, chưa từng được công bố.
-              Ngôn ngữ sử dụng: <strong>Tiếng Việt hoặc Tiếng Anh</strong>.
+              {t('public.cfpPage.guidelinesText1')}
             </p>
             <p style={{ margin: 0 }}>
-              Tác giả nộp bài thông qua hệ thống UTH-ConfMS và theo dõi phản biện
-              trực tuyến.
+              {t('public.cfpPage.guidelinesText2')}
             </p>
           </div>
         </div>
@@ -418,7 +417,7 @@ const PublicCfp = () => {
               e.target.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
             }}
           >
-            <FiSend /> Nộp bài
+            <FiSend /> {t('public.cfpPage.submitPaper')}
           </button>
           <Link 
             to="/conferences"
@@ -445,7 +444,7 @@ const PublicCfp = () => {
               e.target.style.transform = 'translateY(0)';
             }}
           >
-            <FiUsers /> Xem danh sách hội nghị
+            <FiUsers /> {t('public.cfpPage.viewConferenceList')}
           </Link>
         </div>
       </section>
@@ -454,3 +453,4 @@ const PublicCfp = () => {
 };
 
 export default PublicCfp;
+
