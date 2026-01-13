@@ -222,7 +222,7 @@ const ChairDecisionPage = () => {
       // Reload data
       window.location.reload();
     } catch (err) {
-      addToast("Lỗi: " + (err.response?.data || err.message), "error");
+      addToast(t('errors.prefix') + (err.response?.data || err.message), "error");
     } finally {
       setSubmitting(false);
     }
@@ -245,7 +245,7 @@ const ChairDecisionPage = () => {
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <span className="breadcrumb-current">Chair</span>
+            <span className="breadcrumb-current">{t('roles.chair')}</span>
           </div>
           <h2 className="data-page-title">{t('chair.decisions.pageTitle')}</h2>
           <p className="data-page-subtitle">
@@ -768,7 +768,7 @@ const ChairDecisionPage = () => {
               await apiClient.post("/decisions", {
                 paperId: emailModal.paper.id,
                 status: emailModal.decision,
-                comment: comment || "Đã gửi email thông báo quyết định",
+                comment: comment || t('chair.decisions.emailSentComment'),
                 skipEmail: true // Bỏ qua email tự động vì đã gửi bằng AI
               });
               addToast(t('chair.decisions.emailAndDecisionSuccess'), "success");

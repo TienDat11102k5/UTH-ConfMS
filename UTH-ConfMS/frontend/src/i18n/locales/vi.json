@@ -31,6 +31,7 @@
     "selectAll": "Chọn tất cả",
     "deselectAll": "Bỏ chọn tất cả",
     "noData": "Không có dữ liệu",
+    "portal": "Cổng thông tin",
     "actions": "Thao tác",
     "status": "Trạng thái",
     "details": "Chi tiết",
@@ -58,14 +59,6 @@
     "prev": "Trước",
     "next": "Sau",
     "last": "Cuối"
-  },
-  "status": {
-    "active": "Hoạt động",
-    "inactive": "Không hoạt động",
-    "pending": "Đang chờ",
-    "approved": "Đã duyệt",
-    "rejected": "Từ chối",
-    "disabled": "Tạm khóa"
   },
   "common": {
     "back": "Quay lại",
@@ -145,11 +138,6 @@
     "other": "Khác",
     "required": "Bắt buộc",
     "optional": "Tùy chọn",
-    "papers": "bài báo",
-    "submissions": "bài nộp",
-    "authors": "đồng tác giả",
-    "conferences": "hội nghị",
-    "author": "Tác giả",
     "confirm": "Xác nhận",
     "edit": "Chỉnh sửa",
     "save": "Lưu",
@@ -172,6 +160,12 @@
     "approved": "Đã duyệt",
     "completed": "Hoàn thành",
     "cancelled": "Đã hủy"
+  },
+  "roles": {
+    "admin": "Quản trị viên",
+    "chair": "Chủ tịch",
+    "reviewer": "Phản biện",
+    "author": "Tác giả"
   },
   "validation": {
     "emailInvalid": "Email không hợp lệ",
@@ -222,6 +216,7 @@
     "noAccount": "Chưa có tài khoản?",
     "registerNow": "Đăng ký ngay",
     "affiliationPlaceholder": "Trường Đại học, Viện nghiên cứu...",
+    "fullNamePlaceholder": "Nguyễn Văn A",
     "affiliationHint": "Không bắt buộc - giúp nhận diện bạn trong hệ thống",
     "hasAccount": "Đã có tài khoản?",
     "orBackTo": "Hoặc quay lại",
@@ -821,6 +816,8 @@
       "filter": "Lọc",
       "clearFilter": "Xóa bộ lọc",
       "action": "Hành động",
+      "actor": "Thực hiện bởi",
+      "target": "Đối tượng",
       "ipAddress": "Địa chỉ IP",
       "timestamp": "Thời gian",
       "noData": "Không có dữ liệu audit log",
@@ -845,6 +842,8 @@
       "title": "CẤU HÌNH EMAIL",
       "subtitle": "Cấu hình máy chủ email",
       "smtpConfig": "Cấu hình SMTP",
+      "host": "Máy chủ SMTP",
+      "port": "Cổng",
       "active": "Đang hoạt động",
       "security": "Bảo mật",
       "none": "Không",
@@ -1158,6 +1157,7 @@
       "decisionSuccess": "Đã ra quyết định thành công!",
       "emailAndDecisionSuccess": "Đã gửi email và ra quyết định thành công!",
       "emailSentButSaveError": "Email đã gửi nhưng lỗi khi lưu quyết định: ",
+      "emailSentComment": "Đã gửi email thông báo quyết định",
       "pendingDecisions": "Chờ quyết định",
       "acceptPaper": "Chấp nhận",
       "rejectPaper": "Từ chối",
@@ -1464,6 +1464,7 @@
       "mainAuthor": "Tác giả chính",
       "authorEmail": "Email tác giả",
       "keywords": "Từ khóa",
+      "abstractLabel": "Tóm tắt",
       "submittedFile": "File bài báo đã nộp",
       "viewPaperFile": "Xem file bài báo",
       "clickToViewHint": "Click vào link trên để xem hoặc tải file PDF/DOC của bài báo để chấm",
@@ -1904,6 +1905,7 @@
   },
   "errors": {
     "general": "Đã xảy ra lỗi",
+    "prefix": "Lỗi: ",
     "notFound": "Không tìm thấy trang",
     "notFoundTitle": "404 - Không tìm thấy trang",
     "notFoundDescription": "Đường dẫn bạn truy cập không tồn tại trong hệ thống UTH-ConfMS.",

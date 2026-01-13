@@ -132,7 +132,7 @@ const AuthorSubmissionEditPage = () => {
           <div className="data-page-header">
             <div className="data-page-header-left">
               <div className="breadcrumb">
-                <Link to="/" className="breadcrumb-link">Portal</Link>
+                <Link to="/" className="breadcrumb-link">{t('app.portal')}</Link>
                 <span className="breadcrumb-separator">/</span>
                 <Link to="/author/submissions" className="breadcrumb-link">{t('author.submissions.title')}</Link>
                 <span className="breadcrumb-separator">/</span>

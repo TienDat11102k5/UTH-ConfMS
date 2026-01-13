@@ -31,6 +31,7 @@
     "selectAll": "Select All",
     "deselectAll": "Deselect All",
     "noData": "No data available",
+    "portal": "Portal",
     "actions": "Actions",
     "status": "Status",
     "details": "Details",
@@ -58,14 +59,6 @@
     "prev": "Prev",
     "next": "Next",
     "last": "Last"
-  },
-  "status": {
-    "active": "Active",
-    "inactive": "Inactive",
-    "pending": "Pending",
-    "approved": "Approved",
-    "rejected": "Rejected",
-    "disabled": "Disabled"
   },
   "common": {
     "back": "Back",
@@ -145,11 +138,6 @@
     "other": "Other",
     "required": "Required",
     "optional": "Optional",
-    "papers": "papers",
-    "submissions": "submissions",
-    "authors": "authors",
-    "conferences": "conferences",
-    "author": "Author",
     "confirm": "Confirm",
     "edit": "Edit",
     "save": "Save",
@@ -172,6 +160,12 @@
     "approved": "Approved",
     "completed": "Completed",
     "cancelled": "Cancelled"
+  },
+  "roles": {
+    "admin": "Admin",
+    "chair": "Chair",
+    "reviewer": "Reviewer",
+    "author": "Author"
   },
   "validation": {
     "emailInvalid": "Invalid email format",
@@ -222,6 +216,7 @@
     "noAccount": "Don't have an account?",
     "registerNow": "Register now",
     "affiliationPlaceholder": "University, Research Institute...",
+    "fullNamePlaceholder": "John Doe",
     "affiliationHint": "Optional - helps identify you in the system",
     "hasAccount": "Already have an account?",
     "orBackTo": "Or go back to",
@@ -770,19 +765,6 @@
       "assignReviewers": "Assign Reviewers",
       "noSubmissions": "No submissions found"
     },
-    "aiGovernance": {
-      "title": "AI Governance",
-      "subtitle": "Manage AI features and settings",
-      "aiFeatures": "AI Features",
-      "enableAi": "Enable AI Features",
-      "disableAi": "Disable AI Features",
-      "aiLogs": "AI Usage Logs",
-      "quotaManagement": "Quota Management",
-      "usageStats": "Usage Statistics",
-      "apiKey": "API Key",
-      "modelSettings": "Model Settings",
-      "saveSettings": "Save Settings"
-    },
     "backup": {
       "title": "BACKUP & RESTORE",
       "subtitle": "Manage system backups",
@@ -821,6 +803,8 @@
       "filter": "Filter",
       "clearFilter": "Clear Filter",
       "action": "Action",
+      "actor": "Actor",
+      "target": "Target",
       "ipAddress": "IP Address",
       "timestamp": "Timestamp",
       "noData": "No audit log data",
@@ -845,6 +829,8 @@
       "title": "EMAIL CONFIGURATION",
       "subtitle": "Configure email server settings",
       "smtpConfig": "SMTP Configuration",
+      "host": "SMTP Host",
+      "port": "Port",
       "active": "Active",
       "security": "Security",
       "none": "None",
@@ -1159,6 +1145,7 @@
       "decisionSuccess": "Decision saved successfully!",
       "emailAndDecisionSuccess": "Email sent and decision saved successfully!",
       "emailSentButSaveError": "Email sent but error saving decision: ",
+      "emailSentComment": "Decision notification email sent",
       "pendingDecisions": "Pending Decisions",
       "acceptPaper": "Accept",
       "rejectPaper": "Reject",
@@ -1465,6 +1452,7 @@
       "mainAuthor": "Main Author",
       "authorEmail": "Author Email",
       "keywords": "Keywords",
+      "abstractLabel": "Abstract",
       "submittedFile": "Submitted paper file",
       "viewPaperFile": "View paper file",
       "clickToViewHint": "Click the link above to view or download the PDF/DOC file for review",
@@ -1905,6 +1893,7 @@
   },
   "errors": {
     "general": "An error occurred",
+    "prefix": "Error: ",
     "notFound": "Page not found",
     "notFoundTitle": "404 - Page Not Found",
     "notFoundDescription": "The page you are looking for does not exist in the UTH-ConfMS system.",

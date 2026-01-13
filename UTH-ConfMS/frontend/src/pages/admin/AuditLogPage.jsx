@@ -112,9 +112,9 @@ const AuditLogPage = () => {
               <thead>
                 <tr>
                   <th style={{ width: "80px" }}>ID</th>
-                  <th>Actor</th>
+                  <th>{t('admin.auditLog.actor')}</th>
                   <th>{t('admin.auditLog.action')}</th>
-                  <th>Target</th>
+                  <th>{t('admin.auditLog.target')}</th>
                   <th>{t('admin.auditLog.ipAddress')}</th>
                   <th>{t('admin.auditLog.timestamp')}</th>
                 </tr>

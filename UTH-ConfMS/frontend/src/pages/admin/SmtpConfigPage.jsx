@@ -20,13 +20,13 @@ const SmtpConfigPage = () => {
 
           <div style={{ display: "grid", gap: "0.6rem" }}>
             <div>
-              <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "#374151", marginBottom: "0.25rem" }}>SMTP Host</label>
+              <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "#374151", marginBottom: "0.25rem" }}>{t('admin.smtp.host')}</label>
               <div style={{ padding: "0.4rem 0.6rem", background: "white", border: "1px solid #d1d5db", borderRadius: "4px", color: "#1f2937", fontFamily: "monospace", fontSize: "0.8rem" }}>{config.host}</div>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.6rem" }}>
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "#374151", marginBottom: "0.25rem" }}>Port</label>
+                <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "#374151", marginBottom: "0.25rem" }}>{t('admin.smtp.port')}</label>
                 <div style={{ padding: "0.4rem 0.6rem", background: "white", border: "1px solid #d1d5db", borderRadius: "4px", color: "#1f2937", fontFamily: "monospace", fontSize: "0.8rem" }}>{config.port}</div>
               </div>
               <div>

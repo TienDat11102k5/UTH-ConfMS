@@ -169,7 +169,7 @@ const AuthorSubmissionListPage = () => {
             <div className="data-page-header-left">
               <div className="breadcrumb">
                 <Link to="/" className="breadcrumb-link">
-                  Portal
+                  {t('app.portal')}
                 </Link>
                 <span className="breadcrumb-separator">/</span>
                 <span className="breadcrumb-current">{t('author.submissions.title')}</span>

@@ -270,7 +270,7 @@ const ReviewerReviewForm = () => {
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <span className="breadcrumb-current">Reviewer</span>
+            <span className="breadcrumb-current">{t('roles.reviewer')}</span>
           </div>
           <h2 className="data-page-title">{t('reviewer.reviewForm.title')}</h2>
         </div>
@@ -368,7 +368,7 @@ const ReviewerReviewForm = () => {
             )}
             {assignment.paper?.abstractText && (
               <div style={{ marginTop: "1rem", marginBottom: "1rem" }}>
-                <strong>Abstract:</strong>
+                <strong>{t('reviewer.reviewForm.abstractLabel')}:</strong>
                 <p
                   style={{
                     marginTop: "0.5rem",

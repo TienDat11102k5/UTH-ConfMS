@@ -84,7 +84,7 @@ const AuthorCameraReadyList = () => {
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
-            <Link to="/" className="breadcrumb-link">Portal</Link>
+            <Link to="/" className="breadcrumb-link">{t('app.portal')}</Link>
             <span className="breadcrumb-separator">/</span>
             <Link to="/author/dashboard" className="breadcrumb-link">{t('author.dashboard.title')}</Link>
             <span className="breadcrumb-separator">/</span>

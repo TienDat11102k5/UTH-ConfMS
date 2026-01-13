@@ -229,7 +229,7 @@ const ReviewerAssignments = () => {
       <div className="assignments-header">
         <div className="assignments-header-content">
           <div className="assignments-breadcrumb">
-            <span className="breadcrumb-item">Reviewer</span>
+            <span className="breadcrumb-item">{t('roles.reviewer')}</span>
           </div>
           <h2 className="assignments-title">{t('reviewer.assignments.title')}</h2>
         </div>

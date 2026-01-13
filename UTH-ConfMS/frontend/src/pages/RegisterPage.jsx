@@ -139,7 +139,7 @@ const RegisterPage = () => {
                 setFullName(e.target.value);
                 if (fieldErrors.fullName) setFieldErrors({ ...fieldErrors, fullName: undefined });
               }}
-              placeholder="Nguyễn Văn A"
+              placeholder={t('auth.fullNamePlaceholder')}
               className={fieldErrors.fullName ? "error" : ""}
               disabled={loading}
               required
