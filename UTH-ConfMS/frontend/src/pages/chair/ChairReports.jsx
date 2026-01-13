@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import { StatsSkeleton } from "../../components/LoadingSkeleton";
@@ -7,6 +8,7 @@ import "../../styles/ReviewerAssignments.css";
 import "../../styles/ChairReports.css";
 
 const ChairReports = () => {
+  const { t } = useTranslation();
   const [conferences, setConferences] = useState([]);
   const [selectedConference, setSelectedConference] = useState("ALL");
   const [papers, setPapers] = useState([]);
@@ -145,7 +147,7 @@ const ChairReports = () => {
         });
       } catch (err) {
         console.error("Load error:", err);
-        setError("Không thể tải dữ liệu báo cáo.");
+        setError(t('chair.reports.loadError'));
       } finally {
         setLoading(false);
       }
@@ -298,7 +300,7 @@ const ChairReports = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Chair" title="Báo cáo & Thống kê">
+      <DashboardLayout roleLabel="Chair" title={t('chair.reports.title')}>
         <StatsSkeleton count={4} />
       </DashboardLayout>
     );
@@ -307,17 +309,17 @@ const ChairReports = () => {
   return (
     <DashboardLayout
       roleLabel="Chair"
-      title="Báo cáo & Thống kê"
-      subtitle="Xem tổng quan và xuất báo cáo chi tiết"
+      title={t('chair.reports.title')}
+      subtitle={t('chair.reports.subtitle')}
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
             <span className="breadcrumb-current">Chair</span>
           </div>
-          <h2 className="data-page-title">Báo cáo & Thống kê</h2>
+          <h2 className="data-page-title">{t('chair.reports.pageTitle')}</h2>
           <p className="data-page-subtitle">
-            Xem tổng quan thống kê và xuất báo cáo chi tiết về hội nghị
+            {t('chair.reports.pageSubtitle')}
           </p>
         </div>
       </div>
@@ -345,7 +347,7 @@ const ChairReports = () => {
               color: "#64748b",
               fontSize: "0.875rem",
             }}>
-              Chọn hội nghị:
+              {t('chair.reports.selectConference')}
             </label>
             <select
               value={selectedConference}
@@ -362,7 +364,7 @@ const ChairReports = () => {
                 color: "#475569",
               }}
             >
-              <option value="ALL">Tất cả hội nghị</option>
+              <option value="ALL">{t('chair.assignments.allConferences')}</option>
               {conferences.map((conf) => (
                 <option key={conf.id} value={conf.id}>
                   {conf.name}
@@ -379,7 +381,7 @@ const ChairReports = () => {
               style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
             >
               <FiDownload size={16} />
-              {exporting ? "Đang xuất..." : "Xuất báo cáo CSV"}
+              {exporting ? t('chair.reports.exporting') : t('chair.reports.exportCSV')}
             </button>
             <button
               className="btn-secondary"
@@ -388,7 +390,7 @@ const ChairReports = () => {
               style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
             >
               <FiBarChart2 size={16} />
-              Xuất thống kê chủ đề
+              {t('chair.reports.exportTrackStats')}
             </button>
           </div>
         </div>
@@ -419,7 +421,7 @@ const ChairReports = () => {
           gap: "0.5rem"
         }}>
           <FiFileText size={20} style={{ color: "#008689" }} />
-          Tổng quan bài báo
+          {t('chair.reports.paperOverview')}
         </h3>
         <div style={{
           display: "grid",
@@ -434,7 +436,7 @@ const ChairReports = () => {
             boxShadow: "0 2px 8px rgba(13, 148, 136, 0.15)"
           }}>
             <div style={{ fontSize: "0.75rem", opacity: 0.9, marginBottom: "0.375rem", whiteSpace: "nowrap" }}>
-              Tổng số bài
+              {t('chair.reports.totalPapers')}
             </div>
             <div style={{ fontSize: "2rem", fontWeight: 700, lineHeight: 1 }}>
               {stats.totalPapers}
@@ -449,7 +451,7 @@ const ChairReports = () => {
             boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)"
           }}>
             <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "0.375rem", whiteSpace: "nowrap" }}>
-              Đã nộp
+              {t('chair.reports.submitted')}
             </div>
             <div style={{ fontSize: "2rem", fontWeight: 700, color: "#3b82f6", lineHeight: 1 }}>
               {stats.submitted}
@@ -464,7 +466,7 @@ const ChairReports = () => {
             boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)"
           }}>
             <div style={{ fontSize: "0.75rem", opacity: 0.9, marginBottom: "0.375rem", whiteSpace: "nowrap" }}>
-              Đang đánh giá
+              {t('chair.reports.underReview')}
             </div>
             <div style={{ fontSize: "2rem", fontWeight: 700, color: "#f59e0b", lineHeight: 1 }}>
               {stats.underReview}
@@ -479,13 +481,13 @@ const ChairReports = () => {
             boxShadow: "0 2px 8px rgba(16, 185, 129, 0.15)"
           }}>
             <div style={{ fontSize: "0.75rem", opacity: 0.9, marginBottom: "0.375rem", whiteSpace: "nowrap" }}>
-              Chấp nhận
+              {t('chair.reports.accepted')}
             </div>
             <div style={{ fontSize: "2rem", fontWeight: 700, lineHeight: 1 }}>
               {stats.accepted}
             </div>
             <div style={{ fontSize: "0.6875rem", opacity: 0.85, marginTop: "0.25rem" }}>
-              {stats.acceptanceRate.toFixed(1)}% tỷ lệ
+              {stats.acceptanceRate.toFixed(1)}% {t('chair.reports.rate')}
             </div>
           </div>
 
@@ -497,7 +499,7 @@ const ChairReports = () => {
             boxShadow: "0 2px 8px rgba(239, 68, 68, 0.15)"
           }}>
             <div style={{ fontSize: "0.75rem", opacity: 0.9, marginBottom: "0.375rem", whiteSpace: "nowrap" }}>
-              Từ chối
+              {t('chair.reports.rejected')}
             </div>
             <div style={{ fontSize: "2rem", fontWeight: 700, lineHeight: 1 }}>
               {stats.rejected}
@@ -512,7 +514,7 @@ const ChairReports = () => {
             boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)"
           }}>
             <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "0.375rem", whiteSpace: "nowrap" }}>
-              Đã rút
+              {t('chair.reports.withdrawn')}
             </div>
             <div style={{ fontSize: "2rem", fontWeight: 700, color: "#94a3b8", lineHeight: 1 }}>
               {stats.withdrawn}
@@ -533,7 +535,7 @@ const ChairReports = () => {
           gap: "0.5rem"
         }}>
           <FiTrendingUp size={20} style={{ color: "#008689" }} />
-          Tiến độ đánh giá
+          {t('chair.reports.reviewProgress')}
         </h3>
         <div style={{
           display: "grid",
@@ -548,7 +550,7 @@ const ChairReports = () => {
             boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)"
           }}>
             <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "0.375rem", whiteSpace: "nowrap" }}>
-              Tổng assignments
+              {t('chair.reports.totalAssignments')}
             </div>
             <div style={{ fontSize: "2rem", fontWeight: 700, color: "#1f2937", lineHeight: 1 }}>
               {stats.totalAssignments}
@@ -563,13 +565,13 @@ const ChairReports = () => {
             boxShadow: "0 2px 8px rgba(59, 130, 246, 0.15)"
           }}>
             <div style={{ fontSize: "0.75rem", opacity: 0.9, marginBottom: "0.375rem", whiteSpace: "nowrap" }}>
-              Tỷ lệ hoàn thành
+              {t('chair.reports.completionRate')}
             </div>
             <div style={{ fontSize: "2rem", fontWeight: 700, lineHeight: 1 }}>
               {stats.completionRate.toFixed(1)}%
             </div>
             <div style={{ fontSize: "0.6875rem", opacity: 0.85, marginTop: "0.25rem" }}>
-              {stats.completedReviews}/{stats.totalAssignments} đánh giá
+              {stats.completedReviews}/{stats.totalAssignments} {t('chair.reports.reviews')}
             </div>
           </div>
 
@@ -581,7 +583,7 @@ const ChairReports = () => {
             boxShadow: "0 2px 6px rgba(16, 185, 129, 0.1)"
           }}>
             <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "0.375rem", whiteSpace: "nowrap" }}>
-              Đã hoàn thành
+              {t('chair.reports.completed')}
             </div>
             <div style={{ fontSize: "2rem", fontWeight: 700, color: "#10b981", lineHeight: 1 }}>
               {stats.completedReviews}
@@ -596,7 +598,7 @@ const ChairReports = () => {
             boxShadow: "0 2px 6px rgba(245, 158, 11, 0.1)"
           }}>
             <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "0.375rem", whiteSpace: "nowrap" }}>
-              Đang chờ
+              {t('chair.reports.pending')}
             </div>
             <div style={{ fontSize: "2rem", fontWeight: 700, color: "#f59e0b", lineHeight: 1 }}>
               {stats.pendingReviews}
@@ -618,20 +620,20 @@ const ChairReports = () => {
             gap: "0.5rem"
           }}>
             <FiBarChart2 size={20} style={{ color: "#008689" }} />
-            Thống kê theo chủ đề
+            {t('chair.reports.trackStats')}
           </h3>
           <div className="table-wrapper">
             <table className="simple-table">
               <thead>
                 <tr>
-                  <th>Chủ đề</th>
-                  <th>Tổng</th>
-                  <th>Đã nộp</th>
-                  <th>Đang đánh giá</th>
-                  <th>Chấp nhận</th>
-                  <th>Từ chối</th>
-                  <th>Đã rút</th>
-                  <th>Tỷ lệ chấp nhận</th>
+                  <th>{t('chair.reports.trackColumn')}</th>
+                  <th>{t('chair.reports.total')}</th>
+                  <th>{t('chair.reports.submitted')}</th>
+                  <th>{t('chair.reports.underReview')}</th>
+                  <th>{t('chair.reports.accepted')}</th>
+                  <th>{t('chair.reports.rejected')}</th>
+                  <th>{t('chair.reports.withdrawn')}</th>
+                  <th>{t('chair.reports.acceptanceRateColumn')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -670,19 +672,19 @@ const ChairReports = () => {
       {showTrackExportModal && (
         <div className="modal-overlay" onClick={() => setShowTrackExportModal(false)}>
           <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "500px" }}>
-            <h3 style={{ marginBottom: "1rem" }}>Xuất thống kê chủ đề</h3>
+            <h3 style={{ marginBottom: "1rem" }}>{t('chair.reports.exportTrackStats')}</h3>
 
             <div className="form-group">
-              <label className="form-label">Chọn chủ đề muốn xuất *</label>
+              <label className="form-label">{t('chair.reports.selectTrackToExport')}</label>
               <select
                 value={selectedTrackForExport}
                 onChange={(e) => setSelectedTrackForExport(e.target.value)}
                 className="form-input"
               >
-                <option value="ALL">📋 Tất cả chủ đề</option>
+                <option value="ALL">📋 {t('chair.reports.allTracks')}</option>
                 {Object.keys(stats.trackStats).map((trackName) => (
                   <option key={trackName} value={trackName}>
-                    {trackName} ({stats.trackStats[trackName].total} bài)
+                    {trackName} ({stats.trackStats[trackName].total} {t('chair.reports.paperCount')})
                   </option>
                 ))}
               </select>
@@ -696,7 +698,7 @@ const ChairReports = () => {
                 style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
               >
                 <FiDownload size={16} />
-                {exporting ? "Đang xuất..." : "Xuất CSV"}
+                {exporting ? t('chair.reports.exporting') : t('chair.reports.exportCSVShort')}
               </button>
               <button
                 className="btn-secondary"
@@ -706,7 +708,7 @@ const ChairReports = () => {
                 }}
                 disabled={exporting}
               >
-                Hủy
+                {t('app.cancel')}
               </button>
             </div>
           </div>

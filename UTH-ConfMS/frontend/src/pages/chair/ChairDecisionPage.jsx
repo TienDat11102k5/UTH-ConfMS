@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
@@ -14,6 +15,7 @@ import "../../styles/ReviewerAssignments.css";
 import "../../styles/ChairDecisionPage.css";
 
 const ChairDecisionPage = () => {
+  const { t } = useTranslation();
   const [conferences, setConferences] = useState([]);
   const [selectedConference, setSelectedConference] = useState("ALL");
   const [papers, setPapers] = useState([]);
@@ -202,7 +204,7 @@ const ChairDecisionPage = () => {
 
   const submitDecision = async () => {
     if (!decision) {
-      addToast("Vui lòng chọn quyết định!", "warning");
+      addToast(t('chair.decisions.selectDecision'), "warning");
       return;
     }
 
@@ -213,7 +215,7 @@ const ChairDecisionPage = () => {
         status: decision,
         comment,
       });
-      addToast("Đã ra quyết định thành công!", "success");
+      addToast(t('chair.decisions.decisionSuccess'), "success");
       setSelectedPaper(null);
       setDecision("");
       setComment("");
@@ -228,7 +230,7 @@ const ChairDecisionPage = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Chair" title="Ra quyết định">
+      <DashboardLayout roleLabel="Chair" title={t('chair.decisions.title')}>
         <TableSkeleton rows={6} columns={7} />
       </DashboardLayout>
     );
@@ -237,17 +239,17 @@ const ChairDecisionPage = () => {
   return (
     <DashboardLayout
       roleLabel="Chair"
-      title="Ra quyết định"
-      subtitle="Tổng hợp đánh giá và ra quyết định cho bài báo"
+      title={t('chair.decisions.title')}
+      subtitle={t('chair.decisions.subtitle')}
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
             <span className="breadcrumb-current">Chair</span>
           </div>
-          <h2 className="data-page-title">Ra quyết định</h2>
+          <h2 className="data-page-title">{t('chair.decisions.pageTitle')}</h2>
           <p className="data-page-subtitle">
-            Xem tổng hợp đánh giá từ người chấm và ra quyết định chấp nhận/từ chối bài báo
+            {t('chair.decisions.pageSubtitle')}
           </p>
         </div>
       </div>
@@ -273,7 +275,7 @@ const ChairDecisionPage = () => {
                 color: "#64748b",
                 fontSize: "0.875rem",
               }}>
-                Chọn hội nghị:
+                {t('chair.decisions.selectConference')}
               </label>
               <select
                 value={selectedConference}
@@ -290,7 +292,7 @@ const ChairDecisionPage = () => {
                   color: "#475569",
                 }}
               >
-                <option value="ALL"> Tất cả hội nghị</option>
+                <option value="ALL">{t('chair.assignments.allConferences')}</option>
                 {conferences.map((conf) => (
                   <option key={conf.id} value={conf.id}>
                     {conf.name}
@@ -307,7 +309,7 @@ const ChairDecisionPage = () => {
                 color: "#64748b",
                 fontSize: "0.875rem",
               }}>
-                Tìm kiếm:
+                {t('chair.decisions.search')}
               </label>
               <div style={{ position: "relative" }}>
                 <FiSearch style={{
@@ -321,7 +323,7 @@ const ChairDecisionPage = () => {
                 }} />
                 <input
                   type="text"
-                  placeholder="Tìm theo tiêu đề, tác giả, chủ đề..."
+                  placeholder={t('chair.decisions.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{
@@ -346,21 +348,21 @@ const ChairDecisionPage = () => {
           <div className="filter-section">
             <div className="filter-label">
               <FiFilter />
-              <span>Lọc:</span>
+              <span>{t('chair.decisions.filter')}</span>
             </div>
             <div className="filter-buttons">
               <button
                 className={`filter-btn ${statusFilter === 'ALL' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('ALL')}
               >
-                Tất cả
+                {t('chair.decisions.all')}
                 <span className="filter-count">{papers.length}</span>
               </button>
               <button
                 className={`filter-btn ${statusFilter === 'READY' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('READY')}
               >
-                Sẵn sàng quyết định
+                {t('chair.decisions.readyForDecision')}
                 <span className="filter-count">
                   {papers.filter(p => canMakeDecision(p.id)).length}
                 </span>
@@ -369,7 +371,7 @@ const ChairDecisionPage = () => {
                 className={`filter-btn ${statusFilter === 'PENDING' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('PENDING')}
               >
-                Chưa đủ đánh giá
+                {t('chair.decisions.notEnoughReviews')}
                 <span className="filter-count">
                   {papers.filter(p => !canMakeDecision(p.id)).length}
                 </span>
@@ -380,16 +382,16 @@ const ChairDecisionPage = () => {
           <div className="sort-section">
             <div className="sort-label">
               <FiTrendingUp />
-              <span>Sắp xếp:</span>
+              <span>{t('chair.decisions.sort')}</span>
             </div>
             <select
               className="sort-select"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
             >
-              <option value="newest">Mới nhất</option>
-              <option value="oldest">Cũ nhất</option>
-              <option value="score">Điểm cao nhất</option>
+              <option value="newest">{t('chair.decisions.newest')}</option>
+              <option value="oldest">{t('chair.decisions.oldest')}</option>
+              <option value="score">{t('chair.decisions.highestScore')}</option>
             </select>
           </div>
         </div>
@@ -399,21 +401,21 @@ const ChairDecisionPage = () => {
         {papers.length === 0 ? (
           <EmptyState
             icon="check"
-            title="Không có bài nào đang chờ quyết định"
-            description="Các bài báo đã được đánh giá đầy đủ sẽ hiển thị ở đây để bạn ra quyết định."
+            title={t('chair.decisions.noPapersTitle')}
+            description={t('chair.decisions.noPapersDescription')}
             size="large"
           />
         ) : (
           <table className="simple-table">
             <thead>
               <tr>
-                <th>Tiêu đề</th>
-                <th>Chủ đề</th>
-                <th>Tác giả</th>
-                <th>Đánh giá</th>
-                <th>Điểm TB</th>
-                <th>Đề xuất</th>
-                <th>Thao tác</th>
+                <th>{t('chair.decisions.paperTitle')}</th>
+                <th>{t('chair.decisions.track')}</th>
+                <th>{t('chair.decisions.author')}</th>
+                <th>{t('chair.decisions.reviews')}</th>
+                <th>{t('chair.decisions.avgScore')}</th>
+                <th>{t('chair.decisions.recommendation')}</th>
+                <th>{t('chair.decisions.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -446,7 +448,7 @@ const ChairDecisionPage = () => {
                         {paperReviews.length}/{paperAssignments.length}
                         {!ready && (
                           <div style={{ fontSize: "0.75rem", color: "#f59e0b", marginTop: "0.25rem" }}>
-                            Chưa đủ
+                            {t('chair.decisions.notEnough')}
                           </div>
                         )}
                       </div>
@@ -463,16 +465,16 @@ const ChairDecisionPage = () => {
                     <td>
                       {recommendation === 'ACCEPT' && (
                         <span className="badge badge-success" style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
-                          <FiCheckCircle size={14} /> Chấp nhận
+                          <FiCheckCircle size={14} /> {t('chair.decisions.accept')}
                         </span>
                       )}
                       {recommendation === 'REJECT' && (
                         <span className="badge badge-danger" style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
-                          <FiXCircle size={14} /> Từ chối
+                          <FiXCircle size={14} /> {t('chair.decisions.reject')}
                         </span>
                       )}
                       {recommendation === 'MIXED' && (
-                        <span className="badge badge-warning">Trái chiều</span>
+                        <span className="badge badge-warning">{t('chair.decisions.mixed')}</span>
                       )}
                       {!recommendation && (
                         <span style={{ color: "#999", fontSize: "0.875rem" }}>—</span>
@@ -489,9 +491,9 @@ const ChairDecisionPage = () => {
                           }}
                           disabled={!ready}
                           style={{ minWidth: "110px", fontSize: "0.8125rem" }}
-                          title={!ready ? "Cần đủ đánh giá từ tất cả người chấm" : ""}
+                          title={!ready ? t('chair.decisions.needAllReviews') : ""}
                         >
-                          Ra quyết định
+                          {t('chair.decisions.makeDecision')}
                         </button>
 
                         {paperReviews.length > 0 && (
@@ -512,9 +514,9 @@ const ChairDecisionPage = () => {
                                 alignItems: "center",
                                 gap: "0.375rem"
                               }}
-                              title="AI gợi ý quyết định"
+                              title={t('chair.decisions.aiSuggestion')}
                             >
-                              ✨ Gợi ý
+                              ✨ {t('chair.decisions.suggest')}
                             </button>
 
                             <button
@@ -533,9 +535,9 @@ const ChairDecisionPage = () => {
                                 alignItems: "center",
                                 gap: "0.375rem"
                               }}
-                              title="AI tóm tắt reviews"
+                              title={t('chair.decisions.aiSummary')}
                             >
-                              ✨ Tóm tắt
+                              ✨ {t('chair.decisions.summary')}
                             </button>
                           </>
                         )}
@@ -557,7 +559,7 @@ const ChairDecisionPage = () => {
           totalItems={filteredPapers.length}
           itemsPerPage={20}
           onPageChange={setCurrentPage}
-          itemName="bài báo"
+          itemName={t('common.papers')}
         />
       )}
 
@@ -578,7 +580,7 @@ const ChairDecisionPage = () => {
               <div style={{ display: "flex", gap: "2rem", marginBottom: "1rem" }}>
                 <div>
                   <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "0.25rem" }}>
-                    Số đánh giá
+                    {t('chair.decisions.reviewCount')}
                   </div>
                   <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "#1f2937" }}>
                     {(reviews[selectedPaper.id] || []).length}
@@ -586,7 +588,7 @@ const ChairDecisionPage = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "0.25rem" }}>
-                    Điểm trung bình
+                    {t('chair.decisions.avgScoreLabel')}
                   </div>
                   <div style={{
                     fontSize: "1.5rem",
@@ -599,17 +601,17 @@ const ChairDecisionPage = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "0.25rem" }}>
-                    Đề xuất chung
+                    {t('chair.decisions.overallRecommendation')}
                   </div>
                   <div style={{ marginTop: "0.25rem" }}>
                     {getRecommendation(selectedPaper.id) === 'ACCEPT' && (
-                      <span className="badge badge-success">Chấp nhận</span>
+                      <span className="badge badge-success">{t('chair.decisions.accept')}</span>
                     )}
                     {getRecommendation(selectedPaper.id) === 'REJECT' && (
-                      <span className="badge badge-danger">Từ chối</span>
+                      <span className="badge badge-danger">{t('chair.decisions.reject')}</span>
                     )}
                     {getRecommendation(selectedPaper.id) === 'MIXED' && (
-                      <span className="badge badge-warning">Trái chiều</span>
+                      <span className="badge badge-warning">{t('chair.decisions.mixed')}</span>
                     )}
                   </div>
                 </div>
@@ -618,7 +620,7 @@ const ChairDecisionPage = () => {
               {/* Chi tiết từng đánh giá */}
               <div style={{ marginTop: "1rem" }}>
                 <div style={{ fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.75rem", color: "#374151" }}>
-                  Chi tiết đánh giá:
+                  {t('chair.decisions.reviewDetails')}
                 </div>
                 {(reviews[selectedPaper.id] || []).map((review, idx) => (
                   <div key={review.id} style={{
@@ -630,7 +632,7 @@ const ChairDecisionPage = () => {
                   }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                       <span style={{ fontWeight: 600, fontSize: "0.875rem", color: "#1f2937" }}>
-                        Người chấm #{idx + 1}
+                        {t('chair.decisions.reviewer')} #{idx + 1}
                       </span>
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <span style={{
@@ -638,13 +640,13 @@ const ChairDecisionPage = () => {
                           fontSize: "0.9375rem",
                           color: review.score >= 1 ? "#10b981" : review.score <= -1 ? "#ef4444" : "#6b7280"
                         }}>
-                          Điểm: {review.score}
+                          {t('chair.decisions.score')}: {review.score}
                         </span>
                         {review.recommendation === 'ACCEPT' && (
-                          <span className="badge badge-success" style={{ fontSize: "0.75rem" }}>Chấp nhận</span>
+                          <span className="badge badge-success" style={{ fontSize: "0.75rem" }}>{t('chair.decisions.accept')}</span>
                         )}
                         {review.recommendation === 'REJECT' && (
-                          <span className="badge badge-danger" style={{ fontSize: "0.75rem" }}>Từ chối</span>
+                          <span className="badge badge-danger" style={{ fontSize: "0.75rem" }}>{t('chair.decisions.reject')}</span>
                         )}
                       </div>
                     </div>
@@ -660,22 +662,22 @@ const ChairDecisionPage = () => {
 
             {/* Decision Form */}
             <div className="form-group">
-              <label className="form-label">Quyết định của Chair *</label>
+              <label className="form-label">{t('chair.decisions.chairDecision')}</label>
               <select
                 value={decision}
                 onChange={(e) => setDecision(e.target.value)}
                 className="form-input"
               >
-                <option value="">-- Chọn quyết định --</option>
-                <option value="ACCEPTED">✓ Chấp nhận (ACCEPTED)</option>
-                <option value="REJECTED">✗ Từ chối (REJECTED)</option>
+                <option value="">{t('chair.decisions.selectDecisionOption')}</option>
+                <option value="ACCEPTED">✓ {t('chair.decisions.acceptOption')}</option>
+                <option value="REJECTED">✗ {t('chair.decisions.rejectOption')}</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label className="form-label">Ghi chú nội bộ (tùy chọn)</label>
+              <label className="form-label">{t('chair.decisions.internalNote')}</label>
               <textarea
-                placeholder="Ghi chú cho quyết định này..."
+                placeholder={t('chair.decisions.notePlaceholder')}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 className="form-input"
@@ -690,7 +692,7 @@ const ChairDecisionPage = () => {
                 disabled={submitting || !decision}
                 onClick={submitDecision}
               >
-                {submitting ? "Đang xử lý..." : "Xác nhận quyết định"}
+                {submitting ? t('chair.decisions.processing') : t('chair.decisions.confirmDecision')}
               </button>
 
               {decision && (
@@ -717,9 +719,9 @@ const ChairDecisionPage = () => {
                     alignItems: "center",
                     gap: "0.5rem"
                   }}
-                  title="AI soạn email thông báo quyết định"
+                  title={t('chair.decisions.draftEmailAI')}
                 >
-                  ✨ Soạn email AI
+                  ✨ {t('chair.decisions.draftAIEmail')}
                 </button>
               )}
 
@@ -728,7 +730,7 @@ const ChairDecisionPage = () => {
                 onClick={() => setSelectedPaper(null)}
                 disabled={submitting}
               >
-                Hủy
+                {t('app.cancel')}
               </button>
             </div>
           </div>
@@ -769,14 +771,14 @@ const ChairDecisionPage = () => {
                 comment: comment || "Đã gửi email thông báo quyết định",
                 skipEmail: true // Bỏ qua email tự động vì đã gửi bằng AI
               });
-              addToast("✅ Đã gửi email và ra quyết định thành công!", "success");
+              addToast(t('chair.decisions.emailAndDecisionSuccess'), "success");
               setEmailModal({ show: false, paper: null, decision: null });
               setSelectedPaper(null);
               setDecision("");
               setComment("");
               window.location.reload();
             } catch (err) {
-              addToast("⚠️ Email đã gửi nhưng lỗi khi lưu quyết định: " + (err.response?.data || err.message), "warning");
+              addToast(t('chair.decisions.emailSentButSaveError') + (err.response?.data || err.message), "warning");
             }
           }}
         />

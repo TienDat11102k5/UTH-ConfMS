@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
@@ -7,6 +8,7 @@ import EmptyState from "../../components/EmptyState";
 import { usePagination } from "../../hooks/usePagination";
 
 const ChairConferenceSubmissions = () => {
+  const { t } = useTranslation();
   const { conferenceId } = useParams();
   const navigate = useNavigate();
 
@@ -26,17 +28,13 @@ const ChairConferenceSubmissions = () => {
     try {
       setLoading(true);
       setError("");
-
-      // Fetch conference info
       const confRes = await apiClient.get(`/conferences/${conferenceId}`);
       setConference(confRes.data);
-
-      // Fetch all papers for this conference
       const papersRes = await apiClient.get(`/decisions/papers/${conferenceId}`);
       setPapers(papersRes.data || []);
     } catch (err) {
       console.error(err);
-      setError("Không thể tải dữ liệu. Vui lòng thử lại.");
+      setError(t('chair.assignments.loadError'));
     } finally {
       setLoading(false);
     }
@@ -44,23 +42,23 @@ const ChairConferenceSubmissions = () => {
 
   const getStatusBadge = (status) => {
     const statusMap = {
-      SUBMITTED: { label: "Đã nộp", class: "badge badge-info" },
-      UNDER_REVIEW: { label: "Đang chấm", class: "badge badge-warning" },
-      ACCEPTED: { label: "Chấp nhận", class: "badge badge-success" },
-      REJECTED: { label: "Từ chối", class: "badge badge-danger" },
-      WITHDRAWN: { label: "Đã rút", class: "badge badge-secondary" },
+      SUBMITTED: { label: t('chair.assignments.paperSubmitted'), class: "badge badge-info" },
+      UNDER_REVIEW: { label: t('chair.assignments.paperUnderReview'), class: "badge badge-warning" },
+      ACCEPTED: { label: t('chair.assignments.paperAccepted'), class: "badge badge-success" },
+      REJECTED: { label: t('chair.assignments.paperRejected'), class: "badge badge-danger" },
+      WITHDRAWN: { label: t('chair.assignments.paperWithdrawn'), class: "badge badge-secondary" },
     };
     const info = statusMap[status] || { label: status, class: "badge badge-secondary" };
     return <span className={info.class} style={{ minWidth: "90px", display: "inline-block", textAlign: "center" }}>{info.label}</span>;
   };
 
   const getTrackName = (paper) => {
-    return paper.track?.name || "Chưa có track";
+    return paper.track?.name || t('chair.conferences.noTrack');
   };
 
   const getAuthorInfo = (paper) => {
     if (!paper.mainAuthor) {
-      return { name: "Chưa có", coAuthorCount: 0 };
+      return { name: t('common.none'), coAuthorCount: 0 };
     }
     const coAuthorCount = paper.coAuthors?.length || 0;
     return {
@@ -69,7 +67,6 @@ const ChairConferenceSubmissions = () => {
     };
   };
 
-  // Calculate stats
   const stats = {
     total: papers.length,
     submitted: papers.filter(p => p.status === 'SUBMITTED').length,
@@ -82,8 +79,8 @@ const ChairConferenceSubmissions = () => {
   return (
     <DashboardLayout
       roleLabel="Chair"
-      title="Bài nộp của hội nghị"
-      subtitle="Xem toàn bộ bài báo đã nộp vào hội nghị"
+      title={t('chair.conferences.manageSubmissions')}
+      subtitle={t('chair.conferences.subtitle')}
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
@@ -93,26 +90,26 @@ const ChairConferenceSubmissions = () => {
               onClick={() => navigate("/chair/conferences")}
               style={{ cursor: "pointer" }}
             >
-              Hội nghị
+              {t('common.conferences')}
             </span>
             <span className="breadcrumb-separator">/</span>
-            <span className="breadcrumb-current">Bài nộp</span>
+            <span className="breadcrumb-current">{t('common.submissions')}</span>
           </div>
           <h2 className="data-page-title">
-            {conference ? conference.name : "Đang tải..."}
+            {conference ? conference.name : t('app.loading')}
           </h2>
         </div>
 
         <div className="data-page-header-right">
           <button className="btn-secondary" type="button" onClick={fetchData}>
-            Làm mới
+            {t('app.refresh')}
           </button>
           <button
             className="btn-secondary"
             type="button"
             onClick={() => navigate("/chair/conferences")}
           >
-            Quay lại
+            {t('app.back')}
           </button>
         </div>
       </div>
@@ -125,58 +122,28 @@ const ChairConferenceSubmissions = () => {
           gap: "1rem",
           marginBottom: "1.5rem"
         }}>
-          <div style={{
-            background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
-            borderRadius: "12px",
-            padding: "1.25rem",
-            color: "white"
-          }}>
-            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>Tổng số bài</div>
+          <div style={{ background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)", borderRadius: "12px", padding: "1.25rem", color: "white" }}>
+            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>{t('common.total')}</div>
             <div style={{ fontSize: "2rem", fontWeight: 700 }}>{stats.total}</div>
           </div>
-          <div style={{
-            background: "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
-            borderRadius: "12px",
-            padding: "1.25rem",
-            color: "white"
-          }}>
-            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>Đã nộp</div>
+          <div style={{ background: "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)", borderRadius: "12px", padding: "1.25rem", color: "white" }}>
+            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>{t('chair.assignments.paperSubmitted')}</div>
             <div style={{ fontSize: "2rem", fontWeight: 700 }}>{stats.submitted}</div>
           </div>
-          <div style={{
-            background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
-            borderRadius: "12px",
-            padding: "1.25rem",
-            color: "white"
-          }}>
-            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>Đang chấm</div>
+          <div style={{ background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)", borderRadius: "12px", padding: "1.25rem", color: "white" }}>
+            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>{t('chair.assignments.paperUnderReview')}</div>
             <div style={{ fontSize: "2rem", fontWeight: 700 }}>{stats.underReview}</div>
           </div>
-          <div style={{
-            background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-            borderRadius: "12px",
-            padding: "1.25rem",
-            color: "white"
-          }}>
-            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>Chấp nhận</div>
+          <div style={{ background: "linear-gradient(135deg, #10b981 0%, #059669 100%)", borderRadius: "12px", padding: "1.25rem", color: "white" }}>
+            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>{t('chair.assignments.paperAccepted')}</div>
             <div style={{ fontSize: "2rem", fontWeight: 700 }}>{stats.accepted}</div>
           </div>
-          <div style={{
-            background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
-            borderRadius: "12px",
-            padding: "1.25rem",
-            color: "white"
-          }}>
-            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>Từ chối</div>
+          <div style={{ background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)", borderRadius: "12px", padding: "1.25rem", color: "white" }}>
+            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>{t('chair.assignments.paperRejected')}</div>
             <div style={{ fontSize: "2rem", fontWeight: 700 }}>{stats.rejected}</div>
           </div>
-          <div style={{
-            background: "linear-gradient(135deg, #6b7280 0%, #4b5563 100%)",
-            borderRadius: "12px",
-            padding: "1.25rem",
-            color: "white"
-          }}>
-            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>Đã rút</div>
+          <div style={{ background: "linear-gradient(135deg, #6b7280 0%, #4b5563 100%)", borderRadius: "12px", padding: "1.25rem", color: "white" }}>
+            <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>{t('chair.assignments.paperWithdrawn')}</div>
             <div style={{ fontSize: "2rem", fontWeight: 700 }}>{stats.withdrawn}</div>
           </div>
         </div>
@@ -187,34 +154,30 @@ const ChairConferenceSubmissions = () => {
           <thead>
             <tr>
               <th style={{ width: "60px" }}>ID</th>
-              <th>Tiêu đề bài báo</th>
-              <th style={{ width: "120px" }}>Track</th>
-              <th style={{ width: "150px" }}>Tác giả</th>
-              <th style={{ width: "110px" }}>Ngày nộp</th>
-              <th style={{ width: "120px", whiteSpace: "nowrap" }}>Trạng thái</th>
-              <th style={{ width: "130px", whiteSpace: "nowrap" }}>Thao tác</th>
+              <th>{t('common.title')}</th>
+              <th style={{ width: "120px" }}>{t('common.track')}</th>
+              <th style={{ width: "150px" }}>{t('common.author')}</th>
+              <th style={{ width: "110px" }}>{t('common.date')}</th>
+              <th style={{ width: "120px", whiteSpace: "nowrap" }}>{t('common.status')}</th>
+              <th style={{ width: "130px", whiteSpace: "nowrap" }}>{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} className="table-empty">
-                  Đang tải dữ liệu...
-                </td>
+                <td colSpan={7} className="table-empty">{t('app.loading')}</td>
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan={7} className="table-empty" style={{ color: "#d72d2d" }}>
-                  {error}
-                </td>
+                <td colSpan={7} className="table-empty" style={{ color: "#d72d2d" }}>{error}</td>
               </tr>
             ) : papers.length === 0 ? (
               <tr>
                 <td colSpan={7} style={{ padding: 0, border: 'none' }}>
                   <EmptyState
                     icon="inbox"
-                    title="Chưa có bài nộp nào"
-                    description="Các bài nộp cho hội nghị này sẽ hiển thị ở đây."
+                    title={t('chair.assignments.noPapers')}
+                    description={t('chair.assignments.noPapers')}
                     size="medium"
                   />
                 </td>
@@ -228,17 +191,7 @@ const ChairConferenceSubmissions = () => {
                     <td>
                       <strong>{paper.title}</strong>
                       {paper.abstractText && (
-                        <div
-                          style={{
-                            fontSize: "0.85em",
-                            color: "#666",
-                            marginTop: "0.25rem",
-                            maxWidth: "400px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
+                        <div style={{ fontSize: "0.85em", color: "#666", marginTop: "0.25rem", maxWidth: "400px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {paper.abstractText}
                         </div>
                       )}
@@ -249,14 +202,14 @@ const ChairConferenceSubmissions = () => {
                         <div>{authorInfo.name}</div>
                         {authorInfo.coAuthorCount > 0 && (
                           <div style={{ fontSize: "0.85em", color: "#666" }}>
-                            +{authorInfo.coAuthorCount} đồng tác giả
+                            +{authorInfo.coAuthorCount} {t('common.authors')}
                           </div>
                         )}
                       </div>
                     </td>
                     <td>
                       {paper.createdAt
-                        ? new Date(paper.createdAt).toLocaleDateString("vi-VN")
+                        ? new Date(paper.createdAt).toLocaleDateString()
                         : "—"}
                     </td>
                     <td style={{ whiteSpace: "nowrap" }}>{getStatusBadge(paper.status)}</td>
@@ -266,7 +219,7 @@ const ChairConferenceSubmissions = () => {
                         type="button"
                         onClick={() => navigate(`/author/submissions/${paper.id}`)}
                       >
-                        Xem chi tiết
+                        {t('app.view')}
                       </button>
                     </td>
                   </tr>
@@ -284,7 +237,7 @@ const ChairConferenceSubmissions = () => {
           totalItems={papers.length}
           itemsPerPage={20}
           onPageChange={setCurrentPage}
-          itemName="bài nộp"
+          itemName={t('common.submissions')}
         />
       )}
     </DashboardLayout>

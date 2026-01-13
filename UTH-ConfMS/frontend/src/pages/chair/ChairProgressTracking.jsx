@@ -1,5 +1,6 @@
 // src/pages/chair/ChairProgressTracking.jsx
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
@@ -12,6 +13,7 @@ import "../../styles/ReviewerAssignments.css";
 import "../../styles/ChairProgressTracking.css";
 
 const ChairProgressTracking = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [conferences, setConferences] = useState([]);
   const [selectedConference, setSelectedConference] = useState("ALL");
@@ -120,7 +122,7 @@ const ChairProgressTracking = () => {
         });
       } catch (err) {
         console.error("Load error:", err);
-        setError("Không thể tải dữ liệu tiến độ.");
+        setError(t('chair.progress.loadError'));
       } finally {
         setLoading(false);
       }
@@ -177,11 +179,11 @@ const ChairProgressTracking = () => {
 
   const getStatusBadge = (status) => {
     const badges = {
-      SUBMITTED: { text: "Đã nộp", className: "badge badge-info" },
-      UNDER_REVIEW: { text: "Đang chấm", className: "badge badge-warning" },
-      ACCEPTED: { text: "Chấp nhận", className: "badge badge-success" },
-      REJECTED: { text: "Từ chối", className: "badge badge-danger" },
-      WITHDRAWN: { text: "Đã rút", className: "badge badge-secondary" },
+      SUBMITTED: { text: t('chair.progress.statusSubmitted'), className: "badge badge-info" },
+      UNDER_REVIEW: { text: t('chair.progress.statusUnderReview'), className: "badge badge-warning" },
+      ACCEPTED: { text: t('chair.progress.statusAccepted'), className: "badge badge-success" },
+      REJECTED: { text: t('chair.progress.statusRejected'), className: "badge badge-danger" },
+      WITHDRAWN: { text: t('chair.progress.statusWithdrawn'), className: "badge badge-secondary" },
     };
     const info = badges[status] || { text: status, className: "badge badge-secondary" };
     return <span className={info.className} style={{ minWidth: "90px", display: "inline-block", textAlign: "center" }}>{info.text}</span>;
@@ -189,7 +191,7 @@ const ChairProgressTracking = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Chair" title="Theo dõi tiến độ">
+      <DashboardLayout roleLabel="Chair" title={t('chair.progress.title')}>
         <TableSkeleton rows={8} columns={6} />
       </DashboardLayout>
     );
@@ -198,8 +200,8 @@ const ChairProgressTracking = () => {
   return (
     <DashboardLayout
       roleLabel="Chair"
-      title="Theo dõi tiến độ"
-      subtitle="Theo dõi tiến độ đánh giá và quyết định của hội nghị"
+      title={t('chair.progress.title')}
+      subtitle={t('chair.progress.subtitle')}
     >
       <div style={{ marginBottom: "1rem" }}>
         <button
@@ -228,7 +230,7 @@ const ChairProgressTracking = () => {
             e.currentTarget.style.borderColor = "#e2e8f0";
           }}
         >
-          ← Quay lại dashboard
+          ← {t('chair.progress.backToDashboard')}
         </button>
       </div>
       <div className="data-page-header">
@@ -236,9 +238,9 @@ const ChairProgressTracking = () => {
           <div className="breadcrumb">
             <span className="breadcrumb-current">Chair</span>
           </div>
-          <h2 className="data-page-title">Theo dõi tiến độ</h2>
+          <h2 className="data-page-title">{t('chair.progress.pageTitle')}</h2>
           <p className="data-page-subtitle">
-            Xem tổng quan tiến độ đánh giá và trạng thái quyết định của tất cả bài báo
+            {t('chair.progress.pageSubtitle')}
           </p>
         </div>
       </div>
@@ -258,7 +260,7 @@ const ChairProgressTracking = () => {
           boxShadow: "0 4px 12px rgba(13, 148, 136, 0.2)"
         }}>
           <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>
-            Tổng số bài
+            {t('chair.progress.totalPapers')}
           </div>
           <div style={{ fontSize: "2.5rem", fontWeight: 700 }}>
             {stats.totalPapers}
@@ -273,7 +275,7 @@ const ChairProgressTracking = () => {
           boxShadow: "0 4px 12px rgba(59, 130, 246, 0.2)"
         }}>
           <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>
-            Tỷ lệ hoàn thành
+            {t('chair.progress.completionRate')}
           </div>
           <div style={{ fontSize: "2.5rem", fontWeight: 700 }}>
             {stats.completionRate.toFixed(1)}%
@@ -291,7 +293,7 @@ const ChairProgressTracking = () => {
           boxShadow: "0 4px 12px rgba(16, 185, 129, 0.2)"
         }}>
           <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>
-            Đã chấp nhận
+            {t('chair.progress.accepted')}
           </div>
           <div style={{ fontSize: "2.5rem", fontWeight: 700 }}>
             {stats.acceptedPapers}
@@ -306,7 +308,7 @@ const ChairProgressTracking = () => {
           boxShadow: "0 4px 12px rgba(239, 68, 68, 0.2)"
         }}>
           <div style={{ fontSize: "0.875rem", opacity: 0.9, marginBottom: "0.5rem" }}>
-            Đã từ chối
+            {t('chair.progress.rejected')}
           </div>
           <div style={{ fontSize: "2.5rem", fontWeight: 700 }}>
             {stats.rejectedPapers}
@@ -335,7 +337,7 @@ const ChairProgressTracking = () => {
                 color: "#64748b",
                 fontSize: "0.875rem",
               }}>
-                Chọn hội nghị:
+                {t('chair.progress.selectConference')}
               </label>
               <select
                 value={selectedConference}
@@ -352,7 +354,7 @@ const ChairProgressTracking = () => {
                   color: "#475569",
                 }}
               >
-                <option value="ALL">Tất cả hội nghị</option>
+                <option value="ALL">{t('chair.assignments.allConferences')}</option>
                 {conferences.map((conf) => (
                   <option key={conf.id} value={conf.id}>
                     {conf.name}
@@ -369,7 +371,7 @@ const ChairProgressTracking = () => {
                 color: "#64748b",
                 fontSize: "0.875rem",
               }}>
-                Tìm kiếm:
+                {t('chair.progress.search')}
               </label>
               <div style={{ position: "relative" }}>
                 <FiSearch style={{
@@ -383,7 +385,7 @@ const ChairProgressTracking = () => {
                 }} />
                 <input
                   type="text"
-                  placeholder="Tìm theo tiêu đề, tác giả, chủ đề..."
+                  placeholder={t('chair.progress.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{
@@ -408,21 +410,21 @@ const ChairProgressTracking = () => {
           <div className="filter-section">
             <div className="filter-label">
               <FiFilter />
-              <span>Lọc:</span>
+              <span>{t('chair.progress.filter')}</span>
             </div>
             <div className="filter-buttons">
               <button
                 className={`filter-btn ${statusFilter === 'ALL' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('ALL')}
               >
-                Tất cả
+                {t('chair.progress.all')}
                 <span className="filter-count">{papers.length}</span>
               </button>
               <button
                 className={`filter-btn ${statusFilter === 'COMPLETED' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('COMPLETED')}
               >
-                Đã đủ đánh giá
+                {t('chair.progress.hasEnoughReviews')}
                 <span className="filter-count">
                   {papers.filter(p => {
                     const paperAssignments = assignments[p.id] || [];
@@ -435,7 +437,7 @@ const ChairProgressTracking = () => {
                 className={`filter-btn ${statusFilter === 'PENDING' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('PENDING')}
               >
-                Chưa đủ đánh giá
+                {t('chair.progress.notEnoughReviews')}
                 <span className="filter-count">
                   {papers.filter(p => {
                     const paperAssignments = assignments[p.id] || [];
@@ -448,7 +450,7 @@ const ChairProgressTracking = () => {
                 className={`filter-btn ${statusFilter === 'NO_ASSIGNMENT' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('NO_ASSIGNMENT')}
               >
-                Chưa phân công
+                {t('chair.progress.notAssigned')}
                 <span className="filter-count">
                   {papers.filter(p => (assignments[p.id] || []).length === 0).length}
                 </span>
@@ -475,20 +477,20 @@ const ChairProgressTracking = () => {
         {papers.length === 0 ? (
           <EmptyState
             icon="file"
-            title="Chưa có bài báo nào"
-            description="Các bài báo sẽ hiển thị ở đây sau khi có submissions."
+            title={t('chair.progress.noPapersTitle')}
+            description={t('chair.progress.noPapersDescription')}
             size="large"
           />
         ) : (
           <table className="simple-table">
             <thead>
               <tr>
-                <th>Tiêu đề</th>
-                <th>Chủ đề</th>
-                <th>Tác giả</th>
-                <th>Trạng thái</th>
-                <th>Tiến độ đánh giá</th>
-                <th>Người chấm</th>
+                <th>{t('chair.progress.paperTitle')}</th>
+                <th>{t('chair.progress.track')}</th>
+                <th>{t('chair.progress.author')}</th>
+                <th>{t('chair.progress.status')}</th>
+                <th>{t('chair.progress.reviewProgress')}</th>
+                <th>{t('chair.progress.reviewers')}</th>
               </tr>
             </thead>
             <tbody>
@@ -547,13 +549,13 @@ const ChairProgressTracking = () => {
                           </span>
                         </div>
                         <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>
-                          {paperReviews.length}/{paperAssignments.length} đánh giá
+                          {paperReviews.length}/{paperAssignments.length} {t('chair.progress.reviews')}
                         </div>
                       </div>
                     </td>
                     <td>
                       {paperAssignments.length === 0 ? (
-                        <span style={{ color: "#999", fontSize: "0.875rem" }}>Chưa phân công</span>
+                        <span style={{ color: "#999", fontSize: "0.875rem" }}>{t('chair.progress.notAssigned')}</span>
                       ) : (
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                           {paperAssignments.map((assign) => {
@@ -601,7 +603,7 @@ const ChairProgressTracking = () => {
           totalItems={filteredPapers.length}
           itemsPerPage={20}
           onPageChange={setCurrentPage}
-          itemName="bài báo"
+          itemName={t('common.papers')}
         />
       )}
     </DashboardLayout>

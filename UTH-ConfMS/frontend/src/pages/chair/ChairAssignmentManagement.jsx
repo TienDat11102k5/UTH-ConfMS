@@ -1,5 +1,6 @@
 // src/pages/chair/ChairAssignmentManagement.jsx
 import React, { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
@@ -10,6 +11,7 @@ import { ToastContainer } from "../../components/Toast";
 import "../../styles/ReviewerAssignments.css";
 
 const ChairAssignmentManagement = () => {
+  const { t } = useTranslation();
   const [conferences, setConferences] = useState([]);
   const [selectedConference, setSelectedConference] = useState("ALL");
   const [papers, setPapers] = useState([]);
@@ -115,10 +117,7 @@ const ChairAssignmentManagement = () => {
           setReviewers(allUsers);
         } catch (uErr) {
           console.error("Không thể tải danh sách reviewers:", uErr);
-          setError(
-            "Không thể tải danh sách reviewers: " +
-            (uErr.response?.data || uErr.message)
-          );
+          setError(t('chair.assignments.loadReviewersError') + (uErr.response?.data || uErr.message));
         }
 
         // Load assignments for each paper
@@ -136,7 +135,7 @@ const ChairAssignmentManagement = () => {
         setAssignments(assignmentsMap);
       } catch (err) {
         console.error("Load error:", err);
-        setError("Không thể tải dữ liệu.");
+        setError(t('chair.assignments.loadError'));
       } finally {
         setLoading(false);
       }
@@ -192,7 +191,7 @@ const ChairAssignmentManagement = () => {
 
   const handleAssign = async () => {
     if (!selectedPaper || !selectedReviewer) {
-      addToast("Vui lòng chọn bài báo và reviewer!", "warning");
+      addToast(t('chair.assignments.selectPaperAndReviewer'), "warning");
       return;
     }
 
@@ -203,7 +202,7 @@ const ChairAssignmentManagement = () => {
         reviewerId: parseInt(selectedReviewer),
       });
 
-      addToast("Phân công thành công!", "success");
+      addToast(t('chair.assignments.assignSuccess'), "success");
       setShowAssignModal(false);
       setSelectedPaper(null);
       setSelectedReviewer("");
@@ -220,7 +219,7 @@ const ChairAssignmentManagement = () => {
     } catch (err) {
       console.error("Assignment error:", err);
 
-      let errorMsg = "Phân công thất bại";
+      let errorMsg = t('chair.assignments.assignFailed');
 
       if (err.response) {
         // Backend trả về error message trực tiếp trong response.data (string)
@@ -229,9 +228,9 @@ const ChairAssignmentManagement = () => {
         } else if (err.response.data?.message) {
           errorMsg = err.response.data.message;
         } else if (err.response.status === 403) {
-          errorMsg = "Bạn không có quyền thực hiện thao tác này.";
+          errorMsg = t('chair.assignments.noPermission');
         } else if (err.response.status === 401) {
-          errorMsg = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+          errorMsg = t('chair.assignments.sessionExpired');
         }
       } else if (err.message) {
         errorMsg = err.message;
@@ -257,7 +256,7 @@ const ChairAssignmentManagement = () => {
       });
 
       if (availableReviewers.length === 0) {
-        addToast("Không có reviewer nào khả dụng để gợi ý!", "warning");
+        addToast(t('chair.assignments.noAvailableReviewers'), "warning");
         return;
       }
 
@@ -279,7 +278,7 @@ const ChairAssignmentManagement = () => {
       setAiSuggestions(response.data);
     } catch (err) {
       console.error("AI suggestion error:", err);
-      addToast("Không thể lấy gợi ý AI: " + (err.response?.data?.message || err.message), "error");
+      addToast(t('chair.assignments.aiSuggestError') + (err.response?.data?.message || err.message), "error");
     } finally {
       setLoadingAI(false);
     }
@@ -300,7 +299,7 @@ const ChairAssignmentManagement = () => {
         paperIds: paperIds,
         reviewerIds: reviewerIds,
       });
-      addToast("Phân công hàng loạt thành công!", "success");
+      addToast(t('chair.assignments.bulkAssignSuccess'), "success");
       // Reload
       window.location.reload();
     } catch (err) {
@@ -312,10 +311,10 @@ const ChairAssignmentManagement = () => {
 
   const getStatusBadge = (status) => {
     const badges = {
-      PENDING: { text: "Chờ xác nhận", className: "badge-warning" },
-      ACCEPTED: { text: "Đang chấm", className: "badge-success" },
-      DECLINED: { text: "Từ chối", className: "badge-danger" },
-      COMPLETED: { text: "Hoàn thành", className: "badge-info" },
+      PENDING: { text: t('chair.assignments.statusPending'), className: "badge-warning" },
+      ACCEPTED: { text: t('chair.assignments.statusAccepted'), className: "badge-success" },
+      DECLINED: { text: t('chair.assignments.statusDeclined'), className: "badge-danger" },
+      COMPLETED: { text: t('chair.assignments.statusCompleted'), className: "badge-info" },
     };
     const badge = badges[status] || badges.PENDING;
     return <span className={`badge ${badge.className}`} style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem" }}>{badge.text}</span>;
@@ -323,11 +322,11 @@ const ChairAssignmentManagement = () => {
 
   const getPaperStatusBadge = (status) => {
     const badges = {
-      SUBMITTED: { text: "Đã nộp", className: "badge-info" },
-      UNDER_REVIEW: { text: "Đang chấm", className: "badge-warning" },
-      ACCEPTED: { text: "Chấp nhận", className: "badge-success" },
-      REJECTED: { text: "Từ chối", className: "badge-danger" },
-      WITHDRAWN: { text: "Đã rút", className: "badge-secondary" },
+      SUBMITTED: { text: t('chair.assignments.paperSubmitted'), className: "badge-info" },
+      UNDER_REVIEW: { text: t('chair.assignments.paperUnderReview'), className: "badge-warning" },
+      ACCEPTED: { text: t('chair.assignments.paperAccepted'), className: "badge-success" },
+      REJECTED: { text: t('chair.assignments.paperRejected'), className: "badge-danger" },
+      WITHDRAWN: { text: t('chair.assignments.paperWithdrawn'), className: "badge-secondary" },
     };
     const badge = badges[status] || { text: status, className: "badge-info" };
     return <span className={`badge ${badge.className}`}>{badge.text}</span>;
@@ -335,7 +334,7 @@ const ChairAssignmentManagement = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Chair" title="Quản lý Assignment">
+      <DashboardLayout roleLabel="Chair" title={t('chair.assignments.title')}>
         <TableSkeleton rows={8} columns={7} />
       </DashboardLayout>
     );
@@ -344,18 +343,17 @@ const ChairAssignmentManagement = () => {
   return (
     <DashboardLayout
       roleLabel="Chair"
-      title="Quản lý Assignment"
-      subtitle="Phân công Reviewer/PC cho các bài báo"
+      title={t('chair.assignments.title')}
+      subtitle={t('chair.assignments.subtitle')}
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
             <span className="breadcrumb-current">Chair</span>
           </div>
-          <h2 className="data-page-title">Quản lý Assignment</h2>
+          <h2 className="data-page-title">{t('chair.assignments.pageTitle')}</h2>
           <p className="data-page-subtitle">
-            Phân công reviewer cho từng bài báo, theo dõi trạng thái assignment
-            và tiến độ review.
+            {t('chair.assignments.pageSubtitle')}
           </p>
         </div>
       </div>
@@ -381,7 +379,7 @@ const ChairAssignmentManagement = () => {
                 color: "#64748b",
                 fontSize: "0.875rem",
               }}>
-                Chọn hội nghị:
+                {t('chair.assignments.selectConference')}
               </label>
               <select
                 value={selectedConference}
@@ -398,7 +396,7 @@ const ChairAssignmentManagement = () => {
                   color: "#475569",
                 }}
               >
-                <option value="ALL">Tất cả hội nghị</option>
+                <option value="ALL">{t('chair.assignments.allConferences')}</option>
                 {conferences.map((conf) => (
                   <option key={conf.id} value={conf.id}>
                     {conf.name}
@@ -415,7 +413,7 @@ const ChairAssignmentManagement = () => {
                 color: "#64748b",
                 fontSize: "0.875rem",
               }}>
-                Tìm kiếm:
+                {t('chair.assignments.search')}
               </label>
               <div style={{ position: "relative" }}>
                 <FiSearch style={{
@@ -429,7 +427,7 @@ const ChairAssignmentManagement = () => {
                 }} />
                 <input
                   type="text"
-                  placeholder="Tìm theo tiêu đề, tác giả, track..."
+                  placeholder={t('chair.assignments.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{
@@ -454,21 +452,21 @@ const ChairAssignmentManagement = () => {
           <div className="filter-section">
             <div className="filter-label">
               <FiFilter />
-              <span>Lọc:</span>
+              <span>{t('chair.assignments.filter')}</span>
             </div>
             <div className="filter-buttons">
               <button
                 className={`filter-btn ${statusFilter === 'ALL' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('ALL')}
               >
-                Tất cả
+                {t('chair.assignments.all')}
                 <span className="filter-count">{papers.length}</span>
               </button>
               <button
                 className={`filter-btn ${statusFilter === 'UNASSIGNED' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('UNASSIGNED')}
               >
-                Chưa phân công
+                {t('chair.assignments.unassigned')}
                 <span className="filter-count">
                   {papers.filter(p =>
                     (!assignments[p.id] || assignments[p.id].length === 0) &&
@@ -480,7 +478,7 @@ const ChairAssignmentManagement = () => {
                 className={`filter-btn ${statusFilter === 'UNDER_REVIEW' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('UNDER_REVIEW')}
               >
-                Đang review
+                {t('chair.assignments.underReview')}
                 <span className="filter-count">
                   {papers.filter(p => p.status === 'UNDER_REVIEW').length}
                 </span>
@@ -489,7 +487,7 @@ const ChairAssignmentManagement = () => {
                 className={`filter-btn ${statusFilter === 'WITHDRAWN' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('WITHDRAWN')}
               >
-                Đã rút
+                {t('chair.assignments.withdrawn')}
                 <span className="filter-count">
                   {papers.filter(p => p.status === 'WITHDRAWN').length}
                 </span>
@@ -498,7 +496,7 @@ const ChairAssignmentManagement = () => {
                 className={`filter-btn ${statusFilter === 'COMPLETED' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('COMPLETED')}
               >
-                Hoàn thành
+                {t('chair.assignments.completed')}
                 <span className="filter-count">
                   {papers.filter(p => p.status === 'ACCEPTED' || p.status === 'REJECTED').length}
                 </span>
@@ -509,16 +507,16 @@ const ChairAssignmentManagement = () => {
           <div className="sort-section">
             <div className="sort-label">
               <FiTrendingUp />
-              <span>Sắp xếp:</span>
+              <span>{t('chair.assignments.sort')}</span>
             </div>
             <select
               className="sort-select"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
             >
-              <option value="newest">Mới nhất</option>
-              <option value="oldest">Cũ nhất</option>
-              <option value="unassigned">Chưa phân công trước</option>
+              <option value="newest">{t('chair.assignments.newest')}</option>
+              <option value="oldest">{t('chair.assignments.oldest')}</option>
+              <option value="unassigned">{t('chair.assignments.unassignedFirst')}</option>
             </select>
           </div>
         </div>
@@ -542,18 +540,18 @@ const ChairAssignmentManagement = () => {
       <div className="table-wrapper">
         {papers.length === 0 ? (
           <div style={{ textAlign: "center", padding: "3rem", color: "#666" }}>
-            Chưa có bài báo nào trong hội nghị này.
+            {t('chair.assignments.noPapers')}
           </div>
         ) : (
           <table className="simple-table">
             <thead>
               <tr>
-                <th>Tiêu đề</th>
-                <th>Chủ đề </th>
-                <th>Tác giả</th>
-                <th>Trạng thái</th>
-                <th>Người chấm bài</th>
-                <th>Thao tác</th>
+                <th>{t('chair.assignments.paperTitle')}</th>
+                <th>{t('chair.assignments.track')}</th>
+                <th>{t('chair.assignments.author')}</th>
+                <th>{t('chair.assignments.paperStatus')}</th>
+                <th>{t('chair.assignments.reviewers')}</th>
+                <th>{t('chair.assignments.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -597,7 +595,7 @@ const ChairAssignmentManagement = () => {
                           ))}
                         </div>
                       ) : (
-                        <span style={{ color: "#999", fontSize: "0.875rem" }}>Chưa phân công</span>
+                        <span style={{ color: "#999", fontSize: "0.875rem" }}>{t('chair.assignments.notAssigned')}</span>
                       )}
                     </td>
                     <td>
@@ -613,11 +611,11 @@ const ChairAssignmentManagement = () => {
                             style={{ minWidth: "140px" }}
                             title={
                               paperAssignments.length > 0
-                                ? "Thêm reviewer cho bài này"
-                                : "Phân công reviewer"
+                                ? t('chair.assignments.addReviewer')
+                                : t('chair.assignments.assign')
                             }
                           >
-                            {paperAssignments.length > 0 ? "Thêm reviewer" : "Phân công"}
+                            {paperAssignments.length > 0 ? t('chair.assignments.addReviewer') : t('chair.assignments.assign')}
                           </button>
                         ) : (
                           <span
@@ -627,9 +625,9 @@ const ChairAssignmentManagement = () => {
                               }`}
                             style={{ minWidth: "140px", display: "inline-block", textAlign: "center" }}
                           >
-                            {paper.status === 'ACCEPTED' && 'Đã chấp nhận'}
-                            {paper.status === 'REJECTED' && 'Đã từ chối'}
-                            {paper.status === 'WITHDRAWN' && 'Đã rút'}
+                            {paper.status === 'ACCEPTED' && t('chair.assignments.accepted')}
+                            {paper.status === 'REJECTED' && t('chair.assignments.rejected')}
+                            {paper.status === 'WITHDRAWN' && t('chair.assignments.paperWithdrawn')}
                           </span>
                         )}
                       </div>
@@ -650,7 +648,7 @@ const ChairAssignmentManagement = () => {
           totalItems={filteredPapers.length}
           itemsPerPage={20}
           onPageChange={setCurrentPage}
-          itemName="bài báo"
+          itemName={t('common.papers')}
         />
       )}
 
@@ -664,7 +662,7 @@ const ChairAssignmentManagement = () => {
           }}
         >
           <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "800px" }}>
-            <h3>Phân công Reviewer cho: {selectedPaper.title}</h3>
+            <h3>{t('chair.assignments.assignReviewerFor')} {selectedPaper.title}</h3>
 
             {/* Hiển thị các reviewer đã được phân công */}
             {(() => {
@@ -672,7 +670,7 @@ const ChairAssignmentManagement = () => {
               if (paperAssignments.length > 0) {
                 return (
                   <div style={{ marginBottom: '1rem', padding: '0.75rem', background: '#f0f0f0', borderRadius: '4px' }}>
-                    <strong>Đã phân công:</strong>
+                    <strong>{t('chair.assignments.alreadyAssigned')}</strong>
                     {paperAssignments.map((assign) => (
                       <div key={assign.id} style={{ marginTop: '0.25rem' }}>
                         • {assign.reviewer?.fullName} - {getStatusBadge(assign.status).props.children}
@@ -709,12 +707,12 @@ const ChairAssignmentManagement = () => {
                 {loadingAI ? (
                   <>
                     <span>⏳</span>
-                    <span>Đang phân tích...</span>
+                    <span>{t('chair.assignments.aiAnalyzing')}</span>
                   </>
                 ) : (
                   <>
                     <span>✨</span>
-                    <span>Gợi ý AI người chấm phù hợp</span>
+                    <span>{t('chair.assignments.aiSuggestButton')}</span>
                   </>
                 )}
               </button>
@@ -739,7 +737,7 @@ const ChairAssignmentManagement = () => {
                   gap: '0.5rem'
                 }}>
                   <span>🤖</span>
-                  <span>Gợi ý từ AI (xếp hạng theo độ phù hợp):</span>
+                  <span>{t('chair.assignments.aiSuggestTitle')}</span>
                 </div>
                 {aiSuggestions.suggestions.map((suggestion, idx) => (
                   <div
@@ -778,7 +776,7 @@ const ChairAssignmentManagement = () => {
                         fontSize: '0.75rem',
                         fontWeight: 700
                       }}>
-                        {(suggestion.similarityScore * 100).toFixed(0)}% phù hợp
+                        {(suggestion.similarityScore * 100).toFixed(0)}% {t('chair.assignments.similarity')}
                       </div>
                     </div>
                     <div style={{ fontSize: '0.8125rem', color: '#6b7280', fontStyle: 'italic' }}>
@@ -796,20 +794,20 @@ const ChairAssignmentManagement = () => {
                     color: '#92400e',
                     border: '1px solid #fcd34d'
                   }}>
-                    <strong>💡 Lưu ý:</strong> {aiSuggestions.explanation}
+                    <strong>💡 {t('chair.assignments.aiNote')}</strong> {aiSuggestions.explanation}
                   </div>
                 )}
               </div>
             )}
 
             <div className="form-group">
-              <label className="form-label">Chọn Reviewer *</label>
+              <label className="form-label">{t('chair.assignments.selectReviewer')}</label>
               <select
                 value={selectedReviewer}
                 onChange={(e) => setSelectedReviewer(e.target.value)}
                 className="form-input"
               >
-                <option value="">-- Chọn Reviewer --</option>
+                <option value="">{t('chair.assignments.selectReviewerPlaceholder')}</option>
                 {reviewers
                   .filter((reviewer) => {
                     // Lọc ra những reviewer chưa được phân công cho bài này
@@ -831,7 +829,7 @@ const ChairAssignmentManagement = () => {
                 );
               }).length === 0 && (
                   <div style={{ marginTop: '0.5rem', color: '#666', fontSize: '0.9rem' }}>
-                    Tất cả reviewers đã được phân công cho bài này
+                            <span>{t('chair.assignments.allReviewersAssigned')}</span>
                   </div>
                 )}
             </div>
@@ -841,7 +839,7 @@ const ChairAssignmentManagement = () => {
                 onClick={handleAssign}
                 disabled={submitting || !selectedReviewer}
               >
-                {submitting ? "Đang phân công..." : "Phân công"}
+                {submitting ? t('chair.assignments.assigning') : t('chair.assignments.assignBtn')}
               </button>
               <button
                 className="btn-secondary"
@@ -852,7 +850,7 @@ const ChairAssignmentManagement = () => {
                   setAiSuggestions(null);
                 }}
               >
-                Hủy
+                {t('chair.assignments.cancelBtn')}
               </button>
             </div>
           </div>

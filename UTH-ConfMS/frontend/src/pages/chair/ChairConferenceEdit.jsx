@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import { ToastContainer } from "../../components/Toast";
 
 const ChairConferenceEdit = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -64,7 +66,7 @@ const ChairConferenceEdit = () => {
         });
       } catch (err) {
         console.error(err);
-        setLoadError("Không thể tải dữ liệu hội nghị.");
+        setLoadError(t('chair.conferenceForm.loadError'));
       } finally {
         setLoading(false);
       }
@@ -106,7 +108,7 @@ const ChairConferenceEdit = () => {
       
       // Cho phép cùng ngày, chỉ cần giờ kết thúc sau giờ bắt đầu
       if (endDateTime.getTime() <= startDateTime.getTime()) {
-        addToast("Thời gian kết thúc phải sau thời gian bắt đầu!", "error");
+        addToast(t('chair.conferenceForm.endDateError'), "error");
         return;
       }
     }
@@ -128,7 +130,7 @@ const ChairConferenceEdit = () => {
           
           if (!isNaN(sessionDate.getTime())) {
             if (sessionDate < confStartDate || sessionDate > confEndDate) {
-              addToast(`Track "${track.name}": Ngày session phải nằm trong khoảng thời gian hội nghị!`, "error");
+              addToast(`Track "${track.name}": ${t('chair.conferenceForm.trackSessionDateError')}`, "error");
               return;
             }
           }
@@ -160,11 +162,11 @@ const ChairConferenceEdit = () => {
       };
 
       await apiClient.put(`/conferences/${id}`, payload);
-      addToast("Cập nhật thành công!", "success");
+      addToast(t('chair.conferenceForm.updateSuccess'), "success");
       setTimeout(() => navigate("/chair/conferences"), 800);
     } catch (err) {
       console.error(err);
-      const msg = err.response?.data || "Lưu thất bại.";
+      const msg = err.response?.data || t('chair.conferenceForm.saveFailed');
       addToast(typeof msg === "string" ? msg : JSON.stringify(msg), "error");
     } finally {
       setSaving(false);
@@ -173,13 +175,13 @@ const ChairConferenceEdit = () => {
 
   if (loading)
     return (
-      <DashboardLayout roleLabel="Program Chair" title="Đang tải...">
-        <div className="form-card">Đang tải dữ liệu...</div>
+      <DashboardLayout roleLabel="Program Chair" title={t('chair.conferenceForm.loading')}>
+        <div className="form-card">{t('chair.conferenceForm.loadingData')}</div>
       </DashboardLayout>
     );
 
   return (
-    <DashboardLayout roleLabel="Program Chair" title={`Sửa Hội Nghị #${id}`} subtitle="Cập nhật thông tin chi tiết và danh sách tracks.">
+    <DashboardLayout roleLabel="Program Chair" title={`${t('chair.conferenceForm.editTitle')} #${id}`} subtitle={t('chair.conferenceForm.editSubtitle')}>
       <div style={{ marginBottom: "1rem" }}>
         <button 
           className="btn-back" 
@@ -207,19 +209,19 @@ const ChairConferenceEdit = () => {
             e.currentTarget.style.borderColor = "#e2e8f0";
           }}
         >
-          ← Quay lại danh sách hội nghị
+          ← {t('chair.conferenceForm.backToConferences')}
         </button>
       </div>
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
             <Link to="/chair/conferences" className="breadcrumb-link">
-              Hội nghị
+              {t('chair.conferenceForm.breadcrumbConferences')}
             </Link>
             <span className="breadcrumb-separator">/</span>
-            <span className="breadcrumb-current">Chỉnh sửa #{id}</span>
+            <span className="breadcrumb-current">{t('chair.conferenceForm.breadcrumbEdit')} #{id}</span>
           </div>
-          <h2 className="data-page-title">Cập nhật thông tin hội nghị</h2>
+          <h2 className="data-page-title">{t('chair.conferenceForm.editPageTitle')}</h2>
         </div>
       </div>
 
@@ -243,22 +245,22 @@ const ChairConferenceEdit = () => {
           fontWeight: 600,
           color: "#111827"
         }}>
-          Thông tin chung
+          {t('chair.conferenceForm.generalInfo')}
         </h3>
         <div className="form-card" style={{ marginBottom: "1.5rem" }}>
           <div className="form-group">
-            <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Tên hội nghị *</label>
+            <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.conferenceName')}</label>
             <input 
               name="name" 
               value={formData.name} 
               onChange={handleChange} 
               required 
-              placeholder="Ví dụ: UTH Conference 2025"
+              placeholder={t('chair.conferenceForm.conferenceNamePlaceholder')}
               style={{ fontSize: "0.95rem" }}
             />
           </div>
           <div className="form-group">
-            <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Mô tả chi tiết *</label>
+            <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.description')}</label>
             <textarea 
               name="description" 
               value={formData.description} 
@@ -271,7 +273,7 @@ const ChairConferenceEdit = () => {
           </div>
           <label className="checkbox" style={{ fontSize: "0.95rem" }}>
             <input type="checkbox" name="blindReview" checked={formData.blindReview} onChange={handleChange} />
-            <span style={{ marginLeft: "0.5rem" }}>Bật chế độ Blind Review (Phản biện kín)</span>
+            <span style={{ marginLeft: "0.5rem" }}>{t('chair.conferenceForm.blindReview')}</span>
           </label>
         </div>
 
@@ -281,44 +283,44 @@ const ChairConferenceEdit = () => {
           fontWeight: 600,
           color: "#111827"
         }}>
-          Thời gian tổ chức
+          {t('chair.conferenceForm.schedule')}
         </h3>
         <div className="form-card" style={{ marginBottom: "1.5rem" }}>
           <div className="form-grid">
             <div className="form-group">
-              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Ngày bắt đầu *</label>
+              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.startDate')}</label>
               <input type="datetime-local" name="startDate" value={formData.startDate} onChange={handleChange} required />
             </div>
             <div className="form-group">
-              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Ngày kết thúc *</label>
+              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.endDate')}</label>
               <input type="datetime-local" name="endDate" value={formData.endDate} onChange={handleChange} required />
               <div className="field-hint" style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>
-                Có thể cùng ngày, miễn giờ kết thúc sau giờ bắt đầu
+                {t('chair.conferenceForm.sameDayHint')}
               </div>
             </div>
           </div>
 
           <div className="form-group">
-            <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Hạn nộp bài</label>
+            <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.submissionDeadline')}</label>
             <input type="datetime-local" name="submissionDeadline" value={formData.submissionDeadline} onChange={handleChange} />
             <div className="field-hint" style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>
-              Thời hạn tác giả nộp bài báo
+              {t('chair.conferenceForm.submissionDeadlineHint')}
             </div>
           </div>
 
           <div className="form-grid">
             <div className="form-group">
-              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Hạn chấm bài</label>
+              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.reviewDeadline')}</label>
               <input type="datetime-local" name="reviewDeadline" value={formData.reviewDeadline} onChange={handleChange} />
               <div className="field-hint" style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>
-                Thời hạn reviewer hoàn thành đánh giá
+                {t('chair.conferenceForm.reviewDeadlineHint')}
               </div>
             </div>
             <div className="form-group">
-              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Hạn nộp bản cuối</label>
+              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.cameraReadyDeadline')}</label>
               <input type="datetime-local" name="cameraReadyDeadline" value={formData.cameraReadyDeadline} onChange={handleChange} />
               <div className="field-hint" style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>
-                Thời hạn nộp bản cuối sau khi được chấp nhận
+                {t('chair.conferenceForm.cameraReadyDeadlineHint')}
               </div>
             </div>
           </div>
@@ -330,7 +332,7 @@ const ChairConferenceEdit = () => {
           fontWeight: 600,
           color: "#111827"
         }}>
-          Danh sách Tracks & Lịch trình
+          {t('chair.conferenceForm.tracksAndSchedule')}
         </h3>
         <div style={{ 
           background: "#ffffff",
@@ -371,7 +373,7 @@ const ChairConferenceEdit = () => {
                     borderRadius: "6px",
                     padding: "0.5rem 0.75rem"
                   }} 
-                  placeholder="Tên track (VD: AI, Security...)" 
+                placeholder={t('chair.conferenceForm.trackNamePlaceholder')} 
                   value={track.name || ""} 
                   onChange={(e) => handleTrackChange(index, 'name', e.target.value)} 
                 />
@@ -386,7 +388,7 @@ const ChairConferenceEdit = () => {
                   }} 
                   onClick={() => removeTrack(index)}
                 >
-                  Xóa
+                  {t('chair.conferenceForm.removeTrack')}
                 </button>
               </div>
               
@@ -404,7 +406,7 @@ const ChairConferenceEdit = () => {
                     color: "#374151",
                     marginBottom: "0.25rem"
                   }}>
-                    Ngày tổ chức
+                    {t('chair.conferenceForm.trackSessionDate')}
                   </label>
                   <input 
                     type="date"
@@ -423,7 +425,7 @@ const ChairConferenceEdit = () => {
                     color: "#6b7280", 
                     marginTop: "0.25rem" 
                   }}>
-                    Phải trong khoảng thời gian hội nghị
+                    {t('chair.conferenceForm.trackSessionDateHint')}
                   </div>
                 </div>
                 <div>
@@ -434,7 +436,7 @@ const ChairConferenceEdit = () => {
                     color: "#374151",
                     marginBottom: "0.25rem"
                   }}>
-                    Thời gian phiên
+                    {t('chair.conferenceForm.trackSessionTime')}
                   </label>
                   <input 
                     style={{ 
@@ -444,7 +446,7 @@ const ChairConferenceEdit = () => {
                       borderRadius: "6px",
                       padding: "0.5rem 0.75rem"
                     }} 
-                    placeholder="VD: 09:00 - 11:00" 
+                    placeholder={t('chair.conferenceForm.trackSessionTimePlaceholder')} 
                     value={track.sessionTime || ""} 
                     onChange={(e) => handleTrackChange(index, 'sessionTime', e.target.value)} 
                   />
@@ -457,7 +459,7 @@ const ChairConferenceEdit = () => {
                     color: "#374151",
                     marginBottom: "0.25rem"
                   }}>
-                    Phòng/Địa điểm
+                    {t('chair.conferenceForm.trackRoom')}
                   </label>
                   <input 
                     style={{ 
@@ -467,7 +469,7 @@ const ChairConferenceEdit = () => {
                       borderRadius: "6px",
                       padding: "0.5rem 0.75rem"
                     }} 
-                    placeholder="VD: Phòng 201" 
+                    placeholder={t('chair.conferenceForm.trackRoomPlaceholder')} 
                     value={track.room || ""} 
                     onChange={(e) => handleTrackChange(index, 'room', e.target.value)} 
                   />
@@ -482,7 +484,7 @@ const ChairConferenceEdit = () => {
                   color: "#374151",
                   marginBottom: "0.25rem"
                 }}>
-                  Mô tả (tùy chọn)
+                  {t('chair.conferenceForm.trackDescription')}
                 </label>
                 <textarea 
                   style={{ 
@@ -494,7 +496,7 @@ const ChairConferenceEdit = () => {
                     minHeight: "60px",
                     resize: "vertical"
                   }} 
-                  placeholder="Mô tả ngắn về track này..." 
+                  placeholder={t('chair.conferenceForm.trackDescriptionPlaceholder')} 
                   value={track.description || ""} 
                   onChange={(e) => handleTrackChange(index, 'description', e.target.value)} 
                 />
@@ -511,7 +513,7 @@ const ChairConferenceEdit = () => {
               borderRadius: "6px"
             }}
           >
-            + Thêm Track
+            {t('chair.conferenceForm.addTrack')}
           </button>
         </div>
 
@@ -523,7 +525,7 @@ const ChairConferenceEdit = () => {
           borderTop: "2px solid #e5e7eb"
         }}>
           <button className="btn-primary" type="submit" disabled={saving} style={{ minWidth: "140px" }}>
-            {saving ? "Đang lưu..." : "Lưu thay đổi"}
+            {saving ? t('chair.conferenceForm.saving') : t('chair.conferenceForm.saveChanges')}
           </button>
           <button 
             type="button" 
@@ -531,7 +533,7 @@ const ChairConferenceEdit = () => {
             onClick={() => navigate("/chair/conferences")}
             style={{ minWidth: "120px" }}
           >
-            Quay lại
+            {t('chair.conferenceForm.back')}
           </button>
         </div>
       </form>

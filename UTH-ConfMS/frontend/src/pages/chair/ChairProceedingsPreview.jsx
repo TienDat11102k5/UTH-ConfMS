@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
@@ -8,6 +9,7 @@ import { FiDownload, FiEye, FiFilter } from "react-icons/fi";
 import "../../styles/PublicProceedings.css";
 
 const ChairProceedingsPreview = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [conferences, setConferences] = useState([]);
   const [selectedConference, setSelectedConference] = useState("");
@@ -40,7 +42,7 @@ const ChairProceedingsPreview = () => {
       setProceedings(res.data);
     } catch (err) {
       console.error("Error fetching proceedings:", err);
-      alert("Không thể tải kỷ yếu!");
+      alert(t('chair.proceedings.loadError'));
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ const ChairProceedingsPreview = () => {
 
   const handleExportJSON = async () => {
     if (!selectedConference) {
-      alert("Vui lòng chọn hội nghị!");
+      alert(t('chair.proceedings.selectConferenceFirst'));
       return;
     }
     try {
@@ -71,16 +73,16 @@ const ChairProceedingsPreview = () => {
       a.download = `proceedings-${selectedConference}-${new Date().toISOString().split("T")[0]}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      alert("Đã xuất JSON thành công!");
+      alert(t('chair.proceedings.jsonExportSuccess'));
     } catch (err) {
       console.error(err);
-      alert("Lỗi export proceedings!");
+      alert(t('chair.proceedings.exportError'));
     }
   };
 
   const handleExportCSV = () => {
     if (!selectedConference || proceedings.length === 0) {
-      alert("Không có dữ liệu để xuất!");
+      alert(t('chair.proceedings.noDataToExport'));
       return;
     }
 
@@ -100,7 +102,7 @@ const ChairProceedingsPreview = () => {
       proceedings.forEach((paper, index) => {
         const allAuthors = paper.coAuthors
           ? `${paper.authorName}, ${paper.coAuthors}`
-          : paper.authorName || "Không có thông tin tác giả";
+          : paper.authorName || t('chair.proceedings.noAuthorInfo');
 
         csvData.push([
           index + 1,
@@ -128,10 +130,10 @@ const ChairProceedingsPreview = () => {
       link.click();
       document.body.removeChild(link);
 
-      alert("Đã xuất CSV thành công!");
+      alert(t('chair.proceedings.csvExportSuccess'));
     } catch (err) {
       console.error("Export error:", err);
-      alert("Lỗi khi xuất CSV: " + err.message);
+      alert(t('chair.proceedings.csvExportError') + err.message);
     }
   };
 
@@ -152,7 +154,7 @@ const ChairProceedingsPreview = () => {
 
   if (loading) {
     return (
-      <DashboardLayout roleLabel="Chair" title="Xem trước kỷ yếu">
+      <DashboardLayout roleLabel="Chair" title={t('chair.proceedings.title')}>
         <ListSkeleton items={6} />
       </DashboardLayout>
     );
@@ -161,17 +163,17 @@ const ChairProceedingsPreview = () => {
   return (
     <DashboardLayout
       roleLabel="Chair"
-      title="Xem trước kỷ yếu"
-      subtitle="Kiểm tra danh sách kỷ yếu và xuất dữ liệu"
+      title={t('chair.proceedings.title')}
+      subtitle={t('chair.proceedings.subtitle')}
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
             <span className="breadcrumb-current">Chair</span>
           </div>
-          <h2 className="data-page-title">Xem trước kỷ yếu</h2>
+          <h2 className="data-page-title">{t('chair.proceedings.pageTitle')}</h2>
           <p className="data-page-subtitle">
-            Xem danh sách bài báo trong kỷ yếu và xuất dữ liệu
+            {t('chair.proceedings.pageSubtitle')}
           </p>
         </div>
       </div>
@@ -198,7 +200,7 @@ const ChairProceedingsPreview = () => {
             color: "#64748b",
             fontSize: "0.875rem",
           }}>
-            Chọn hội nghị:
+            {t('chair.proceedings.selectConference')}
           </label>
           <select
             value={selectedConference}
@@ -215,7 +217,7 @@ const ChairProceedingsPreview = () => {
               color: "#475569",
             }}
           >
-            <option value="">-- Chọn hội nghị --</option>
+            <option value="">{t('chair.proceedings.selectConferenceOption')}</option>
             {conferences.map((conf) => (
               <option key={conf.id} value={conf.id}>
                 {conf.name}
@@ -232,7 +234,7 @@ const ChairProceedingsPreview = () => {
             style={{ display: "flex", alignItems: "center", gap: "0.5rem", whiteSpace: "nowrap" }}
           >
             <FiDownload size={16} />
-            Xuất CSV
+            {t('chair.proceedings.exportCSV')}
           </button>
           <button
             className="btn-secondary"
@@ -241,7 +243,7 @@ const ChairProceedingsPreview = () => {
             style={{ display: "flex", alignItems: "center", gap: "0.5rem", whiteSpace: "nowrap" }}
           >
             <FiDownload size={16} />
-            Xuất JSON
+            {t('chair.proceedings.exportJSON')}
           </button>
           <button
             className="btn-secondary"
@@ -250,7 +252,7 @@ const ChairProceedingsPreview = () => {
             style={{ display: "flex", alignItems: "center", gap: "0.5rem", whiteSpace: "nowrap" }}
           >
             <FiEye size={16} />
-            Xem công khai
+            {t('chair.proceedings.viewPublic')}
           </button>
         </div>
       </div>
@@ -277,7 +279,7 @@ const ChairProceedingsPreview = () => {
                 gap: "0.375rem"
               }}>
                 <FiFilter size={14} />
-                Lọc theo chủ đề:
+                {t('chair.proceedings.filterByTrack')}
               </label>
               <select
                 value={selectedTrack}
@@ -294,7 +296,7 @@ const ChairProceedingsPreview = () => {
                   color: "#475569",
                 }}
               >
-                <option value="ALL">Tất cả chủ đề ({proceedings.length})</option>
+                <option value="ALL">{t('chair.proceedings.allTracks')} ({proceedings.length})</option>
                 {tracks.map((track) => (
                   <option key={track} value={track}>
                     {track} ({proceedings.filter(p => p.trackName === track).length})
@@ -311,11 +313,11 @@ const ChairProceedingsPreview = () => {
                 color: "#64748b",
                 fontSize: "0.875rem",
               }}>
-                Tìm kiếm:
+                {t('chair.proceedings.search')}
               </label>
               <input
                 type="text"
-                placeholder="Tìm theo tiêu đề, tác giả..."
+                placeholder={t('chair.proceedings.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
@@ -343,8 +345,8 @@ const ChairProceedingsPreview = () => {
         }}>
           <EmptyState
             icon={selectedConference ? "file" : "search"}
-            title={selectedConference ? "Chưa có bài báo nào trong kỷ yếu" : "Vui lòng chọn hội nghị"}
-            description={selectedConference ? "Các bài báo được chấp nhận sẽ xuất hiện trong kỷ yếu." : "Chọn một hội nghị từ dropdown ở trên để xem kỷ yếu."}
+            title={selectedConference ? t('chair.proceedings.noPapersTitle') : t('chair.proceedings.selectConferenceFirst')}
+            description={selectedConference ? t('chair.proceedings.noPapersDescription') : t('chair.proceedings.selectConferenceDescription')}
             size="large"
           />
         </div>
@@ -361,14 +363,14 @@ const ChairProceedingsPreview = () => {
             color: "#6b7280",
             fontWeight: 600
           }}>
-            Hiển thị {filteredProceedings.length} / {proceedings.length} bài báo
+            {t('chair.proceedings.showing')} {filteredProceedings.length} / {proceedings.length} {t('chair.proceedings.papers')}
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             {filteredProceedings.map((paper, index) => {
               const allAuthors = paper.coAuthors
                 ? `${paper.authorName}, ${paper.coAuthors}`
-                : paper.authorName || "Không có thông tin tác giả";
+                : paper.authorName || t('chair.proceedings.noAuthorInfo');
 
               return (
                 <div key={paper.paperId || index} style={{

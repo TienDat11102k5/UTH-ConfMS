@@ -1,10 +1,12 @@
 import React, { useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, Link } from "react-router-dom";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import { ToastContainer } from "../../components/Toast";
 
 const ChairConferenceCreate = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
 
@@ -62,7 +64,7 @@ const ChairConferenceCreate = () => {
     e.preventDefault();
 
     if (!formData.name || !formData.startDate || !formData.endDate) {
-      addToast("Vui lòng điền tên, ngày bắt đầu và ngày kết thúc!", "warning");
+      addToast(t('chair.conferenceForm.requiredFieldsWarning'), "warning");
       return;
     }
 
@@ -71,7 +73,7 @@ const ChairConferenceCreate = () => {
       const endDateTime = new Date(formData.endDate);
       
       if (endDateTime.getTime() <= startDateTime.getTime()) {
-        addToast("Thời gian kết thúc phải sau thời gian bắt đầu!", "error");
+        addToast(t('chair.conferenceForm.endDateError'), "error");
         return;
       }
     }
@@ -96,11 +98,11 @@ const ChairConferenceCreate = () => {
     try {
       setSubmitting(true);
       await apiClient.post(`/conferences`, payload);
-      addToast("Tạo hội nghị thành công!", "success");
+      addToast(t('chair.conferenceForm.createSuccess'), "success");
       setTimeout(() => navigate("/chair/conferences"), 800);
     } catch (err) {
       console.error(err);
-      const serverMsg = err.response?.data || "Tạo thất bại";
+      const serverMsg = err.response?.data || t('chair.conferenceForm.createFailed');
       addToast(typeof serverMsg === "string" ? serverMsg : JSON.stringify(serverMsg), "error");
     } finally {
       setSubmitting(false);
@@ -110,112 +112,112 @@ const ChairConferenceCreate = () => {
   return (
     <DashboardLayout
       roleLabel="Chair"
-      title="Tạo Hội Nghị Mới"
-      subtitle="Điền thông tin chi tiết để tạo hội nghị khoa học mới"
+      title={t('chair.conferenceForm.createTitle')}
+      subtitle={t('chair.conferenceForm.createSubtitle')}
     >
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
             <Link to="/chair/conferences" className="breadcrumb-link">
-              Hội nghị
+              {t('chair.conferenceForm.breadcrumbConferences')}
             </Link>
             <span className="breadcrumb-separator">/</span>
-            <span className="breadcrumb-current">Tạo mới</span>
+            <span className="breadcrumb-current">{t('chair.conferenceForm.breadcrumbCreate')}</span>
           </div>
-          <h2 className="data-page-title">Tạo hội nghị mới</h2>
+          <h2 className="data-page-title">{t('chair.conferenceForm.createPageTitle')}</h2>
         </div>
       </div>
 
       <form onSubmit={handleCreate} className="submission-form" style={{ maxWidth: 960, margin: "0 auto" }}>
 
-        <h3 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: 600, color: "#111827" }}>Thông tin chung</h3>
+        <h3 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: 600, color: "#111827" }}>{t('chair.conferenceForm.generalInfo')}</h3>
         <div className="form-card" style={{ marginBottom: "1.5rem" }}>
           <div className="form-group">
-            <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Tên hội nghị *</label>
-            <input name="name" value={formData.name} onChange={handleChange} required placeholder="Ví dụ: UTH Conference 2025" style={{ fontSize: "0.95rem" }} />
+            <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.conferenceName')}</label>
+            <input name="name" value={formData.name} onChange={handleChange} required placeholder={t('chair.conferenceForm.conferenceNamePlaceholder')} style={{ fontSize: "0.95rem" }} />
           </div>
           <div className="form-group">
-            <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Mô tả chi tiết *</label>
-            <textarea name="description" value={formData.description} onChange={handleChange} rows={4} required className="textarea-input" placeholder="Giới thiệu ngắn gọn về hội nghị..." style={{ fontSize: "0.95rem", lineHeight: "1.6" }} />
+            <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.description')}</label>
+            <textarea name="description" value={formData.description} onChange={handleChange} rows={4} required className="textarea-input" placeholder={t('chair.conferenceForm.descriptionPlaceholder')} style={{ fontSize: "0.95rem", lineHeight: "1.6" }} />
           </div>
           <label className="checkbox" style={{ fontSize: "0.95rem" }}>
             <input type="checkbox" name="blindReview" checked={formData.blindReview} onChange={handleChange} />
-            <span style={{ marginLeft: "0.5rem" }}>Bật chế độ Blind Review (Phản biện kín)</span>
+            <span style={{ marginLeft: "0.5rem" }}>{t('chair.conferenceForm.blindReview')}</span>
           </label>
         </div>
 
-        <h3 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: 600, color: "#111827" }}>Thời gian tổ chức</h3>
+        <h3 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: 600, color: "#111827" }}>{t('chair.conferenceForm.schedule')}</h3>
         <div className="form-card" style={{ marginBottom: "1.5rem" }}>
           <div className="form-grid">
             <div className="form-group">
-              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Ngày bắt đầu *</label>
+              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.startDate')}</label>
               <input type="datetime-local" name="startDate" value={formData.startDate} onChange={handleChange} required />
             </div>
             <div className="form-group">
-              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Ngày kết thúc *</label>
+              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.endDate')}</label>
               <input type="datetime-local" name="endDate" value={formData.endDate} onChange={handleChange} required />
-              <div className="field-hint" style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>Có thể cùng ngày, miễn giờ kết thúc sau giờ bắt đầu</div>
+              <div className="field-hint" style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>{t('chair.conferenceForm.sameDayHint')}</div>
             </div>
           </div>
 
           <div className="form-group">
-            <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Hạn nộp bài</label>
+            <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.submissionDeadline')}</label>
             <input type="datetime-local" name="submissionDeadline" value={formData.submissionDeadline} onChange={handleChange} />
-            <div className="field-hint" style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>Thời hạn tác giả nộp bài báo</div>
+            <div className="field-hint" style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>{t('chair.conferenceForm.submissionDeadlineHint')}</div>
           </div>
 
           <div className="form-grid">
             <div className="form-group">
-              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Hạn chấm bài</label>
+              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.reviewDeadline')}</label>
               <input type="datetime-local" name="reviewDeadline" value={formData.reviewDeadline} onChange={handleChange} />
-              <div className="field-hint" style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>Thời hạn reviewer hoàn thành đánh giá</div>
+              <div className="field-hint" style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>{t('chair.conferenceForm.reviewDeadlineHint')}</div>
             </div>
             <div className="form-group">
-              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>Hạn nộp bản cuối</label>
+              <label className="form-label" style={{ fontWeight: 500, color: "#374151" }}>{t('chair.conferenceForm.cameraReadyDeadline')}</label>
               <input type="datetime-local" name="cameraReadyDeadline" value={formData.cameraReadyDeadline} onChange={handleChange} />
-              <div className="field-hint" style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>Thời hạn nộp bản cuối sau khi được chấp nhận</div>
+              <div className="field-hint" style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>{t('chair.conferenceForm.cameraReadyDeadlineHint')}</div>
             </div>
           </div>
         </div>
 
-        <h3 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: 600, color: "#111827" }}>Danh sách Tracks & Lịch trình</h3>
+        <h3 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: 600, color: "#111827" }}>{t('chair.conferenceForm.tracksAndSchedule')}</h3>
         <div style={{ background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "12px", padding: "1.5rem", boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)", marginBottom: "1.5rem" }}>
           {formData.tracks.map((track, index) => (
             <div key={index} style={{ padding: "1.25rem", background: "#f9fafb", borderRadius: "8px", marginBottom: "1rem", border: "1px solid #e5e7eb" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
                 <span style={{ color: "#6b7280", minWidth: "32px", fontWeight: 600, fontSize: "0.9rem" }}>{index + 1}.</span>
-                <input style={{ flex: 1, minWidth: 0, fontSize: "0.95rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} placeholder="Tên track (VD: AI, Security...)" value={track.name || ""} onChange={(e) => handleTrackChange(index, "name", e.target.value)} />
-                <button type="button" className="btn-secondary table-action" style={{ color: "#dc2626", fontWeight: 500, padding: "0.5rem 1rem", borderRadius: "6px" }} onClick={() => removeTrack(index)}>Xóa</button>
+                <input style={{ flex: 1, minWidth: 0, fontSize: "0.95rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} placeholder={t('chair.conferenceForm.trackNamePlaceholder')} value={track.name || ""} onChange={(e) => handleTrackChange(index, "name", e.target.value)} />
+                <button type="button" className="btn-secondary table-action" style={{ color: "#dc2626", fontWeight: 500, padding: "0.5rem 1rem", borderRadius: "6px" }} onClick={() => removeTrack(index)}>{t('chair.conferenceForm.removeTrack')}</button>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.75rem", marginLeft: "40px" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>Ngày tổ chức</label>
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>{t('chair.conferenceForm.trackSessionDate')}</label>
                   <input type="date" style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} value={track.sessionDate || ""} onChange={(e) => handleTrackChange(index, "sessionDate", e.target.value)} />
-                  <div style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: "0.25rem" }}>Phải trong khoảng thời gian hội nghị</div>
+                  <div style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: "0.25rem" }}>{t('chair.conferenceForm.trackSessionDateHint')}</div>
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>Thời gian phiên</label>
-                  <input style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} placeholder="VD: 09:00 - 11:00" value={track.sessionTime || ""} onChange={(e) => handleTrackChange(index, "sessionTime", e.target.value)} />
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>{t('chair.conferenceForm.trackSessionTime')}</label>
+                  <input style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} placeholder={t('chair.conferenceForm.trackSessionTimePlaceholder')} value={track.sessionTime || ""} onChange={(e) => handleTrackChange(index, "sessionTime", e.target.value)} />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>Phòng/Địa điểm</label>
-                  <input style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} placeholder="VD: Phòng 201" value={track.room || ""} onChange={(e) => handleTrackChange(index, "room", e.target.value)} />
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>{t('chair.conferenceForm.trackRoom')}</label>
+                  <input style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} placeholder={t('chair.conferenceForm.trackRoomPlaceholder')} value={track.room || ""} onChange={(e) => handleTrackChange(index, "room", e.target.value)} />
                 </div>
               </div>
 
               <div style={{ marginLeft: "40px", marginTop: "0.75rem" }}>
-                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>Mô tả (tùy chọn)</label>
-                <textarea style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem", minHeight: "60px", resize: "vertical" }} placeholder="Mô tả ngắn về track này..." value={track.description || ""} onChange={(e) => handleTrackChange(index, "description", e.target.value)} />
+                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>{t('chair.conferenceForm.trackDescription')}</label>
+                <textarea style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem", minHeight: "60px", resize: "vertical" }} placeholder={t('chair.conferenceForm.trackDescriptionPlaceholder')} value={track.description || ""} onChange={(e) => handleTrackChange(index, "description", e.target.value)} />
               </div>
             </div>
           ))}
-          <button type="button" className="btn-secondary table-action" onClick={addTrack} style={{ marginTop: "0.5rem", padding: "0.5rem 1rem", borderRadius: "6px" }}>+ Thêm Track</button>
+          <button type="button" className="btn-secondary table-action" onClick={addTrack} style={{ marginTop: "0.5rem", padding: "0.5rem 1rem", borderRadius: "6px" }}>{t('chair.conferenceForm.addTrack')}</button>
         </div>
 
         <div className="form-actions" style={{ marginTop: "2rem", display: "flex", gap: "1rem", paddingTop: "1.5rem", borderTop: "2px solid #e5e7eb" }}>
-          <button className="btn-primary" type="submit" disabled={submitting} style={{ minWidth: "140px" }}>{submitting ? "Đang tạo..." : "Tạo hội nghị"}</button>
-          <button type="button" className="btn-secondary" onClick={() => navigate("/chair/conferences")} style={{ minWidth: "120px" }}>Hủy</button>
+          <button className="btn-primary" type="submit" disabled={submitting} style={{ minWidth: "140px" }}>{submitting ? t('chair.conferenceForm.creating') : t('chair.conferenceForm.createButton')}</button>
+          <button type="button" className="btn-secondary" onClick={() => navigate("/chair/conferences")} style={{ minWidth: "120px" }}>{t('app.cancel')}</button>
         </div>
       </form>
 
