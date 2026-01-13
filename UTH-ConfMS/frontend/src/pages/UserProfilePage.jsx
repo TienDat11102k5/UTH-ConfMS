@@ -1,19 +1,21 @@
 // src/pages/UserProfilePage.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getCurrentUser, setCurrentUser } from "../auth";
 import apiClient from "../apiClient";
 import Toast, { toastStyles } from "../components/Toast";
 import "../styles/UserProfilePage.css";
 
 const UserProfilePage = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [currentUserState, setCurrentUserState] = useState(getCurrentUser()); // Thêm state cho currentUser
-  const [loading, setLoading] = useState(false); // loading khi submit
-  const [fetchingProfile, setFetchingProfile] = useState(false); // loading khi đồng bộ profile
+  const [currentUserState, setCurrentUserState] = useState(getCurrentUser());
+  const [loading, setLoading] = useState(false);
+  const [fetchingProfile, setFetchingProfile] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [toast, setToast] = useState(null); // { message, type: 'success' | 'error' }
+  const [toast, setToast] = useState(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -34,7 +36,6 @@ const UserProfilePage = () => {
       navigate("/login");
       return;
     }
-    // Khởi tạo form với dữ liệu user hiện tại (local)
     const userData = {
       fullName: currentUserState.fullName || currentUserState.name || "",
       dateOfBirth: currentUserState.dateOfBirth || "",
@@ -54,7 +55,6 @@ const UserProfilePage = () => {
         currentUserState.avatar
     );
 
-    // Đồng bộ lại dữ liệu mới nhất từ backend để tránh mất dữ liệu sau reload
     const loadProfile = async () => {
       try {
         setFetchingProfile(true);
@@ -79,19 +79,18 @@ const UserProfilePage = () => {
             currentUserState.avatarUrl ||
             currentUserState.avatar
         );
-        // Lưu lại localStorage để lần vào sau vẫn có dữ liệu
         const updatedUser = { ...currentUserState, ...res.data };
         setCurrentUser(updatedUser, { remember: true });
         setCurrentUserState(updatedUser);
       } catch (err) {
-        console.error("Không tải được profile mới nhất:", err);
+        console.error("Could not load latest profile:", err);
       } finally {
         setFetchingProfile(false);
       }
     };
 
     loadProfile();
-  }, [navigate]); // chỉ chạy khi mount hoặc navigate đổi (tránh loop)
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -100,7 +99,6 @@ const UserProfilePage = () => {
 
   const handlePhoneChange = (e) => {
     const value = e.target.value;
-    // Chỉ cho phép nhập số và tối đa 10 ký tự
     const phoneRegex = /^[0-9]*$/;
     if (phoneRegex.test(value) && value.length <= 10) {
       setFormData((prev) => ({ ...prev, phone: value }));
@@ -110,26 +108,22 @@ const UserProfilePage = () => {
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    // Kiểm tra file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setToast({ message: "Kích thước ảnh không được vượt quá 5MB", type: "error" });
+      setToast({ message: t('profilePage.avatarSizeError'), type: "error" });
       return;
     }
-    // Kiểm tra file type
     if (!file.type.startsWith("image/")) {
-      setToast({ message: "Vui lòng chọn file ảnh", type: "error" });
+      setToast({ message: t('profilePage.avatarTypeError'), type: "error" });
       return;
     }
     setUploadingAvatar(true);
     setToast(null);
     try {
-      // Preview local
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarPreview(reader.result);
       };
       reader.readAsDataURL(file);
-      // Upload lên server
       const formData = new FormData();
       formData.append("avatar", file);
       const res = await apiClient.post("/user/upload-avatar", formData, {
@@ -137,17 +131,15 @@ const UserProfilePage = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      // Cập nhật user trong localStorage và state
       const updatedUser = { ...currentUserState, ...res.data };
       setCurrentUser(updatedUser, { remember: true });
-      setCurrentUserState(updatedUser); // Update state để re-render đúng
-      setToast({ message: "Cập nhật ảnh đại diện thành công!", type: "success" });
+      setCurrentUserState(updatedUser);
+      setToast({ message: t('profilePage.avatarUploadSuccess'), type: "success" });
     } catch (err) {
       setToast({
-        message: err?.response?.data?.message || "Không thể upload avatar. Vui lòng thử lại.",
+        message: err?.response?.data?.message || t('profilePage.avatarUploadError'),
         type: "error"
       });
-      // Rollback preview
       setAvatarPreview(
         currentUserState.photoURL ||
           currentUserState.avatarUrl ||
@@ -179,7 +171,6 @@ const UserProfilePage = () => {
     setLoading(true);
 
     try {
-      // Tạo payload mới (KHÔNG gửi field rỗng)
       const payload = { ...formData };
 
       if (!payload.phone || payload.phone.trim() === "") {
@@ -198,15 +189,15 @@ const UserProfilePage = () => {
 
       setOriginalFormData(payload);
       setIsEditing(false);
-      setToast({ message: "Cập nhật thông tin thành công!", type: "success" });
+      setToast({ message: t('profilePage.updateSuccess'), type: "success" });
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error("Profile update error:", err);
 
-      let errorMessage = "Không thể cập nhật thông tin. Vui lòng thử lại.";
+      let errorMessage = t('profilePage.updateError');
       if (err?.response?.status === 401) {
-        errorMessage = "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.";
+        errorMessage = t('errors.sessionExpired');
       } else if (err?.response?.data?.message) {
         errorMessage = err.response.data.message;
       }
@@ -221,8 +212,6 @@ const UserProfilePage = () => {
   if (!currentUserState) {
     return null;
   }
-
-  // console.log("Rendering - isEditing:", isEditing); // Comment để tránh spam console
 
   const getInitials = (name) => {
     if (!name) return "U";
@@ -249,16 +238,16 @@ const UserProfilePage = () => {
       <div className="profile-page">
       <div className="profile-container">
         <div className="profile-header">
-          <h1>Thông tin cá nhân</h1>
+          <h1>{t('profilePage.title')}</h1>
           <button className="btn-back" onClick={() => navigate(-1)}>
-            ← Quay lại
+            ← {t('common.back')}
           </button>
         </div>
         {error && <div className="alert alert-error">{error}</div>}
         {success && <div className="alert alert-success">{success}</div>}
         {fetchingProfile && (
           <div className="alert profile-alert-loading">
-            Đang tải thông tin mới nhất...
+            {t('profilePage.loadingProfile')}
           </div>
         )}
         <div className="profile-content">
@@ -291,29 +280,29 @@ const UserProfilePage = () => {
                   disabled={uploadingAvatar}
                   className="visually-hidden"
                 />
-                {uploadingAvatar ? "Đang tải lên..." : "Thay đổi ảnh đại diện"}
+                {uploadingAvatar ? t('app.uploading') : t('profilePage.changeAvatar')}
               </label>
-              <p className="avatar-hint">JPG, PNG, GIF (tối đa 5MB)</p>
+              <p className="avatar-hint">{t('profilePage.avatarHint')}</p>
             </div>
           </div>
           {/* Profile Form */}
           <form className="profile-form" onSubmit={handleSubmit}>
             <div className="form-section">
               <div className="profile-section-header">
-                <h2>Thông tin cơ bản</h2>
+                <h2>{t('profilePage.basicInfo')}</h2>
                 {!isEditing && (
                   <button
                     type="button"
                     className="btn-primary profile-edit-btn"
                     onClick={handleEditClick}
                   >
-                    Chỉnh sửa
+                    {t('common.edit')}
                   </button>
                 )}
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="fullName">Họ và tên *</label>
+                  <label htmlFor="fullName">{t('profilePage.fullName')} *</label>
                   <input
                     id="fullName"
                     name="fullName"
@@ -326,7 +315,7 @@ const UserProfilePage = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="dateOfBirth">Ngày tháng năm sinh</label>
+                  <label htmlFor="dateOfBirth">{t('profilePage.dateOfBirth')}</label>
                   <input
                     id="dateOfBirth"
                     name="dateOfBirth"
@@ -339,7 +328,7 @@ const UserProfilePage = () => {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="phone">Số điện thoại</label>
+                  <label htmlFor="phone">{t('profilePage.phone')}</label>
                   <input
                     id="phone"
                     name="phone"
@@ -348,10 +337,10 @@ const UserProfilePage = () => {
                     pattern="^0[0-9]{9}$"
                     value={formData.phone || ""}
                     onChange={handlePhoneChange}
-                    placeholder="0xxxxxxxxx (10 số, bắt đầu bằng 0)"
+                    placeholder={t('profilePage.phonePlaceholder')}
                     disabled={!isEditing}
                     maxLength="10"
-                    title="Số điện thoại phải có 10 số và bắt đầu bằng số 0"
+                    title={t('profilePage.phoneTitle')}
                   />
                   {isEditing && formData.phone && formData.phone.length > 0 && (
                     <small
@@ -366,16 +355,16 @@ const UserProfilePage = () => {
                       }}
                     >
                       {!formData.phone.startsWith("0")
-                        ? "⚠️ Phải bắt đầu bằng số 0"
+                        ? t('profilePage.phoneMustStartWith0')
                         : formData.phone.length < 10
-                        ? `⚠️ Còn ${10 - formData.phone.length} số nữa`
-                        : "✓ Hợp lệ"}
+                        ? t('profilePage.phoneDigitsLeft', { count: 10 - formData.phone.length })
+                        : t('profilePage.phoneValid')}
                     </small>
                   )}
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="gender">Giới tính</label>
+                  <label htmlFor="gender">{t('profilePage.gender')}</label>
                   <select
                     id="gender"
                     name="gender"
@@ -392,15 +381,15 @@ const UserProfilePage = () => {
                         : {}
                     }
                   >
-                    <option value="">-- Chọn giới tính --</option>
-                    <option value="Nam">Nam</option>
-                    <option value="Nữ">Nữ</option>
-                    <option value="Khác">Khác</option>
+                    <option value="">{t('profilePage.selectGender')}</option>
+                    <option value="Nam">{t('profilePage.male')}</option>
+                    <option value="Nữ">{t('profilePage.female')}</option>
+                    <option value="Khác">{t('profilePage.other')}</option>
                   </select>
                 </div>
               </div>
               <div className="form-group">
-                <label htmlFor="email">Email *</label>
+                <label htmlFor="email">{t('auth.email')} *</label>
                 <input
                   id="email"
                   name="email"
@@ -409,18 +398,18 @@ const UserProfilePage = () => {
                   onChange={handleChange}
                   required
                   disabled
-                  title="Email không thể thay đổi"
+                  title={t('profilePage.emailCannotChange')}
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="affiliation">Cơ quan/Tổ chức</label>
+                <label htmlFor="affiliation">{t('profilePage.affiliation')}</label>
                 <input
                   id="affiliation"
                   name="affiliation"
                   type="text"
                   value={formData.affiliation || ""}
                   onChange={handleChange}
-                  placeholder="Trường Đại học, Công ty..."
+                  placeholder={t('profilePage.affiliationPlaceholder')}
                   disabled={!isEditing}
                   style={
                     isEditing
@@ -430,14 +419,14 @@ const UserProfilePage = () => {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="address">Địa chỉ</label>
+                <label htmlFor="address">{t('profilePage.address')}</label>
                 <input
                   id="address"
                   name="address"
                   type="text"
                   value={formData.address || ""}
                   onChange={handleChange}
-                  placeholder="Địa chỉ liên hệ"
+                  placeholder={t('profilePage.addressPlaceholder')}
                   disabled={!isEditing}
                   style={
                     isEditing
@@ -447,14 +436,14 @@ const UserProfilePage = () => {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="bio">Giới thiệu bản thân</label>
+                <label htmlFor="bio">{t('profilePage.bio')}</label>
                 <textarea
                   id="bio"
                   name="bio"
                   rows="4"
                   value={formData.bio || ""}
                   onChange={handleChange}
-                  placeholder="Viết vài dòng về bản thân, lĩnh vực nghiên cứu..."
+                  placeholder={t('profilePage.bioPlaceholder')}
                   disabled={!isEditing}
                   style={
                     isEditing
@@ -472,38 +461,38 @@ const UserProfilePage = () => {
                   onClick={handleCancelEdit}
                   disabled={loading}
                 >
-                  Hủy
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="btn-primary"
                   disabled={loading}
                 >
-                  {loading ? "Đang lưu..." : "Lưu thay đổi"}
+                  {loading ? t('app.saving') : t('common.saveChanges')}
                 </button>
               </div>
             )}
           </form>
           {/* Account Info */}
           <div className="account-info-section">
-            <h2>Thông tin tài khoản</h2>
+            <h2>{t('profilePage.accountInfo')}</h2>
             <div className="info-grid">
               <div className="info-item">
-                <span className="info-label">Vai trò:</span>
+                <span className="info-label">{t('profilePage.role')}:</span>
                 <span className="info-value">
                   {currentUserState.role?.replace("ROLE_", "") || "N/A"}
                 </span>
               </div>
               <div className="info-item">
-                <span className="info-label">Trạng thái:</span>
-                <span className="info-value status-active">Hoạt động</span>
+                <span className="info-label">{t('profilePage.status')}:</span>
+                <span className="info-value status-active">{t('profilePage.active')}</span>
               </div>
               {currentUserState.createdAt && (
                 <div className="info-item">
-                  <span className="info-label">Ngày tạo:</span>
+                  <span className="info-label">{t('profilePage.createdAt')}:</span>
                   <span className="info-value">
                     {new Date(currentUserState.createdAt).toLocaleDateString(
-                      "vi-VN"
+                      i18n.language === 'vi' ? "vi-VN" : "en-US"
                     )}
                   </span>
                 </div>

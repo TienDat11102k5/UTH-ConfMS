@@ -1,26 +1,29 @@
 // src/pages/NotFound.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const NotFoundPage = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-title">404 - Không tìm thấy trang</h1>
+        <h1 className="auth-title">{t('errors.notFoundTitle')}</h1>
         <p className="auth-subtitle">
-          Đường dẫn bạn truy cập không tồn tại trong hệ thống UTH-ConfMS.
+          {t('errors.notFoundDescription')}
         </p>
 
         <div style={{ marginTop: "16px" }}>
           <Link to="/" className="link-inline">
-            Về trang cổng thông tin hội nghị
+            {t('errors.backToPortal')}
           </Link>
         </div>
 
         <div className="auth-footer">
-          <span>Hoặc </span>
+          <span>{t('common.or')} </span>
           <Link to="/login" className="link-inline">
-            quay lại trang đăng nhập
+            {t('auth.backToLogin')}
           </Link>
         </div>
       </div>
@@ -29,3 +32,4 @@ const NotFoundPage = () => {
 };
 
 export default NotFoundPage;
+

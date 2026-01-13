@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import UserProfileDropdown from "./UserProfileDropdown";
+import LanguageSwitcher from "./LanguageSwitcher";
 import logoUTH from "../assets/logoUTH.jpg";
 import "../styles/PortalHeader.css";
 
@@ -12,8 +14,9 @@ const PortalHeader = ({
   title = "UTH Conference Portal",
   subtitle = "University of Transport HCMC",
   ctaHref = "/author/dashboard",
-  ctaText = "Cổng thông tin Tác giả",
 }) => {
+  const { t } = useTranslation();
+  
   return (
     <header className="dash-header">
       <div className="dash-header-left">
@@ -28,14 +31,15 @@ const PortalHeader = ({
 
       <nav className="portal-nav">
         <Link to="/" className="nav-link">
-          Trang chủ
+          {t('nav.home')}
         </Link>
         <Link to="/program" className="nav-link">
-          Chương trình
+          {t('nav.program')}
         </Link>
         <Link to={ctaHref} className="btn-dashboard-nav">
-          {ctaText} <span></span>
+          {t('nav.authorPortal')} <span></span>
         </Link>
+        <LanguageSwitcher />
         <UserProfileDropdown />
       </nav>
     </header>

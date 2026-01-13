@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../auth';
 import { FiActivity, FiFileText, FiMessageSquare, FiLock } from 'react-icons/fi';
 import DashboardLayout from '../components/Layout/DashboardLayout';
@@ -9,6 +10,7 @@ import Pagination from '../components/Pagination';
 import { usePagination } from '../hooks/usePagination';
 
 const HistoryPage = () => {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -76,11 +78,11 @@ const HistoryPage = () => {
             setActivities(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error('Error loading activities:', err);
-            setError('Không thể tải lịch sử hoạt động. Vui lòng thử lại sau.');
+            setError(t('historyPage.loadError'));
         } finally {
             setLoading(false);
         }
-    }, [filter, timeRange, filterByGroup]);
+    }, [filter, timeRange, filterByGroup, t]);
 
     useEffect(() => {
         loadActivities();
@@ -125,7 +127,7 @@ const HistoryPage = () => {
                 </div>
                 <div>
                     <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1f2937' }}>{stats.totalActivities}</div>
-                    <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Tổng hoạt động</div>
+                    <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>{t('historyPage.totalActivities')}</div>
                 </div>
             </div>
         );
@@ -155,7 +157,7 @@ const HistoryPage = () => {
                     </div>
                     <div>
                         <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1f2937' }}>{stats.paperActivities}</div>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Hoạt động bài viết</div>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>{t('historyPage.paperActivities')}</div>
                     </div>
                 </div>
             );
@@ -186,7 +188,7 @@ const HistoryPage = () => {
                     </div>
                     <div>
                         <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1f2937' }}>{stats.reviewActivities}</div>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Hoạt động review</div>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>{t('historyPage.reviewActivities')}</div>
                     </div>
                 </div>
             );
@@ -216,7 +218,7 @@ const HistoryPage = () => {
                 </div>
                 <div>
                     <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1f2937' }}>{stats.loginCount}</div>
-                    <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Lần đăng nhập</div>
+                    <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>{t('historyPage.loginCount')}</div>
                 </div>
             </div>
         );
@@ -229,11 +231,11 @@ const HistoryPage = () => {
             <div className="data-page-header">
                 <div className="data-page-header-left">
                     <div className="breadcrumb">
-                        <span className="breadcrumb-current">Lịch sử</span>
+                        <span className="breadcrumb-current">{t('historyPage.breadcrumb')}</span>
                     </div>
-                    <h2 className="data-page-title">Lịch Sử Hoạt Động</h2>
+                    <h2 className="data-page-title">{t('historyPage.title')}</h2>
                     <p className="data-page-subtitle">
-                        Theo dõi tất cả các hoạt động của bạn trong hệ thống
+                        {t('historyPage.subtitle')}
                     </p>
                 </div>
             </div>
@@ -260,7 +262,7 @@ const HistoryPage = () => {
             }}>
                 <div style={{ marginBottom: '1rem' }}>
                     <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#374151', marginBottom: '0.5rem' }}>
-                        Loại hoạt động:
+                        {t('historyPage.activityType')}:
                     </label>
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                         {availableFilters.includes('all') && (
@@ -269,7 +271,7 @@ const HistoryPage = () => {
                                 onClick={() => setFilter('all')}
                                 style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
                             >
-                                Tất cả
+                                {t('common.all')}
                             </button>
                         )}
                         {availableFilters.includes('paper') && (
@@ -279,7 +281,7 @@ const HistoryPage = () => {
                                 style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                             >
                                 <FiFileText size={16} />
-                                Bài viết
+                                {t('historyPage.filterPaper')}
                             </button>
                         )}
                         {availableFilters.includes('review') && (
@@ -289,7 +291,7 @@ const HistoryPage = () => {
                                 style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                             >
                                 <FiMessageSquare size={16} />
-                                Review
+                                {t('historyPage.filterReview')}
                             </button>
                         )}
                         {availableFilters.includes('system') && (
@@ -299,7 +301,7 @@ const HistoryPage = () => {
                                 style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                             >
                                 <FiLock size={16} />
-                                Hệ thống
+                                {t('historyPage.filterSystem')}
                             </button>
                         )}
                     </div>
@@ -307,7 +309,7 @@ const HistoryPage = () => {
 
                 <div>
                     <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#374151', marginBottom: '0.5rem' }}>
-                        Thời gian:
+                        {t('historyPage.timeRange')}:
                     </label>
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                         <button
@@ -315,28 +317,28 @@ const HistoryPage = () => {
                             onClick={() => setTimeRange('all')}
                             style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
                         >
-                            Tất cả
+                            {t('common.all')}
                         </button>
                         <button
                             className={timeRange === 'today' ? 'btn-primary' : 'btn-secondary'}
                             onClick={() => setTimeRange('today')}
                             style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
                         >
-                            Hôm nay
+                            {t('historyPage.today')}
                         </button>
                         <button
                             className={timeRange === 'week' ? 'btn-primary' : 'btn-secondary'}
                             onClick={() => setTimeRange('week')}
                             style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
                         >
-                            7 ngày
+                            {t('historyPage.sevenDays')}
                         </button>
                         <button
                             className={timeRange === 'month' ? 'btn-primary' : 'btn-secondary'}
                             onClick={() => setTimeRange('month')}
                             style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
                         >
-                            30 ngày
+                            {t('historyPage.thirtyDays')}
                         </button>
                     </div>
                 </div>
@@ -352,7 +354,7 @@ const HistoryPage = () => {
                     <div style={{ textAlign: 'center', padding: '3rem' }}>
                         <p style={{ color: '#ef4444', marginBottom: '1rem' }}>{error}</p>
                         <button onClick={loadActivities} className="btn-primary">
-                            Thử lại
+                            {t('common.retry')}
                         </button>
                     </div>
                 )}
@@ -372,9 +374,9 @@ const HistoryPage = () => {
                             <FiActivity size={40} color="#9ca3af" />
                         </div>
                         <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1f2937', marginBottom: '0.5rem' }}>
-                            Chưa có hoạt động nào
+                            {t('historyPage.noActivities')}
                         </h3>
-                        <p style={{ color: '#6b7280' }}>Lịch sử hoạt động của bạn sẽ hiển thị ở đây</p>
+                        <p style={{ color: '#6b7280' }}>{t('historyPage.noActivitiesDesc')}</p>
                     </div>
                 )}
 
@@ -394,7 +396,7 @@ const HistoryPage = () => {
                                     totalItems={activities.length}
                                     itemsPerPage={20}
                                     onPageChange={setCurrentPage}
-                                    itemName="hoạt động"
+                                    itemName={t('historyPage.activities')}
                                 />
                             </div>
                         )}
@@ -406,3 +408,4 @@ const HistoryPage = () => {
 };
 
 export default HistoryPage;
+

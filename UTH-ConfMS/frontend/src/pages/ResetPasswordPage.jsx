@@ -1,13 +1,16 @@
 // src/pages/ResetPasswordPage.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../apiClient";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const ResetPasswordPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Nhận verifiedToken từ VerifyOtpPage
+  // Get verifiedToken from VerifyOtpPage
   const verifiedToken = location.state?.verifiedToken || "";
   const email = location.state?.email || "";
 
@@ -18,7 +21,7 @@ const ResetPasswordPage = () => {
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  // Redirect nếu không có verified token
+  // Redirect if no verified token
   useEffect(() => {
     if (!verifiedToken) {
       navigate("/forgot-password", { replace: true });
@@ -31,12 +34,12 @@ const ResetPasswordPage = () => {
     setSuccessMsg("");
 
     if (newPassword.length < 8) {
-      setError("Mật khẩu mới phải có ít nhất 8 ký tự.");
+      setError(t('auth.passwordMinLength'));
       return;
     }
 
     if (newPassword !== confirm) {
-      setError("Mật khẩu xác nhận không khớp.");
+      setError(t('auth.passwordMismatch'));
       return;
     }
 
@@ -47,7 +50,7 @@ const ResetPasswordPage = () => {
         newPassword,
       });
 
-      setSuccessMsg("Đặt lại mật khẩu thành công. Đang chuyển về trang đăng nhập...");
+      setSuccessMsg(t('auth.resetPasswordSuccessRedirect'));
 
       setTimeout(() => {
         navigate("/login", { replace: true });
@@ -56,7 +59,7 @@ const ResetPasswordPage = () => {
       const message =
         err?.response?.data?.message ||
         err?.response?.data?.error ||
-        "Đặt lại mật khẩu thất bại. Token có thể đã hết hạn hoặc đã được dùng.";
+        t('auth.resetPasswordError');
       setError(message);
     } finally {
       setLoading(false);
@@ -66,10 +69,13 @@ const ResetPasswordPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-title">Đặt lại mật khẩu</h1>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
+          <LanguageSwitcher />
+        </div>
+        <h1 className="auth-title">{t('auth.resetPasswordTitle')}</h1>
         {email && (
           <p className="auth-subtitle">
-            Đặt lại mật khẩu cho: <strong>{email}</strong>
+            {t('auth.resetPasswordFor')}: <strong>{email}</strong>
           </p>
         )}
 
@@ -78,7 +84,7 @@ const ResetPasswordPage = () => {
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label htmlFor="newPassword">Mật khẩu mới *</label>
+            <label htmlFor="newPassword">{t('auth.newPassword')} *</label>
             <input
               id="newPassword"
               type="password"
@@ -91,7 +97,7 @@ const ResetPasswordPage = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirm">Xác nhận mật khẩu mới *</label>
+            <label htmlFor="confirm">{t('auth.confirmNewPassword')} *</label>
             <input
               id="confirm"
               type="password"
@@ -104,19 +110,19 @@ const ResetPasswordPage = () => {
           </div>
 
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? "Đang cập nhật..." : "Cập nhật mật khẩu"}
+            {loading ? t('app.updating') : t('auth.updatePassword')}
           </button>
         </form>
 
         <div className="auth-footer">
           <Link to="/login" className="link-inline">
-            Quay lại đăng nhập
+            {t('auth.backToLogin')}
           </Link>
         </div>
 
         <div className="auth-footer">
           <Link to="/forgot-password" className="link-inline">
-            Gửi lại yêu cầu quên mật khẩu
+            {t('auth.resendForgotPassword')}
           </Link>
         </div>
       </div>
@@ -125,3 +131,4 @@ const ResetPasswordPage = () => {
 };
 
 export default ResetPasswordPage;
+

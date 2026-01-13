@@ -1,9 +1,12 @@
 // src/pages/ForgotPasswordPage.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../apiClient";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const ForgotPasswordPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,13 +20,13 @@ const ForgotPasswordPage = () => {
     try {
       await apiClient.post("/auth/forgot-password", { email });
 
-      // Chuyển sang trang nhập OTP
+      // Navigate to OTP verification page
       navigate("/verify-otp", { state: { email } });
     } catch (err) {
       const message =
         err?.response?.data?.message ||
         err?.response?.data?.error ||
-        "Không gửi được yêu cầu đặt lại mật khẩu.";
+        t('auth.forgotPasswordError');
       setError(message);
     } finally {
       setLoading(false);
@@ -33,13 +36,16 @@ const ForgotPasswordPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-title">Quên mật khẩu</h1>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
+          <LanguageSwitcher />
+        </div>
+        <h1 className="auth-title">{t('auth.forgotPasswordTitle')}</h1>
 
         {error && <div className="auth-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label htmlFor="email">Email *</label>
+            <label htmlFor="email">{t('common.email')} *</label>
             <input
               id="email"
               type="email"
@@ -52,13 +58,13 @@ const ForgotPasswordPage = () => {
           </div>
 
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? "Đang gửi..." : "Gửi mã OTP"}
+            {loading ? t('app.sending') : t('auth.sendOtp')}
           </button>
         </form>
 
         <div className="auth-footer">
           <Link to="/login" className="link-inline">
-            Quay lại đăng nhập
+            {t('auth.backToLogin')}
           </Link>
         </div>
       </div>
@@ -67,3 +73,4 @@ const ForgotPasswordPage = () => {
 };
 
 export default ForgotPasswordPage;
+

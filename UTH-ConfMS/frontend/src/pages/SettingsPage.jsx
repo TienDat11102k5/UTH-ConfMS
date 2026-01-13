@@ -1,12 +1,14 @@
 // src/pages/SettingsPage.jsx
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getCurrentUser } from "../auth";
 import apiClient from "../apiClient";
 import { ToastContainer } from "../components/Toast";
 import "../styles/SettingsPage.css";
 
 const SettingsPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
 
@@ -42,12 +44,12 @@ const SettingsPage = () => {
 
     // Validate
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      addToast("Mật khẩu mới và xác nhận mật khẩu không khớp", "error");
+      addToast(t('settings.passwordMismatch'), "error");
       return;
     }
 
     if (passwordData.newPassword.length < 6) {
-      addToast("Mật khẩu mới phải có ít nhất 6 ký tự", "error");
+      addToast(t('settings.passwordTooShort'), "error");
       return;
     }
 
@@ -59,7 +61,7 @@ const SettingsPage = () => {
         newPassword: passwordData.newPassword,
       });
 
-      addToast("Đổi mật khẩu thành công!", "success");
+      addToast(t('settings.passwordChangeSuccess'), "success");
       setPasswordData({
         currentPassword: "",
         newPassword: "",
@@ -67,7 +69,7 @@ const SettingsPage = () => {
       });
     } catch (err) {
       const errorMsg = err?.response?.data?.message ||
-        "Không thể đổi mật khẩu. Vui lòng kiểm tra mật khẩu hiện tại.";
+        t('settings.passwordChangeError');
       addToast(errorMsg, "error");
     } finally {
       setLoading(false);
@@ -85,9 +87,9 @@ const SettingsPage = () => {
     <div className="settings-page">
       <div className="settings-container">
         <div className="settings-header">
-          <h1>Cài đặt</h1>
+          <h1>{t('settings.title')}</h1>
           <button className="btn-back" onClick={() => navigate(-1)}>
-            ← Quay lại
+            ← {t('common.back')}
           </button>
         </div>
 
@@ -96,14 +98,14 @@ const SettingsPage = () => {
           {/* Password Section - Only for LOCAL users */}
           {!isGoogleUser && (
             <div className="settings-section">
-              <h2>Đổi mật khẩu</h2>
+              <h2>{t('settings.changePassword')}</h2>
               <p className="section-description">
-                Cập nhật mật khẩu của bạn để bảo mật tài khoản
+                {t('settings.changePasswordDescription')}
               </p>
 
               <form className="settings-form" onSubmit={handlePasswordSubmit}>
                 <div className="form-group">
-                  <label htmlFor="currentPassword">Mật khẩu hiện tại *</label>
+                  <label htmlFor="currentPassword">{t('auth.currentPassword')} *</label>
                   <input
                     id="currentPassword"
                     name="currentPassword"
@@ -111,12 +113,12 @@ const SettingsPage = () => {
                     value={passwordData.currentPassword}
                     onChange={handlePasswordChange}
                     required
-                    placeholder="Nhập mật khẩu hiện tại"
+                    placeholder={t('settings.currentPasswordPlaceholder')}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="newPassword">Mật khẩu mới *</label>
+                  <label htmlFor="newPassword">{t('auth.newPassword')} *</label>
                   <input
                     id="newPassword"
                     name="newPassword"
@@ -124,12 +126,12 @@ const SettingsPage = () => {
                     value={passwordData.newPassword}
                     onChange={handlePasswordChange}
                     required
-                    placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)"
+                    placeholder={t('settings.newPasswordPlaceholder')}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="confirmPassword">Xác nhận mật khẩu mới *</label>
+                  <label htmlFor="confirmPassword">{t('auth.confirmNewPassword')} *</label>
                   <input
                     id="confirmPassword"
                     name="confirmPassword"
@@ -137,13 +139,13 @@ const SettingsPage = () => {
                     value={passwordData.confirmPassword}
                     onChange={handlePasswordChange}
                     required
-                    placeholder="Nhập lại mật khẩu mới"
+                    placeholder={t('settings.confirmPasswordPlaceholder')}
                   />
                 </div>
 
                 <div className="form-actions">
                   <button type="submit" className="btn-primary" disabled={loading}>
-                    {loading ? "Đang xử lý..." : "Đổi mật khẩu"}
+                    {loading ? t('app.processing') : t('settings.changePassword')}
                   </button>
                 </div>
               </form>
@@ -152,7 +154,7 @@ const SettingsPage = () => {
 
           {isGoogleUser && (
             <div className="settings-section">
-              <h2>Đổi mật khẩu</h2>
+              <h2>{t('settings.changePassword')}</h2>
               <div className="info-box">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path
@@ -161,8 +163,7 @@ const SettingsPage = () => {
                   />
                 </svg>
                 <p>
-                  Bạn đang sử dụng tài khoản Google để đăng nhập. Để thay đổi mật
-                  khẩu, vui lòng truy cập trang quản lý tài khoản Google.
+                  {t('settings.googleAccountInfo')}
                 </p>
               </div>
             </div>

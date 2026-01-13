@@ -1,9 +1,12 @@
 // src/pages/VerifyOtpPage.jsx
 import React, { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import apiClient from "../apiClient";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const VerifyOtpPage = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
     const email = location.state?.email || "";
@@ -12,7 +15,7 @@ const VerifyOtpPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    // Redirect nếu không có email
+    // Redirect if no email
     React.useEffect(() => {
         if (!email) {
             navigate("/forgot-password", { replace: true });
@@ -24,7 +27,7 @@ const VerifyOtpPage = () => {
         setError("");
 
         if (otp.length !== 6) {
-            setError("OTP phải có 6 chữ số");
+            setError(t('auth.otpMustBe6Digits'));
             return;
         }
 
@@ -34,7 +37,7 @@ const VerifyOtpPage = () => {
             const response = await apiClient.post("/auth/verify-otp", { email, otp });
             const { verifiedToken } = response.data;
 
-            // Chuyển sang trang reset password với verified token
+            // Navigate to reset password page with verified token
             navigate("/reset-password", {
                 state: { verifiedToken, email },
                 replace: true,
@@ -43,7 +46,7 @@ const VerifyOtpPage = () => {
             const message =
                 err?.response?.data?.message ||
                 err?.response?.data?.error ||
-                "OTP không đúng. Vui lòng thử lại.";
+                t('auth.otpInvalid');
             setError(message);
         } finally {
             setLoading(false);
@@ -53,16 +56,19 @@ const VerifyOtpPage = () => {
     return (
         <div className="auth-page">
             <div className="auth-card">
-                <h1 className="auth-title">Xác thực OTP</h1>
+                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
+                    <LanguageSwitcher />
+                </div>
+                <h1 className="auth-title">{t('auth.verifyOtpTitle')}</h1>
                 <p className="auth-subtitle">
-                    Mã OTP đã được gửi đến: <strong>{email}</strong>
+                    {t('auth.otpSentTo')}: <strong>{email}</strong>
                 </p>
 
                 {error && <div className="auth-error">{error}</div>}
 
                 <form onSubmit={handleSubmit} className="auth-form">
                     <div className="form-group">
-                        <label htmlFor="otp">Mã OTP (6 số) *</label>
+                        <label htmlFor="otp">{t('auth.otpCode')} *</label>
                         <input
                             id="otp"
                             type="text"
@@ -76,22 +82,22 @@ const VerifyOtpPage = () => {
                             required
                         />
                         <div className="field-hint">
-                            Mã OTP có hiệu lực trong 5 phút
+                            {t('auth.otpValidity')}
                         </div>
                     </div>
 
                     <button type="submit" className="btn-primary" disabled={loading}>
-                        {loading ? "Đang xác thực..." : "Xác nhận"}
+                        {loading ? t('app.verifying') : t('common.confirm')}
                     </button>
                 </form>
 
                 <div className="auth-footer">
                     <Link to="/forgot-password" className="link-inline">
-                        Gửi lại mã OTP
+                        {t('auth.resendOtp')}
                     </Link>
                     {" • "}
                     <Link to="/login" className="link-inline">
-                        Quay lại đăng nhập
+                        {t('auth.backToLogin')}
                     </Link>
                 </div>
             </div>
@@ -100,3 +106,4 @@ const VerifyOtpPage = () => {
 };
 
 export default VerifyOtpPage;
+

@@ -1,17 +1,19 @@
 // src/components/UserProfileDropdown.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getCurrentUser, clearAuth } from "../auth";
 import "../styles/UserProfileDropdown.css";
 
 const UserProfileDropdown = () => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
   const user = getCurrentUser();
 
-  // Đóng dropdown khi click bên ngoài
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -32,7 +34,7 @@ const UserProfileDropdown = () => {
     setIsOpen(false);
     clearAuth();
     
-    // Chuyển về trang login với thông báo đăng xuất thành công
+    // Redirect to login page with success message
     navigate("/login", { 
       replace: true, 
       state: { logoutSuccess: true } 
@@ -43,13 +45,13 @@ const UserProfileDropdown = () => {
     return null;
   }
 
-  // Lấy thông tin hiển thị
+  // Get display information
   const displayName = user.fullName || user.name || user.email || "User";
   const userEmail = user.email || "";
   const userAvatar = user.photoURL || user.avatarUrl || user.avatar || null;
   const userRole = user.role || user.primaryRole || "";
 
-  // Xác định dashboard path dựa trên role
+  // Determine dashboard path based on role
   const getDashboardPath = () => {
     if (!userRole) return "/author/dashboard";
     
@@ -68,7 +70,7 @@ const UserProfileDropdown = () => {
     return "/author/dashboard"; // Default for AUTHOR or other roles
   };
 
-  // Tạo avatar initials nếu không có ảnh
+  // Create avatar initials if no image
   const getInitials = (name) => {
     if (!name) return "U";
     const parts = name.trim().split(" ");
@@ -150,7 +152,7 @@ const UserProfileDropdown = () => {
                 fill="currentColor"
               />
             </svg>
-            Trang quản lý
+            {t('components.userDropdown.managementPage')}
           </Link>
 
           <Link
@@ -164,7 +166,7 @@ const UserProfileDropdown = () => {
                 fill="currentColor"
               />
             </svg>
-            Thông tin cá nhân
+            {t('components.userDropdown.personalInfo')}
           </Link>
 
           <Link
@@ -178,7 +180,7 @@ const UserProfileDropdown = () => {
                 fill="currentColor"
               />
             </svg>
-            Cài đặt
+            {t('components.userDropdown.settings')}
           </Link>
 
           <Link
@@ -192,7 +194,7 @@ const UserProfileDropdown = () => {
                 fill="currentColor"
               />
             </svg>
-            Lịch sử hoạt động
+            {t('components.userDropdown.activityHistory')}
           </Link>
 
           <div className="dropdown-divider"></div>
@@ -207,7 +209,7 @@ const UserProfileDropdown = () => {
                 strokeLinejoin="round"
               />
             </svg>
-            Đăng xuất
+            {t('components.userDropdown.logout')}
           </button>
         </div>
       )}
