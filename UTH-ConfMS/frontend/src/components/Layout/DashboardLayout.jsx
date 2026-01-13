@@ -32,7 +32,7 @@ const DashboardLayout = ({
     { icon: "FiUsers", text: t('admin.menu.userManagement'), link: "/admin/users" },
     { icon: "FiSettings", text: t('admin.menu.conferenceManagement'), link: "/admin/conferences" },
     { icon: "FiShield", text: t('admin.menu.aiGovernance'), link: "/admin/ai-governance" },
-    { icon: "FiFileText", text: t('admin.menu.backupRestore'), link: "/admin/backup" }
+    { icon: "FiFileText", text: t('admin.menu.backupRestore'), link: "/admin/backups" }
   ];
 
   const chairMenuItems = [

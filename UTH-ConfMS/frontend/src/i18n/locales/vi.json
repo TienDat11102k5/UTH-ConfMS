@@ -141,6 +141,9 @@
     "author": "Tác giả"
   },
   "status": {
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động",
+    "disabled": "Tạm khóa",
     "submitted": "Đã nộp",
     "underReview": "Đang chấm",
     "accepted": "Chấp nhận",

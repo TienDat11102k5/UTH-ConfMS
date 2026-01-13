@@ -141,6 +141,9 @@
     "author": "Author"
   },
   "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "disabled": "Disabled",
     "submitted": "Submitted",
     "underReview": "Under Review",
     "accepted": "Accepted",
