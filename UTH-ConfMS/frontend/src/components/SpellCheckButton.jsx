@@ -3,6 +3,7 @@
  * Button component for spell checking with loading state and error display.
  */
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { checkSpelling } from "../api/ai/authorAI";
 import "./SpellCheckButton.css";
 
@@ -15,18 +16,19 @@ const SpellCheckButton = ({
   className = "",
   disabled = false,
 }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [errors, setErrors] = useState([]);
 
   const handleCheck = async () => {
     if (!text || text.trim().length === 0) {
-      setError("Vui lòng nhập văn bản để kiểm tra chính tả.");
+      setError(t('components.spellCheck.enterText'));
       return;
     }
 
     if (!conferenceId) {
-      setError("Conference ID is required.");
+      setError(t('components.spellCheck.conferenceRequired'));
       return;
     }
 
@@ -43,10 +45,10 @@ const SpellCheckButton = ({
           onErrorsFound(result.errors);
         }
       } else {
-        setError("Không tìm thấy lỗi chính tả nào.");
+        setError(t('components.spellCheck.noErrors'));
       }
     } catch (err) {
-      setError(err.message || "Kiểm tra chính tả thất bại. Vui lòng thử lại.");
+      setError(err.message || t('components.spellCheck.checkFailed'));
       console.error("Spell check error:", err);
     } finally {
       setLoading(false);
@@ -60,17 +62,17 @@ const SpellCheckButton = ({
         onClick={handleCheck}
         disabled={loading || disabled || !text}
         className="spell-check-button"
-        title="Kiểm tra chính tả"
+        title={t('components.spellCheck.title')}
       >
         {loading ? (
           <>
             <span className="spinner"></span>
-            <span>Đang kiểm tra...</span>
+            <span>{t('components.spellCheck.checking')}</span>
           </>
         ) : (
           <>
             <span className="icon">✓</span>
-            <span>Kiểm tra chính tả</span>
+            <span>{t('components.spellCheck.title')}</span>
           </>
         )}
       </button>
@@ -84,7 +86,7 @@ const SpellCheckButton = ({
       {errors.length > 0 && (
         <div className="spell-check-results">
           <div className="results-header">
-            <strong>Tìm thấy {errors.length} lỗi chính tả:</strong>
+            <strong>{t('components.spellCheck.foundErrors', { count: errors.length })}</strong>
           </div>
           <ul className="errors-list">
             {errors.map((err, index) => (
@@ -92,7 +94,7 @@ const SpellCheckButton = ({
                 <span className="error-word">"{err.word}"</span>
                 {err.suggestions && err.suggestions.length > 0 && (
                   <span className="suggestions">
-                    Gợi ý: {err.suggestions.join(", ")}
+                    {t('components.spellCheck.suggestions')}: {err.suggestions.join(", ")}
                   </span>
                 )}
                 {err.context && (
@@ -108,5 +110,3 @@ const SpellCheckButton = ({
 };
 
 export default SpellCheckButton;
-
-

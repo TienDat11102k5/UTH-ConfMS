@@ -1,5 +1,6 @@
 // src/components/Toast.jsx
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { toastStyles } from "./toastStyles";
 
 /* =========================
@@ -24,6 +25,8 @@ const getIcon = (type) => {
    TOAST COMPONENT
    ========================= */
 const Toast = ({ message, type = "success", onClose, duration = 3000 }) => {
+  const { t } = useTranslation();
+  
   useEffect(() => {
     if (duration > 0) {
       const timer = setTimeout(() => {
@@ -45,8 +48,8 @@ const Toast = ({ message, type = "success", onClose, duration = 3000 }) => {
       <button 
         style={toastStyles.closeBtn} 
         onClick={onClose}
-        aria-label="Đóng thông báo"
-        title="Đóng"
+        aria-label={t('app.close')}
+        title={t('app.close')}
       >
         ×
       </button>

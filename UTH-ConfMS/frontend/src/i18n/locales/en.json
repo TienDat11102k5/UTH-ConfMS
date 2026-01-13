@@ -45,7 +45,10 @@
     "updating": "Updating...",
     "processing": "Processing...",
     "uploading": "Uploading...",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "done": "Done",
+    "portalTitle": "UTH Conference Portal",
+    "universityName": "University of Transport HCMC"
   },
   "pagination": {
     "showing": "Showing",
@@ -147,7 +150,13 @@
     "authors": "authors",
     "conferences": "conferences",
     "author": "Author",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "edit": "Edit",
+    "save": "Save",
+    "delete": "Delete",
+    "saveChanges": "Save Changes",
+    "reject": "Reject",
+    "anonymous": "Anonymous"
   },
   "status": {
     "active": "Active",
@@ -631,7 +640,10 @@
       "hidden": "Hidden",
       "visible": "Visible",
       "conferenceLockedTitle": "Conference is locked",
-      "viewSubmissions": "View Submissions"
+      "viewSubmissions": "View Submissions",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "reviewDeadline": "Review Deadline"
     },
     "conferenceCreate": {
       "title": "Create New Conference",
@@ -1909,5 +1921,152 @@
     "goHome": "Go to Home",
     "goBack": "Go Back",
     "contactSupport": "Contact Support"
+  },
+  "components": {
+    "historyItem": {
+      "conference": "Conference",
+      "paper": "Paper",
+      "viewDetails": "View details"
+    },
+    "spellCheck": {
+      "title": "Check Spelling",
+      "checking": "Checking...",
+      "enterText": "Please enter text to check spelling.",
+      "conferenceRequired": "Conference ID is required.",
+      "noErrors": "No spelling errors found.",
+      "checkFailed": "Spell check failed. Please try again.",
+      "foundErrors": "Found {{count}} spelling errors:",
+      "suggestions": "Suggestions"
+    },
+    "synopsis": {
+      "title": "AI-Generated Synopsis",
+      "words": "words",
+      "disclaimer": "This is AI-generated content for reviewer assistance. Please verify accuracy.",
+      "keyThemes": "Key Themes",
+      "methodology": "Methodology",
+      "contribution": "Contribution",
+      "describeInaccuracy": "Describe the inaccuracy...",
+      "reportInaccuracy": "Report Inaccuracy"
+    },
+    "aiDecision": {
+      "title": "AI Decision Recommendation",
+      "accept": "Accept",
+      "reject": "Reject",
+      "revise": "Revision Required",
+      "confidence": "Confidence",
+      "summary": "Summary",
+      "reasoning": "Detailed Reasoning",
+      "strengths": "Strengths",
+      "weaknesses": "Weaknesses",
+      "noStrengths": "No strengths identified",
+      "noWeaknesses": "No weaknesses identified",
+      "generateError": "Unable to generate recommendation. Please try again later.",
+      "analyzing": "Analyzing reviews and generating recommendation..."
+    },
+    "aiReviewSummary": {
+      "title": "AI Review Summary",
+      "overview": "Overview",
+      "consensus": "Consensus Level",
+      "commonStrengths": "Common Strengths",
+      "commonWeaknesses": "Common Weaknesses",
+      "keyPoints": "Key Points",
+      "noCommonStrengths": "No common strengths identified",
+      "noCommonWeaknesses": "No common weaknesses identified",
+      "noKeyPoints": "No key points identified",
+      "generateError": "Unable to generate review summary. Please try again.",
+      "analyzing": "Analyzing and synthesizing reviews..."
+    },
+    "abstractPolish": {
+      "title": "Polish Abstract",
+      "enterAbstract": "Please enter abstract to polish.",
+      "conferenceRequired": "Conference ID is required.",
+      "polishFailed": "Abstract polishing failed. Please try again.",
+      "cannotApply": "Cannot apply. Please check the information.",
+      "applyFailed": "Applying abstract failed. Please try again.",
+      "preserveMeaning": "Preserve original meaning",
+      "enhanceTone": "Enhance academic tone",
+      "originalAbstract": "Original Abstract",
+      "polishedAbstract": "Polished Abstract",
+      "polishButton": "Polish Abstract",
+      "improvementReason": "Improvement Reason",
+      "confidence": "Confidence",
+      "changes": "Changes",
+      "before": "Before",
+      "after": "After",
+      "applyNew": "Apply New Abstract"
+    },
+    "similarityExplainer": {
+      "title": "Similarity Explanation",
+      "reviewer": "Reviewer",
+      "paper": "Paper",
+      "similarityScore": "Similarity Score",
+      "expertiseMatch": "Expertise Match",
+      "matchingKeywords": "Matching Keywords",
+      "commonTopics": "Common Topics",
+      "rationale": "Rationale",
+      "disclaimer": "This is an AI-generated similarity score. Please review carefully before assigning."
+    },
+    "emailDraft": {
+      "title": "Auto-compose Email",
+      "accept": "Accept",
+      "reject": "Reject",
+      "revision": "Revision Required",
+      "reminder": "Reminder",
+      "paper": "Paper",
+      "decision": "Decision",
+      "recipient": "Recipient",
+      "additionalComments": "Additional comments (optional)",
+      "commentsPlaceholder": "Add notes or comments for AI to create a more appropriate email...",
+      "generating": "Generating email...",
+      "aiUnavailable": "AI unavailable. Using default template.",
+      "emailSubject": "Email Subject",
+      "emailContent": "Email Content",
+      "note": "Note",
+      "editNote": "You can edit the email content before sending. Click 'Done' to save changes.",
+      "sendEmail": "Send Email",
+      "sendSuccess": "✅ Email sent successfully!",
+      "sendFailed": "Unable to send email. Please try again.",
+      "sendError": "Error sending email"
+    },
+    "paperSynopsis": {
+      "title": "Paper Synopsis by AI",
+      "generating": "Generating synopsis...",
+      "generateError": "Unable to generate synopsis. Please try again.",
+      "summary": "Summary",
+      "keyThemes": "Key Themes",
+      "methodology": "Methodology",
+      "mainClaims": "Main Claims",
+      "datasetsUsed": "Datasets Used",
+      "contributionType": "Contribution Type",
+      "estimatedWordCount": "Estimated Word Count",
+      "words": "words",
+      "keyboardTip": "Tip: Use keyboard shortcuts for faster navigation"
+    },
+    "emailEditor": {
+      "title": "Email Draft Editor",
+      "aiGenerated": "AI Generated",
+      "requiresReview": "Requires Review",
+      "preview": "Preview",
+      "subject": "Subject",
+      "body": "Body",
+      "subjectPlaceholder": "Email subject",
+      "bodyPlaceholder": "Email body",
+      "changedFrom": "Changed from",
+      "bodyEdited": "Body has been edited",
+      "aiRationale": "AI Rationale",
+      "to": "To",
+      "recipient": "Recipient",
+      "approveDraft": "Approve Draft",
+      "sendEmail": "Send Email",
+      "disclaimer": "All email drafts require chair review before sending. No emails are sent automatically."
+    },
+    "userDropdown": {
+      "managementPage": "Management Page",
+      "personalInfo": "Personal Information",
+      "settings": "Settings",
+      "activityHistory": "Activity History",
+      "logout": "Logout"
+    }
   }
 }
+

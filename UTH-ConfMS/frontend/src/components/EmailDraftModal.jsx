@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import apiClient from "../apiClient";
 
 const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [emailDraft, setEmailDraft] = useState(null);
   const [error, setError] = useState("");
@@ -10,11 +12,14 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
   const [editedBody, setEditedBody] = useState("");
   const [additionalComments, setAdditionalComments] = useState("");
 
-  const emailTypeMap = {
-    ACCEPT: "Chấp nhận",
-    REJECT: "Từ chối",
-    REVISION: "Yêu cầu sửa",
-    REMINDER: "Nhắc nhở"
+  const getEmailTypeText = (type) => {
+    const map = {
+      ACCEPT: t('components.emailDraft.accept'),
+      REJECT: t('components.emailDraft.reject'),
+      REVISION: t('components.emailDraft.revision'),
+      REMINDER: t('components.emailDraft.reminder')
+    };
+    return map[type] || type;
   };
 
   const generateDraft = async () => {
@@ -30,9 +35,9 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
       
       const response = await apiClient.post("/ai/draft-email", {
         emailType: decision,
-        recipientName: paper.authorName || paper.mainAuthor?.fullName || "Tác giả",
+        recipientName: paper.authorName || paper.mainAuthor?.fullName || t('common.author'),
         paperTitle: paper.title,
-        conferenceName: conferenceName || paper.conference?.name || "Hội nghị",
+        conferenceName: conferenceName || paper.conference?.name || t('common.conference'),
         decision: decision,
         comments: additionalComments,
         language: "vietnamese",
@@ -52,28 +57,28 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
       setEmailDraft(fallbackEmail);
       setEditedSubject(fallbackEmail.subject);
       setEditedBody(fallbackEmail.body);
-      setError("AI không khả dụng. Đang sử dụng template mặc định.");
+      setError(t('components.emailDraft.aiUnavailable'));
     } finally {
       setLoading(false);
     }
   };
 
   const createFallbackEmail = () => {
-    const recipientName = paper.authorName || paper.mainAuthor?.fullName || "Tác giả";
-    const confName = conferenceName || paper.conference?.name || "Hội nghị";
+    const recipientName = paper.authorName || paper.mainAuthor?.fullName || t('common.author');
+    const confName = conferenceName || paper.conference?.name || t('common.conference');
     
     let subject = "";
     let body = "";
     
     if (decision === "ACCEPTED") {
-      subject = `[${confName}] Thông báo chấp nhận bài báo: ${paper.title}`;
-      body = `Kính gửi ${recipientName},\n\nChúng tôi vui mừng thông báo rằng bài báo của bạn với tiêu đề "${paper.title}" đã được chấp nhận tại ${confName}.\n\n${additionalComments ? `Nhận xét: ${additionalComments}\n\n` : ''}Vui lòng chuẩn bị bản camera-ready theo hướng dẫn.\n\nTrân trọng,\nBan tổ chức ${confName}`;
+      subject = `[${confName}] ${t('components.emailDraft.acceptSubject')}: ${paper.title}`;
+      body = `${t('components.emailDraft.dearRecipient', { name: recipientName })}\n\n${t('components.emailDraft.acceptBody', { title: paper.title, conference: confName })}\n\n${additionalComments ? `${t('components.emailDraft.comments')}: ${additionalComments}\n\n` : ''}${t('components.emailDraft.prepareCamera')}\n\n${t('components.emailDraft.regards')}\n${t('components.emailDraft.organizer')} ${confName}`;
     } else if (decision === "REJECTED") {
-      subject = `[${confName}] Thông báo về bài báo: ${paper.title}`;
-      body = `Kính gửi ${recipientName},\n\nCảm ơn bạn đã gửi bài báo "${paper.title}" đến ${confName}.\n\nSau khi xem xét kỹ lưỡng, chúng tôi rất tiếc phải thông báo rằng bài báo của bạn chưa được chấp nhận trong lần này.\n\n${additionalComments ? `Nhận xét: ${additionalComments}\n\n` : ''}Chúng tôi khuyến khích bạn tiếp tục nghiên cứu và gửi bài trong các kỳ tới.\n\nTrân trọng,\nBan tổ chức ${confName}`;
+      subject = `[${confName}] ${t('components.emailDraft.paperNotice')}: ${paper.title}`;
+      body = `${t('components.emailDraft.dearRecipient', { name: recipientName })}\n\n${t('components.emailDraft.rejectBody', { title: paper.title, conference: confName })}\n\n${additionalComments ? `${t('components.emailDraft.comments')}: ${additionalComments}\n\n` : ''}${t('components.emailDraft.encourageContinue')}\n\n${t('components.emailDraft.regards')}\n${t('components.emailDraft.organizer')} ${confName}`;
     } else {
-      subject = `[${confName}] Thông báo về bài báo: ${paper.title}`;
-      body = `Kính gửi ${recipientName},\n\nĐây là thông báo về bài báo "${paper.title}" tại ${confName}.\n\n${additionalComments || ''}\n\nTrân trọng,\nBan tổ chức ${confName}`;
+      subject = `[${confName}] ${t('components.emailDraft.paperNotice')}: ${paper.title}`;
+      body = `${t('components.emailDraft.dearRecipient', { name: recipientName })}\n\n${t('components.emailDraft.genericBody', { title: paper.title, conference: confName })}\n\n${additionalComments || ''}\n\n${t('components.emailDraft.regards')}\n${t('components.emailDraft.organizer')} ${confName}`;
     }
     
     return { subject, body, language: "vietnamese" };
@@ -96,7 +101,7 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
       });
       
       if (response.data.success) {
-        alert("✅ Email đã được gửi thành công!");
+        alert(t('components.emailDraft.sendSuccess'));
         if (onSend) {
           onSend({
             to: paper.authorEmail || paper.mainAuthor?.email,
@@ -107,11 +112,11 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
         }
         onClose();
       } else {
-        setError("Không thể gửi email. Vui lòng thử lại.");
+        setError(t('components.emailDraft.sendFailed'));
       }
     } catch (err) {
       console.error("Error sending email:", err);
-      setError("Lỗi khi gửi email: " + (err.response?.data?.message || err.message));
+      setError(t('components.emailDraft.sendError') + ": " + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }
@@ -151,7 +156,7 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
           borderRadius: "12px 12px 0 0"
         }}>
           <h3 style={{ margin: 0, color: "white", fontSize: "1.25rem", fontWeight: 600 }}>
-            ✨ Soạn email tự động
+            ✨ {t('components.emailDraft.title')}
           </h3>
           <button
             onClick={onClose}
@@ -185,19 +190,19 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
           }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", fontSize: "0.875rem" }}>
               <div>
-                <span style={{ color: "#6b7280" }}>Bài báo:</span>
+                <span style={{ color: "#6b7280" }}>{t('components.emailDraft.paper')}:</span>
                 <div style={{ fontWeight: 600, color: "#111827", marginTop: "4px" }}>
                   {paper.title}
                 </div>
               </div>
               <div>
-                <span style={{ color: "#6b7280" }}>Quyết định:</span>
+                <span style={{ color: "#6b7280" }}>{t('components.emailDraft.decision')}:</span>
                 <div style={{ fontWeight: 600, color: decision === "ACCEPT" ? "#059669" : "#dc2626", marginTop: "4px" }}>
-                  {emailTypeMap[decision]}
+                  {getEmailTypeText(decision)}
                 </div>
               </div>
               <div>
-                <span style={{ color: "#6b7280" }}>Người nhận:</span>
+                <span style={{ color: "#6b7280" }}>{t('components.emailDraft.recipient')}:</span>
                 <div style={{ fontWeight: 600, color: "#111827", marginTop: "4px" }}>
                   {paper.authorName || paper.mainAuthor?.fullName || "N/A"}
                 </div>
@@ -220,12 +225,12 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
               marginBottom: "8px",
               fontSize: "0.9rem"
             }}>
-              Ghi chú thêm (tùy chọn):
+              {t('components.emailDraft.additionalComments')}:
             </label>
             <textarea
               value={additionalComments}
               onChange={(e) => setAdditionalComments(e.target.value)}
-              placeholder="Thêm ghi chú hoặc nhận xét để AI tạo email phù hợp hơn..."
+              placeholder={t('components.emailDraft.commentsPlaceholder')}
               style={{
                 width: "100%",
                 padding: "12px",
@@ -250,7 +255,7 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
                 animation: "spin 1s linear infinite",
                 margin: "0 auto 16px"
               }} />
-              <div style={{ color: "#6b7280" }}>Đang tạo email...</div>
+              <div style={{ color: "#6b7280" }}>{t('components.emailDraft.generating')}</div>
               <style>{`
                 @keyframes spin {
                   0% { transform: rotate(0deg); }
@@ -287,7 +292,7 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
                     color: "#374151",
                     fontSize: "0.9rem"
                   }}>
-                    Tiêu đề email:
+                    {t('components.emailDraft.emailSubject')}:
                   </label>
                   {!editing && (
                     <button
@@ -302,7 +307,7 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
                         cursor: "pointer"
                       }}
                     >
-                      ✏️ Chỉnh sửa
+                      ✏️ {t('app.edit')}
                     </button>
                   )}
                 </div>
@@ -343,7 +348,7 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
                   marginBottom: "8px",
                   fontSize: "0.9rem"
                 }}>
-                  Nội dung email:
+                  {t('components.emailDraft.emailContent')}:
                 </label>
                 {editing ? (
                   <textarea
@@ -388,7 +393,7 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
                   color: "#92400e",
                   marginBottom: "20px"
                 }}>
-                  💡 <strong>Lưu ý:</strong> Bạn có thể chỉnh sửa nội dung email trước khi gửi. Nhấn "Xong" để lưu thay đổi.
+                  💡 <strong>{t('components.emailDraft.note')}:</strong> {t('components.emailDraft.editNote')}
                 </div>
               )}
             </div>
@@ -416,7 +421,7 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
               cursor: "pointer"
             }}
           >
-            Hủy
+            {t('app.cancel')}
           </button>
           <div style={{ display: "flex", gap: "12px" }}>
             {editing && (
@@ -433,7 +438,7 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
                   cursor: "pointer"
                 }}
               >
-                ✓ Xong
+                ✓ {t('app.done')}
               </button>
             )}
             {!editing && emailDraft && (
@@ -452,7 +457,7 @@ const EmailDraftModal = ({ paper, decision, conferenceName, onClose, onSend }) =
                   boxShadow: "0 4px 6px rgba(16, 185, 129, 0.3)"
                 }}
               >
-                {loading ? "Đang gửi..." : "📧 Gửi email"}
+                {loading ? t('app.sending') : `📧 ${t('components.emailDraft.sendEmail')}`}
               </button>
             )}
           </div>

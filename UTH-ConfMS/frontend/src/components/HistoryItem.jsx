@@ -1,6 +1,7 @@
 // src/components/HistoryItem.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FiFileText, FiMessageSquare, FiLock, FiActivity } from 'react-icons/fi';
 import { formatRelativeTime } from '../utils/dateUtils';
 import './HistoryItem.css';
@@ -9,6 +10,8 @@ import './HistoryItem.css';
  * Component hiển thị một item trong lịch sử hoạt động
  */
 const HistoryItem = ({ activity }) => {
+    const { t } = useTranslation();
+    
     // Helper function to get icon and color based on activity type
     const getActivityIcon = (activityType) => {
         const type = activityType?.toUpperCase();
@@ -76,12 +79,12 @@ const HistoryItem = ({ activity }) => {
                     <div className="history-item-metadata">
                         {metadata.conferenceName && (
                             <span className="metadata-tag">
-                                <strong>Hội nghị:</strong> {metadata.conferenceName}
+                                <strong>{t('components.historyItem.conference')}:</strong> {metadata.conferenceName}
                             </span>
                         )}
                         {metadata.paperTitle && (
                             <span className="metadata-tag">
-                                <strong>Bài viết:</strong> {metadata.paperTitle}
+                                <strong>{t('components.historyItem.paper')}:</strong> {metadata.paperTitle}
                             </span>
                         )}
                         {activity.ipAddress && (
@@ -94,7 +97,7 @@ const HistoryItem = ({ activity }) => {
 
                 {entityLink && (
                     <Link to={entityLink} className="history-item-link">
-                        Xem chi tiết →
+                        {t('components.historyItem.viewDetails')} →
                     </Link>
                 )}
             </div>

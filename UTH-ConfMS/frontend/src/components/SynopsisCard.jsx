@@ -3,6 +3,7 @@
  * Displays AI-generated synopsis with key points in a collapsible card.
  */
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./SynopsisCard.css";
 
 const SynopsisCard = ({
@@ -14,6 +15,7 @@ const SynopsisCard = ({
   onReportInaccuracy = null,
   synopsisId = null,
 }) => {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportIssue, setReportIssue] = useState("");
@@ -31,8 +33,8 @@ const SynopsisCard = ({
       <div className="synopsis-header" onClick={() => setIsExpanded(!isExpanded)}>
         <div className="synopsis-title">
           <span className="icon">{isExpanded ? "▼" : "▶"}</span>
-          <span>AI-Generated Synopsis</span>
-          {wordCount && <span className="word-count">({wordCount} words)</span>}
+          <span>{t('components.synopsis.title')}</span>
+          {wordCount && <span className="word-count">({wordCount} {t('components.synopsis.words')})</span>}
         </div>
         <div className="synopsis-badge">AI</div>
       </div>
@@ -40,14 +42,14 @@ const SynopsisCard = ({
       {isExpanded && (
         <div className="synopsis-content">
           <div className="synopsis-disclaimer">
-            ⚠️ This is AI-generated content for reviewer assistance. Please verify accuracy.
+            ⚠️ {t('components.synopsis.disclaimer')}
           </div>
 
           <div className="synopsis-text">{synopsis}</div>
 
           {keyThemes && keyThemes.length > 0 && (
             <div className="key-themes">
-              <strong>Key Themes:</strong>
+              <strong>{t('components.synopsis.keyThemes')}:</strong>
               <div className="themes-list">
                 {keyThemes.map((theme, index) => (
                   <span key={index} className="theme-tag">
@@ -61,12 +63,12 @@ const SynopsisCard = ({
           <div className="synopsis-metadata">
             {methodology && (
               <div className="metadata-item">
-                <strong>Methodology:</strong> {methodology}
+                <strong>{t('components.synopsis.methodology')}:</strong> {methodology}
               </div>
             )}
             {contributionType && (
               <div className="metadata-item">
-                <strong>Contribution:</strong> {contributionType}
+                <strong>{t('components.synopsis.contribution')}:</strong> {contributionType}
               </div>
             )}
           </div>
@@ -74,14 +76,14 @@ const SynopsisCard = ({
           {showReportForm ? (
             <div className="report-form">
               <textarea
-                placeholder="Describe the inaccuracy..."
+                placeholder={t('components.synopsis.describeInaccuracy')}
                 value={reportIssue}
                 onChange={(e) => setReportIssue(e.target.value)}
                 rows={3}
               />
               <div className="report-actions">
                 <button onClick={handleReport} className="submit-button">
-                  Submit
+                  {t('app.submit')}
                 </button>
                 <button
                   onClick={() => {
@@ -90,7 +92,7 @@ const SynopsisCard = ({
                   }}
                   className="cancel-button"
                 >
-                  Cancel
+                  {t('app.cancel')}
                 </button>
               </div>
             </div>
@@ -99,7 +101,7 @@ const SynopsisCard = ({
               onClick={() => setShowReportForm(true)}
               className="report-button"
             >
-              Report Inaccuracy
+              {t('components.synopsis.reportInaccuracy')}
             </button>
           )}
         </div>
@@ -109,7 +111,3 @@ const SynopsisCard = ({
 };
 
 export default SynopsisCard;
-
-
-
-

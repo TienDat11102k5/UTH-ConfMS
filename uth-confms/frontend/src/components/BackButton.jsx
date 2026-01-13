@@ -1,16 +1,20 @@
 // src/components/BackButton.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { FiArrowLeft } from "react-icons/fi";
 
 const BackButton = ({ 
-  text = "Quay lại", 
+  text = null, 
   to = null, 
   className = "", 
   style = {},
   showIcon = true 
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  
+  const buttonText = text || t('common.back');
 
   const handleClick = () => {
     if (to) {
@@ -41,8 +45,8 @@ const BackButton = ({
       className={`btn-back ${className}`}
       onClick={handleClick}
       style={defaultStyle}
-      aria-label={`${text} - Quay lại trang trước`}
-      title={text}
+      aria-label={buttonText}
+      title={buttonText}
       onMouseOver={(e) => {
         e.currentTarget.style.background = "#f8fafc";
         e.currentTarget.style.borderColor = "#cbd5e1";
@@ -55,7 +59,7 @@ const BackButton = ({
       }}
     >
       {showIcon && <FiArrowLeft />}
-      {text}
+      {buttonText}
     </button>
   );
 };

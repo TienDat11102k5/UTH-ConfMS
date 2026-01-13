@@ -56,9 +56,9 @@ const DashboardLayout = ({
               <img src={logoUTH} alt="UTH logo" className="portal-logo-small" />
               <div>
                 <div className="dash-logo-text">
-                  UTH Conference Portal{roleLabel ? ` · ${roleLabel}` : ""}
+                  {t('app.portalTitle')}{roleLabel ? ` · ${roleLabel}` : ""}
                 </div>
-                <div className="dash-logo-sub">University of Transport HCMC</div>
+                <div className="dash-logo-sub">{t('app.universityName')}</div>
               </div>
             </Link>
           </div>

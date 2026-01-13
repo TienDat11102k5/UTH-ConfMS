@@ -45,7 +45,10 @@
     "updating": "Đang cập nhật...",
     "processing": "Đang xử lý...",
     "uploading": "Đang tải lên...",
-    "saving": "Đang lưu..."
+    "saving": "Đang lưu...",
+    "done": "Xong",
+    "portalTitle": "Cổng thông tin Hội nghị UTH",
+    "universityName": "Trường Đại học Giao thông Vận tải TP.HCM"
   },
   "pagination": {
     "showing": "Hiển thị",
@@ -147,7 +150,13 @@
     "authors": "đồng tác giả",
     "conferences": "hội nghị",
     "author": "Tác giả",
-    "confirm": "Xác nhận"
+    "confirm": "Xác nhận",
+    "edit": "Chỉnh sửa",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "saveChanges": "Lưu thay đổi",
+    "reject": "Từ chối",
+    "anonymous": "Ẩn danh"
   },
   "status": {
     "active": "Hoạt động",
@@ -631,7 +640,10 @@
       "hidden": "Đã ẩn",
       "visible": "Hiển thị",
       "conferenceLockedTitle": "Hội nghị đã bị khóa",
-      "viewSubmissions": "Xem bài nộp"
+      "viewSubmissions": "Xem bài nộp",
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc",
+      "reviewDeadline": "Hạn phản biện"
     },
     "conferenceCreate": {
       "title": "Tạo Hội Nghị Mới",
@@ -1908,5 +1920,152 @@
     "goHome": "Về trang chủ",
     "goBack": "Quay lại",
     "contactSupport": "Liên hệ hỗ trợ"
+  },
+  "components": {
+    "historyItem": {
+      "conference": "Hội nghị",
+      "paper": "Bài viết",
+      "viewDetails": "Xem chi tiết"
+    },
+    "spellCheck": {
+      "title": "Kiểm tra chính tả",
+      "checking": "Đang kiểm tra...",
+      "enterText": "Vui lòng nhập văn bản để kiểm tra chính tả.",
+      "conferenceRequired": "Yêu cầu Conference ID.",
+      "noErrors": "Không tìm thấy lỗi chính tả nào.",
+      "checkFailed": "Kiểm tra chính tả thất bại. Vui lòng thử lại.",
+      "foundErrors": "Tìm thấy {{count}} lỗi chính tả:",
+      "suggestions": "Gợi ý"
+    },
+    "synopsis": {
+      "title": "Tóm tắt AI",
+      "words": "từ",
+      "disclaimer": "Đây là nội dung do AI tạo để hỗ trợ người phản biện. Vui lòng xác minh tính chính xác.",
+      "keyThemes": "Chủ đề chính",
+      "methodology": "Phương pháp",
+      "contribution": "Đóng góp",
+      "describeInaccuracy": "Mô tả sự không chính xác...",
+      "reportInaccuracy": "Báo cáo lỗi"
+    },
+    "aiDecision": {
+      "title": "AI Gợi ý Quyết định",
+      "accept": "Chấp nhận",
+      "reject": "Từ chối",
+      "revise": "Yêu cầu sửa chữa",
+      "confidence": "Độ tin cậy",
+      "summary": "Tóm tắt",
+      "reasoning": "Lý do chi tiết",
+      "strengths": "Điểm mạnh",
+      "weaknesses": "Điểm yếu",
+      "noStrengths": "Không có điểm mạnh được xác định",
+      "noWeaknesses": "Không có điểm yếu được xác định",
+      "generateError": "Không thể tạo gợi ý quyết định. Vui lòng thử lại sau.",
+      "analyzing": "Đang phân tích đánh giá và đưa ra gợi ý..."
+    },
+    "aiReviewSummary": {
+      "title": "AI Tóm tắt Đánh giá",
+      "overview": "Tổng quan",
+      "consensus": "Mức độ đồng thuận",
+      "commonStrengths": "Điểm mạnh chung",
+      "commonWeaknesses": "Điểm yếu chung",
+      "keyPoints": "Các điểm chính",
+      "noCommonStrengths": "Không có điểm mạnh chung được xác định",
+      "noCommonWeaknesses": "Không có điểm yếu chung được xác định",
+      "noKeyPoints": "Không có điểm chính nào được xác định",
+      "generateError": "Không thể tạo tóm tắt reviews. Vui lòng thử lại.",
+      "analyzing": "Đang phân tích và tổng hợp đánh giá..."
+    },
+    "abstractPolish": {
+      "title": "Đánh bóng Abstract",
+      "enterAbstract": "Vui lòng nhập abstract để đánh bóng.",
+      "conferenceRequired": "Yêu cầu Conference ID.",
+      "polishFailed": "Đánh bóng abstract thất bại. Vui lòng thử lại.",
+      "cannotApply": "Không thể áp dụng. Vui lòng kiểm tra lại thông tin.",
+      "applyFailed": "Áp dụng abstract thất bại. Vui lòng thử lại.",
+      "preserveMeaning": "Giữ nguyên ý nghĩa gốc",
+      "enhanceTone": "Nâng cao giọng văn học thuật",
+      "originalAbstract": "Abstract gốc",
+      "polishedAbstract": "Abstract đã đánh bóng",
+      "polishButton": "Đánh bóng Abstract",
+      "improvementReason": "Lý do cải thiện",
+      "confidence": "Độ tin cậy",
+      "changes": "Các thay đổi",
+      "before": "Trước",
+      "after": "Sau",
+      "applyNew": "Áp dụng Abstract mới"
+    },
+    "similarityExplainer": {
+      "title": "Giải thích độ tương đồng",
+      "reviewer": "Người phản biện",
+      "paper": "Bài báo",
+      "similarityScore": "Điểm tương đồng",
+      "expertiseMatch": "Chuyên môn phù hợp",
+      "matchingKeywords": "Từ khóa trùng khớp",
+      "commonTopics": "Chủ đề chung",
+      "rationale": "Lý do",
+      "disclaimer": "Đây là điểm tương đồng do AI tạo. Vui lòng xem xét kỹ trước khi phân công."
+    },
+    "emailDraft": {
+      "title": "Soạn email tự động",
+      "accept": "Chấp nhận",
+      "reject": "Từ chối",
+      "revision": "Yêu cầu sửa",
+      "reminder": "Nhắc nhở",
+      "paper": "Bài báo",
+      "decision": "Quyết định",
+      "recipient": "Người nhận",
+      "additionalComments": "Ghi chú thêm (tùy chọn)",
+      "commentsPlaceholder": "Thêm ghi chú hoặc nhận xét để AI tạo email phù hợp hơn...",
+      "generating": "Đang tạo email...",
+      "aiUnavailable": "AI không khả dụng. Đang sử dụng template mặc định.",
+      "emailSubject": "Tiêu đề email",
+      "emailContent": "Nội dung email",
+      "note": "Lưu ý",
+      "editNote": "Bạn có thể chỉnh sửa nội dung email trước khi gửi. Nhấn 'Xong' để lưu thay đổi.",
+      "sendEmail": "Gửi email",
+      "sendSuccess": "✅ Email đã được gửi thành công!",
+      "sendFailed": "Không thể gửi email. Vui lòng thử lại.",
+      "sendError": "Lỗi khi gửi email"
+    },
+    "paperSynopsis": {
+      "title": "Tóm tắt bài báo bởi AI",
+      "generating": "Đang tạo tóm tắt...",
+      "generateError": "Không thể tạo tóm tắt. Vui lòng thử lại.",
+      "summary": "Tóm tắt",
+      "keyThemes": "Chủ đề chính",
+      "methodology": "Phương pháp",
+      "mainClaims": "Các khẳng định chính",
+      "datasetsUsed": "Dữ liệu sử dụng",
+      "contributionType": "Loại đóng góp",
+      "estimatedWordCount": "Số từ ước tính",
+      "words": "từ",
+      "keyboardTip": "Mẹo: Sử dụng phím tắt để thao tác nhanh hơn"
+    },
+    "emailEditor": {
+      "title": "Trình soạn email",
+      "aiGenerated": "AI tạo",
+      "requiresReview": "Cần xem xét",
+      "preview": "Xem trước",
+      "subject": "Tiêu đề",
+      "body": "Nội dung",
+      "subjectPlaceholder": "Tiêu đề email",
+      "bodyPlaceholder": "Nội dung email",
+      "changedFrom": "Thay đổi từ",
+      "bodyEdited": "Nội dung đã được chỉnh sửa",
+      "aiRationale": "Lý do AI",
+      "to": "Đến",
+      "recipient": "Người nhận",
+      "approveDraft": "Phê duyệt bản nháp",
+      "sendEmail": "Gửi email",
+      "disclaimer": "Tất cả bản nháp email đều phải được chair xem xét trước khi gửi. Không email nào được gửi tự động."
+    },
+    "userDropdown": {
+      "managementPage": "Trang quản lý",
+      "personalInfo": "Thông tin cá nhân",
+      "settings": "Cài đặt",
+      "activityHistory": "Lịch sử hoạt động",
+      "logout": "Đăng xuất"
+    }
   }
 }
+

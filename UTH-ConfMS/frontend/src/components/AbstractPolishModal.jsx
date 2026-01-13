@@ -3,6 +3,7 @@
  * Modal component for abstract polishing with side-by-side comparison and diff viewer.
  */
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { polishAbstract, applyPolish } from "../api/ai/authorAI";
 import "./AbstractPolishModal.css";
 
@@ -16,6 +17,7 @@ const AbstractPolishModal = ({
   userId = null,
   onApply = null,
 }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [polishResult, setPolishResult] = useState(null);
@@ -32,12 +34,12 @@ const AbstractPolishModal = ({
 
   const handlePolish = async () => {
     if (!originalAbstract || originalAbstract.trim().length === 0) {
-      setError("Vui lòng nhập abstract để đánh bóng.");
+      setError(t('components.abstractPolish.enterAbstract'));
       return;
     }
 
     if (!conferenceId) {
-      setError("Conference ID is required.");
+      setError(t('components.abstractPolish.conferenceRequired'));
       return;
     }
 
@@ -58,7 +60,7 @@ const AbstractPolishModal = ({
 
       setPolishResult(result);
     } catch (err) {
-      setError(err.message || "Đánh bóng abstract thất bại. Vui lòng thử lại.");
+      setError(err.message || t('components.abstractPolish.polishFailed'));
       console.error("Abstract polish error:", err);
     } finally {
       setLoading(false);
@@ -67,7 +69,7 @@ const AbstractPolishModal = ({
 
   const handleApply = async () => {
     if (!polishResult || !paperId) {
-      setError("Không thể áp dụng. Vui lòng kiểm tra lại thông tin.");
+      setError(t('components.abstractPolish.cannotApply'));
       return;
     }
 
@@ -83,7 +85,7 @@ const AbstractPolishModal = ({
       
       onClose();
     } catch (err) {
-      setError(err.message || "Áp dụng abstract thất bại. Vui lòng thử lại.");
+      setError(err.message || t('components.abstractPolish.applyFailed'));
       console.error("Apply polish error:", err);
     } finally {
       setApplying(false);
@@ -101,7 +103,7 @@ const AbstractPolishModal = ({
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Đánh bóng Abstract</h2>
+          <h2>{t('components.abstractPolish.title')}</h2>
           <button className="modal-close" onClick={onClose} aria-label="Close">
             ×
           </button>
@@ -123,7 +125,7 @@ const AbstractPolishModal = ({
                     checked={preserveMeaning}
                     onChange={(e) => setPreserveMeaning(e.target.checked)}
                   />
-                  <span>Giữ nguyên ý nghĩa gốc</span>
+                  <span>{t('components.abstractPolish.preserveMeaning')}</span>
                 </label>
               </div>
 
@@ -134,12 +136,12 @@ const AbstractPolishModal = ({
                     checked={enhanceTone}
                     onChange={(e) => setEnhanceTone(e.target.checked)}
                   />
-                  <span>Nâng cao giọng văn học thuật</span>
+                  <span>{t('components.abstractPolish.enhanceTone')}</span>
                 </label>
               </div>
 
               <div className="original-preview">
-                <h3>Abstract gốc:</h3>
+                <h3>{t('components.abstractPolish.originalAbstract')}:</h3>
                 <div className="text-preview">{originalAbstract}</div>
               </div>
 
@@ -149,31 +151,31 @@ const AbstractPolishModal = ({
                 disabled={loading}
                 className="polish-button"
               >
-                {loading ? "Đang xử lý..." : "Đánh bóng Abstract"}
+                {loading ? t('app.processing') : t('components.abstractPolish.polishButton')}
               </button>
             </div>
           ) : (
             <div className="polish-results">
               <div className="rationale-section">
-                <h3>Lý do cải thiện:</h3>
+                <h3>{t('components.abstractPolish.improvementReason')}:</h3>
                 <p>{polishResult.rationale}</p>
                 {polishResult.confidence_score && (
                   <div className="confidence-score">
-                    Độ tin cậy: {(polishResult.confidence_score * 100).toFixed(0)}%
+                    {t('components.abstractPolish.confidence')}: {(polishResult.confidence_score * 100).toFixed(0)}%
                   </div>
                 )}
               </div>
 
               <div className="comparison-view">
                 <div className="text-column">
-                  <h3>Abstract gốc</h3>
+                  <h3>{t('components.abstractPolish.originalAbstract')}</h3>
                   <div className="text-content original-text">
                     {originalAbstract}
                   </div>
                 </div>
 
                 <div className="text-column">
-                  <h3>Abstract đã đánh bóng</h3>
+                  <h3>{t('components.abstractPolish.polishedAbstract')}</h3>
                   <div className="text-content polished-text">
                     {polishResult.polished}
                   </div>
@@ -182,7 +184,7 @@ const AbstractPolishModal = ({
 
               {polishResult.changes && polishResult.changes.length > 0 && (
                 <div className="changes-section">
-                  <h3>Các thay đổi ({polishResult.changes.length}):</h3>
+                  <h3>{t('components.abstractPolish.changes')} ({polishResult.changes.length}):</h3>
                   <ul className="changes-list">
                     {polishResult.changes.map((change, index) => (
                       <li key={index} className="change-item">
@@ -191,10 +193,10 @@ const AbstractPolishModal = ({
                         </div>
                         <div className="change-content">
                           <div className="change-before">
-                            <strong>Trước:</strong> {change.before}
+                            <strong>{t('components.abstractPolish.before')}:</strong> {change.before}
                           </div>
                           <div className="change-after">
-                            <strong>Sau:</strong> {change.after}
+                            <strong>{t('components.abstractPolish.after')}:</strong> {change.after}
                           </div>
                           {change.explanation && (
                             <div className="change-explanation">
@@ -215,7 +217,7 @@ const AbstractPolishModal = ({
                   className="reject-button"
                   disabled={applying}
                 >
-                  Từ chối
+                  {t('common.reject')}
                 </button>
                 <button
                   type="button"
@@ -223,7 +225,7 @@ const AbstractPolishModal = ({
                   className="apply-button"
                   disabled={applying || !paperId}
                 >
-                  {applying ? "Đang áp dụng..." : "Áp dụng Abstract mới"}
+                  {applying ? t('app.processing') : t('components.abstractPolish.applyNew')}
                 </button>
               </div>
             </div>
@@ -235,5 +237,3 @@ const AbstractPolishModal = ({
 };
 
 export default AbstractPolishModal;
-
-

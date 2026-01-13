@@ -1,5 +1,6 @@
 // src/components/EmptyState.jsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { FiInbox, FiFileText, FiAlertCircle, FiSearch, FiCheckCircle } from "react-icons/fi";
 import "../styles/EmptyState.css";
 
@@ -21,23 +22,26 @@ const iconMap = {
  */
 const EmptyState = ({ 
   icon = "inbox", 
-  title = "Không có dữ liệu",
+  title = null,
   description = "",
   action = null,
   size = "medium"
 }) => {
+  const { t } = useTranslation();
   const IconComponent = iconMap[icon] || FiInbox;
+  
+  const displayTitle = title || t('app.noData');
 
   return (
     <div 
       className={`empty-state empty-state-${size}`}
       role="status"
-      aria-label={`${title}. ${description}`}
+      aria-label={`${displayTitle}. ${description}`}
     >
       <div className="empty-state-icon" aria-hidden="true">
         <IconComponent />
       </div>
-      <h3 className="empty-state-title">{title}</h3>
+      <h3 className="empty-state-title">{displayTitle}</h3>
       {description && (
         <p className="empty-state-description">{description}</p>
       )}

@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import apiClient from "../apiClient";
 import { useEscapeKey } from "../hooks/useKeyboardShortcut";
 import "../styles/AIModal.css";
 
 const AIDecisionModal = ({ paper, reviews, onClose }) => {
+  const { t } = useTranslation();
+  
   // ESC key to close modal
   useEscapeKey(onClose);
   
@@ -35,7 +38,7 @@ const AIDecisionModal = ({ paper, reviews, onClose }) => {
       setRecommendation(response.data);
     } catch (err) {
       console.error("Error generating recommendation:", err);
-      setError("Không thể tạo gợi ý quyết định. Vui lòng thử lại sau.");
+      setError(t('components.aiDecision.generateError'));
     } finally {
       setLoading(false);
     }
@@ -58,9 +61,9 @@ const AIDecisionModal = ({ paper, reviews, onClose }) => {
   };
 
   const getRecommendationText = (rec) => {
-    if (rec === "ACCEPT") return "Chấp nhận";
-    if (rec === "REJECT") return "Từ chối";
-    return "Yêu cầu sửa chữa";
+    if (rec === "ACCEPT") return t('components.aiDecision.accept');
+    if (rec === "REJECT") return t('components.aiDecision.reject');
+    return t('components.aiDecision.revise');
   };
 
   const getRecommendationIcon = (rec) => {
@@ -80,7 +83,7 @@ const AIDecisionModal = ({ paper, reviews, onClose }) => {
           borderBottom: "2px solid #e5e7eb"
         }}>
           <h3 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-            ✨ AI Gợi ý Quyết định
+            ✨ {t('components.aiDecision.title')}
           </h3>
           <button onClick={onClose} style={{
             background: "#f3f4f6",
@@ -106,7 +109,7 @@ const AIDecisionModal = ({ paper, reviews, onClose }) => {
             <div style={{ textAlign: "center", padding: "3rem" }}>
               <div className="spinner"></div>
               <p style={{ marginTop: "1rem", color: "#6b7280", fontSize: "0.9375rem" }}>
-                Đang phân tích đánh giá và đưa ra gợi ý...
+                {t('components.aiDecision.analyzing')}
               </p>
             </div>
           )}
@@ -159,7 +162,7 @@ const AIDecisionModal = ({ paper, reviews, onClose }) => {
                   fontWeight: 600,
                   boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
                 }}>
-                  Độ tin cậy: <strong style={{ color: getRecommendationColor(recommendation.recommendation) }}>
+                  {t('components.aiDecision.confidence')}: <strong style={{ color: getRecommendationColor(recommendation.recommendation) }}>
                     {recommendation.confidence}%
                   </strong>
                 </div>
@@ -176,7 +179,7 @@ const AIDecisionModal = ({ paper, reviews, onClose }) => {
                   alignItems: "center",
                   gap: "0.5rem"
                 }}>
-                  📋 Tóm tắt
+                  📋 {t('components.aiDecision.summary')}
                 </h4>
                 <p style={{
                   padding: "1.25rem",
@@ -204,7 +207,7 @@ const AIDecisionModal = ({ paper, reviews, onClose }) => {
                   alignItems: "center",
                   gap: "0.5rem"
                 }}>
-                  💡 Lý do chi tiết
+                  💡 {t('components.aiDecision.reasoning')}
                 </h4>
                 <p style={{
                   padding: "1.25rem",
@@ -233,7 +236,7 @@ const AIDecisionModal = ({ paper, reviews, onClose }) => {
                     alignItems: "center",
                     gap: "0.5rem"
                   }}>
-                    ✅ Điểm mạnh
+                    ✅ {t('components.aiDecision.strengths')}
                   </h4>
                   <ul style={{
                     margin: 0,
@@ -260,7 +263,7 @@ const AIDecisionModal = ({ paper, reviews, onClose }) => {
                       ))
                     ) : (
                       <li style={{ color: "#6b7280", fontSize: "0.875rem", fontStyle: "italic" }}>
-                        Không có điểm mạnh được xác định
+                        {t('components.aiDecision.noStrengths')}
                       </li>
                     )}
                   </ul>
@@ -276,7 +279,7 @@ const AIDecisionModal = ({ paper, reviews, onClose }) => {
                     alignItems: "center",
                     gap: "0.5rem"
                   }}>
-                    ⚠️ Điểm yếu
+                    ⚠️ {t('components.aiDecision.weaknesses')}
                   </h4>
                   <ul style={{
                     margin: 0,
@@ -303,7 +306,7 @@ const AIDecisionModal = ({ paper, reviews, onClose }) => {
                       ))
                     ) : (
                       <li style={{ color: "#6b7280", fontSize: "0.875rem", fontStyle: "italic" }}>
-                        Không có điểm yếu được xác định
+                        {t('components.aiDecision.noWeaknesses')}
                       </li>
                     )}
                   </ul>
@@ -336,7 +339,7 @@ const AIDecisionModal = ({ paper, reviews, onClose }) => {
             onMouseEnter={(e) => e.currentTarget.style.background = "#0f766e"}
             onMouseLeave={(e) => e.currentTarget.style.background = "#0d9488"}
           >
-            Đóng
+            {t('app.close')}
           </button>
         </div>
       </div>

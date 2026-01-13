@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import apiClient from "../apiClient";
 import { useEscapeKey } from "../hooks/useKeyboardShortcut";
 import KeyboardShortcut from "./KeyboardShortcut";
 
 const PaperSynopsisModal = ({ paper, onClose }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [synopsis, setSynopsis] = useState(null);
   const [error, setError] = useState("");
@@ -27,7 +29,7 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
       setSynopsis(response.data);
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || "Không thể tạo tóm tắt. Vui lòng thử lại.");
+      setError(err.response?.data?.message || t('components.paperSynopsis.generateError'));
     } finally {
       setLoading(false);
     }
@@ -71,7 +73,7 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
           borderRadius: "12px 12px 0 0"
         }}>
           <h3 style={{ margin: 0, color: "white", fontSize: "1.25rem", fontWeight: 600 }}>
-            ✨ Tóm tắt bài báo bởi AI
+            ✨ {t('components.paperSynopsis.title')}
           </h3>
           <button
             onClick={onClose}
@@ -107,7 +109,7 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
               {paper.title}
             </div>
             <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
-              Tác giả: {paper.authorName || "N/A"}
+              {t('common.author')}: {paper.authorName || "N/A"}
             </div>
           </div>
 
@@ -122,7 +124,7 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
                 animation: "spin 1s linear infinite",
                 margin: "0 auto 16px"
               }} />
-              <div style={{ color: "#6b7280" }}>Đang tạo tóm tắt...</div>
+              <div style={{ color: "#6b7280" }}>{t('components.paperSynopsis.generating')}</div>
               <style>{`
                 @keyframes spin {
                   0% { transform: rotate(0deg); }
@@ -160,7 +162,7 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
                   gap: "8px"
                 }}>
                   <span style={{ fontSize: "1.1rem" }}>📝</span>
-                  Tóm tắt
+                  {t('components.paperSynopsis.summary')}
                 </div>
                 <div style={{
                   background: "#f0f9ff",
@@ -188,7 +190,7 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
                     gap: "6px"
                   }}>
                     <span style={{ fontSize: "1.1rem" }}>🎯</span>
-                    Chủ đề chính
+                    {t('components.paperSynopsis.keyThemes')}
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                     {synopsis.keyThemes.map((theme, idx) => (
@@ -223,7 +225,7 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
                     gap: "6px"
                   }}>
                     <span style={{ fontSize: "1.1rem" }}>🔬</span>
-                    Phương pháp
+                    {t('components.paperSynopsis.methodology')}
                   </div>
                   <div style={{
                     background: "#f9fafb",
@@ -251,7 +253,7 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
                     gap: "6px"
                   }}>
                     <span style={{ fontSize: "1.1rem" }}>💡</span>
-                    Các khẳng định chính
+                    {t('components.paperSynopsis.mainClaims')}
                   </div>
                   <ul style={{ margin: 0, paddingLeft: "20px", color: "#374151", lineHeight: "1.8" }}>
                     {synopsis.claims.map((claim, idx) => (
@@ -274,7 +276,7 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
                     gap: "6px"
                   }}>
                     <span style={{ fontSize: "1.1rem" }}>📊</span>
-                    Dữ liệu sử dụng
+                    {t('components.paperSynopsis.datasetsUsed')}
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                     {synopsis.datasets.map((dataset, idx) => (
@@ -311,7 +313,7 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
                     border: "1px solid #bbf7d0"
                   }}>
                     <div style={{ fontSize: "0.75rem", color: "#166534", marginBottom: "4px" }}>
-                      Loại đóng góp
+                      {t('components.paperSynopsis.contributionType')}
                     </div>
                     <div style={{ fontWeight: 600, color: "#15803d" }}>
                       {synopsis.contributionType}
@@ -326,10 +328,10 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
                     border: "1px solid #fecdd3"
                   }}>
                     <div style={{ fontSize: "0.75rem", color: "#9f1239", marginBottom: "4px" }}>
-                      Số từ ước tính
+                      {t('components.paperSynopsis.estimatedWordCount')}
                     </div>
                     <div style={{ fontWeight: 600, color: "#be123c" }}>
-                      {synopsis.wordCount} từ
+                      {synopsis.wordCount} {t('components.paperSynopsis.words')}
                     </div>
                   </div>
                 )}
@@ -358,7 +360,7 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
               cursor: "pointer"
             }}
           >
-            Đóng
+            {t('app.close')}
           </button>
         </div>
         {/* Keyboard Hint */}
@@ -371,9 +373,9 @@ const PaperSynopsisModal = ({ paper, onClose }) => {
           borderTop: "1px solid #e5e7eb"
         }}>
           <span style={{ fontSize: "0.8125rem", color: "#6b7280" }}>
-            Mẹo: Sử dụng phím tắt để thao tác nhanh hơn
+            {t('components.paperSynopsis.keyboardTip')}
           </span>
-          <KeyboardShortcut keys="ESC" description="Đóng" variant="default" />
+          <KeyboardShortcut keys="ESC" description={t('app.close')} variant="default" />
         </div>      </div>
     </div>
   );

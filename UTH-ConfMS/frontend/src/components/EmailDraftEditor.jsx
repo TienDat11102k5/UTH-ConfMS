@@ -3,6 +3,7 @@
  * Editor for AI-generated email drafts with side-by-side comparison.
  */
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./EmailDraftEditor.css";
 
 const EmailDraftEditor = ({
@@ -11,6 +12,7 @@ const EmailDraftEditor = ({
   onCancel,
   onSend,
 }) => {
+  const { t } = useTranslation();
   const [editedSubject, setEditedSubject] = useState(draft?.subject || "");
   const [editedBody, setEditedBody] = useState(draft?.body || "");
   const [showPreview, setShowPreview] = useState(false);
@@ -43,10 +45,10 @@ const EmailDraftEditor = ({
   return (
     <div className="email-draft-editor">
       <div className="editor-header">
-        <h3>Email Draft Editor</h3>
+        <h3>{t('components.emailEditor.title')}</h3>
         <div className="editor-badges">
-          <span className="badge ai-badge">AI Generated</span>
-          <span className="badge review-badge">Requires Review</span>
+          <span className="badge ai-badge">{t('components.emailEditor.aiGenerated')}</span>
+          <span className="badge review-badge">{t('components.emailEditor.requiresReview')}</span>
         </div>
       </div>
 
@@ -55,53 +57,53 @@ const EmailDraftEditor = ({
           className={`tab ${!showPreview ? "active" : ""}`}
           onClick={() => setShowPreview(false)}
         >
-          Edit
+          {t('app.edit')}
         </button>
         <button
           className={`tab ${showPreview ? "active" : ""}`}
           onClick={() => setShowPreview(true)}
         >
-          Preview
+          {t('components.emailEditor.preview')}
         </button>
       </div>
 
       {!showPreview ? (
         <div className="editor-content">
           <div className="editor-section">
-            <label>Subject</label>
+            <label>{t('components.emailEditor.subject')}</label>
             <input
               type="text"
               value={editedSubject}
               onChange={(e) => setEditedSubject(e.target.value)}
               className="subject-input"
-              placeholder="Email subject"
+              placeholder={t('components.emailEditor.subjectPlaceholder')}
             />
             {hasChanges && editedSubject !== draft.subject && (
               <div className="change-indicator">
-                <small>Changed from: "{draft.subject}"</small>
+                <small>{t('components.emailEditor.changedFrom')}: "{draft.subject}"</small>
               </div>
             )}
           </div>
 
           <div className="editor-section">
-            <label>Body</label>
+            <label>{t('components.emailEditor.body')}</label>
             <textarea
               value={editedBody}
               onChange={(e) => setEditedBody(e.target.value)}
               className="body-textarea"
               rows={15}
-              placeholder="Email body"
+              placeholder={t('components.emailEditor.bodyPlaceholder')}
             />
             {hasChanges && editedBody !== draft.body && (
               <div className="change-indicator">
-                <small>Body has been edited</small>
+                <small>{t('components.emailEditor.bodyEdited')}</small>
               </div>
             )}
           </div>
 
           {draft.rationale && (
             <div className="rationale-box">
-              <strong>AI Rationale:</strong>
+              <strong>{t('components.emailEditor.aiRationale')}:</strong>
               <p>{draft.rationale}</p>
             </div>
           )}
@@ -111,10 +113,10 @@ const EmailDraftEditor = ({
           <div className="email-preview">
             <div className="email-header">
               <div className="email-field">
-                <strong>To:</strong> {draft.personalization?.author_name || "Recipient"}
+                <strong>{t('components.emailEditor.to')}:</strong> {draft.personalization?.author_name || t('components.emailEditor.recipient')}
               </div>
               <div className="email-field">
-                <strong>Subject:</strong> {editedSubject}
+                <strong>{t('components.emailEditor.subject')}:</strong> {editedSubject}
               </div>
             </div>
             <div className="email-body-preview">
@@ -128,22 +130,21 @@ const EmailDraftEditor = ({
 
       <div className="editor-actions">
         <button onClick={onCancel} className="cancel-button">
-          Cancel
+          {t('app.cancel')}
         </button>
         <button onClick={handleApprove} className="approve-button">
-          {hasChanges ? "Save Changes" : "Approve Draft"}
+          {hasChanges ? t('common.saveChanges') : t('components.emailEditor.approveDraft')}
         </button>
         {draft.status === "APPROVED" && (
           <button onClick={handleSend} className="send-button">
-            Send Email
+            {t('components.emailEditor.sendEmail')}
           </button>
         )}
       </div>
 
       <div className="editor-footer">
         <small>
-          ⚠️ All email drafts require chair review before sending. No emails are
-          sent automatically.
+          ⚠️ {t('components.emailEditor.disclaimer')}
         </small>
       </div>
     </div>
@@ -151,7 +152,3 @@ const EmailDraftEditor = ({
 };
 
 export default EmailDraftEditor;
-
-
-
-

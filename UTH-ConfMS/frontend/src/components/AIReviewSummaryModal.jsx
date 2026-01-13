@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import apiClient from "../apiClient";
 import { useEscapeKey } from "../hooks/useKeyboardShortcut";
 import "../styles/AIModal.css";
 
 const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
+  const { t } = useTranslation();
+  
   // ESC key to close modal
   useEscapeKey(onClose);
   
@@ -20,7 +23,7 @@ const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
         paperId: paper.id,
         paperTitle: paper.title,
         reviews: reviews.map(r => ({
-          reviewerName: r.reviewer?.fullName || "Ẩn danh",
+          reviewerName: r.reviewer?.fullName || t('common.anonymous'),
           score: r.score,
           comment: r.comment || "",
           recommendation: r.recommendation || ""
@@ -31,7 +34,7 @@ const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
       setSummary(response.data);
     } catch (err) {
       console.error("Error generating summary:", err);
-      setError("Không thể tạo tóm tắt reviews. Vui lòng thử lại.");
+      setError(t('components.aiReviewSummary.generateError'));
     } finally {
       setLoading(false);
     }
@@ -52,7 +55,7 @@ const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
           borderBottom: "2px solid #e5e7eb"
         }}>
           <h3 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-            ✨ AI Tóm tắt Đánh giá
+            ✨ {t('components.aiReviewSummary.title')}
           </h3>
           <button onClick={onClose} style={{
             background: "#f3f4f6",
@@ -78,7 +81,7 @@ const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
             <div style={{ textAlign: "center", padding: "3rem" }}>
               <div className="spinner"></div>
               <p style={{ marginTop: "1rem", color: "#6b7280", fontSize: "0.9375rem" }}>
-                Đang phân tích và tổng hợp đánh giá...
+                {t('components.aiReviewSummary.analyzing')}
               </p>
             </div>
           )}
@@ -109,7 +112,7 @@ const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
                   alignItems: "center",
                   gap: "0.5rem"
                 }}>
-                  📝 Tổng quan
+                  📝 {t('components.aiReviewSummary.overview')}
                 </h4>
                 <p style={{
                   padding: "1.25rem",
@@ -137,7 +140,7 @@ const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
                   alignItems: "center",
                   gap: "0.5rem"
                 }}>
-                  🤝 Mức độ đồng thuận
+                  🤝 {t('components.aiReviewSummary.consensus')}
                 </h4>
                 <p style={{
                   padding: "1.25rem",
@@ -166,7 +169,7 @@ const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
                     alignItems: "center",
                     gap: "0.5rem"
                   }}>
-                    ✅ Điểm mạnh chung
+                    ✅ {t('components.aiReviewSummary.commonStrengths')}
                   </h4>
                   <ul style={{
                     margin: 0,
@@ -193,7 +196,7 @@ const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
                       ))
                     ) : (
                       <li style={{ color: "#6b7280", fontSize: "0.875rem", fontStyle: "italic" }}>
-                        Không có điểm mạnh chung được xác định
+                        {t('components.aiReviewSummary.noCommonStrengths')}
                       </li>
                     )}
                   </ul>
@@ -209,7 +212,7 @@ const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
                     alignItems: "center",
                     gap: "0.5rem"
                   }}>
-                    ⚠️ Điểm yếu chung
+                    ⚠️ {t('components.aiReviewSummary.commonWeaknesses')}
                   </h4>
                   <ul style={{
                     margin: 0,
@@ -236,7 +239,7 @@ const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
                       ))
                     ) : (
                       <li style={{ color: "#6b7280", fontSize: "0.875rem", fontStyle: "italic" }}>
-                        Không có điểm yếu chung được xác định
+                        {t('components.aiReviewSummary.noCommonWeaknesses')}
                       </li>
                     )}
                   </ul>
@@ -254,7 +257,7 @@ const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
                   alignItems: "center",
                   gap: "0.5rem"
                 }}>
-                  🔑 Các điểm chính
+                  🔑 {t('components.aiReviewSummary.keyPoints')}
                 </h4>
                 <ul style={{
                   margin: 0,
@@ -282,7 +285,7 @@ const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
                     ))
                   ) : (
                     <li style={{ color: "#6b7280", fontSize: "0.875rem", fontStyle: "italic", padding: "0.5rem" }}>
-                      Không có điểm chính nào được xác định
+                      {t('components.aiReviewSummary.noKeyPoints')}
                     </li>
                   )}
                 </ul>
@@ -314,7 +317,7 @@ const AIReviewSummaryModal = ({ paper, reviews, onClose }) => {
             onMouseEnter={(e) => e.currentTarget.style.background = "#0f766e"}
             onMouseLeave={(e) => e.currentTarget.style.background = "#0d9488"}
           >
-            Đóng
+            {t('app.close')}
           </button>
         </div>
       </div>
