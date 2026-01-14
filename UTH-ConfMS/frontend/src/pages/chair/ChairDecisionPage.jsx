@@ -71,6 +71,12 @@ const ChairDecisionPage = () => {
     const loadData = async () => {
       try {
         setLoading(true);
+        
+        // ✅ FIX: Clear old data to prevent stale UI
+        setPapers([]);
+        setReviews({});
+        setAssignments({});
+        
         let allPapers = [];
 
         if (selectedConference === "ALL") {
@@ -98,23 +104,39 @@ const ChairDecisionPage = () => {
         const underReviewPapers = allPapers.filter(p => p.status === 'UNDER_REVIEW');
         setPapers(underReviewPapers);
 
-        // Load reviews và assignments cho mỗi bài
-        const reviewsMap = {};
-        const assignmentsMap = {};
-
-        for (const paper of underReviewPapers) {
+        // Load reviews và assignments cho mỗi bài - SONG SONG thay vì tuần tự
+        const loadPromises = underReviewPapers.map(async (paper) => {
           try {
             const [reviewsRes, assignRes] = await Promise.all([
               apiClient.get(`/reviews/paper/${paper.id}`),
               apiClient.get(`/assignments/paper/${paper.id}`)
             ]);
-            reviewsMap[paper.id] = reviewsRes.data || [];
-            assignmentsMap[paper.id] = assignRes.data || [];
+            
+            return {
+              paperId: paper.id,
+              reviews: reviewsRes.data || [],
+              assignments: assignRes.data || []
+            };
           } catch (err) {
-            reviewsMap[paper.id] = [];
-            assignmentsMap[paper.id] = [];
+            return {
+              paperId: paper.id,
+              reviews: [],
+              assignments: []
+            };
           }
-        }
+        });
+
+        // Đợi TẤT CẢ promises hoàn thành
+        const results = await Promise.all(loadPromises);
+        
+        // Build maps từ results
+        const reviewsMap = {};
+        const assignmentsMap = {};
+        
+        results.forEach(result => {
+          reviewsMap[result.paperId] = result.reviews;
+          assignmentsMap[result.paperId] = result.assignments;
+        });
 
         setReviews(reviewsMap);
         setAssignments(assignmentsMap);

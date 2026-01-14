@@ -18,7 +18,9 @@ public class ReviewAssignmentService {
     @Autowired private ConflictOfInterestRepository coiRepo;
     @Autowired private EmailService emailService; 
 
+
     // 1. Hàm Phân công (Assign) - TP4
+    @org.springframework.transaction.annotation.Transactional
     public ReviewAssignment assignReviewer(Long paperId, Long reviewerId) {
         // a. Kiểm tra bài báo có tồn tại không
         Paper paper = paperRepo.findById(paperId)
@@ -73,13 +75,14 @@ public class ReviewAssignmentService {
             assignment.setDueDate(paper.getTrack().getConference().getReviewDeadline());
         }
         
-        // (Optional) Cập nhật trạng thái bài báo sang UNDER_REVIEW
+        // ✅ FIX: Save assignment FIRST to avoid race condition
+        ReviewAssignment savedAssignment = assignmentRepo.save(assignment);
+        
+        // ✅ THEN update paper status (after assignment is committed)
         if (paper.getStatus() == PaperStatus.SUBMITTED) {
             paper.setStatus(PaperStatus.UNDER_REVIEW);
             paperRepo.save(paper);
         }
-
-        ReviewAssignment savedAssignment = assignmentRepo.save(assignment);
         
         // Send email notification
         try {

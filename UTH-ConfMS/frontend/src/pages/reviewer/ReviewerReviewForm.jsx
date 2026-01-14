@@ -103,12 +103,15 @@ const ReviewerReviewForm = () => {
     console.log("Existing review:", existingReview);
     console.log("Form data:", formData);
 
-    if (assignment?.status !== "ACCEPTED") {
-      addToast(t('reviewer.reviewForm.acceptedStatusRequired'), "warning");
+    // ✅ FIX: Cho phép submit khi status là ACCEPTED hoặc PENDING
+    // Chỉ chặn nếu status là DECLINED hoặc COMPLETED
+    if (assignment?.status === "DECLINED") {
+      addToast(t('reviewer.reviewForm.declinedCannotReview'), "warning");
       return;
     }
 
-    if (existingReview) {
+    // ✅ FIX: Kiểm tra existingReview chính xác hơn
+    if (existingReview && existingReview.id) {
       addToast(t('reviewer.reviewForm.alreadyReviewed'), "warning");
       return;
     }

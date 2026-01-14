@@ -92,7 +92,11 @@ const ChairAssignmentManagement = () => {
           for (const conf of conferences) {
             try {
               const papersRes = await apiClient.get(`/decisions/papers/${conf.id}`);
-              const confPapers = papersRes.data || [];
+              const confPapers = (papersRes.data || []).map(paper => ({
+                ...paper,
+                conferenceId: conf.id,
+                conference: paper.conference || { id: conf.id, name: conf.name }
+              }));
               allPapers = [...allPapers, ...confPapers];
             } catch (err) {
               console.error(`Error loading papers for conference ${conf.id}:`, err);
@@ -102,7 +106,12 @@ const ChairAssignmentManagement = () => {
           // Load papers của conference cụ thể
           console.log("Loading papers for conference:", selectedConference);
           const papersRes = await apiClient.get(`/decisions/papers/${selectedConference}`);
-          allPapers = papersRes.data || [];
+          const confPapers = (papersRes.data || []).map(paper => ({
+            ...paper,
+            conferenceId: selectedConference,
+            conference: paper.conference || { id: selectedConference }
+          }));
+          allPapers = confPapers;
         }
 
         console.log("Total papers loaded:", allPapers.length);
@@ -257,6 +266,26 @@ const ChairAssignmentManagement = () => {
 
       if (availableReviewers.length === 0) {
         addToast(t('chair.assignments.noAvailableReviewers'), "warning");
+        setLoadingAI(false);
+        return;
+      }
+
+      // Lấy conference ID với nhiều fallback
+      const conferenceId = selectedPaper.conference?.id || 
+                          selectedPaper.conferenceId || 
+                          selectedPaper.track?.conference?.id || 
+                          (selectedConference !== "ALL" ? selectedConference : null);
+
+      // Debug log
+      console.log('=== AI Suggestion Debug ===');
+      console.log('Selected Paper:', selectedPaper);
+      console.log('Conference ID:', conferenceId);
+      console.log('Selected Conference:', selectedConference);
+      console.log('Available Reviewers:', availableReviewers.length);
+
+      if (!conferenceId) {
+        addToast("Không tìm thấy ID hội nghị. Vui lòng chọn hội nghị cụ thể.", "error");
+        setLoadingAI(false);
         return;
       }
 
@@ -272,7 +301,7 @@ const ChairAssignmentManagement = () => {
           expertise: r.expertise || [r.affiliation || ""].filter(Boolean),
           keywords: r.keywords || (r.bio ? [r.bio] : [])
         })),
-        conferenceId: selectedPaper.conference?.id || selectedPaper.conferenceId
+        conferenceId: conferenceId
       });
 
       setAiSuggestions(response.data);
@@ -568,7 +597,7 @@ const ChairAssignmentManagement = () => {
                           marginTop: "0.25rem",
                           fontWeight: 500
                         }}>
-                          🏛️ {paper.conference.name}
+                          {paper.conference.name}
                         </div>
                       )}
                     </td>
