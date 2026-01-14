@@ -367,12 +367,11 @@ const PublicProgram = () => {
             border: "1px solid #e2e8f0",
           }}>
             <label style={{
-              display: "block",
+              display: "flex",
               marginBottom: "0.5rem",
               fontWeight: 600,
               color: "#64748b",
               fontSize: "0.875rem",
-              display: "flex",
               alignItems: "center",
               gap: "0.375rem"
             }}>
