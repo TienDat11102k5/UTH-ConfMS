@@ -818,14 +818,17 @@
 @media (min-width: 768px) {
   .grid-bento {
     grid-template-columns: 1fr 1fr;
-    grid-auto-rows: minmax(350px, auto); /* Consistent height */
+    grid-auto-rows: minmax(350px, auto);
+    /* Consistent height */
   }
 }
 
 @media (min-width: 1024px) {
   .grid-bento {
-    grid-template-columns: 1fr 1fr; /* Changed to equal columns */
-    grid-auto-rows: minmax(400px, auto); /* Consistent height */
+    grid-template-columns: 1fr 1fr;
+    /* Changed to equal columns */
+    grid-auto-rows: minmax(400px, auto);
+    /* Consistent height */
   }
 }
 

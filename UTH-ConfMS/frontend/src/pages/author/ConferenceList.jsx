@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
+import { getMySubmissionsAPI } from "../../api/submissionAPI";
 import PortalHeader from "../../components/PortalHeader";
 import { formatDate } from "../../utils/dateUtils";
 import "../../styles/ConferenceList.css";
@@ -14,6 +15,7 @@ const ConferenceList = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(0);
+  const [submissionCount, setSubmissionCount] = useState(0);
 
   useEffect(() => {
     const fetchConferences = async () => {
@@ -39,12 +41,31 @@ const ConferenceList = () => {
     fetchConferences();
   }, [navigate, t]);
 
+  useEffect(() => {
+    const fetchSubmissionsCount = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      try {
+        const data = await getMySubmissionsAPI();
+        if (Array.isArray(data)) {
+          setSubmissionCount(data.length);
+        }
+      } catch (error) {
+        console.error("Failed to fetch author submissions count", error);
+        // Fail silently for stats
+      }
+    };
+
+    fetchSubmissionsCount();
+  }, []);
+
   const formatDateCustom = (dateString, format = "full") => {
     if (!dateString) return t('author.conferenceList.comingSoon');
-    
+
     const date = new Date(dateString);
     const vietnamDate = new Date(date.getTime() + (7 * 60 * 60 * 1000));
-    
+
     if (format === "day") return vietnamDate.getDate();
     if (format === "my") {
       const monthLabel = i18n.language === 'vi' ? 'THÁNG' : 'MONTH';
@@ -84,8 +105,8 @@ const ConferenceList = () => {
       </div>
 
       <PortalHeader
-        title="UTH Conference Portal · Author"
-        subtitle="University of Transport HCMC"
+        title={t('author.conferenceList.portalTitle')}
+        subtitle={t('components.portalHeader.subtitle')}
       />
 
       <main className="relative z-10 font-body">
@@ -154,8 +175,8 @@ const ConferenceList = () => {
                 <span className="stat-label">{t('common.conferences')}</span>
               </div>
               <div className="stat-block">
-                <span className="stat-num">{conferences.reduce((acc, c) => acc + (c.submissionCount || 0), 0)}<span className="text-primary-accent">+</span></span>
-                <span className="stat-label">{t('common.papers')}</span>
+                <span className="stat-num">{submissionCount}<span className="text-primary-accent">+</span></span>
+                <span className="stat-label">{t('common.submissions')}</span>
               </div>
             </div>
 
@@ -235,7 +256,7 @@ const ConferenceList = () => {
                             </span>
                             <span className="flex items-center gap-2">
                               <span className="material-symbols-outlined text-lg">location_on</span>
-                              {featuredConf.location || t('author.conferenceList.hallA')}
+                              {featuredConf.location || featuredConf.tracks?.[0]?.room || t('author.conferenceList.hallA')}
                             </span>
                             <Link
                               to={`/conferences/${featuredConf.id}`}
@@ -329,10 +350,10 @@ const ConferenceList = () => {
                 {t('author.conferenceList.footerDesc')}
               </p>
               <div className="mt-8 flex gap-4">
-                <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white hover:text-deep-ocean transition-colors">
+                <Link to="/" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white hover:text-deep-ocean transition-colors">
                   <span className="material-symbols-outlined text-lg">public</span>
-                </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white hover:text-deep-ocean transition-colors">
+                </Link>
+                <a href="mailto:conference@ut.edu.vn" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white hover:text-deep-ocean transition-colors">
                   <span className="material-symbols-outlined text-lg">mail</span>
                 </a>
               </div>
@@ -340,9 +361,9 @@ const ConferenceList = () => {
             <div>
               <h4 className="font-mono font-bold text-primary-accent mb-6 text-xs uppercase tracking-widest">{t('author.conferenceList.navigation')}</h4>
               <ul className="space-y-4 text-sm text-slate-400">
-                <li><a href="#" className="hover:text-white transition-colors">{t('author.conferenceList.about')}</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">{t('author.conferenceList.reviewProcess')}</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">{t('author.conferenceList.authorGuide')}</a></li>
+                <li><Link to="/about" className="hover:text-white transition-colors">{t('author.conferenceList.about')}</Link></li>
+                <li><Link to="/review-process" className="hover:text-white transition-colors">{t('author.conferenceList.reviewProcess')}</Link></li>
+                <li><Link to="/author-guide" className="hover:text-white transition-colors">{t('author.conferenceList.authorGuide')}</Link></li>
               </ul>
             </div>
             <div>
@@ -362,8 +383,8 @@ const ConferenceList = () => {
           <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-xs text-slate-500 font-mono">© 2026 UNIVERSITY OF TRANSPORT HCMC.</p>
             <div className="flex gap-8 text-xs text-slate-500 font-mono">
-              <a href="#" className="hover:text-primary-accent">{t('author.conferenceList.privacyPolicy')}</a>
-              <a href="#" className="hover:text-primary-accent">{t('author.conferenceList.termsOfUse')}</a>
+              <Link to="/privacy" className="hover:text-primary-accent">{t('author.conferenceList.privacyPolicy')}</Link>
+              <Link to="/terms" className="hover:text-primary-accent">{t('author.conferenceList.termsOfUse')}</Link>
             </div>
           </div>
         </div>
