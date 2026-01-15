@@ -19,6 +19,12 @@ import PublicHome from "./pages/public/PublicHome";
 import PublicCfp from "./pages/public/PublicCfp";
 import PublicAcceptedPapers from "./pages/public/PublicAcceptedPapers";
 import PublicProceedings from "./pages/public/PublicProceedings";
+import PublicAbout from "./pages/public/PublicAbout";
+import PublicReviewProcess from "./pages/public/PublicReviewProcess";
+
+import PublicAuthorGuide from "./pages/public/PublicAuthorGuide";
+import PublicPrivacy from "./pages/public/PublicPrivacy";
+import PublicTerms from "./pages/public/PublicTerms";
 
 // --- Author Imports ---
 import ConferenceList from "./pages/author/ConferenceList.jsx";
@@ -81,6 +87,11 @@ const App = () => {
         <Route path="/conferences/:id" element={<ConferenceDetail />} />
         <Route path="/publichome" element={<PublicHome />} />
         <Route path="/cfp" element={<PublicCfp />} />
+        <Route path="/about" element={<PublicAbout />} />
+        <Route path="/review-process" element={<PublicReviewProcess />} />
+        <Route path="/author-guide" element={<PublicAuthorGuide />} />
+        <Route path="/privacy" element={<PublicPrivacy />} />
+        <Route path="/terms" element={<PublicTerms />} />
         <Route
           path="/author/camera-ready"
           element={
