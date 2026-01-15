@@ -505,6 +505,7 @@
       "loadError": "Không thể tải submission."
     },
     "conferenceList": {
+      "portalTitle": "Cổng thông tin Hội nghị UTH · Tác giả",
       "loadError": "Không thể tải danh sách hội nghị.",
       "comingSoon": "Sắp diễn ra",
       "academicConference": "Hội nghị Học thuật",
@@ -940,15 +941,51 @@
       "agree": "Đồng ý",
       "system": "Hệ thống",
       "features": {
-        "grammar_check": { "name": "Kiểm tra ngữ pháp", "description": "Kiểm tra lỗi chính tả và ngữ pháp trong tiêu đề, tóm tắt", "role": "Tác giả" },
-        "polish_content": { "name": "Đánh bóng nội dung", "description": "Cải thiện văn phong học thuật cho tóm tắt và tiêu đề", "role": "Tác giả" },
-        "keyword_suggestion": { "name": "Gợi ý từ khóa", "description": "Đề xuất từ khóa phù hợp dựa trên nội dung bài báo", "role": "Tác giả" },
-        "paper_synopsis": { "name": "Tóm tắt bài báo", "description": "Tạo bản tóm tắt chi tiết về nội dung nghiên cứu", "role": "Phản biện" },
-        "reviewer_similarity": { "name": "Độ tương đồng phản biện", "description": "Tính toán mức độ phù hợp giữa phản biện và bài báo", "role": "Chủ tịch" },
-        "assignment_suggestion": { "name": "Gợi ý phân công", "description": "Đề xuất phân công phản biện phù hợp cho từng bài báo", "role": "Chủ tịch" },
-        "decision_recommendation": { "name": "Gợi ý quyết định", "description": "Phân tích đánh giá và đề xuất quyết định chấp nhận/từ chối", "role": "Chủ tịch" },
-        "review_summary": { "name": "Tóm tắt đánh giá", "description": "Tổng hợp các ý kiến phản biện thành bản tóm tắt", "role": "Chủ tịch" },
-        "email_draft": { "name": "Soạn thảo email", "description": "Tự động soạn email thông báo quyết định cho tác giả", "role": "Chủ tịch" }
+        "grammar_check": {
+          "name": "Kiểm tra ngữ pháp",
+          "description": "Kiểm tra lỗi chính tả và ngữ pháp trong tiêu đề, tóm tắt",
+          "role": "Tác giả"
+        },
+        "polish_content": {
+          "name": "Đánh bóng nội dung",
+          "description": "Cải thiện văn phong học thuật cho tóm tắt và tiêu đề",
+          "role": "Tác giả"
+        },
+        "keyword_suggestion": {
+          "name": "Gợi ý từ khóa",
+          "description": "Đề xuất từ khóa phù hợp dựa trên nội dung bài báo",
+          "role": "Tác giả"
+        },
+        "paper_synopsis": {
+          "name": "Tóm tắt bài báo",
+          "description": "Tạo bản tóm tắt chi tiết về nội dung nghiên cứu",
+          "role": "Phản biện"
+        },
+        "reviewer_similarity": {
+          "name": "Độ tương đồng phản biện",
+          "description": "Tính toán mức độ phù hợp giữa phản biện và bài báo",
+          "role": "Chủ tịch"
+        },
+        "assignment_suggestion": {
+          "name": "Gợi ý phân công",
+          "description": "Đề xuất phân công phản biện phù hợp cho từng bài báo",
+          "role": "Chủ tịch"
+        },
+        "decision_recommendation": {
+          "name": "Gợi ý quyết định",
+          "description": "Phân tích đánh giá và đề xuất quyết định chấp nhận/từ chối",
+          "role": "Chủ tịch"
+        },
+        "review_summary": {
+          "name": "Tóm tắt đánh giá",
+          "description": "Tổng hợp các ý kiến phản biện thành bản tóm tắt",
+          "role": "Chủ tịch"
+        },
+        "email_draft": {
+          "name": "Soạn thảo email",
+          "description": "Tự động soạn email thông báo quyết định cho tác giả",
+          "role": "Chủ tịch"
+        }
       }
     },
     "sidebar": {
@@ -1746,49 +1783,77 @@
       "next": "Sau",
       "backToHome": "Quay lại trang chủ",
       "footer": "Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải"
-    }
-  },
-  "components": {
-    "pagination": {
-      "page": "Trang",
-      "of": "của",
-      "showing": "Hiển thị",
-      "to": "đến",
-      "entries": "mục",
-      "first": "Đầu",
-      "last": "Cuối",
-      "next": "Tiếp",
-      "previous": "Trước"
     },
-    "emptyState": {
-      "noData": "Không có dữ liệu",
-      "noResults": "Không tìm thấy kết quả",
-      "tryAgain": "Thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn"
+    "about": {
+      "title": "Giới thiệu",
+      "heroTitle": "Giới thiệu Cổng thông tin Hội nghị UTH",
+      "heroDesc": "Nền tảng quản lý toàn diện cho các hội nghị học thuật, hỗ trợ quy trình nộp bài, phản biện và xuất bản kỷ yếu.",
+      "missionTitle": "Sứ mệnh của chúng tôi",
+      "missionText": "Sứ mệnh của chúng tôi là thúc đẩy việc phổ biến tri thức khoa học thông qua một hệ thống quản lý minh bạch, hiệu quả và mạnh mẽ. Chúng tôi cam kết hỗ trợ các nhà nghiên cứu, người phản biện và ban tổ chức trong mọi giai đoạn của chu kỳ hội nghị.",
+      "contactTitle": "Liên hệ",
+      "addressTitle": "Địa chỉ",
+      "addressText": "70 Đường Tô Ký, Phường Trung Mỹ Tây, Quận 12, Thành phố Hồ Chí Minh",
+      "emailTitle": "Email",
+      "phoneTitle": "Điện thoại"
     },
-    "toast": {
-      "success": "Thành công",
-      "error": "Lỗi",
-      "warning": "Cảnh báo",
-      "info": "Thông tin"
+    "reviewProcess": {
+      "title": "Quy trình Phản biện",
+      "heroTitle": "Quy trình Phản biện Ngang hàng",
+      "heroDesc": "Chúng tôi đảm bảo chất lượng nghiên cứu cao nhất thông qua hệ thống phản biện kín hai chiều nghiêm ngặt.",
+      "step1Title": "1. Nộp bài",
+      "step1Desc": "Tác giả nộp bài báo toàn văn thông qua cổng thông tin. Bài nộp phải tuân thủ hướng dẫn định dạng của hội nghị.",
+      "step2Title": "2. Sơ duyệt",
+      "step2Desc": "Ban chương trình thực hiện kiểm tra ban đầu về phạm vi, định dạng và đạo văn.",
+      "step3Title": "3. Phản biện kín",
+      "step3Desc": "Mỗi bài báo được phân công cho ít nhất 3 chuyên gia phản biện theo quy trình phản biện kín hai chiều (double-blind).",
+      "step4Title": "4. Quyết định",
+      "step4Desc": "Dựa trên đề xuất của người phản biện, Chủ tịch hội nghị đưa ra quyết định cuối cùng (Chấp nhận, Sửa chữa hoặc Từ chối).",
+      "step5Title": "5. Bản hoàn chỉnh",
+      "step5Desc": "Tác giả của các bài được chấp nhận nộp phiên bản camera-ready sau khi đã chỉnh sửa theo nhận xét của phản biện."
     },
-    "loading": {
-      "loading": "Đang tải...",
-      "pleaseWait": "Vui lòng chờ...",
-      "processingRequest": "Đang xử lý yêu cầu của bạn..."
+    "authorGuide": {
+      "title": "Hướng dẫn Tác giả",
+      "heroTitle": "Hướng dẫn dành cho Tác giả",
+      "heroDesc": "Tất cả thông tin bạn cần biết về việc chuẩn bị và nộp bản thảo. Chúng tôi cung cấp các mẫu định dạng, danh sách kiểm tra nộp bài và các chính sách quan trọng để đảm bảo quy trình xuất bản diễn ra suôn sẻ.",
+      "paperFormattingTitle": "Định dạng Bài báo",
+      "formattingList1": "Sử dụng mẫu IEEE chính thức cho tất cả các bài nộp.",
+      "formattingList2": "Bài báo không được vượt quá 6 trang (bao gồm tài liệu tham khảo).",
+      "formattingList3": "Tất cả các hình ảnh và bảng biểu phải rõ ràng và có chú thích.",
+      "formattingList4": "Nộp dưới định dạng PDF.",
+      "formattingList5": "Không đưa thông tin tác giả vào bản thảo ban đầu (để phản biện kín).",
+      "downloadTemplate": "Tải xuống Mẫu Bài báo",
+      "checklistTitle": "Danh sách Kiểm tra Nộp bài",
+      "checklist1": "Bài báo chưa từng được xuất bản trước đây.",
+      "checklist2": "Tất cả đồng tác giả đã chấp thuận việc nộp bài.",
+      "checklist3": "Bài báo tuân thủ đúng hướng dẫn định dạng.",
+      "checklist4": "Đã loại bỏ thông tin nhận dạng tác giả.",
+      "policyTitle": "Chính sách Đạo văn & Đạo đức",
+      "policyText1": "Tất cả các bài nộp sẽ được kiểm tra đạo văn bằng phần mềm chuyên dụng. Bất kỳ bài báo nào có tỷ lệ trùng lặp cao không có trích dẫn hợp lệ sẽ bị từ chối ngay lập tức.",
+      "policyText2": "Các tác giả phải tuân thủ các tiêu chuẩn đạo đức nghiêm ngặt trong nghiên cứu. Việc giả mạo dữ liệu hoặc các hành vi sai trái khác sẽ dẫn đến việc bị cấm nộp bài trong tương lai."
     },
-    "breadcrumb": {
-      "home": "Trang chủ"
+    "privacy": {
+      "title": "Chính sách Bảo mật",
+      "lastUpdated": "Cập nhật lần cuối: {{date}}",
+      "section1Title": "1. Thu thập Thông tin",
+      "section1Text": "Chúng tôi thu thập thông tin cá nhân khi bạn đăng ký, nộp bài hoặc tham gia vào các hoạt động của hội nghị. Thông tin này bao gồm tên, email, cơ quan công tác và các chi tiết liên quan khác.",
+      "section2Title": "2. Sử dụng Thông tin",
+      "section2Text": "Thông tin của bạn được sử dụng để quản lý quá trình nộp bài, phản biện và tổ chức hội nghị. Chúng tôi cũng có thể sử dụng thông tin để liên hệ với bạn về các cập nhật quan trọng.",
+      "section3Title": "3. Bảo mật Dữ liệu",
+      "section3Text": "Chúng tôi cam kết bảo vệ dữ liệu của bạn và thực hiện các biện pháp an ninh thích hợp để ngăn chặn truy cập trái phép, tiết lộ hoặc sửa đổi thông tin cá nhân.",
+      "contactTitle": "Liên hệ",
+      "contactText": "Nếu bạn có bất kỳ câu hỏi nào về chính sách bảo mật của chúng tôi, vui lòng liên hệ với ban tổ chức hội nghị."
     },
-    "backButton": {
-      "back": "Quay lại",
-      "goBack": "Quay lại"
-    },
-    "userDropdown": {
-      "managementPage": "Trang quản lý",
-      "personalInfo": "Thông tin cá nhân",
-      "settings": "Cài đặt",
-      "activityHistory": "Lịch sử hoạt động",
-      "logout": "Đăng xuất"
+    "terms": {
+      "title": "Điều khoản Sử dụng",
+      "lastUpdated": "Cập nhật lần cuối: {{date}}",
+      "section1Title": "1. Chấp nhận Điều khoản",
+      "section1Text": "Bằng việc truy cập và sử dụng Cổng thông tin Hội nghị UTH, bạn đồng ý tuân thủ các điều khoản và điều kiện này. Nếu bạn không đồng ý, vui lòng không sử dụng dịch vụ của chúng tôi.",
+      "section2Title": "2. Trách nhiệm của Người dùng",
+      "section2Text": "Bạn chịu trách nhiệm về tính chính xác của thông tin bạn cung cấp và nội dung bạn nộp. Bạn cam kết không thực hiện bất kỳ hành vi nào gây hại đến hệ thống hoặc uy tín của hội nghị.",
+      "section3Title": "3. Quyền Sở hữu Trí tuệ",
+      "section3Text": "Tất cả nội dung trên cổng thông tin này, bao gồm văn bản, hình ảnh và phần mềm, đều thuộc quyền sở hữu trí tuệ của Đại học Giao thông Vận tải hoặc các bên cấp phép.",
+      "contactTitle": "Liên hệ",
+      "contactText": "Mọi thắc mắc về điều khoản sử dụng xin vui lòng gửi về địa chỉ email của ban tổ chức."
     }
   },
   "settings": {
@@ -1924,6 +1989,44 @@
     "contactSupport": "Liên hệ hỗ trợ"
   },
   "components": {
+    "portalHeader": {
+      "title": "Cổng thông tin Hội nghị UTH",
+      "subtitle": "Trường Đại học Giao thông Vận tải TP.HCM"
+    },
+    "pagination": {
+      "page": "Trang",
+      "of": "của",
+      "showing": "Hiển thị",
+      "to": "đến",
+      "entries": "mục",
+      "first": "Đầu",
+      "last": "Cuối",
+      "next": "Tiếp",
+      "previous": "Trước"
+    },
+    "emptyState": {
+      "noData": "Không có dữ liệu",
+      "noResults": "Không tìm thấy kết quả",
+      "tryAgain": "Thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn"
+    },
+    "toast": {
+      "success": "Thành công",
+      "error": "Lỗi",
+      "warning": "Cảnh báo",
+      "info": "Thông tin"
+    },
+    "loading": {
+      "loading": "Đang tải...",
+      "pleaseWait": "Vui lòng chờ...",
+      "processingRequest": "Đang xử lý yêu cầu của bạn..."
+    },
+    "breadcrumb": {
+      "home": "Trang chủ"
+    },
+    "backButton": {
+      "back": "Quay lại",
+      "goBack": "Quay lại"
+    },
     "historyItem": {
       "conference": "Hội nghị",
       "paper": "Bài viết",
@@ -2068,6 +2171,115 @@
       "activityHistory": "Lịch sử hoạt động",
       "logout": "Đăng xuất"
     }
+  },
+  "reviewer": {
+    "dashboard": {
+      "title": "Bảng điều khiển Phản biện",
+      "subtitle": "Quản lý bài phân công và đánh giá",
+      "assignedPapers": "Bài được phân công",
+      "assignedPapersDesc": "Xem danh sách bài báo cần đánh giá",
+      "viewAssignments": "Xem danh sách",
+      "reviewForm": "Đánh giá",
+      "reviewFormDesc": "Truy cập form đánh giá",
+      "openReviewForm": "Mở form",
+      "pcDiscussion": "Thảo luận",
+      "pcDiscussionDesc": "Trao đổi với PC",
+      "openDiscussion": "Xem thảo luận",
+      "coi": "Xung đột lợi ích",
+      "coiDesc": "Khai báo xung đột lợi ích",
+      "manageCoi": "Quản lý COI"
+    },
+    "assignments": {
+      "reviewerNotFound": "Không tìm thấy thông tin reviewer",
+      "loadError": "Lỗi tải danh sách phân công",
+      "confirmDecline": "Bạn có chắc muốn từ chối phân công này?",
+      "notSet": "Chưa đặt",
+      "statusPending": "Chờ xác nhận",
+      "statusAccepted": "Đang đánh giá",
+      "statusDeclined": "Đã từ chối",
+      "statusCompleted": "Đã hoàn thành",
+      "title": "Danh sách phân công",
+      "totalPapers": "Tổng số bài",
+      "pendingCount": "Chờ xác nhận",
+      "reviewingCount": "Đang đánh giá",
+      "completedCount": "Đã hoàn thành",
+      "selectConference": "Chọn hội nghị",
+      "allConferences": "Tất cả hội nghị",
+      "search": "Tìm kiếm",
+      "searchPlaceholder": "Tìm theo tiêu đề, tác giả...",
+      "filterLabel": "Lọc",
+      "filterAll": "Tất cả",
+      "filterReviewing": "Đang đánh giá",
+      "filterCompleted": "Đã xong",
+      "sortLabel": "Sắp xếp",
+      "sortNewest": "Mới nhất",
+      "sortDeadline": "Theo deadline",
+      "noAssignments": "Chưa có phân công nào",
+      "noMatchingResults": "Không tìm thấy kết quả",
+      "noAssignmentsDesc": "Hiện tại bạn chưa được phân công bài báo nào.",
+      "noMatchingResultsDesc": "Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.",
+      "assignedDate": "Ngày phân công",
+      "dueDate": "Hạn chót",
+      "acceptBtn": "Chấp nhận",
+      "declineBtn": "Từ chối",
+      "reviewBtn": "Đánh giá ngay",
+      "discussionBtn": "Thảo luận",
+      "viewReviewBtn": "Xem đánh giá",
+      "assignmentsLabel": "phân công"
+    },
+    "reviewForm": {
+      "title": "Đánh giá bài báo",
+      "reviewPaper": "Đánh giá bài báo",
+      "backToAssignments": "Quay lại danh sách phân công",
+      "noteLabel": "Lưu ý:",
+      "alreadyReviewedMsg": "Bạn đã đánh giá bài báo này. Bạn có thể cập nhật đánh giá nếu cần.",
+      "loadError": "Không thể tải thông tin phân công.",
+      "declinedCannotReview": "Bạn đã từ chối phân công này, không thể đánh giá.",
+      "alreadyReviewed": "Bài báo này đã được đánh giá.",
+      "fillAllComments": "Vui lòng nhập đầy đủ nhận xét cho tác giả và PC.",
+      "submitSuccess": "Gửi đánh giá thành công!",
+      "submitError": "Gửi đánh giá thất bại.",
+      "pleaseLogin": "Vui lòng đăng nhập để tải bài báo.",
+      "noPermission": "Bạn không có quyền tải bài báo này.",
+      "fileNotFound": "Không tìm thấy file bài báo.",
+      "downloadError": "Lỗi khi tải bài báo",
+      "openFileError": "Không thể mở file",
+      "notFound": "Không tìm thấy nội dung phân công.",
+      "paperInfo": "Thông tin bài báo",
+      "aiSummary": "Tóm tắt AI",
+      "paperTitle": "Tiêu đề",
+      "track": "Track",
+      "mainAuthor": "Tác giả chính",
+      "authorEmail": "Email tác giả",
+      "keywords": "Từ khóa",
+      "abstractLabel": "Tóm tắt",
+      "submittedFile": "File bài báo",
+      "viewPaperFile": "Xem file bài báo",
+      "clickToViewHint": "Nhấn để xem file PDF trong tab mới",
+      "scoreLabel": "Điểm đánh giá",
+      "scoreRange": "(-3 đến +3)",
+      "scoreVeryInappropriate": "Rất không phù hợp",
+      "scoreInappropriate": "Không phù hợp",
+      "scoreSomewhatInappropriate": "Hơi không phù hợp",
+      "scoreNeutral": "Trung lập",
+      "scoreSomewhatAppropriate": "Hơi phù hợp",
+      "scoreAppropriate": "Phù hợp",
+      "scoreVeryAppropriate": "Rất phù hợp",
+      "confidenceLabel": "Độ tin cậy",
+      "confVeryNotConfident": "Rất không tự tin",
+      "confNotConfident": "Không tự tin",
+      "confMedium": "Trung bình",
+      "confConfident": "Tự tin",
+      "confVeryConfident": "Rất tự tin",
+      "commentForAuthorLabel": "Nhận xét cho tác giả",
+      "commentForAuthorPlaceholder": "Nhập nhận xét chi tiết, mang tính xây dựng cho tác giả...",
+      "commentForAuthorHint": "Nhận xét này sẽ được gửi cho tác giả.",
+      "commentForPCLabel": "Nhận xét cho PC (Chủ tịch)",
+      "commentForPCPlaceholder": "Nhập nhận xét riêng tư cho Ban chương trình...",
+      "commentForPCHint": "Nhận xét này CHỈ hiển thị cho PC và Chair, tác giả KHÔNG xem được.",
+      "submitting": "Đang gửi...",
+      "alreadySubmitted": "Đã gửi đánh giá",
+      "submitReview": "Gửi đánh giá"
+    }
   }
 }
-

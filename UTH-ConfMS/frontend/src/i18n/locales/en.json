@@ -505,6 +505,7 @@
       "loadError": "Unable to load submission."
     },
     "conferenceList": {
+      "portalTitle": "UTH Conference Portal · Author",
       "loadError": "Unable to load conference list.",
       "comingSoon": "Coming soon",
       "academicConference": "Academic Conference",
@@ -927,18 +928,53 @@
       "agree": "Confirm",
       "system": "System",
       "features": {
-        "grammar_check": { "name": "Grammar Check", "description": "Check spelling and grammar in title, abstract", "role": "Author" },
-        "polish_content": { "name": "Polish Content", "description": "Improve academic style for abstract and title", "role": "Author" },
-        "keyword_suggestion": { "name": "Keyword Suggestion", "description": "Suggest keywords based on paper content", "role": "Author" },
-        "paper_synopsis": { "name": "Paper Synopsis", "description": "Create detailed summary of research content", "role": "Reviewer" },
-        "reviewer_similarity": { "name": "Reviewer Similarity", "description": "Calculate match between reviewer and paper", "role": "Chair" },
-        "assignment_suggestion": { "name": "Assignment Suggestion", "description": "Suggest appropriate reviewer assignments", "role": "Chair" },
-        "decision_recommendation": { "name": "Decision Recommendation", "description": "Analyze reviews and suggest accept/reject decision", "role": "Chair" },
-        "review_summary": { "name": "Review Summary", "description": "Consolidate reviewer opinions into summary", "role": "Chair" },
-        "email_draft": { "name": "Email Draft", "description": "Auto-draft decision notification emails for authors", "role": "Chair" }
+        "grammar_check": {
+          "name": "Grammar Check",
+          "description": "Check spelling and grammar in title, abstract",
+          "role": "Author"
+        },
+        "polish_content": {
+          "name": "Polish Content",
+          "description": "Improve academic style for abstract and title",
+          "role": "Author"
+        },
+        "keyword_suggestion": {
+          "name": "Keyword Suggestion",
+          "description": "Suggest keywords based on paper content",
+          "role": "Author"
+        },
+        "paper_synopsis": {
+          "name": "Paper Synopsis",
+          "description": "Create detailed summary of research content",
+          "role": "Reviewer"
+        },
+        "reviewer_similarity": {
+          "name": "Reviewer Similarity",
+          "description": "Calculate match between reviewer and paper",
+          "role": "Chair"
+        },
+        "assignment_suggestion": {
+          "name": "Assignment Suggestion",
+          "description": "Suggest appropriate reviewer assignments",
+          "role": "Chair"
+        },
+        "decision_recommendation": {
+          "name": "Decision Recommendation",
+          "description": "Analyze reviews and suggest accept/reject decision",
+          "role": "Chair"
+        },
+        "review_summary": {
+          "name": "Review Summary",
+          "description": "Consolidate reviewer opinions into summary",
+          "role": "Chair"
+        },
+        "email_draft": {
+          "name": "Email Draft",
+          "description": "Auto-draft decision notification emails for authors",
+          "role": "Chair"
+        }
       }
     },
-
     "sidebar": {
       "adminPanel": "ADMIN PANEL",
       "dashboard": "OVERVIEW",
@@ -1563,49 +1599,49 @@
   "public": {
     "home": {
       "badge": "UTH Scientific Research Conference Portal",
-    "title": "Manage CFP, submissions, reviews and conference programs in one system.",
-    "subtitle": "UTH Scientific Conference Paper Management System",
-    "description": "The UTH-ConfMS system supports EasyChair-style workflow: Call for Papers → Submission → Review → Decision → Camera-ready → Program & Proceedings, with RBAC, SSO, audit log and AI support (optional).",
-    "loginSystem": "Login to System",
-    "registerAuthor": "Register as New Author",
-    "conferenceList": "Conference List",
-    "roleNote": "Reviewer / PC / Chair / Admin roles will be assigned by the Organizing Committee after you have an account.",
-    "cards": {
-      "author": {
-        "title": "Submit & Camera-ready",
-        "description": "Submit papers, update metadata, add co-authors, track results, upload camera-ready version and view anonymous reviews."
+      "title": "Manage CFP, submissions, reviews and conference programs in one system.",
+      "subtitle": "UTH Scientific Conference Paper Management System",
+      "description": "The UTH-ConfMS system supports EasyChair-style workflow: Call for Papers → Submission → Review → Decision → Camera-ready → Program & Proceedings, with RBAC, SSO, audit log and AI support (optional).",
+      "loginSystem": "Login to System",
+      "registerAuthor": "Register as New Author",
+      "conferenceList": "Conference List",
+      "roleNote": "Reviewer / PC / Chair / Admin roles will be assigned by the Organizing Committee after you have an account.",
+      "cards": {
+        "author": {
+          "title": "Submit & Camera-ready",
+          "description": "Submit papers, update metadata, add co-authors, track results, upload camera-ready version and view anonymous reviews."
+        },
+        "reviewer": {
+          "label": "Reviewer / PC",
+          "title": "Review & Internal Discussion",
+          "description": "Receive assigned papers, submit scores & reviews, participate in internal PC discussions, handle COI and review deadlines."
+        },
+        "admin": {
+          "label": "Chair & Admin",
+          "title": "Conference Management & AI Governance",
+          "description": "Configure conference, tracks, deadlines, assign papers, Accept/Reject decisions, bulk email, manage SMTP, quota and AI audit log."
+        }
       },
-      "reviewer": {
-        "label": "Reviewer / PC",
-        "title": "Review & Internal Discussion",
-        "description": "Receive assigned papers, submit scores & reviews, participate in internal PC discussions, handle COI and review deadlines."
+      "workflow": {
+        "title": "Conference Workflow (Summary)",
+        "cfp": {
+          "title": "Call for Papers (CFP)",
+          "description": "Create CFP page, topics, tracks, deadlines and email templates."
+        },
+        "submission": {
+          "title": "Submission",
+          "description": "Author submits papers, edits before deadline; format and COI check."
+        },
+        "review": {
+          "title": "Review & Discussion",
+          "description": "PC assigns papers, Reviewers review, internal discussion, rebuttal (if enabled)."
+        },
+        "decision": {
+          "title": "Decision & Camera-ready",
+          "description": "Accept/Reject decisions, send emails, open camera-ready round and export program."
+        }
       },
-      "admin": {
-        "label": "Chair & Admin",
-        "title": "Conference Management & AI Governance",
-        "description": "Configure conference, tracks, deadlines, assign papers, Accept/Reject decisions, bulk email, manage SMTP, quota and AI audit log."
-      }
-    },
-    "workflow": {
-      "title": "Conference Workflow (Summary)",
-      "cfp": {
-        "title": "Call for Papers (CFP)",
-        "description": "Create CFP page, topics, tracks, deadlines and email templates."
-      },
-      "submission": {
-        "title": "Submission",
-        "description": "Author submits papers, edits before deadline; format and COI check."
-      },
-      "review": {
-        "title": "Review & Discussion",
-        "description": "PC assigns papers, Reviewers review, internal discussion, rebuttal (if enabled)."
-      },
-      "decision": {
-        "title": "Decision & Camera-ready",
-        "description": "Accept/Reject decisions, send emails, open camera-ready round and export program."
-      }
-    },
-    "footer": "UTH Scientific Research Conference Management System"
+      "footer": "UTH Scientific Research Conference Management System"
     },
     "publicHome": {
       "welcome": "Welcome to UTH Conference Management System",
@@ -1734,49 +1770,77 @@
       "next": "Next",
       "backToHome": "Back to home",
       "footer": "UTH Scientific Conference Management System - UTH University of Transport"
-    }
-  },
-  "components": {
-    "pagination": {
-      "page": "Page",
-      "of": "of",
-      "showing": "Showing",
-      "to": "to",
-      "entries": "entries",
-      "first": "First",
-      "last": "Last",
-      "next": "Next",
-      "previous": "Previous"
     },
-    "emptyState": {
-      "noData": "No data available",
-      "noResults": "No results found",
-      "tryAgain": "Try adjusting your search or filters"
+    "about": {
+      "title": "About",
+      "heroTitle": "About UTH Conference Portal",
+      "heroDesc": "A comprehensive management platform for academic conferences, supporting submission, review, and proceedings publication processes.",
+      "missionTitle": "Our Mission",
+      "missionText": "Our mission is to promote the dissemination of scientific knowledge through a transparent, efficient, and robust management system. We are committed to supporting researchers, reviewers, and organizers in every stage of the conference cycle.",
+      "contactTitle": "Contact",
+      "addressTitle": "Address",
+      "addressText": "70 To Ky Street, Trung My Tay Ward, District 12, Ho Chi Minh City",
+      "emailTitle": "Email",
+      "phoneTitle": "Phone"
     },
-    "toast": {
-      "success": "Success",
-      "error": "Error",
-      "warning": "Warning",
-      "info": "Information"
+    "reviewProcess": {
+      "title": "Review Process",
+      "heroTitle": "Peer Review Process",
+      "heroDesc": "We ensure the highest research quality through a rigorous double-blind peer review system.",
+      "step1Title": "1. Submission",
+      "step1Desc": "Authors submit full papers through the portal. Submissions must comply with conference formatting guidelines.",
+      "step2Title": "2. Pre-screening",
+      "step2Desc": "The Program Committee performs an initial check for scope, formatting, and plagiarism.",
+      "step3Title": "3. Double-Blind Review",
+      "step3Desc": "Each paper is assigned to at least 3 reviewers following a double-blind peer review process.",
+      "step4Title": "4. Decision",
+      "step4Desc": "Based on reviewer recommendations, the Conference Chair makes the final decision (Accept, Revise, or Reject).",
+      "step5Title": "5. Camera-Ready",
+      "step5Desc": "Authors of accepted papers submit the camera-ready version after addressing reviewer comments."
     },
-    "loading": {
-      "loading": "Loading...",
-      "pleaseWait": "Please wait...",
-      "processingRequest": "Processing your request..."
+    "authorGuide": {
+      "title": "Author Guide",
+      "heroTitle": "Guide for Authors",
+      "heroDesc": "Everything you need to know about preparing and submitting your manuscript. We provide formatting templates, submission checklists, and key policies to ensure a smooth publication process.",
+      "paperFormattingTitle": "Paper Formatting",
+      "formattingList1": "Use the official IEEE template for all submissions.",
+      "formattingList2": "Papers must not exceed 6 pages (including references).",
+      "formattingList3": "All figures and tables must be clear and captioned.",
+      "formattingList4": "Submit in PDF format.",
+      "formattingList5": "Do not include author information in the initial manuscript (for blind review).",
+      "downloadTemplate": "Download Paper Template",
+      "checklistTitle": "Submission Checklist",
+      "checklist1": "The paper has not been published previously.",
+      "checklist2": "All co-authors have approved the submission.",
+      "checklist3": "The paper complies with formatting guidelines.",
+      "checklist4": "Author identification has been removed.",
+      "policyTitle": "Plagiarism & Ethics Policy",
+      "policyText1": "All submissions will be checked for plagiarism using specialized software. Any paper with high similarity without proper citation will be rejected immediately.",
+      "policyText2": "Authors must adhere to strict ethical standards in research. Data fabrication or other misconduct will result in a ban on future submissions."
     },
-    "breadcrumb": {
-      "home": "Home"
+    "privacy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated: {{date}}",
+      "section1Title": "1. Information Collection",
+      "section1Text": "We collect personal information when you register, submit a paper, or participate in conference activities. This includes your name, email, affiliation, and other relevant details.",
+      "section2Title": "2. Information Usage",
+      "section2Text": "Your information is used to manage the submission, review, and conference organization processes. We may also use it to contact you regarding important updates.",
+      "section3Title": "3. Data Security",
+      "section3Text": "We are committed to protecting your data and implement appropriate security measures to prevent unauthorized access, disclosure, or modification of personal information.",
+      "contactTitle": "Contact",
+      "contactText": "If you have any questions about our privacy policy, please contact the conference organizers."
     },
-    "backButton": {
-      "back": "Back",
-      "goBack": "Go Back"
-    },
-    "userDropdown": {
-      "managementPage": "Management Page",
-      "personalInfo": "Personal Information",
-      "settings": "Settings",
-      "activityHistory": "Activity History",
-      "logout": "Logout"
+    "terms": {
+      "title": "Terms of Use",
+      "lastUpdated": "Last updated: {{date}}",
+      "section1Title": "1. Acceptance of Terms",
+      "section1Text": "By accessing and using the UTH Conference Portal, you agree to comply with these terms and conditions. If you do not agree, please do not use our services.",
+      "section2Title": "2. User Responsibilities",
+      "section2Text": "You are responsible for the accuracy of the information you provide and the content you submit. You agree not to engage in any activity that harms the system or the reputation of the conference.",
+      "section3Title": "3. Intellectual Property",
+      "section3Text": "All content on this portal, including text, images, and software, is the intellectual property of the University of Transport HCMC or its licensors.",
+      "contactTitle": "Contact",
+      "contactText": "Any questions regarding these terms of use should be sent to the organizers' email address."
     }
   },
   "settings": {
@@ -1912,6 +1976,44 @@
     "contactSupport": "Contact Support"
   },
   "components": {
+    "portalHeader": {
+      "title": "UTH Conference Portal",
+      "subtitle": "University of Transport HCMC"
+    },
+    "pagination": {
+      "page": "Page",
+      "of": "of",
+      "showing": "Showing",
+      "to": "to",
+      "entries": "entries",
+      "first": "First",
+      "last": "Last",
+      "next": "Next",
+      "previous": "Previous"
+    },
+    "emptyState": {
+      "noData": "No data available",
+      "noResults": "No results found",
+      "tryAgain": "Try adjusting your search or filters"
+    },
+    "toast": {
+      "success": "Success",
+      "error": "Error",
+      "warning": "Warning",
+      "info": "Information"
+    },
+    "loading": {
+      "loading": "Loading...",
+      "pleaseWait": "Please wait...",
+      "processingRequest": "Processing your request..."
+    },
+    "breadcrumb": {
+      "home": "Home"
+    },
+    "backButton": {
+      "back": "Back",
+      "goBack": "Go Back"
+    },
     "historyItem": {
       "conference": "Conference",
       "paper": "Paper",
@@ -2056,6 +2158,115 @@
       "activityHistory": "Activity History",
       "logout": "Logout"
     }
+  },
+  "reviewer": {
+    "dashboard": {
+      "title": "Reviewer Dashboard",
+      "subtitle": "Manage assignments and reviews",
+      "assignedPapers": "Assigned Papers",
+      "assignedPapersDesc": "View papers assigned for review",
+      "viewAssignments": "View Assignments",
+      "reviewForm": "Review Form",
+      "reviewFormDesc": "Access review form",
+      "openReviewForm": "Open Form",
+      "pcDiscussion": "PC Discussion",
+      "pcDiscussionDesc": "Discuss with Program Committee",
+      "openDiscussion": "View Discussion",
+      "coi": "Conflict of Interest",
+      "coiDesc": "Declare Conflict of Interest",
+      "manageCoi": "Manage COI"
+    },
+    "assignments": {
+      "reviewerNotFound": "Reviewer information not found",
+      "loadError": "Error loading assignments",
+      "confirmDecline": "Are you sure you want to decline this assignment?",
+      "notSet": "Not set",
+      "statusPending": "Pending",
+      "statusAccepted": "In Progress",
+      "statusDeclined": "Declined",
+      "statusCompleted": "Completed",
+      "title": "Assignments",
+      "totalPapers": "Total Papers",
+      "pendingCount": "Pending",
+      "reviewingCount": "Reviewing",
+      "completedCount": "Completed",
+      "selectConference": "Select Conference",
+      "allConferences": "All Conferences",
+      "search": "Search",
+      "searchPlaceholder": "Search by title, author...",
+      "filterLabel": "Filter",
+      "filterAll": "All",
+      "filterReviewing": "Reviewing",
+      "filterCompleted": "Completed",
+      "sortLabel": "Sort",
+      "sortNewest": "Newest",
+      "sortDeadline": "By Deadline",
+      "noAssignments": "No assignments yet",
+      "noMatchingResults": "No results found",
+      "noAssignmentsDesc": "You have no papers assigned at the moment.",
+      "noMatchingResultsDesc": "Try changing filters or search keywords.",
+      "assignedDate": "Assigned Date",
+      "dueDate": "Due Date",
+      "acceptBtn": "Accept",
+      "declineBtn": "Decline",
+      "reviewBtn": "Review Now",
+      "discussionBtn": "Discussion",
+      "viewReviewBtn": "View Review",
+      "assignmentsLabel": "assignments"
+    },
+    "reviewForm": {
+      "title": "Review Paper",
+      "reviewPaper": "Review Paper",
+      "backToAssignments": "Back to Assignments",
+      "noteLabel": "Note:",
+      "alreadyReviewedMsg": "You have already reviewed this paper. You can update your review if needed.",
+      "loadError": "Unable to load assignment information.",
+      "declinedCannotReview": "You have declined this assignment, cannot review.",
+      "alreadyReviewed": "This paper has already been reviewed.",
+      "fillAllComments": "Please fill in all comments for Author and PC.",
+      "submitSuccess": "Review submitted successfully!",
+      "submitError": "Failed to submit review.",
+      "pleaseLogin": "Please login to download paper.",
+      "noPermission": "You do not have permission to download this paper.",
+      "fileNotFound": "Paper file not found.",
+      "downloadError": "Error downloading paper",
+      "openFileError": "Unable to open file",
+      "notFound": "Assignment content not found.",
+      "paperInfo": "Paper Information",
+      "aiSummary": "AI Summary",
+      "paperTitle": "Title",
+      "track": "Track",
+      "mainAuthor": "Main Author",
+      "authorEmail": "Author Email",
+      "keywords": "Keywords",
+      "abstractLabel": "Abstract",
+      "submittedFile": "Paper File",
+      "viewPaperFile": "View Paper File",
+      "clickToViewHint": "Click to view PDF in new tab",
+      "scoreLabel": "Score",
+      "scoreRange": "(-3 to +3)",
+      "scoreVeryInappropriate": "Very Inappropriate",
+      "scoreInappropriate": "Inappropriate",
+      "scoreSomewhatInappropriate": "Somewhat Inappropriate",
+      "scoreNeutral": "Neutral",
+      "scoreSomewhatAppropriate": "Somewhat Appropriate",
+      "scoreAppropriate": "Appropriate",
+      "scoreVeryAppropriate": "Very Appropriate",
+      "confidenceLabel": "Confidence",
+      "confVeryNotConfident": "Very Not Confident",
+      "confNotConfident": "Not Confident",
+      "confMedium": "Medium",
+      "confConfident": "Confident",
+      "confVeryConfident": "Very Confident",
+      "commentForAuthorLabel": "Comments for Author",
+      "commentForAuthorPlaceholder": "Enter detailed, constructive comments for the author...",
+      "commentForAuthorHint": "These comments will be sent to the author.",
+      "commentForPCLabel": "Comments for PC (Chair)",
+      "commentForPCPlaceholder": "Enter private comments for the Program Committee...",
+      "commentForPCHint": "These comments are ONLY visible to PC and Chair, NOT the author.",
+      "submitting": "Submitting...",
+      "alreadySubmitted": "Already Submitted",
+      "submitReview": "Submit Review"
+    }
   }
 }
-
