@@ -6,7 +6,7 @@ import Pagination from '../../components/Pagination';
 import { usePagination } from '../../hooks/usePagination';
 import apiClient from "../../apiClient";
 import { ToastContainer } from "../../components/Toast";
-import { FiDownload, FiRotateCcw, FiTrash2 } from 'react-icons/fi';
+import { FiDownload, FiRotateCcw, FiTrash2, FiUpload } from 'react-icons/fi';
 
 const BackupPage = () => {
   const { t } = useTranslation();
@@ -14,6 +14,7 @@ const BackupPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const [toasts, setToasts] = useState([]);
   const addToast = useCallback((message, type = "success") => { const id = Date.now(); setToasts((prev) => [...prev, { id, message, type }]); }, []);
@@ -57,6 +58,50 @@ const BackupPage = () => {
     catch (err) { console.error(err); const errorMsg = err.response?.data?.error || t('admin.backup.deleteFailed'); addToast(errorMsg, "error"); }
   };
 
+  const handleUploadBackup = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    console.log('Selected file:', file.name, 'Size:', file.size, 'Type:', file.type);
+
+    // Validate file extension - chấp nhận .json.gz hoặc .json
+    if (!file.name.endsWith('.json.gz') && !file.name.endsWith('.json')) {
+      addToast("Chỉ chấp nhận file .json hoặc .json.gz", "error");
+      event.target.value = '';
+      return;
+    }
+
+    if (!confirm(`Bạn có chắc muốn upload và restore từ file "${file.name}"?\n\n⚠️ CẢNH BÁO: Thao tác này sẽ ghi đè toàn bộ dữ liệu hiện tại!`)) {
+      event.target.value = '';
+      return;
+    }
+
+    try {
+      setUploading(true);
+      console.log('Starting upload...');
+      
+      const formData = new FormData();
+      formData.append('file', file);
+
+      console.log('Calling API /backups/upload...');
+      const response = await apiClient.post('/backups/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      console.log('Upload response:', response.data);
+      addToast("Upload và restore thành công! Đang chuyển hướng...", "success");
+      setTimeout(() => { window.location.href = "/login"; }, 1500);
+    } catch (err) {
+      console.error('Upload error:', err);
+      console.error('Error response:', err.response?.data);
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message || "Upload backup thất bại";
+      addToast(errorMsg, "error");
+    } finally {
+      setUploading(false);
+      event.target.value = '';
+    }
+  };
+
   const formatDate = (timestamp) => { if (!timestamp) return ""; const date = new Date(timestamp); return date.toLocaleString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }); };
   const formatSize = (bytes) => { if (bytes < 1024) return bytes + " B"; if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB"; return (bytes / (1024 * 1024)).toFixed(2) + " MB"; };
 
@@ -77,6 +122,32 @@ const BackupPage = () => {
           <h3>{t('admin.backup.createBackup')}</h3>
           <p>{t('admin.backup.createDesc')}</p>
           <button className="btn-primary" type="button" onClick={handleCreateBackup} disabled={creating}>{creating ? t('app.loading') : t('admin.backup.backupNow')}</button>
+        </div>
+        <div className="dash-card">
+          <h3>📤 Khôi phục từ file</h3>
+          <p>Upload file backup (.json.gz hoặc .json) từ máy tính để khôi phục dữ liệu</p>
+          <label htmlFor="backup-upload" style={{
+            display: 'inline-block',
+            padding: '0.625rem 1rem',
+            background: uploading ? '#9ca3af' : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            color: 'white',
+            borderRadius: '8px',
+            cursor: uploading ? 'not-allowed' : 'pointer',
+            fontWeight: 600,
+            fontSize: '0.875rem',
+            border: 'none',
+            transition: 'all 0.2s'
+          }}>
+            {uploading ? '⏳ Đang upload...' : '📁 Chọn file backup'}
+          </label>
+          <input
+            id="backup-upload"
+            type="file"
+            accept=".json,.json.gz"
+            onChange={handleUploadBackup}
+            disabled={uploading}
+            style={{ display: 'none' }}
+          />
         </div>
         <div className="dash-card">
           <h3>{t('admin.backup.note')}</h3>

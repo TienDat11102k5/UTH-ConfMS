@@ -97,4 +97,31 @@ public class BackupController {
                 .body(Map.of("error", "Failed to delete backup: " + e.getMessage()));
         }
     }
+    
+    /**
+     * Upload và restore backup từ file
+     */
+    @PostMapping("/upload")
+    public ResponseEntity<?> uploadAndRestoreBackup(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        try {
+            // Validate file
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "File is empty"));
+            }
+            
+            String filename = file.getOriginalFilename();
+            if (filename == null || (!filename.endsWith(".json.gz") && !filename.endsWith(".json"))) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Only .json or .json.gz files are accepted"));
+            }
+            
+            // Upload và restore
+            backupService.uploadAndRestore(file);
+            return ResponseEntity.ok(Map.of("message", "Backup uploaded and restored successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                .body(Map.of("error", "Failed to upload and restore backup: " + e.getMessage()));
+        }
+    }
 }

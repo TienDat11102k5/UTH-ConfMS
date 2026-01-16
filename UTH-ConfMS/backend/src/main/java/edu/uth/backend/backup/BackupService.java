@@ -436,6 +436,115 @@ public class BackupService {
     }
     
     /**
+     * Upload và restore backup từ file
+     */
+    public void uploadAndRestore(org.springframework.web.multipart.MultipartFile file) throws IOException, SQLException {
+        // Tạo thư mục backup nếu chưa có
+        Path backupPath = Paths.get(backupDirectory).toAbsolutePath();
+        logger.info("Backup directory (absolute): {}", backupPath);
+        
+        if (!Files.exists(backupPath)) {
+            Files.createDirectories(backupPath);
+            logger.info("Created backup directory: {}", backupPath);
+        }
+        
+        // Lưu file tạm
+        String filename = file.getOriginalFilename();
+        Path tempFile = backupPath.resolve("temp_" + filename);
+        logger.info("Temp file path: {}", tempFile.toAbsolutePath());
+        
+        try {
+            // Save uploaded file using Files.copy instead of transferTo
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+            logger.info("Uploaded backup file to temp: {}", tempFile);
+            
+            // Verify file exists
+            if (!Files.exists(tempFile)) {
+                throw new IOException("Failed to save uploaded file to: " + tempFile);
+            }
+            logger.info("Verified temp file exists, size: {} bytes", Files.size(tempFile));
+            
+            // Restore from uploaded file
+            restoreFromFile(tempFile);
+            
+            // Sau khi restore thành công, đổi tên file tạm thành file chính thức
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+            String finalFilename = "uploaded_" + timestamp + "_" + filename;
+            Path finalPath = backupPath.resolve(finalFilename);
+            Files.move(tempFile, finalPath, StandardCopyOption.REPLACE_EXISTING);
+            
+            logger.info("Backup uploaded and restored successfully: {}", finalFilename);
+        } catch (Exception e) {
+            logger.error("Failed to upload and restore backup", e);
+            // Xóa file tạm nếu có lỗi
+            try {
+                if (Files.exists(tempFile)) {
+                    Files.delete(tempFile);
+                }
+            } catch (IOException deleteErr) {
+                logger.error("Failed to delete temp file", deleteErr);
+            }
+            throw e;
+        }
+    }
+    
+    /**
+     * Restore từ file path cụ thể
+     */
+    private void restoreFromFile(Path filepath) throws IOException, SQLException {
+        if (!Files.exists(filepath)) {
+            throw new FileNotFoundException("Backup file not found: " + filepath);
+        }
+        
+        logger.info("Starting restore from: {}", filepath);
+        
+        // Đọc file JSON
+        Map<String, Object> backupData;
+        try (FileInputStream fis = new FileInputStream(filepath.toFile());
+             InputStreamReader reader = filepath.toString().endsWith(".gz") 
+                 ? new InputStreamReader(new GZIPInputStream(fis))
+                 : new InputStreamReader(fis)) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> temp = (Map<String, Object>) objectMapper.readValue(reader, Map.class);
+            backupData = temp;
+        }
+        
+        @SuppressWarnings("unchecked")
+        Map<String, List<Map<String, Object>>> tablesData = 
+            (Map<String, List<Map<String, Object>>>) backupData.get("tables");
+        
+        try (Connection conn = dataSource.getConnection()) {
+            conn.setAutoCommit(false);
+            
+            try {
+                // Xóa dữ liệu cũ
+                deleteAllData(conn, tablesData.keySet());
+                
+                // Import dữ liệu mới
+                List<String> orderedTables = getTableImportOrder(tablesData.keySet());
+                logger.info("Tables to import: {}", orderedTables);
+                for (String tableName : orderedTables) {
+                    List<Map<String, Object>> rows = tablesData.get(tableName);
+                    if (rows != null) {
+                        logger.info("Importing table: {} with {} rows", tableName, rows.size());
+                        importTable(conn, tableName, rows);
+                        logger.info("Imported table: {} ({} rows)", tableName, rows.size());
+                    }
+                }
+                
+                conn.commit();
+                logger.info("Restore completed successfully");
+            } catch (Exception e) {
+                conn.rollback();
+                logger.error("Restore failed, rolled back", e);
+                throw e;
+            }
+        }
+    }
+    
+    /**
      * Sắp xếp thứ tự import các bảng để tránh foreign key constraint
      */
     private List<String> getTableImportOrder(Set<String> tables) {

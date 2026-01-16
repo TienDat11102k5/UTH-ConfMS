@@ -359,7 +359,7 @@
       "coAuthorRequired": "Vui lòng nhập tên và email của đồng tác giả",
       "loadConferencesError": "Không thể tải danh sách hội nghị",
       "saveDraft": "Lưu bản nháp",
-      "submitPaper": "Gửi submission",
+      "submitPaper": "Nộp bài",
       "submitSuccess": "Bài báo đã được nộp thành công! Đang chuyển hướng...",
       "submitError": "Lỗi khi nộp bài. Vui lòng thử lại.",
       "cancelAndBack": "Hủy & quay lại danh sách"
@@ -553,7 +553,7 @@
         "importantDates": "Mốc thời gian quan trọng",
         "submissionDeadline": "Hạn nộp bài",
         "notificationDate": "Ngày thông báo kết quả",
-        "cameraReadyDeadline": "Hạn nộp Camera-Ready",
+        "cameraReadyDeadline": "Hạn nộp bản cuối",
         "conferenceDate": "Ngày hội nghị",
         "topics": "Lĩnh vực",
         "tracks": "Chủ đề",
