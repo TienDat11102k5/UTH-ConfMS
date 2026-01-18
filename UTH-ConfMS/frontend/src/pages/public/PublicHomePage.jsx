@@ -13,7 +13,7 @@ const PublicHomePage = () => {
   useEffect(() => {
     const token = sessionStorage.getItem("accessToken") || localStorage.getItem("accessToken");
     const userStr = sessionStorage.getItem("currentUser") || localStorage.getItem("currentUser");
-    
+
     if (token && userStr) {
       try {
         const user = JSON.parse(userStr);
@@ -26,7 +26,7 @@ const PublicHomePage = () => {
 
   const getDashboardLink = () => {
     if (!currentUser) return "/author/dashboard";
-    
+
     const role = currentUser.role?.toLowerCase();
     if (role === "admin") return "/admin/dashboard";
     if (role === "chair" || role === "pc") return "/chair/dashboard";
@@ -96,15 +96,15 @@ const PublicHomePage = () => {
             <div className="portal-actions">
               {currentUser ? (
                 <Link to="/author" className="btn-primary">
-                  {t('nav.conferences')}
+                  {t('nav.authorPortal')}
                 </Link>
               ) : (
                 <>
                   <Link to="/login" className="btn-primary">
-                    {t('auth.loginSystem')}
+                    {t('public.home.loginSystem')}
                   </Link>
                   <Link to="/register" className="btn-secondary">
-                    {t('auth.registerAuthor')}
+                    {t('public.home.registerAuthor')}
                   </Link>
                 </>
               )}

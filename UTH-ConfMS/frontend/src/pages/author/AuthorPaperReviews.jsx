@@ -12,7 +12,7 @@ const formatDate = (value) => {
   try {
     const date = typeof value === 'string' ? new Date(value) : value;
     if (isNaN(date.getTime())) return "";
-    
+
     const vietnamDate = new Date(date.getTime() + (7 * 60 * 60 * 1000));
     const day = String(vietnamDate.getDate()).padStart(2, '0');
     const month = String(vietnamDate.getMonth() + 1).padStart(2, '0');
@@ -28,7 +28,7 @@ const formatDateTimeLocal = (value) => {
   try {
     const date = typeof value === 'string' ? new Date(value) : value;
     if (isNaN(date.getTime())) return "";
-    
+
     const vietnamDate = new Date(date.getTime() + (7 * 60 * 60 * 1000));
     const day = String(vietnamDate.getDate()).padStart(2, '0');
     const month = String(vietnamDate.getMonth() + 1).padStart(2, '0');
@@ -68,12 +68,12 @@ const AuthorPaperReviews = () => {
           try {
             const reviewsRes = await apiClient.get(`/reviews/paper/${paperId}/for-author`);
             setReviews(reviewsRes.data || []);
-          } catch (err) {}
+          } catch (err) { }
 
           try {
             const decisionRes = await apiClient.get(`/decisions/paper/${paperId}`);
             setDecision(decisionRes.data);
-          } catch (err) {}
+          } catch (err) { }
         }
       } catch (err) {
         setError(err.response?.data?.message || err.message || t('author.reviews.loadError'));
@@ -232,7 +232,7 @@ const AuthorPaperReviews = () => {
                 </span>
               </div>
               <div style={{ padding: "0.5rem 1rem", background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)", color: "white", borderRadius: "8px", fontWeight: 700, fontSize: "1.125rem" }}>
-                {t('author.reviews.avgScore')}: {averageScore}/10
+                {t('author.reviews.avgScore')}: {averageScore}/3
               </div>
             </div>
           </div>
@@ -251,7 +251,7 @@ const AuthorPaperReviews = () => {
                   </div>
                   <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
                     <div style={{ padding: "0.5rem 1rem", background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)", color: "white", borderRadius: "8px", fontWeight: 700, fontSize: "1.125rem" }}>
-                      {review.score}/10
+                      {review.score}/3
                     </div>
                     <div style={{ padding: "0.375rem 0.75rem", background: "#f1f5f9", color: "#475569", borderRadius: "6px", fontSize: "0.8125rem", fontWeight: 600 }}>
                       {t('author.reviews.confidence')}: {review.confidenceLevel}/5

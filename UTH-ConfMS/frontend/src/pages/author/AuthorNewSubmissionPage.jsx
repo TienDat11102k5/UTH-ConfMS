@@ -256,7 +256,7 @@ const AuthorNewSubmissionPage = () => {
 
                   <div className="form-group">
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <label htmlFor="keywords">{t('common.keyword')} </label>
+                      <label htmlFor="keywords">{t('common.keywords')} </label>
                       <button type="button" onClick={handleSuggestKeywords} disabled={aiLoading}
                         style={{ background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)", color: "white", border: "none", padding: "6px 14px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: 500, cursor: aiLoading ? "not-allowed" : "pointer", opacity: aiLoading ? 0.6 : 1, display: "flex", alignItems: "center", gap: "6px" }}>
                         <span style={{ fontSize: "1rem" }}>✨</span>{t('author.newSubmission.suggestKeywords')}

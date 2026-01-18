@@ -49,7 +49,8 @@
     "saving": "Đang lưu...",
     "done": "Xong",
     "portalTitle": "Cổng thông tin Hội nghị UTH",
-    "universityName": "Trường Đại học Giao thông Vận tải TP.HCM"
+    "universityName": "Trường Đại học Giao thông Vận tải TP.HCM",
+    "withdraw": "Rút"
   },
   "pagination": {
     "showing": "Hiển thị",
@@ -1612,46 +1613,46 @@
   "public": {
     "home": {
       "badge": "Portal Hội nghị Nghiên cứu khoa học UTH",
-      "title": "Quản lý CFP, nộp bài, phản biện và chương trình hội nghị trong một hệ thống.",
+      "title": "Quản lý Mời bài, nộp bài, phản biện và chương trình hội nghị trong một hệ thống.",
       "subtitle": "Hệ thống quản lý bài báo Hội nghị Khoa học UTH",
-      "description": "Hệ thống UTH-ConfMS hỗ trợ luồng EasyChair-style: Call for Papers → Submission → Review → Decision → Camera-ready → Program & Proceedings, với RBAC, SSO, audit log và AI hỗ trợ (tùy chọn).",
+      "description": "Hệ thống UTH-ConfMS hỗ trợ luồng theo phong cách EasyChair: Mời bài (CFP) → Nộp bài → Phản biện → Quyết định → Bản hoàn thiện (Camera-ready) → Chương trình & Kỷ yếu, với phân quyền (RBAC), đăng nhập một lần (SSO), nhật ký hệ thống và AI hỗ trợ (tùy chọn).",
       "loginSystem": "Đăng nhập hệ thống",
-      "registerAuthor": "Đăng ký Author mới",
+      "registerAuthor": "Đăng ký Tác giả mới",
       "conferenceList": "Trang hội nghị",
-      "roleNote": "Vai trò Reviewer / PC / Chair / Admin sẽ được gán bởi Ban tổ chức sau khi bạn có tài khoản.",
+      "roleNote": "Vai trò Phản biện / Ban chương trình / Chủ tịch / Quản trị viên sẽ được gán bởi Ban tổ chức sau khi bạn có tài khoản.",
       "cards": {
         "author": {
-          "title": "Nộp bài & Camera-ready",
-          "description": "Nộp bài, cập nhật metadata, thêm đồng tác giả, theo dõi kết quả, tải lên bản camera-ready và xem nhận xét ẩn danh."
+          "title": "Nộp bài & Bản hoàn thiện",
+          "description": "Nộp bài, cập nhật thông tin, thêm đồng tác giả, theo dõi kết quả, tải lên bản hoàn thiện (camera-ready) và xem nhận xét ẩn danh."
         },
         "reviewer": {
-          "label": "Reviewer / PC",
+          "label": "Phản biện / Ban chương trình",
           "title": "Phản biện & thảo luận nội bộ",
-          "description": "Nhận bài được phân công, gửi điểm & nhận xét, tham gia thảo luận nội bộ PC, xử lý COI và thời hạn review."
+          "description": "Nhận bài được phân công, gửi điểm & nhận xét, tham gia thảo luận nội bộ Ban chương trình (PC), xử lý xung đột lợi ích (COI) và thời hạn phản biện."
         },
         "admin": {
-          "label": "Chair & Admin",
-          "title": "Quản lý hội nghị & AI governance",
-          "description": "Cấu hình conference, tracks, deadlines, phân công bài, quyết định Accept / Reject, gửi email hàng loạt, quản lý SMTP, quota và audit log AI."
+          "label": "Chủ tịch & Quản trị viên",
+          "title": "Quản lý hội nghị & Quản trị AI",
+          "description": "Cấu hình hội nghị, lĩnh vực (tracks), thời hạn, phân công bài, quyết định Chấp nhận / Từ chối, gửi email hàng loạt, quản lý SMTP, dung lượng và nhật ký AI."
         }
       },
       "workflow": {
         "title": "Luồng hội nghị (tóm tắt)",
         "cfp": {
-          "title": "Call for Papers (CFP)",
-          "description": "Tạo trang CFP, chủ đề, tracks, deadline và mẫu email."
+          "title": "Mời viết bài (CFP)",
+          "description": "Tạo trang mời bài, chủ đề, lĩnh vực (tracks), hạn chót và mẫu email."
         },
         "submission": {
-          "title": "Submission",
-          "description": "Author nộp bài, chỉnh sửa trước hạn; kiểm tra định dạng và COI."
+          "title": "Nộp bài",
+          "description": "Tác giả nộp bài, chỉnh sửa trước hạn; kiểm tra định dạng và xung đột lợi ích (COI)."
         },
         "review": {
-          "title": "Review & Discussion",
-          "description": "PC assign bài, Reviewer phản biện, thảo luận nội bộ, rebuttal (nếu bật)."
+          "title": "Phản biện & Thảo luận",
+          "description": "Ban chương trình phân bài, Người phản biện đánh giá, thảo luận nội bộ, phản hồi (nếu bật)."
         },
         "decision": {
-          "title": "Decision & Camera-ready",
-          "description": "Quyết định Accept/Reject, gửi email, mở vòng camera-ready và export chương trình."
+          "title": "Quyết định & Bản hoàn thiện",
+          "description": "Quyết định Chấp nhận/Từ chối, gửi email, mở vòng nộp bản hoàn thiện (camera-ready) và xuất chương trình."
         }
       },
       "footer": "Hệ thống quản lý hội nghị nghiên cứu khoa học UTH"

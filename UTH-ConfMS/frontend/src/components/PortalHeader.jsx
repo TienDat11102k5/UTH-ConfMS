@@ -1,9 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import UserProfileDropdown from "./UserProfileDropdown";
 import LanguageSwitcher from "./LanguageSwitcher";
 import logoUTH from "../assets/logoUTH.jpg";
+import { getCurrentUser } from "../auth";
 import "../styles/PortalHeader.css";
 
 /**
@@ -14,11 +15,16 @@ const PortalHeader = ({
   title,
   subtitle,
   ctaHref = "/author/dashboard",
+  ctaText,
 }) => {
   const { t } = useTranslation();
+  const user = getCurrentUser();
+  const location = useLocation();
 
   const displayTitle = title || t('components.portalHeader.title', { defaultValue: "UTH Conference Portal" });
   const displaySubtitle = subtitle || t('components.portalHeader.subtitle', { defaultValue: "University of Transport HCMC" });
+
+  const displayCtaText = ctaText || t('nav.authorPortal');
 
   return (
     <header className="dash-header">
@@ -36,14 +42,31 @@ const PortalHeader = ({
         <Link to="/" className="nav-link">
           {t('nav.home')}
         </Link>
-        <Link to="/program" className="nav-link">
-          {t('nav.program')}
-        </Link>
-        <Link to={ctaHref} className="btn-dashboard-nav">
-          {t('nav.authorPortal')} <span></span>
-        </Link>
+        {location.pathname !== '/program' && !(user && location.pathname === '/proceedings') && (
+          <Link to="/program" className="nav-link">
+            {t('nav.program')}
+          </Link>
+        )}
+
+        {user ? (
+          <>
+            <Link to={ctaHref} className="btn-dashboard-nav">
+              {displayCtaText} <span></span>
+            </Link>
+            <UserProfileDropdown />
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="nav-link">
+              {t('auth.login')}
+            </Link>
+            <Link to="/register" className="nav-link nav-link-primary">
+              {t('auth.register')}
+            </Link>
+          </>
+        )}
+
         <LanguageSwitcher />
-        <UserProfileDropdown />
       </nav>
     </header>
   );

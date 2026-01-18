@@ -48,11 +48,11 @@ const AuthorSubmissionDetail = () => {
           try {
             const rev = await apiClient.get(`/reviews/paper/${id}/for-author`);
             if (!ignore) setReviews(Array.isArray(rev.data) ? rev.data : []);
-          } catch (e) {}
+          } catch (e) { }
           try {
             const dec = await apiClient.get(`/decisions/paper/${id}`);
             if (!ignore) setDecision(dec.data || null);
-          } catch (e) {}
+          } catch (e) { }
         }
       } catch (err) {
         if (!ignore) {
@@ -141,7 +141,7 @@ const AuthorSubmissionDetail = () => {
           ← {t('app.back')}
         </button>
       </div>
-      
+
       <div className="data-page-header">
         <div className="data-page-header-left">
           <h2 className="data-page-title" style={{ marginTop: "0.5rem" }}>{submission.title}</h2>
@@ -291,7 +291,7 @@ const AuthorSubmissionDetail = () => {
                 <div key={r.id || idx} style={{ padding: "1rem", background: "#fafbfc", borderRadius: "8px", border: "1px solid #e5e7eb" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
                     <span style={{ fontWeight: 600, color: "#475569", fontSize: "0.875rem" }}>Review #{idx + 1}</span>
-                    <span style={{ padding: "0.25rem 0.75rem", background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)", color: "white", borderRadius: "6px", fontSize: "0.875rem", fontWeight: 700 }}>{r.score}/10</span>
+                    <span style={{ padding: "0.25rem 0.75rem", background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)", color: "white", borderRadius: "6px", fontSize: "0.875rem", fontWeight: 700 }}>{r.score}/3</span>
                   </div>
                   {r.commentForAuthor && <p style={{ margin: 0, color: "#6b7280", lineHeight: 1.6, fontSize: "0.875rem" }}>{r.commentForAuthor}</p>}
                 </div>

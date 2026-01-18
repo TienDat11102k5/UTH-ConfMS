@@ -262,7 +262,7 @@ button {
   padding: 3rem 6%;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   background-image: url("/background.jpg");
   background-size: cover;
   background-position: center top;
@@ -1521,7 +1521,7 @@ button {
   align-items: center;
 
   /* ⬅️ QUAN TRỌNG: nằm bên phải giống login */
-  justify-content: flex-end;
+
 
   /* padding nhỏ lại để không bị scroll */
   padding: 1.5rem 6%;
@@ -2105,109 +2105,15 @@ button {
 /* =========================
    LEFT - NOTICE BOARD
    ========================= */
-.auth-left {
-  width: 40%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-}
 
-/* NOTICE CONTAINER */
-.notice-container {
-  width: 100%;
-  max-width: 520px;
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 20px 45px rgba(23, 195, 162, 0.28);
-  color: var(--text-dark);
-}
 
-/* =========================
-   TABS
-   ========================= */
-.notice-tabs {
-  display: flex;
-  background: var(--teal-soft);
-  border-bottom: 1px solid #d1f3ea;
-}
 
-.notice-tabs .tab {
-  flex: 1;
-  padding: 14px 10px;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 600;
-  color: #0f3f35;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.notice-tabs .tab:hover {
-  background: rgba(23, 195, 162, 0.12);
-}
-
-.notice-tabs .tab.active {
-  background: #ffffff;
-  color: var(--teal-main);
-  border-bottom: 3px solid var(--teal-main);
-}
-
-/* =========================
-   NOTICE LIST
-   ========================= */
-.notice-list {
-  padding: 16px 18px;
-}
-
-.notice-item {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #e2f4f0;
-}
-
-.notice-item:last-child {
-  border-bottom: none;
-}
-
-.notice-item:hover {
-  background: rgba(23, 195, 162, 0.06);
-}
-
-/* TEXT */
-.notice-text {
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.notice-text .date {
-  margin-top: 4px;
-  font-size: 12px;
-  color: #6b7280;
-}
-
-/* LINK */
-.detail {
-  font-size: 13px;
-  color: var(--teal-main);
-  font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.detail:hover {
-  color: var(--teal-dark);
-  text-decoration: underline;
-}
 
 /* =========================
    RIGHT - LOGIN
    ========================= */
 .auth-right {
-  width: 60%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2237,12 +2143,3 @@ table .btn-secondary,
 /* =========================
    RESPONSIVE
    ========================= */
-@media (max-width: 900px) {
-  .auth-left {
-    display: none;
-  }
-
-  .auth-right {
-    width: 100%;
-  }
-}

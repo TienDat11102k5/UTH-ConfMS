@@ -497,7 +497,7 @@ const AuthorSubmissionListPage = () => {
                           disabled={withdrawingId === s.id}
                           onClick={() => handleWithdraw(s.id)}
                         >
-                          {withdrawingId === s.id ? t('app.loading') : t('status.withdrawn')}
+                          {withdrawingId === s.id ? t('app.loading') : t('app.withdraw')}
                         </button>
                       )}
                     </div>
