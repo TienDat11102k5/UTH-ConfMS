@@ -54,6 +54,33 @@ public class ConflictController {
         }
     }
 
+    // API: Lấy tất cả COI (dành cho Chair)
+    // GET /api/conflicts
+    @GetMapping
+    public ResponseEntity<?> getAllConflicts() {
+        try {
+            List<ConflictOfInterest> conflicts = coiRepo.findAll();
+            return ResponseEntity.ok(conflicts);
+        } catch (Exception e) {
+            log.error("Error loading all conflicts", e);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // API: Lấy chi tiết một COI
+    // GET /api/conflicts/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getConflictById(@PathVariable Long id) {
+        try {
+            ConflictOfInterest conflict = coiRepo.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy xung đột lợi ích này"));
+            return ResponseEntity.ok(conflict);
+        } catch (Exception e) {
+            log.error("Error loading conflict detail", e);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     // API: Lấy danh sách COI của một reviewer
     // GET /api/conflicts/reviewer/{reviewerId}
     @GetMapping("/reviewer/{reviewerId}")

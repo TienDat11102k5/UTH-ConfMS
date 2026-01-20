@@ -65,10 +65,11 @@ public class SubmissionController {
             @RequestParam("abstract") String abstractText,
             @RequestParam Long trackId,
             @RequestParam MultipartFile file,
+            @RequestParam(value = "keywords", required = false) String keywords,
             @RequestParam(value = "coAuthors", required = false) String coAuthorsJson,
             Authentication authentication
     ) {
-        logger.info("Submission request received: title={}, trackId={}", title, trackId);
+        logger.info("Submission request received: title={}, trackId={}, keywords={}", title, trackId, keywords);
         
         // Lấy User từ Token
         User currentUser = getCurrentUser(authentication);
@@ -84,7 +85,7 @@ public class SubmissionController {
             }
         }
 
-        Paper paper = submissionService.submitPaper(title, abstractText, currentUser.getId(), trackId, file, coAuthors);
+        Paper paper = submissionService.submitPaper(title, abstractText, currentUser.getId(), trackId, file, coAuthors, keywords);
         logger.info("Paper submitted successfully: id={}", paper.getId());
         
         // Audit log
@@ -304,6 +305,7 @@ public class SubmissionController {
         response.setId(paper.getId());
         response.setTitle(paper.getTitle());
         response.setAbstractText(paper.getAbstractText());
+        response.setKeywords(paper.getKeywords());
         response.setFilePath(paper.getFilePath());
         if (paper.getStatus() != null) response.setStatus(paper.getStatus().toString());
 

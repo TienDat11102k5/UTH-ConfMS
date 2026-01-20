@@ -42,7 +42,7 @@ public class SubmissionService {
     // --- 1. NỘP BÀI ---
     @org.springframework.transaction.annotation.Transactional
     public Paper submitPaper(String title, String abstractText, Long authorId, Long trackId, MultipartFile file,
-            List<CoAuthorDTO> coAuthors) {
+            List<CoAuthorDTO> coAuthors, String keywords) {
         // Validate file with comprehensive checks
         fileValidationService.validatePdfFile(file);
 
@@ -71,6 +71,7 @@ public class SubmissionService {
         Paper paper = new Paper();
         paper.setTitle(title);
         paper.setAbstractText(abstractText);
+        paper.setKeywords(keywords); // Lưu từ khóa
         paper.setFilePath(fileName);
         paper.setMainAuthor(author);
         paper.setTrack(track);
@@ -148,6 +149,7 @@ public class SubmissionService {
         response.setId(paper.getId());
         response.setTitle(paper.getTitle());
         response.setAbstractText(paper.getAbstractText());
+        response.setKeywords(paper.getKeywords()); // Map từ khóa
         response.setFilePath(paper.getFilePath());
         if (paper.getStatus() != null)
             response.setStatus(paper.getStatus().toString());

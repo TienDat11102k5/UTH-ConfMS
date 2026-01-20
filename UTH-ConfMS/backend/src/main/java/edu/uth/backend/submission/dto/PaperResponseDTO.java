@@ -9,6 +9,7 @@ public class PaperResponseDTO {
     private Long id;
     private String title;
     private String abstractText;
+    private String keywords; // Từ khóa
     private String filePath;
     private String status;       // Trả về String cho Frontend dễ hiển thị
     private Long authorId;       // Chỉ trả về ID tác giả
@@ -20,7 +21,16 @@ public class PaperResponseDTO {
     private String cameraReadyPath;
     private String cameraReadyDownloadUrl;
 
-    // Thời gian tạo / cập nhật (dùng cho “Ngày nộp” và “Ngày cập nhật”)
+    // Thời gian tạo / cập nhật (dùng cho "Ngày nộp" và "Ngày cập nhật")
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    
+    // Explicit getter/setter for keywords
+    public String getKeywords() {
+        return keywords;
+    }
+    
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
 }

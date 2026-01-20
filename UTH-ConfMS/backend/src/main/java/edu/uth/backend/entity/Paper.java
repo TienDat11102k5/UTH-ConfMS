@@ -16,13 +16,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@org.hibernate.annotations.DynamicUpdate
 public class Paper extends BaseEntity {
 
     @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
-    private String abstractText; // Tóm tắt
+    private String abstractText;
+
+    @Column(name = "keywords", columnDefinition = "TEXT")
+    private String keywords; 
 
     @Column(name = "file_path")
     private String filePath;
