@@ -205,6 +205,36 @@ public class EmailService {
     }
 
     /**
+     * 6. Gửi email thông báo hủy phân công review
+     */
+    @Async
+    public void sendAssignmentCancellationNotification(String reviewerEmail, String reviewerName, String paperTitle) {
+        if (!emailEnabled) {
+            log.info("Email disabled, skipping cancellation notification");
+            return;
+        }
+
+        try {
+            Context context = new Context();
+            context.setVariable("reviewerName", reviewerName);
+            context.setVariable("paperTitle", paperTitle);
+            context.setVariable("dashboardLink", frontendBaseUrl + "/reviewer");
+
+            String htmlContent = templateEngine.process("email/assignment-cancellation", context);
+            
+            sendEmail(
+                reviewerEmail,
+                "Thông báo hủy phân công review - " + paperTitle,
+                htmlContent
+            );
+
+            log.info("Sent assignment cancellation notification to {}", reviewerEmail);
+        } catch (Exception e) {
+            log.error("Failed to send assignment cancellation notification", e);
+        }
+    }
+
+    /**
      * Private method để gửi email
      */
     private void sendEmail(String to, String subject, String htmlContent) throws MessagingException {

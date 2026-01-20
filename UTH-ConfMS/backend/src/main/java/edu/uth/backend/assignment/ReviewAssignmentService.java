@@ -175,4 +175,54 @@ public class ReviewAssignmentService {
         }
         return assignment;
     }
+
+    // 8. Xóa assignment (Chair dùng)
+    @org.springframework.transaction.annotation.Transactional
+    public void deleteAssignment(Long assignmentId) {
+        ReviewAssignment assignment = assignmentRepo.findById(assignmentId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy assignment này!"));
+        
+        // Kiểm tra điều kiện: Chỉ cho xóa nếu review chưa hoàn thành
+        if (assignment.getStatus() == AssignmentStatus.COMPLETED) {
+            throw new RuntimeException("Không thể xóa assignment đã hoàn thành!");
+        }
+        
+        // Kiểm tra paper status: Không cho xóa nếu bài đã có quyết định cuối
+        Paper paper = assignment.getPaper();
+        if (paper.getStatus() == PaperStatus.ACCEPTED || 
+            paper.getStatus() == PaperStatus.REJECTED || 
+            paper.getStatus() == PaperStatus.WITHDRAWN) {
+            throw new RuntimeException("Không thể xóa assignment vì bài báo đã có quyết định cuối!");
+        }
+        
+        // Lưu thông tin để gửi email trước khi xóa
+        User reviewer = assignment.getReviewer();
+        String paperTitle = paper.getTitle();
+        String reviewerEmail = reviewer.getEmail();
+        String reviewerName = reviewer.getFullName();
+        
+        // Xóa assignment
+        assignmentRepo.delete(assignment);
+        
+        // Gửi email thông báo
+        try {
+            emailService.sendAssignmentCancellationNotification(
+                reviewerEmail, 
+                reviewerName, 
+                paperTitle
+            );
+        } catch (Exception e) {
+            // Log error nhưng không fail transaction
+            System.err.println("Failed to send cancellation email: " + e.getMessage());
+        }
+        
+        // Kiểm tra xem còn assignment nào khác cho paper này không
+        List<ReviewAssignment> remainingAssignments = assignmentRepo.findByPaperId(paper.getId());
+        
+        // Nếu không còn assignment nào, đổi status paper về SUBMITTED
+        if (remainingAssignments.isEmpty() && paper.getStatus() == PaperStatus.UNDER_REVIEW) {
+            paper.setStatus(PaperStatus.SUBMITTED);
+            paperRepo.save(paper);
+        }
+    }
 }

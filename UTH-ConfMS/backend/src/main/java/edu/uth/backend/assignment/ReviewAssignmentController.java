@@ -92,4 +92,18 @@ public class ReviewAssignmentController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    // API: Xóa assignment (Chair dùng)
+    // DELETE /api/assignments/{assignmentId}
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CHAIR','ROLE_TRACK_CHAIR')")
+    @DeleteMapping("/{assignmentId}")
+    public ResponseEntity<?> deleteAssignment(@PathVariable Long assignmentId) {
+        try {
+            assignmentService.deleteAssignment(assignmentId);
+            return ResponseEntity.ok("Đã xóa phân công thành công");
+        } catch (RuntimeException e) {
+            log.error("Error deleting assignment: ", e);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

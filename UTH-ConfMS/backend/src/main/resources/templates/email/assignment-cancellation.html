@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hủy phân công review</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin: -30px -30px 20px -30px;
+        }
+        h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .info-box {
+            background-color: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .info-box ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .info-box li {
+            margin: 8px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+        .btn:hover {
+            background-color: #2563eb;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>❌ Thông báo hủy phân công review</h2>
+        </div>
+        
+        <p>Xin chào <strong th:text="${reviewerName}">Reviewer</strong>,</p>
+        
+        <p>Phân công review của bạn đã được hủy bởi Chair.</p>
+        
+        <div class="info-box">
+            <strong>📄 Thông tin bài báo:</strong>
+            <ul>
+                <li><strong>Tiêu đề:</strong> <span th:text="${paperTitle}">Paper Title</span></li>
+            </ul>
+        </div>
+        
+        <p>Bạn không cần thực hiện review cho bài báo này nữa. Nếu có thắc mắc, vui lòng liên hệ với Chair của hội nghị.</p>
+        
+        <a th:href="${dashboardLink}" class="btn">Xem danh sách phân công hiện tại</a>
+        
+        <p style="margin-top: 20px; font-size: 14px; color: #666;">
+            <strong>Lưu ý:</strong> Nếu bạn đã bắt đầu review bài báo này, vui lòng bỏ qua và không cần nộp review.
+        </p>
+        
+        <div class="footer">
+            <p>Email này được gửi tự động từ hệ thống UTH-ConfMS</p>
+            <p>© 2024 UTH Conference Management System</p>
+        </div>
+    </div>
+</body>
+</html>

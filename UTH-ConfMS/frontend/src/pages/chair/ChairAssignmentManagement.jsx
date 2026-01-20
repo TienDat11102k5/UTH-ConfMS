@@ -6,7 +6,7 @@ import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
 import { TableSkeleton } from "../../components/LoadingSkeleton";
 import { usePagination } from "../../hooks/usePagination";
-import { FiFilter, FiTrendingUp, FiSearch } from "react-icons/fi";
+import { FiFilter, FiTrendingUp, FiSearch, FiTrash2 } from "react-icons/fi";
 import { ToastContainer } from "../../components/Toast";
 import "../../styles/ReviewerAssignments.css";
 
@@ -248,6 +248,27 @@ const ChairAssignmentManagement = () => {
       addToast(errorMsg, "error");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDeleteAssignment = async (assignmentId, paperId) => {
+    if (!confirm("Bạn có chắc muốn xóa phân công này?")) {
+      return;
+    }
+
+    try {
+      await apiClient.delete(`/assignments/${assignmentId}`);
+      addToast("Đã xóa phân công thành công!", "success");
+
+      // Reload assignments for this paper
+      const assignRes = await apiClient.get(`/assignments/paper/${paperId}`);
+      setAssignments({
+        ...assignments,
+        [paperId]: assignRes.data || [],
+      });
+    } catch (err) {
+      console.error("Delete assignment error:", err);
+      addToast("Lỗi khi xóa phân công: " + (err.response?.data || err.message), "error");
     }
   };
 
@@ -636,13 +657,42 @@ const ChairAssignmentManagement = () => {
                               style={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: "0.5rem"
+                                gap: "0.5rem",
+                                justifyContent: "space-between"
                               }}
                             >
-                              <span style={{ fontWeight: 600, color: "#1f2937", fontSize: "0.875rem" }}>
-                                {assign.reviewer?.fullName}
-                              </span>
-                              {getStatusBadge(assign.status)}
+                              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                <span style={{ fontWeight: 600, color: "#1f2937", fontSize: "0.875rem" }}>
+                                  {assign.reviewer?.fullName}
+                                </span>
+                                {getStatusBadge(assign.status)}
+                              </div>
+                              {/* Chỉ cho xóa nếu review chưa hoàn thành VÀ bài chưa có quyết định cuối */}
+                              {assign.status !== 'COMPLETED' && 
+                               paper.status !== 'ACCEPTED' && 
+                               paper.status !== 'REJECTED' && 
+                               paper.status !== 'WITHDRAWN' && (
+                                <button
+                                  onClick={() => handleDeleteAssignment(assign.id, paper.id)}
+                                  title="Xóa phân công"
+                                  style={{
+                                    background: "#ef4444",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "4px",
+                                    padding: "0.25rem 0.5rem",
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    fontSize: "0.75rem",
+                                    transition: "background 0.2s"
+                                  }}
+                                  onMouseEnter={(e) => e.target.style.background = "#dc2626"}
+                                  onMouseLeave={(e) => e.target.style.background = "#ef4444"}
+                                >
+                                  <FiTrash2 size={14} />
+                                </button>
+                              )}
                             </div>
                           ))}
                         </div>

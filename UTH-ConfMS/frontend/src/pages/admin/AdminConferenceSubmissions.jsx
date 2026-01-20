@@ -6,6 +6,7 @@ import apiClient from "../../apiClient";
 import AdminLayout from "../../components/Layout/AdminLayout";
 import Pagination from "../../components/Pagination";
 import { usePagination } from "../../hooks/usePagination";
+import { FiSearch } from "react-icons/fi";
 
 const AdminConferenceSubmissions = () => {
   const { t } = useTranslation();
@@ -14,12 +15,39 @@ const AdminConferenceSubmissions = () => {
   
   const [conference, setConference] = useState(null);
   const [papers, setPapers] = useState([]);
+  const [filteredPapers, setFilteredPapers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
 
-  const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination(papers, 20);
+  const { currentPage, setCurrentPage, totalPages, paginatedItems } = usePagination(filteredPapers, 20);
 
   useEffect(() => { fetchData(); }, [conferenceId]);
+
+  useEffect(() => {
+    let result = papers;
+
+    // Filter by status
+    if (statusFilter !== "ALL") {
+      result = result.filter(p => p.status === statusFilter);
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(p =>
+        p.title?.toLowerCase().includes(query) ||
+        p.mainAuthor?.fullName?.toLowerCase().includes(query) ||
+        p.mainAuthor?.email?.toLowerCase().includes(query) ||
+        p.track?.name?.toLowerCase().includes(query) ||
+        p.abstractText?.toLowerCase().includes(query)
+      );
+    }
+
+    setFilteredPapers(result);
+    setCurrentPage(1);
+  }, [papers, searchQuery, statusFilter, setCurrentPage]);
 
   const fetchData = async () => {
     try {
@@ -55,12 +83,12 @@ const AdminConferenceSubmissions = () => {
   };
 
   const stats = {
-    total: papers.length,
-    submitted: papers.filter(p => p.status === 'SUBMITTED').length,
-    underReview: papers.filter(p => p.status === 'UNDER_REVIEW').length,
-    accepted: papers.filter(p => p.status === 'ACCEPTED').length,
-    rejected: papers.filter(p => p.status === 'REJECTED').length,
-    withdrawn: papers.filter(p => p.status === 'WITHDRAWN').length,
+    total: filteredPapers.length,
+    submitted: filteredPapers.filter(p => p.status === 'SUBMITTED').length,
+    underReview: filteredPapers.filter(p => p.status === 'UNDER_REVIEW').length,
+    accepted: filteredPapers.filter(p => p.status === 'ACCEPTED').length,
+    rejected: filteredPapers.filter(p => p.status === 'REJECTED').length,
+    withdrawn: filteredPapers.filter(p => p.status === 'WITHDRAWN').length,
   };
 
   return (
@@ -79,6 +107,92 @@ const AdminConferenceSubmissions = () => {
           <button className="btn-secondary" type="button" onClick={() => navigate("/admin/conferences")}>{t('app.back')}</button>
         </div>
       </div>
+
+      {/* Search and Filter */}
+      {!loading && !error && papers.length > 0 && (
+        <div style={{
+          marginBottom: "1.5rem",
+          background: "white",
+          borderRadius: "10px",
+          padding: "1rem 1.25rem",
+          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+          border: "1px solid #e2e8f0",
+        }}>
+          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "1rem" }}>
+            {/* Search */}
+            <div>
+              <label style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: 600,
+                color: "#64748b",
+                fontSize: "0.875rem",
+              }}>
+                {t('app.search')}:
+              </label>
+              <div style={{ position: "relative" }}>
+                <FiSearch style={{
+                  position: "absolute",
+                  left: "0.875rem",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "#94a3b8",
+                  width: "16px",
+                  height: "16px"
+                }} />
+                <input
+                  type="text"
+                  placeholder="Tìm theo tiêu đề, tác giả, track, tóm tắt..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem 0.875rem 0.5rem 2.5rem",
+                    borderRadius: "8px",
+                    border: "1.5px solid #e2e8f0",
+                    fontSize: "0.8125rem",
+                    background: "white",
+                    color: "#475569",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Status Filter */}
+            <div>
+              <label style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: 600,
+                color: "#64748b",
+                fontSize: "0.875rem",
+              }}>
+                {t('app.filter')}:
+              </label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.5rem 0.875rem",
+                  borderRadius: "8px",
+                  border: "1.5px solid #e2e8f0",
+                  fontSize: "0.8125rem",
+                  background: "white",
+                  color: "#475569",
+                }}
+              >
+                <option value="ALL">Tất cả trạng thái</option>
+                <option value="SUBMITTED">Đã nộp</option>
+                <option value="UNDER_REVIEW">Đang đánh giá</option>
+                <option value="ACCEPTED">Chấp nhận</option>
+                <option value="REJECTED">Từ chối</option>
+                <option value="WITHDRAWN">Đã rút</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
 
       {!loading && !error && papers.length > 0 && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
@@ -127,8 +241,10 @@ const AdminConferenceSubmissions = () => {
               <tr><td colSpan={7} className="table-empty">{t('app.loading')}</td></tr>
             ) : error ? (
               <tr><td colSpan={7} className="table-empty" style={{ color: "#d72d2d" }}>{error}</td></tr>
-            ) : papers.length === 0 ? (
-              <tr><td colSpan={7} className="table-empty">{t('admin.conferenceSubmissions.noPapers')}</td></tr>
+            ) : filteredPapers.length === 0 ? (
+              <tr><td colSpan={7} className="table-empty">
+                {searchQuery || statusFilter !== "ALL" ? "Không tìm thấy kết quả phù hợp" : t('admin.conferenceSubmissions.noPapers')}
+              </td></tr>
             ) : (
               paginatedItems.map((paper) => {
                 const authorInfo = getAuthorInfo(paper);
@@ -159,8 +275,8 @@ const AdminConferenceSubmissions = () => {
         </table>
       </div>
 
-      {!loading && papers.length > 0 && (
-        <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={papers.length} itemsPerPage={20} onPageChange={setCurrentPage} itemName={t('admin.conferenceSubmissions.submissions')} />
+      {!loading && filteredPapers.length > 0 && (
+        <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredPapers.length} itemsPerPage={20} onPageChange={setCurrentPage} itemName={t('admin.conferenceSubmissions.submissions')} />
       )}
     </AdminLayout>
   );
