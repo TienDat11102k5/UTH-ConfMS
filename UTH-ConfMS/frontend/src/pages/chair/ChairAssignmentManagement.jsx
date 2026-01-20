@@ -385,6 +385,29 @@ const ChairAssignmentManagement = () => {
             {t('chair.assignments.pageSubtitle')}
           </p>
         </div>
+
+        <div className="data-page-header-right">
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={() => window.location.href = "/chair/coi"}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem"
+            }}
+          >
+            <span style={{ fontSize: "1.1em" }}>⚠️</span>
+            Xem xung đột lợi ích
+          </button>
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={() => window.history.back()}
+          >
+            {t('app.back')}
+          </button>
+        </div>
       </div>
 
       {/* Conference Selector */}

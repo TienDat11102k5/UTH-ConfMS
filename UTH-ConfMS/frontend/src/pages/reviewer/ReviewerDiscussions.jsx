@@ -22,6 +22,7 @@ const ReviewerDiscussions = () => {
   const [newComment, setNewComment] = useState("");
   const [replyTo, setReplyTo] = useState(null);
   const [replyContent, setReplyContent] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Toast notifications
   const [toasts, setToasts] = useState([]);
@@ -187,6 +188,15 @@ const ReviewerDiscussions = () => {
 
   const organizedDiscussions = organizeDiscussions();
 
+  // Filter papers by search query
+  const filteredPapers = papers.filter(paper => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return paper.title?.toLowerCase().includes(query) ||
+           paper.track?.name?.toLowerCase().includes(query) ||
+           paper.mainAuthor?.fullName?.toLowerCase().includes(query);
+  });
+
   return (
     <DashboardLayout
       roleLabel="Reviewer"
@@ -207,14 +217,14 @@ const ReviewerDiscussions = () => {
           </p>
         </div>
         <div className="data-page-header-right">
-          <button className="btn-secondary" onClick={() => navigate(-1)}>
-            ← {t('common.back')}
+          <button className="btn-secondary" onClick={() => navigate("/reviewer")}>
+            {t('app.back')}
           </button>
         </div>
       </div>
 
 
-      {/* Paper Selector */}
+      {/* Paper Selector with Search */}
       <div style={{
         marginBottom: "1.5rem",
         background: "white",
@@ -232,6 +242,36 @@ const ReviewerDiscussions = () => {
         }}>
           {t('reviewer.discussionsPage.selectPaper')}:
         </label>
+        
+        {/* Search Input */}
+        <div style={{ position: "relative", marginBottom: "0.75rem" }}>
+          <FiMessageSquare style={{
+            position: "absolute",
+            left: "0.875rem",
+            top: "50%",
+            transform: "translateY(-50%)",
+            color: "#94a3b8",
+            width: "16px",
+            height: "16px"
+          }} />
+          <input
+            type="text"
+            placeholder={t('reviewer.discussionsPage.searchPlaceholder') || "Tìm kiếm bài báo..."}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "0.5rem 0.875rem 0.5rem 2.5rem",
+              borderRadius: "8px",
+              border: "1.5px solid #e2e8f0",
+              fontSize: "0.8125rem",
+              background: "white",
+              color: "#475569",
+            }}
+          />
+        </div>
+
+        {/* Dropdown Select */}
         <select
           value={selectedPaperId}
           onChange={(e) => setSelectedPaperId(e.target.value)}
@@ -248,12 +288,34 @@ const ReviewerDiscussions = () => {
           }}
         >
           <option value="">-- {t('reviewer.discussionsPage.selectPaper')} --</option>
-          {papers.map((paper) => (
+          {filteredPapers.map((paper) => (
             <option key={paper.id} value={paper.id}>
               {paper.title} ({t('reviewer.discussionsPage.topic')}: {paper.track?.name})
             </option>
           ))}
         </select>
+        
+        {searchQuery && filteredPapers.length === 0 && (
+          <div style={{
+            marginTop: "0.5rem",
+            fontSize: "0.8125rem",
+            color: "#94a3b8",
+            fontStyle: "italic"
+          }}>
+            {t('reviewer.discussionsPage.noResults') || "Không tìm thấy bài báo phù hợp"}
+          </div>
+        )}
+        
+        {searchQuery && filteredPapers.length > 0 && (
+          <div style={{
+            marginTop: "0.5rem",
+            fontSize: "0.8125rem",
+            color: "#0d9488",
+            fontWeight: 500
+          }}>
+            {t('reviewer.discussionsPage.foundResults') || "Tìm thấy"} {filteredPapers.length} {t('reviewer.discussionsPage.papers') || "bài báo"}
+          </div>
+        )}
       </div>
 
       {selectedPaperId && (

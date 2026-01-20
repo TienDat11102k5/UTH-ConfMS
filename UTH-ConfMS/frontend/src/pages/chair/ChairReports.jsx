@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
@@ -9,6 +10,7 @@ import "../../styles/ChairReports.css";
 
 const ChairReports = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [conferences, setConferences] = useState([]);
   const [selectedConference, setSelectedConference] = useState("ALL");
   const [papers, setPapers] = useState([]);
@@ -321,6 +323,16 @@ const ChairReports = () => {
           <p className="data-page-subtitle">
             {t('chair.reports.pageSubtitle')}
           </p>
+        </div>
+
+        <div className="data-page-header-right">
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={() => navigate("/chair")}
+          >
+            {t('app.back')}
+          </button>
         </div>
       </div>
 

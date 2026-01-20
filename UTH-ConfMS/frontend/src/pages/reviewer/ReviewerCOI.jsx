@@ -157,8 +157,8 @@ const ReviewerCOI = () => {
           </p>
         </div>
         <div className="data-page-header-right">
-          <button className="btn-secondary" onClick={() => navigate(-1)}>
-            ← {t('common.back')}
+          <button className="btn-secondary" onClick={() => navigate("/reviewer")}>
+            {t('app.back')}
           </button>
         </div>
       </div>

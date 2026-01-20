@@ -8,10 +8,25 @@
   color: #0f172a;
   box-shadow: 0 2px 8px rgba(13, 148, 136, 0.12);
   border: 2px solid #99f6e4;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
 }
 
 .assignments-header-content {
-  margin-bottom: 1rem;
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.assignments-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.assignments-stats-container {
+  margin-bottom: 1.25rem;
 }
 
 .assignments-breadcrumb {
@@ -300,6 +315,7 @@
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   min-height: 3.9em;

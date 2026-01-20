@@ -176,6 +176,16 @@ const ChairProceedingsPreview = () => {
             {t('chair.proceedings.pageSubtitle')}
           </p>
         </div>
+
+        <div className="data-page-header-right">
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={() => navigate("/chair")}
+          >
+            {t('app.back')}
+          </button>
+        </div>
       </div>
 
       {/* Conference Selector & Actions */}

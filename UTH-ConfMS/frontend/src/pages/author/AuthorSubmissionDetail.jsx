@@ -5,20 +5,19 @@ import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import { CardSkeleton } from "../../components/LoadingSkeleton";
-import { formatDateTime } from "../../utils/dateUtils";
 
 const formatDate = (value) => {
   if (!value) return "";
   try {
     const date = typeof value === 'string' ? new Date(value) : value;
     if (isNaN(date.getTime())) return "";
-    const vietnamDate = new Date(date.getTime() + (7 * 60 * 60 * 1000));
-    const day = String(vietnamDate.getDate()).padStart(2, '0');
-    const month = String(vietnamDate.getMonth() + 1).padStart(2, '0');
-    const year = vietnamDate.getFullYear();
-    const hour = String(vietnamDate.getHours()).padStart(2, '0');
-    const minute = String(vietnamDate.getMinutes()).padStart(2, '0');
-    const second = String(vietnamDate.getSeconds()).padStart(2, '0');
+    // Không cần cộng thêm timezone vì backend đã trả về đúng giờ
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    const second = String(date.getSeconds()).padStart(2, '0');
     return `${day}/${month}/${year} ${hour}:${minute}:${second}`;
   } catch {
     return value;
@@ -241,7 +240,7 @@ const AuthorSubmissionDetail = () => {
 
           {/* Keywords & Info */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            {submission.keywords && (
+            {submission.keywords && submission.keywords.trim() !== '' ? (
               <div style={{ background: "white", borderRadius: "12px", padding: "1.5rem", boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)", border: "1px solid #e5e7eb" }}>
                 <div style={{ marginBottom: "1rem", fontWeight: 600, color: "#64748b", fontSize: "0.875rem" }}>{t('common.keywords')}</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
@@ -250,7 +249,7 @@ const AuthorSubmissionDetail = () => {
                   ))}
                 </div>
               </div>
-            )}
+            ) : null}
 
             <div style={{ background: "white", borderRadius: "12px", padding: "1.5rem", boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)", border: "1px solid #e5e7eb" }}>
               <div style={{ marginBottom: "1rem", fontWeight: 600, color: "#64748b", fontSize: "0.875rem" }}>{t('app.details')}</div>

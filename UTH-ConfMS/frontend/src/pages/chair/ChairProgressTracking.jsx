@@ -203,36 +203,6 @@ const ChairProgressTracking = () => {
       title={t('chair.progress.title')}
       subtitle={t('chair.progress.subtitle')}
     >
-      <div style={{ marginBottom: "1rem" }}>
-        <button
-          className="btn-back"
-          onClick={() => navigate(-1)}
-          style={{
-            padding: "0.5rem 1rem",
-            background: "transparent",
-            border: "1.5px solid #e2e8f0",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontSize: "0.875rem",
-            fontWeight: 600,
-            color: "#475569",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            transition: "all 0.2s"
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.background = "#f8fafc";
-            e.currentTarget.style.borderColor = "#cbd5e1";
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.background = "transparent";
-            e.currentTarget.style.borderColor = "#e2e8f0";
-          }}
-        >
-          ← {t('chair.progress.backToDashboard')}
-        </button>
-      </div>
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
@@ -242,6 +212,16 @@ const ChairProgressTracking = () => {
           <p className="data-page-subtitle">
             {t('chair.progress.pageSubtitle')}
           </p>
+        </div>
+
+        <div className="data-page-header-right">
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={() => navigate("/chair")}
+          >
+            {t('app.back')}
+          </button>
         </div>
       </div>
 

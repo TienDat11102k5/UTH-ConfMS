@@ -48,6 +48,8 @@ import ReviewerDiscussions from "./pages/reviewer/ReviewerDiscussions.jsx";
 // --- Chair Imports ---
 import ChairDashboard from "./pages/chair/ChairDashboard.jsx";
 import ChairAssignmentManagement from "./pages/chair/ChairAssignmentManagement.jsx";
+import ChairCOIManagement from "./pages/chair/ChairCOIManagement.jsx";
+import ChairCOIDetail from "./pages/chair/ChairCOIDetail.jsx";
 import ChairDecisionPage from "./pages/chair/ChairDecisionPage.jsx";
 import ChairProgressTracking from "./pages/chair/ChairProgressTracking.jsx";
 import ChairReports from "./pages/chair/ChairReports.jsx";
@@ -285,6 +287,22 @@ const App = () => {
           element={
             <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
               <ChairAssignmentManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chair/coi"
+          element={
+            <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
+              <ChairCOIManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chair/coi/:id"
+          element={
+            <ProtectedRoute requiredRole={["CHAIR", "TRACK_CHAIR"]}>
+              <ChairCOIDetail />
             </ProtectedRoute>
           }
         />

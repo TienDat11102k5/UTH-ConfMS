@@ -1,11 +1,10 @@
 // src/pages/author/AuthorNewSubmissionPage.jsx
-import React, { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
 import { ToastContainer } from "../../components/Toast";
-import { formatDateTime } from "../../utils/dateUtils";
 
 const AIModal = ({ isOpen, title, onClose, children }) => {
   if (!isOpen) return null;
@@ -36,11 +35,7 @@ const AuthorNewSubmissionPage = () => {
 
   const [conference, setConference] = useState(null);
   const [tracks, setTracks] = useState([]);
-  const [loadingConf, setLoadingConf] = useState(false);
-  const [confError, setConfError] = useState("");
   const [conferences, setConferences] = useState([]);
-  const [loadingConfs, setLoadingConfs] = useState(false);
-  const [confListError, setConfListError] = useState("");
 
   const [formValues, setFormValues] = useState({ title: "", abstractText: "", keywords: "", trackId: "" });
   const [file, setFile] = useState(null);
@@ -65,16 +60,13 @@ const AuthorNewSubmissionPage = () => {
     let ignore = false;
     const loadConferences = async () => {
       try {
-        setLoadingConfs(true);
-        setConfListError("");
         const res = await apiClient.get("/conferences", { skipAuth: true });
         if (ignore) return;
         setConferences(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         if (ignore) return;
         if (err?.response?.status === 401 || err?.response?.status === 403) { navigate("/login"); return; }
-        setConfListError(t('author.newSubmission.loadConferencesError'));
-      } finally { if (!ignore) setLoadingConfs(false); }
+      }
     };
     loadConferences();
     return () => { ignore = true; };
@@ -84,8 +76,6 @@ const AuthorNewSubmissionPage = () => {
     if (!confId) return;
     let ignore = false;
     const loadConference = async () => {
-      setLoadingConf(true);
-      setConfError("");
       try {
         const res = await apiClient.get(`/conferences/${confId}`, { skipAuth: true });
         if (ignore) return;
@@ -95,8 +85,9 @@ const AuthorNewSubmissionPage = () => {
         if (fetchedTracks.length) {
           setFormValues((prev) => ({ ...prev, trackId: prev.trackId || (fetchedTracks[0].id ? String(fetchedTracks[0].id) : "") }));
         }
-      } catch (err) { if (!ignore) setConfError(t('author.newSubmission.loadConferenceError')); }
-      finally { if (!ignore) setLoadingConf(false); }
+      } catch (err) { 
+        if (!ignore) console.error("Error loading conference:", err);
+      }
     };
     loadConference();
     return () => { ignore = true; };

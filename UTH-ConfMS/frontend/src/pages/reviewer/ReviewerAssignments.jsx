@@ -233,7 +233,30 @@ const ReviewerAssignments = () => {
           </div>
           <h2 className="assignments-title">{t('reviewer.assignments.title')}</h2>
         </div>
-        
+
+        <div className="assignments-header-actions">
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={() => window.location.href = "/reviewer"}
+            style={{
+              padding: "0.5rem 1rem",
+              fontSize: "0.875rem",
+              fontWeight: 600,
+              borderRadius: "8px",
+              border: "1.5px solid #e2e8f0",
+              background: "white",
+              color: "#475569",
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}
+          >
+            {t('app.back')}
+          </button>
+        </div>
+      </div>
+
+      <div className="assignments-stats-container">
         <div className="assignments-stats">
           <div className="stat-item">
             <span className="stat-number">{assignments.length}</span>

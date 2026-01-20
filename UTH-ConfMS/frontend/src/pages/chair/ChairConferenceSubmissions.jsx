@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
@@ -6,6 +6,7 @@ import DashboardLayout from "../../components/Layout/DashboardLayout";
 import Pagination from "../../components/Pagination";
 import EmptyState from "../../components/EmptyState";
 import { usePagination } from "../../hooks/usePagination";
+import { FiSearch } from "react-icons/fi";
 
 const ChairConferenceSubmissions = () => {
   const { t } = useTranslation();
@@ -16,9 +17,33 @@ const ChairConferenceSubmissions = () => {
   const [papers, setPapers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+
+  // Filter papers based on search and status
+  const filteredPapers = useMemo(() => {
+    let filtered = papers;
+
+    // Filter by status
+    if (statusFilter !== "ALL") {
+      filtered = filtered.filter(p => p.status === statusFilter);
+    }
+
+    // Filter by search query (title or author)
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(p => 
+        p.title?.toLowerCase().includes(query) ||
+        p.mainAuthor?.fullName?.toLowerCase().includes(query) ||
+        p.mainAuthor?.email?.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
+  }, [papers, searchQuery, statusFilter]);
 
   const { currentPage, setCurrentPage, totalPages, paginatedItems } =
-    usePagination(papers, 20);
+    usePagination(filteredPapers, 20);
 
   useEffect(() => {
     fetchData();
@@ -149,6 +174,94 @@ const ChairConferenceSubmissions = () => {
         </div>
       )}
 
+      {/* Search and Filter */}
+      {!loading && !error && papers.length > 0 && (
+        <div
+          style={{
+            marginBottom: "1.25rem",
+            background: "white",
+            borderRadius: "10px",
+            padding: "1rem 1.25rem",
+            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.08)",
+            border: "1px solid #e2e8f0",
+          }}
+        >
+          <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
+            <div style={{ flex: 1 }}>
+              <label style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: 600,
+                color: "#64748b",
+                fontSize: "0.875rem",
+              }}>
+                {t('chair.decisions.search')}
+              </label>
+              <div style={{ position: "relative" }}>
+                <FiSearch style={{
+                  position: "absolute",
+                  left: "0.875rem",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "#94a3b8",
+                  width: "16px",
+                  height: "16px"
+                }} />
+                <input
+                  type="text"
+                  placeholder={t('chair.decisions.searchPlaceholder')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem 0.875rem 0.5rem 2.5rem",
+                    borderRadius: "8px",
+                    border: "1.5px solid #e2e8f0",
+                    fontSize: "0.8125rem",
+                    background: "white",
+                    color: "#475569",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ flex: 1 }}>
+              <label style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: 600,
+                color: "#64748b",
+                fontSize: "0.875rem",
+              }}>
+                {t('chair.decisions.filter')}
+              </label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.5rem 0.875rem",
+                  borderRadius: "8px",
+                  border: "1.5px solid #e2e8f0",
+                  fontSize: "0.8125rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background: "white",
+                  color: "#475569",
+                }}
+              >
+                <option value="ALL">{t('chair.decisions.all')}</option>
+                <option value="SUBMITTED">{t('chair.assignments.paperSubmitted')}</option>
+                <option value="UNDER_REVIEW">{t('chair.assignments.paperUnderReview')}</option>
+                <option value="ACCEPTED">{t('chair.assignments.paperAccepted')}</option>
+                <option value="REJECTED">{t('chair.assignments.paperRejected')}</option>
+                <option value="WITHDRAWN">{t('chair.assignments.paperWithdrawn')}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="table-wrapper">
         <table className="simple-table">
           <thead>
@@ -178,6 +291,17 @@ const ChairConferenceSubmissions = () => {
                     icon="inbox"
                     title={t('chair.assignments.noPapers')}
                     description={t('chair.assignments.noPapers')}
+                    size="medium"
+                  />
+                </td>
+              </tr>
+            ) : filteredPapers.length === 0 ? (
+              <tr>
+                <td colSpan={7} style={{ padding: 0, border: 'none' }}>
+                  <EmptyState
+                    icon="search"
+                    title={t('chair.decisions.noResults')}
+                    description={t('chair.decisions.tryDifferentSearch')}
                     size="medium"
                   />
                 </td>
@@ -230,11 +354,11 @@ const ChairConferenceSubmissions = () => {
         </table>
       </div>
 
-      {!loading && papers.length > 0 && (
+      {!loading && filteredPapers.length > 0 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
-          totalItems={papers.length}
+          totalItems={filteredPapers.length}
           itemsPerPage={20}
           onPageChange={setCurrentPage}
           itemName={t('common.submissions')}

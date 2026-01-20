@@ -101,6 +101,13 @@ const ChairConferenceManager = () => {
           >
             + {t('chair.conferences.createConference')}
           </button>
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={() => navigate("/chair")}
+          >
+            {t('app.back')}
+          </button>
         </div>
       </div>
 
