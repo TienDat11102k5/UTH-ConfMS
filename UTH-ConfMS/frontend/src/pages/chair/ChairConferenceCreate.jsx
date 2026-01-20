@@ -78,7 +78,12 @@ const ChairConferenceCreate = () => {
       }
     }
 
-    const cleanTracks = formData.tracks.filter((t) => t.name.trim() !== "");
+    const cleanTracks = formData.tracks.filter((t) => t.name.trim() !== "").map(track => ({
+      ...track,
+      sessionTime: track.sessionStartTime && track.sessionEndTime 
+        ? `${track.sessionStartTime} - ${track.sessionEndTime}`
+        : track.sessionTime || ""
+    }));
 
     const convertToISO = (dateTimeLocal) => {
       if (!dateTimeLocal) return null;
@@ -198,17 +203,31 @@ const ChairConferenceCreate = () => {
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>{t('chair.conferenceForm.trackSessionTime')}</label>
-                  <input style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} placeholder={t('chair.conferenceForm.trackSessionTimePlaceholder')} value={track.sessionTime || ""} onChange={(e) => handleTrackChange(index, "sessionTime", e.target.value)} />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                    <div>
+                      <input 
+                        type="time" 
+                        style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} 
+                        value={track.sessionStartTime || ""} 
+                        onChange={(e) => handleTrackChange(index, "sessionStartTime", e.target.value)} 
+                      />
+                      <div style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: "0.25rem" }}>Giờ bắt đầu</div>
+                    </div>
+                    <div>
+                      <input 
+                        type="time" 
+                        style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} 
+                        value={track.sessionEndTime || ""} 
+                        onChange={(e) => handleTrackChange(index, "sessionEndTime", e.target.value)} 
+                      />
+                      <div style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: "0.25rem" }}>Giờ kết thúc</div>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>{t('chair.conferenceForm.trackRoom')}</label>
                   <input style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} placeholder={t('chair.conferenceForm.trackRoomPlaceholder')} value={track.room || ""} onChange={(e) => handleTrackChange(index, "room", e.target.value)} />
                 </div>
-              </div>
-
-              <div style={{ marginLeft: "40px", marginTop: "0.75rem" }}>
-                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>{t('chair.conferenceForm.trackDescription')}</label>
-                <textarea style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem", minHeight: "60px", resize: "vertical" }} placeholder={t('chair.conferenceForm.trackDescriptionPlaceholder')} value={track.description || ""} onChange={(e) => handleTrackChange(index, "description", e.target.value)} />
               </div>
             </div>
           ))}
@@ -217,7 +236,7 @@ const ChairConferenceCreate = () => {
 
         <div className="form-actions" style={{ marginTop: "2rem", display: "flex", gap: "1rem", paddingTop: "1.5rem", borderTop: "2px solid #e5e7eb" }}>
           <button className="btn-primary" type="submit" disabled={submitting} style={{ minWidth: "140px" }}>{submitting ? t('chair.conferenceForm.creating') : t('chair.conferenceForm.createButton')}</button>
-          <button type="button" className="btn-secondary" onClick={() => navigate("/chair/conferences")} style={{ minWidth: "120px" }}>{t('app.cancel')}</button>
+          <button type="button" className="btn-secondary" onClick={() => navigate("/chair/conferences")} style={{ minWidth: "120px" }}>{t('app.back')}</button>
         </div>
       </form>
 

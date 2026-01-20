@@ -91,9 +91,6 @@ const ChairConferenceManager = () => {
         </div>
 
         <div className="data-page-header-right">
-          <button className="btn-secondary" type="button" onClick={fetchConfs}>
-            {t('app.refresh')}
-          </button>
           <button
             className="btn-primary"
             type="button"

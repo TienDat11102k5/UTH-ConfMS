@@ -62,7 +62,15 @@ const ChairConferenceEdit = () => {
           reviewDeadline: formatDateTimeForInput(data.reviewDeadline),
           cameraReadyDeadline: formatDateTimeForInput(data.cameraReadyDeadline),
           blindReview: data.blindReview !== undefined ? data.blindReview : true,
-          tracks: data.tracks || [],
+          tracks: (data.tracks || []).map(track => {
+            // Split sessionTime "09:00 - 11:00" into start and end
+            const timeParts = track.sessionTime ? track.sessionTime.split(' - ') : [];
+            return {
+              ...track,
+              sessionStartTime: timeParts[0] || "",
+              sessionEndTime: timeParts[1] || ""
+            };
+          }),
         });
       } catch (err) {
         console.error(err);
@@ -140,7 +148,12 @@ const ChairConferenceEdit = () => {
 
     try {
       setSaving(true);
-      const cleanTracks = formData.tracks.filter((t) => t.name && t.name.trim() !== "");
+      const cleanTracks = formData.tracks.filter((t) => t.name && t.name.trim() !== "").map(track => ({
+        ...track,
+        sessionTime: track.sessionStartTime && track.sessionEndTime 
+          ? `${track.sessionStartTime} - ${track.sessionEndTime}`
+          : track.sessionTime || ""
+      }));
 
       // Convert datetime-local sang ISO string
       // datetime-local đã là giờ local (VN), chỉ cần thêm :00 và Z
@@ -182,36 +195,6 @@ const ChairConferenceEdit = () => {
 
   return (
     <DashboardLayout roleLabel="Program Chair" title={`${t('chair.conferenceForm.editTitle')} #${id}`} subtitle={t('chair.conferenceForm.editSubtitle')}>
-      <div style={{ marginBottom: "1rem" }}>
-        <button 
-          className="btn-back" 
-          onClick={() => navigate(-1)}
-          style={{
-            padding: "0.5rem 1rem",
-            background: "transparent",
-            border: "1.5px solid #e2e8f0",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontSize: "0.875rem",
-            fontWeight: 600,
-            color: "#475569",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            transition: "all 0.2s"
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.background = "#f8fafc";
-            e.currentTarget.style.borderColor = "#cbd5e1";
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.background = "transparent";
-            e.currentTarget.style.borderColor = "#e2e8f0";
-          }}
-        >
-          ← {t('chair.conferenceForm.backToConferences')}
-        </button>
-      </div>
       <div className="data-page-header">
         <div className="data-page-header-left">
           <div className="breadcrumb">
@@ -222,6 +205,16 @@ const ChairConferenceEdit = () => {
             <span className="breadcrumb-current">{t('chair.conferenceForm.breadcrumbEdit')} #{id}</span>
           </div>
           <h2 className="data-page-title">{t('chair.conferenceForm.editPageTitle')}</h2>
+        </div>
+
+        <div className="data-page-header-right">
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={() => navigate("/chair/conferences")}
+          >
+            {t('app.back')}
+          </button>
         </div>
       </div>
 
@@ -438,18 +431,38 @@ const ChairConferenceEdit = () => {
                   }}>
                     {t('chair.conferenceForm.trackSessionTime')}
                   </label>
-                  <input 
-                    style={{ 
-                      width: "100%",
-                      fontSize: "0.9rem",
-                      border: "1px solid #d1d5db",
-                      borderRadius: "6px",
-                      padding: "0.5rem 0.75rem"
-                    }} 
-                    placeholder={t('chair.conferenceForm.trackSessionTimePlaceholder')} 
-                    value={track.sessionTime || ""} 
-                    onChange={(e) => handleTrackChange(index, 'sessionTime', e.target.value)} 
-                  />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                    <div>
+                      <input 
+                        type="time" 
+                        style={{ 
+                          width: "100%",
+                          fontSize: "0.9rem",
+                          border: "1px solid #d1d5db",
+                          borderRadius: "6px",
+                          padding: "0.5rem 0.75rem"
+                        }} 
+                        value={track.sessionStartTime || ""} 
+                        onChange={(e) => handleTrackChange(index, 'sessionStartTime', e.target.value)} 
+                      />
+                      <div style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: "0.25rem" }}>Giờ bắt đầu</div>
+                    </div>
+                    <div>
+                      <input 
+                        type="time" 
+                        style={{ 
+                          width: "100%",
+                          fontSize: "0.9rem",
+                          border: "1px solid #d1d5db",
+                          borderRadius: "6px",
+                          padding: "0.5rem 0.75rem"
+                        }} 
+                        value={track.sessionEndTime || ""} 
+                        onChange={(e) => handleTrackChange(index, 'sessionEndTime', e.target.value)} 
+                      />
+                      <div style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: "0.25rem" }}>Giờ kết thúc</div>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <label style={{ 
@@ -474,32 +487,6 @@ const ChairConferenceEdit = () => {
                     onChange={(e) => handleTrackChange(index, 'room', e.target.value)} 
                   />
                 </div>
-              </div>
-              
-              <div style={{ marginLeft: "40px", marginTop: "0.75rem" }}>
-                <label style={{ 
-                  display: "block",
-                  fontSize: "0.875rem",
-                  fontWeight: 500,
-                  color: "#374151",
-                  marginBottom: "0.25rem"
-                }}>
-                  {t('chair.conferenceForm.trackDescription')}
-                </label>
-                <textarea 
-                  style={{ 
-                    width: "100%",
-                    fontSize: "0.9rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "6px",
-                    padding: "0.5rem 0.75rem",
-                    minHeight: "60px",
-                    resize: "vertical"
-                  }} 
-                  placeholder={t('chair.conferenceForm.trackDescriptionPlaceholder')} 
-                  value={track.description || ""} 
-                  onChange={(e) => handleTrackChange(index, 'description', e.target.value)} 
-                />
               </div>
             </div>
           ))}
@@ -526,14 +513,6 @@ const ChairConferenceEdit = () => {
         }}>
           <button className="btn-primary" type="submit" disabled={saving} style={{ minWidth: "140px" }}>
             {saving ? t('chair.conferenceForm.saving') : t('chair.conferenceForm.saveChanges')}
-          </button>
-          <button 
-            type="button" 
-            className="btn-secondary" 
-            onClick={() => navigate("/chair/conferences")}
-            style={{ minWidth: "120px" }}
-          >
-            {t('chair.conferenceForm.back')}
           </button>
         </div>
       </form>

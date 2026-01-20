@@ -21,7 +21,7 @@ public class ReviewAssignment extends BaseEntity {
     @JoinColumn(name = "paper_id", nullable = false)
     private Paper paper;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "reviewer_id", nullable = false)
     private User reviewer;
 

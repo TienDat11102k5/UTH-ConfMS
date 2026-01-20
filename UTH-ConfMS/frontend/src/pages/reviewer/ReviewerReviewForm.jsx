@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
-import { getToken } from "../../auth";  // ✅ IMPORT getToken
+import { getToken } from "../../auth";
 import DashboardLayout from "../../components/Layout/DashboardLayout";
 import PaperSynopsisModal from "../../components/PaperSynopsisModal";
 import { CardSkeleton } from "../../components/LoadingSkeleton";

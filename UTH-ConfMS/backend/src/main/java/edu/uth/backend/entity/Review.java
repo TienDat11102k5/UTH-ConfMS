@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Review extends BaseEntity {
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "assignment_id", unique = true, nullable = false)
     @JsonIgnoreProperties({"review", "paper"})  // Prevent circular reference
     private ReviewAssignment assignment;

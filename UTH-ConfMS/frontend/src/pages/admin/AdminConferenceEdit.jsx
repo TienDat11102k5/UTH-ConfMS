@@ -35,7 +35,15 @@ const AdminConferenceEdit = () => {
           name: data.name || "", description: data.description || "",
           startDate: formatDateTimeForInput(data.startDate), endDate: formatDateTimeForInput(data.endDate),
           submissionDeadline: formatDateTimeForInput(data.submissionDeadline), reviewDeadline: formatDateTimeForInput(data.reviewDeadline),
-          cameraReadyDeadline: formatDateTimeForInput(data.cameraReadyDeadline), blindReview: data.blindReview !== undefined ? data.blindReview : true, tracks: data.tracks || [],
+          cameraReadyDeadline: formatDateTimeForInput(data.cameraReadyDeadline), blindReview: data.blindReview !== undefined ? data.blindReview : true, 
+          tracks: (data.tracks || []).map(track => {
+            const timeParts = track.sessionTime ? track.sessionTime.split(' - ') : [];
+            return {
+              ...track,
+              sessionStartTime: timeParts[0] || "",
+              sessionEndTime: timeParts[1] || ""
+            };
+          }),
         });
       } catch (err) { console.error(err); setError(t('admin.conferenceEdit.loadError')); }
       finally { setLoading(false); }
@@ -74,7 +82,12 @@ const AdminConferenceEdit = () => {
 
     try {
       setSaving(true);
-      const cleanTracks = formData.tracks.filter((t) => t.name && t.name.trim() !== "");
+      const cleanTracks = formData.tracks.filter((t) => t.name && t.name.trim() !== "").map(track => ({
+        ...track,
+        sessionTime: track.sessionStartTime && track.sessionEndTime 
+          ? `${track.sessionStartTime} - ${track.sessionEndTime}`
+          : track.sessionTime || ""
+      }));
       const convertToISO = (dateTimeLocal) => { if (!dateTimeLocal) return null; return dateTimeLocal + ':00'; };
       const payload = {
         ...formData,
@@ -175,17 +188,31 @@ const AdminConferenceEdit = () => {
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>{t('admin.conferenceCreate.sessionTime')}</label>
-                  <input style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} placeholder={t('admin.conferenceCreate.sessionTimePlaceholder')} value={track.sessionTime || ""} onChange={(e) => handleTrackChange(index, 'sessionTime', e.target.value)} />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                    <div>
+                      <input 
+                        type="time" 
+                        style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} 
+                        value={track.sessionStartTime || ""} 
+                        onChange={(e) => handleTrackChange(index, 'sessionStartTime', e.target.value)} 
+                      />
+                      <div style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: "0.25rem" }}>Giờ bắt đầu</div>
+                    </div>
+                    <div>
+                      <input 
+                        type="time" 
+                        style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} 
+                        value={track.sessionEndTime || ""} 
+                        onChange={(e) => handleTrackChange(index, 'sessionEndTime', e.target.value)} 
+                      />
+                      <div style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: "0.25rem" }}>Giờ kết thúc</div>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>{t('admin.conferenceCreate.room')}</label>
                   <input style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} placeholder={t('admin.conferenceCreate.roomPlaceholder')} value={track.room || ""} onChange={(e) => handleTrackChange(index, 'room', e.target.value)} />
                 </div>
-              </div>
-              
-              <div style={{ marginLeft: "40px", marginTop: "0.75rem" }}>
-                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>{t('admin.conferenceCreate.trackDescription')}</label>
-                <textarea style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem", minHeight: "60px", resize: "vertical" }} placeholder={t('admin.conferenceCreate.trackDescriptionPlaceholder')} value={track.description || ""} onChange={(e) => handleTrackChange(index, 'description', e.target.value)} />
               </div>
             </div>
           ))}

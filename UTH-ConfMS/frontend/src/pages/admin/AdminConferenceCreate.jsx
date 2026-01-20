@@ -35,7 +35,12 @@ const AdminConferenceCreate = () => {
       const endDateTime = new Date(formData.endDate);
       if (endDateTime.getTime() <= startDateTime.getTime()) { setError(t('admin.conferenceCreate.endAfterStart')); return; }
     }
-    const cleanTracks = formData.tracks.filter((t) => t.name.trim() !== "");
+    const cleanTracks = formData.tracks.filter((t) => t.name.trim() !== "").map(track => ({
+      ...track,
+      sessionTime: track.sessionStartTime && track.sessionEndTime 
+        ? `${track.sessionStartTime} - ${track.sessionEndTime}`
+        : track.sessionTime || ""
+    }));
     const convertToISO = (dateTimeLocal) => { if (!dateTimeLocal) return null; return dateTimeLocal + ':00'; };
     const payload = { ...formData, startDate: convertToISO(formData.startDate), endDate: convertToISO(formData.endDate), submissionDeadline: convertToISO(formData.submissionDeadline), reviewDeadline: convertToISO(formData.reviewDeadline), cameraReadyDeadline: convertToISO(formData.cameraReadyDeadline), tracks: cleanTracks };
 
@@ -125,16 +130,31 @@ const AdminConferenceCreate = () => {
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>{t('admin.conferenceCreate.sessionTime')}</label>
-                  <input style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} placeholder={t('admin.conferenceCreate.sessionTimePlaceholder')} value={track.sessionTime || ""} onChange={(e) => handleTrackChange(index, "sessionTime", e.target.value)} />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                    <div>
+                      <input 
+                        type="time" 
+                        style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} 
+                        value={track.sessionStartTime || ""} 
+                        onChange={(e) => handleTrackChange(index, "sessionStartTime", e.target.value)} 
+                      />
+                      <div style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: "0.25rem" }}>Giờ bắt đầu</div>
+                    </div>
+                    <div>
+                      <input 
+                        type="time" 
+                        style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} 
+                        value={track.sessionEndTime || ""} 
+                        onChange={(e) => handleTrackChange(index, "sessionEndTime", e.target.value)} 
+                      />
+                      <div style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: "0.25rem" }}>Giờ kết thúc</div>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>{t('admin.conferenceCreate.room')}</label>
                   <input style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem" }} placeholder={t('admin.conferenceCreate.roomPlaceholder')} value={track.room || ""} onChange={(e) => handleTrackChange(index, "room", e.target.value)} />
                 </div>
-              </div>
-              <div style={{ marginLeft: "40px", marginTop: "0.75rem" }}>
-                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "#374151", marginBottom: "0.25rem" }}>{t('admin.conferenceCreate.trackDescription')}</label>
-                <textarea style={{ width: "100%", fontSize: "0.9rem", border: "1px solid #d1d5db", borderRadius: "6px", padding: "0.5rem 0.75rem", minHeight: "60px", resize: "vertical" }} placeholder={t('admin.conferenceCreate.trackDescriptionPlaceholder')} value={track.description || ""} onChange={(e) => handleTrackChange(index, "description", e.target.value)} />
               </div>
             </div>
           ))}

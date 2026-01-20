@@ -64,6 +64,26 @@ const AiGovernancePage = () => {
     fetchFlags();
   }, [selectedConferenceId, t]);
 
+  // Auto-load logs when conference or feature filter changes
+  useEffect(() => {
+    if (!selectedConferenceId) return;
+    const loadLogs = async () => {
+      setLoadingLogs(true); setLogsError("");
+      try { 
+        const data = await getAuditLogs({ 
+          conferenceId: String(selectedConferenceId), 
+          feature: selectedFeature || undefined, 
+          limit: 20, 
+          offset: 0 
+        }); 
+        setLogs(data.logs || []); 
+      }
+      catch (err) { setLogsError(err.message || t('admin.aiGovernance.logsError')); }
+      finally { setLoadingLogs(false); }
+    };
+    loadLogs();
+  }, [selectedConferenceId, selectedFeature, t]);
+
   const handleToggleClick = (flag) => { setConfirmModal({ isOpen: true, flag: flag, isEnabling: !flag.enabled }); };
   const handleCloseModal = () => { setConfirmModal({ isOpen: false, flag: null, isEnabling: false }); };
 

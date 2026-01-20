@@ -28,7 +28,6 @@ const ChairDecisionPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [selectedPaper, setSelectedPaper] = useState(null);
   const [decision, setDecision] = useState("");
-  const [comment, setComment] = useState("");
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [sortBy, setSortBy] = useState('newest');
   const [searchQuery, setSearchQuery] = useState('');
@@ -237,12 +236,11 @@ const ChairDecisionPage = () => {
       await apiClient.post("/decisions", {
         paperId: selectedPaper.id,
         status: decision,
-        comment,
+        comment: null,
       });
       addToast(t('chair.decisions.decisionSuccess'), "success");
       setSelectedPaper(null);
       setDecision("");
-      setComment("");
       // Reload data
       window.location.reload();
     } catch (err) {
@@ -515,13 +513,12 @@ const ChairDecisionPage = () => {
                       )}
                     </td>
                     <td>
-                      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "nowrap", whiteSpace: "nowrap" }}>
                         <button
                           className="btn-primary table-action"
                           onClick={() => {
                             setSelectedPaper(paper);
                             setDecision("");
-                            setComment("");
                           }}
                           disabled={!ready}
                           style={{ minWidth: "110px", fontSize: "0.8125rem" }}
@@ -666,7 +663,7 @@ const ChairDecisionPage = () => {
                   }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                       <span style={{ fontWeight: 600, fontSize: "0.875rem", color: "#1f2937" }}>
-                        {t('chair.decisions.reviewer')} #{idx + 1}
+                        {review.assignment?.reviewer?.fullName || `${t('chair.decisions.reviewer')} #${idx + 1}`}
                       </span>
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <span style={{
@@ -684,9 +681,21 @@ const ChairDecisionPage = () => {
                         )}
                       </div>
                     </div>
-                    {review.comments && (
-                      <div style={{ fontSize: "0.8125rem", color: "#6b7280", fontStyle: "italic" }}>
-                        "{review.comments}"
+                    {review.commentForAuthor && (
+                      <div style={{ fontSize: "0.8125rem", color: "#6b7280", marginBottom: "0.5rem" }}>
+                        <strong>{t('chair.decisions.publicComment')}:</strong> {review.commentForAuthor}
+                      </div>
+                    )}
+                    {review.commentForPC && (
+                      <div style={{ 
+                        fontSize: "0.8125rem", 
+                        color: "#dc2626", 
+                        background: "#fef2f2",
+                        padding: "0.5rem",
+                        borderRadius: "4px",
+                        border: "1px solid #fecaca"
+                      }}>
+                        <strong>{t('chair.decisions.confidentialComment')}:</strong> {review.commentForPC}
                       </div>
                     )}
                   </div>
@@ -706,18 +715,6 @@ const ChairDecisionPage = () => {
                 <option value="ACCEPTED">✓ {t('chair.decisions.acceptOption')}</option>
                 <option value="REJECTED">✗ {t('chair.decisions.rejectOption')}</option>
               </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">{t('chair.decisions.internalNote')}</label>
-              <textarea
-                placeholder={t('chair.decisions.notePlaceholder')}
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="form-input"
-                rows={3}
-                style={{ resize: "vertical" }}
-              />
             </div>
 
             <div className="form-actions">
@@ -802,14 +799,13 @@ const ChairDecisionPage = () => {
               await apiClient.post("/decisions", {
                 paperId: emailModal.paper.id,
                 status: emailModal.decision,
-                comment: comment || t('chair.decisions.emailSentComment'),
+                comment: null,
                 skipEmail: true // Bỏ qua email tự động vì đã gửi bằng AI
               });
               addToast(t('chair.decisions.emailAndDecisionSuccess'), "success");
               setEmailModal({ show: false, paper: null, decision: null });
               setSelectedPaper(null);
               setDecision("");
-              setComment("");
               window.location.reload();
             } catch (err) {
               addToast(t('chair.decisions.emailSentButSaveError') + (err.response?.data || err.message), "warning");
