@@ -32,6 +32,11 @@ public class ReviewAssignmentService {
             if (conference.getIsLocked() != null && conference.getIsLocked()) {
                 throw new RuntimeException("Hội nghị đã bị khóa, không thể phân công reviewer!");
             }
+            if (conference.getReviewDeadline() != null && 
+                LocalDateTime.now().isAfter(conference.getReviewDeadline())) {
+                throw new RuntimeException("Đã quá hạn chấm bài! Không thể phân công reviewer. Deadline: " + 
+                    conference.getReviewDeadline().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+            }
         }
 
         // b. Kiểm tra người chấm có tồn tại không
@@ -181,6 +186,13 @@ public class ReviewAssignmentService {
     public void deleteAssignment(Long assignmentId) {
         ReviewAssignment assignment = assignmentRepo.findById(assignmentId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy assignment này!"));
+        Paper paper = assignment.getPaper();
+        if (paper.getTrack() != null && paper.getTrack().getConference() != null) {
+            Conference conference = paper.getTrack().getConference();
+            if (conference.getIsLocked() != null && conference.getIsLocked()) {
+                throw new RuntimeException("Không thể xóa assignment vì hội nghị đã bị khóa!");
+            }
+        }
         
         // Kiểm tra điều kiện: Chỉ cho xóa nếu review chưa hoàn thành
         if (assignment.getStatus() == AssignmentStatus.COMPLETED) {
@@ -188,7 +200,6 @@ public class ReviewAssignmentService {
         }
         
         // Kiểm tra paper status: Không cho xóa nếu bài đã có quyết định cuối
-        Paper paper = assignment.getPaper();
         if (paper.getStatus() == PaperStatus.ACCEPTED || 
             paper.getStatus() == PaperStatus.REJECTED || 
             paper.getStatus() == PaperStatus.WITHDRAWN) {

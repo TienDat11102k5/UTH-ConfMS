@@ -31,7 +31,7 @@ const ReviewerDashboard = () => {
     {
       id: 2,
       icon: <FiEdit3 />,
-      title: t('reviewer.dashboard.reviewForm'),
+      title: t('reviewer.dashboard.reviewFormCard'),
       description: t('reviewer.dashboard.reviewFormDesc'),
       link: "/reviewer/assignments",
       buttonText: t('reviewer.dashboard.openReviewForm'),

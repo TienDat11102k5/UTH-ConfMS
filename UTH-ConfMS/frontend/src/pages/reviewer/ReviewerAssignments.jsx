@@ -498,38 +498,76 @@ const ReviewerAssignments = () => {
                 <div className="assignment-card-footer">
                   {assignment.status === "PENDING" && (
                     <>
-                      <button
-                        className="assignment-btn btn-accept"
-                        onClick={() => handleAccept(assignment.id)}
-                      >
-                        <FiCheckCircle />
-                        <span>{t('reviewer.assignments.acceptBtn')}</span>
-                      </button>
-                      <button
-                        className="assignment-btn btn-decline"
-                        onClick={() => handleDecline(assignment.id)}
-                      >
-                        <FiXCircle />
-                        <span>{t('reviewer.assignments.declineBtn')}</span>
-                      </button>
+                      {/* Check deadline before showing accept button */}
+                      {assignment.dueDate && new Date(assignment.dueDate) < new Date() ? (
+                        <div style={{
+                          width: "100%",
+                          padding: "0.75rem",
+                          background: "#fee2e2",
+                          border: "1px solid #ef4444",
+                          borderRadius: "8px",
+                          fontSize: "0.875rem",
+                          color: "#991b1b",
+                          textAlign: "center",
+                          fontWeight: 600
+                        }}>
+                        Không thể chấp nhận - Đã quá hạn
+                        </div>
+                      ) : (
+                        <>
+                          <button
+                            className="assignment-btn btn-accept"
+                            onClick={() => handleAccept(assignment.id)}
+                          >
+                            <FiCheckCircle />
+                            <span>{t('reviewer.assignments.acceptBtn')}</span>
+                          </button>
+                          <button
+                            className="assignment-btn btn-decline"
+                            onClick={() => handleDecline(assignment.id)}
+                          >
+                            <FiXCircle />
+                            <span>{t('reviewer.assignments.declineBtn')}</span>
+                          </button>
+                        </>
+                      )}
                     </>
                   )}
                   {assignment.status === "ACCEPTED" && (
                     <>
-                      <Link
-                        to={`/reviewer/review/${assignment.id}`}
-                        className="assignment-btn btn-primary"
-                      >
-                        <FiFileText />
-                        <span>{t('reviewer.assignments.reviewBtn')}</span>
-                      </Link>
-                      <Link
-                        to={`/reviewer/discussions?paperId=${assignment.paper?.id}`}
-                        className="assignment-btn btn-discussion"
-                      >
-                        <FiMessageSquare />
-                        <span>{t('reviewer.assignments.discussionBtn')}</span>
-                      </Link>
+                      {/* Check if deadline has passed */}
+                      {assignment.dueDate && new Date(assignment.dueDate) < new Date() ? (
+                        <div style={{
+                          width: "100%",
+                          padding: "0.75rem",
+                          background: "#fef3c7",
+                          border: "1px solid #fbbf24",
+                          borderRadius: "8px",
+                          fontSize: "0.875rem",
+                          color: "#92400e",
+                          textAlign: "center",
+                          fontWeight: 600
+                        }}>
+                          ⏰ Đã quá hạn - Không thể chấm
+                        </div>
+                      ) : (
+                        <>
+                          <Link
+                            to={`/reviewer/review/${assignment.id}`}
+                            className="assignment-btn btn-primary"
+                          >
+                            <FiFileText />
+                            <span>{t('reviewer.assignments.reviewBtn')}</span>
+                          </Link>
+                          <Link
+                            to={`/reviewer/discussions?paperId=${assignment.paper?.id}`}
+                            className="assignment-btn btn-discussion"
+                          >
+                            <FiMessageSquare />
+                            <span>{t('reviewer.assignments.discussionBtn')}</span>
+                          </Link>
+                        </>
+                      )}
                     </>
                   )}
                   {assignment.status === "COMPLETED" && (

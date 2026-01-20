@@ -1465,6 +1465,7 @@
       "backToAssignments": "Back to assignments list",
       "noteLabel": "Note:",
       "alreadyReviewedMsg": "You have already reviewed this paper. Cannot modify.",
+      "paperInfo": "Paper Information",
       "aiSummary": "AI Summary",
       "paperTitle": "Title",
       "track": "Track",

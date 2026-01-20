@@ -141,24 +141,25 @@
   - Add test dependencies if needed
   - Estimated time: 30 minutes
 
-- [ ] **Service Layer Tests**
-  - [ ] `SubmissionServiceTest.java`
+- [x] **Service Layer Tests**
+  - [x] `SubmissionServiceTest.java`
     - Test submitPaper()
     - Test updatePaper()
     - Test withdrawPaper()
     - Test getPapersByAuthor()
-  - [ ] `ReviewAssignmentServiceTest.java`
+  - [x] `ReviewAssignmentServiceTest.java`
     - Test assignReviewer()
     - Test COI checks
     - Test getMyAssignments()
-  - [ ] `ReviewServiceTest.java`
+  - [x] `ReviewServiceTest.java`
     - Test submitReview()
     - Test score validation
     - Test getReviewsByPaper()
-  - [ ] `DecisionServiceTest.java`
+  - [x] `DecisionServiceTest.java`
     - Test makeDecision()
     - Test bulkMakeDecision()
     - Test getReviewStatistics()
+  - [x] `AdminServiceTest.java`
   - Estimated time: 8 hours
 
 - [ ] **Repository Tests**

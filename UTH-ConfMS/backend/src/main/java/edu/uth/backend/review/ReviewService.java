@@ -31,6 +31,11 @@ public class ReviewService {
             if (conference.getIsLocked() != null && conference.getIsLocked()) {
                 throw new RuntimeException("Hội nghị đã bị khóa, không thể nộp đánh giá!");
             }
+            LocalDateTime reviewDeadline = conference.getReviewDeadline();
+            if (reviewDeadline != null && LocalDateTime.now().isAfter(reviewDeadline)) {
+                throw new RuntimeException("Đã quá hạn chấm bài! Deadline: " + 
+                    reviewDeadline.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+            }
         }
 
         // 2. Kiểm tra trạng thái
