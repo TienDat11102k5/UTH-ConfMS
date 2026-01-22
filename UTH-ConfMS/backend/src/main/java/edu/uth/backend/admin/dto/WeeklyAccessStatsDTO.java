@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WeeklyAccessStatsDTO {
-    private String day; // e.g., "T2", "T3", "CN"
+    private String day; 
     private Long visits;
 }

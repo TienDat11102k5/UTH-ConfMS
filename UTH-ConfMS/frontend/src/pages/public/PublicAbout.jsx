@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import PortalHeader from "../../components/PortalHeader";
 import { useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiInfo, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
+import "../../styles/PublicProceedings.css";
 
 const PublicAbout = () => {
     const { t } = useTranslation();
@@ -116,6 +117,13 @@ const PublicAbout = () => {
 
                 </div>
             </main>
+
+            {/* Footer */}
+            <footer className="proceedings-footer">
+                <span>
+                    © {new Date().getFullYear()} {t('public.about.footer')}
+                </span>
+            </footer>
         </div>
     );
 };

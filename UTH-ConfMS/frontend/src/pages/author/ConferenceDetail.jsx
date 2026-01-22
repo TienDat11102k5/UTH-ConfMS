@@ -6,6 +6,7 @@ import apiClient from "../../apiClient";
 import PortalHeader from "../../components/PortalHeader";
 import { formatDateTime } from "../../utils/dateUtils";
 import "../../styles/ConferenceDetail.css";
+import "../../styles/PublicProceedings.css";
 
 const ConferenceDetail = () => {
   const { t } = useTranslation();
@@ -47,6 +48,11 @@ const ConferenceDetail = () => {
       <div className="portal-page">
         <PortalHeader />
         <div className="conf-detail-loading">{t('app.loading')}</div>
+        <footer className="proceedings-footer">
+          <span>
+            © {new Date().getFullYear()} {t('public.proceedingsPage.footer')}
+          </span>
+        </footer>
       </div>
     );
   }
@@ -61,6 +67,11 @@ const ConferenceDetail = () => {
             {t('app.back')}
           </button>
         </div>
+        <footer className="proceedings-footer">
+          <span>
+            © {new Date().getFullYear()} {t('public.proceedingsPage.footer')}
+          </span>
+        </footer>
       </div>
     );
   }
@@ -194,6 +205,13 @@ const ConferenceDetail = () => {
           </section>
         ) : null}
       </main>
+
+      {/* Footer */}
+      <footer className="proceedings-footer">
+        <span>
+          © {new Date().getFullYear()} {t('public.proceedingsPage.footer')}
+        </span>
+      </footer>
     </div>
   );
 };

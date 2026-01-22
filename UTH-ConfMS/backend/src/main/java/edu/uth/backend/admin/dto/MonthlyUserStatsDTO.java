@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MonthlyUserStatsDTO {
-    private String month; // e.g., "T1", "T2", etc.
+    private String month; 
     private Long users;
 }

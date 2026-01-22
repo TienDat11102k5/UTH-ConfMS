@@ -1671,7 +1671,8 @@
       "importantDates": "Important Dates",
       "guidelinesTitle": "Submission Guidelines",
       "guidelinesText1": "Papers must be original research that has not been published before. Languages accepted: Vietnamese or English.",
-      "guidelinesText2": "Authors submit papers through the UTH-ConfMS system and track reviews online."
+      "guidelinesText2": "Authors submit papers through the UTH-ConfMS system and track reviews online.",
+      "footer": "UTH Scientific Conference Management System - UTH University of Transport"
     },
     "program": {
       "title": "Conference Program",
@@ -1695,9 +1696,12 @@
       "description": "List of accepted papers at UTH Science and Technology Conference 2025.",
       "emptyTitle": "No papers published yet",
       "emptyDescription": "The list of accepted papers will be updated after the conference ends.",
-      "backToPortal": "Back to conference portal"
+      "backToPortal": "Back to conference portal",
+      "footer": "UTH Scientific Conference Management System - UTH University of Transport"
     },
     "programPage": {
+      "home": "Home",
+      "program": "Program",
       "title": "Conference Program",
       "subtitle": "Schedule of presentation sessions and activities",
       "viewProceedings": "View Proceedings",
@@ -1720,9 +1724,13 @@
       "footer": "UTH Scientific Conference Management System - UTH University of Transport"
     },
     "proceedingsPage": {
+      "home": "Home",
+      "proceedings": "Proceedings",
       "title": "Scientific Conference Proceedings",
       "subtitle": "List of accepted papers",
       "viewProgram": "View Program",
+      "cardsView": "Cards",
+      "tableView": "Table",
       "noConferences": "No conferences in the system yet.",
       "loadConferencesError": "Unable to load conference list.",
       "loadProceedingsError": "Unable to load proceedings. Please try again later.",
@@ -1765,7 +1773,8 @@
       "addressTitle": "Address",
       "addressText": "70 To Ky Street, Trung My Tay Ward, District 12, Ho Chi Minh City",
       "emailTitle": "Email",
-      "phoneTitle": "Phone"
+      "phoneTitle": "Phone",
+      "footer": "UTH Scientific Conference Management System - UTH University of Transport"
     },
     "reviewProcess": {
       "title": "Review Process",
@@ -1780,7 +1789,8 @@
       "step4Title": "4. Decision",
       "step4Desc": "Based on reviewer recommendations, the Conference Chair makes the final decision (Accept, Revise, or Reject).",
       "step5Title": "5. Camera-Ready",
-      "step5Desc": "Authors of accepted papers submit the camera-ready version after addressing reviewer comments."
+      "step5Desc": "Authors of accepted papers submit the camera-ready version after addressing reviewer comments.",
+      "footer": "UTH Scientific Conference Management System - UTH University of Transport"
     },
     "authorGuide": {
       "title": "Author Guide",
@@ -1800,7 +1810,8 @@
       "checklist4": "Author identification has been removed.",
       "policyTitle": "Plagiarism & Ethics Policy",
       "policyText1": "All submissions will be checked for plagiarism using specialized software. Any paper with high similarity without proper citation will be rejected immediately.",
-      "policyText2": "Authors must adhere to strict ethical standards in research. Data fabrication or other misconduct will result in a ban on future submissions."
+      "policyText2": "Authors must adhere to strict ethical standards in research. Data fabrication or other misconduct will result in a ban on future submissions.",
+      "footer": "UTH Scientific Conference Management System - UTH University of Transport"
     },
     "privacy": {
       "title": "Privacy Policy",
@@ -1812,7 +1823,8 @@
       "section3Title": "3. Data Security",
       "section3Text": "We are committed to protecting your data and implement appropriate security measures to prevent unauthorized access, disclosure, or modification of personal information.",
       "contactTitle": "Contact",
-      "contactText": "If you have any questions about our privacy policy, please contact the conference organizers."
+      "contactText": "If you have any questions about our privacy policy, please contact the conference organizers.",
+      "footer": "UTH Scientific Conference Management System - UTH University of Transport"
     },
     "terms": {
       "title": "Terms of Use",
@@ -1824,7 +1836,8 @@
       "section3Title": "3. Intellectual Property",
       "section3Text": "All content on this portal, including text, images, and software, is the intellectual property of the University of Transport HCMC or its licensors.",
       "contactTitle": "Contact",
-      "contactText": "Any questions regarding these terms of use should be sent to the organizers' email address."
+      "contactText": "Any questions regarding these terms of use should be sent to the organizers' email address.",
+      "footer": "UTH Scientific Conference Management System - UTH University of Transport"
     }
   },
   "settings": {

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import PortalHeader from "../../components/PortalHeader";
 import { useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiCheckCircle, FiEdit3, FiEye, FiGitCommit, FiLayers, FiSend } from "react-icons/fi";
+import "../../styles/PublicProceedings.css";
 
 const PublicReviewProcess = () => {
     const { t } = useTranslation();
@@ -129,6 +130,13 @@ const PublicReviewProcess = () => {
                     </div>
                 </div>
             </main>
+
+            {/* Footer */}
+            <footer className="proceedings-footer">
+                <span>
+                    © {new Date().getFullYear()} {t('public.reviewProcess.footer')}
+                </span>
+            </footer>
         </div>
     );
 };

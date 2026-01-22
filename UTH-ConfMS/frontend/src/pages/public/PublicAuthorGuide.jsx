@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import PortalHeader from "../../components/PortalHeader";
 import { useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiBookOpen, FiCheckSquare, FiDownload, FiFileText } from "react-icons/fi";
+import "../../styles/PublicProceedings.css";
 
 const PublicAuthorGuide = () => {
     const { t } = useTranslation();
@@ -127,6 +128,13 @@ const PublicAuthorGuide = () => {
 
                 </div>
             </main>
+
+            {/* Footer */}
+            <footer className="proceedings-footer">
+                <span>
+                    © {new Date().getFullYear()} {t('public.authorGuide.footer')}
+                </span>
+            </footer>
         </div>
     );
 };

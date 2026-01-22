@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class DashboardStatsDTO {
     private Long totalUsers;
     private Long todayActiveUsers;
-    private Double totalUsersTrend; // % change from last month
-    private Double todayUsersTrend; // % change from yesterday
+    private Double totalUsersTrend; 
+    private Double todayUsersTrend; 
 }

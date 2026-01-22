@@ -1716,7 +1716,8 @@
       "importantDates": "Thời hạn quan trọng",
       "guidelinesTitle": "Hướng dẫn nộp bài",
       "guidelinesText1": "Bài viết phải là công trình nghiên cứu gốc, chưa từng được công bố. Ngôn ngữ sử dụng: Tiếng Việt hoặc Tiếng Anh.",
-      "guidelinesText2": "Tác giả nộp bài thông qua hệ thống UTH-ConfMS và theo dõi phản biện trực tuyến."
+      "guidelinesText2": "Tác giả nộp bài thông qua hệ thống UTH-ConfMS và theo dõi phản biện trực tuyến.",
+      "footer": "Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải"
     },
     "program": {
       "title": "Chương trình Hội nghị",
@@ -1740,9 +1741,12 @@
       "description": "Danh sách các bài báo được chấp nhận tại Hội nghị Khoa học Công nghệ UTH 2025.",
       "emptyTitle": "Chưa có bài báo được công bố",
       "emptyDescription": "Danh sách các bài báo được chấp nhận sẽ được cập nhật sau khi hội nghị kết thúc.",
-      "backToPortal": "Quay lại cổng thông tin hội nghị"
+      "backToPortal": "Quay lại cổng thông tin hội nghị",
+      "footer": "Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải"
     },
     "programPage": {
+      "home": "Trang chủ",
+      "program": "Chương trình",
       "title": "Chương trình hội nghị",
       "subtitle": "Lịch trình các phiên trình bày và hoạt động",
       "viewProceedings": "Xem kỷ yếu",
@@ -1765,9 +1769,13 @@
       "footer": "Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải"
     },
     "proceedingsPage": {
+      "home": "Trang chủ",
+      "proceedings": "Kỷ yếu",
       "title": "Kỷ yếu hội nghị khoa học",
       "subtitle": "Danh sách các bài báo đã được chấp nhận công bố",
       "viewProgram": "Xem chương trình",
+      "cardsView": "Thẻ",
+      "tableView": "Bảng",
       "noConferences": "Chưa có hội nghị nào trong hệ thống.",
       "loadConferencesError": "Không thể tải danh sách hội nghị.",
       "loadProceedingsError": "Không thể tải danh sách kỷ yếu. Vui lòng thử lại sau.",
@@ -1810,7 +1818,8 @@
       "addressTitle": "Địa chỉ",
       "addressText": "70 Đường Tô Ký, Phường Trung Mỹ Tây, Quận 12, Thành phố Hồ Chí Minh",
       "emailTitle": "Email",
-      "phoneTitle": "Điện thoại"
+      "phoneTitle": "Điện thoại",
+      "footer": "Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải"
     },
     "reviewProcess": {
       "title": "Quy trình Phản biện",
@@ -1825,7 +1834,8 @@
       "step4Title": "4. Quyết định",
       "step4Desc": "Dựa trên đề xuất của người phản biện, Chủ tịch hội nghị đưa ra quyết định cuối cùng (Chấp nhận, Sửa chữa hoặc Từ chối).",
       "step5Title": "5. Bản hoàn chỉnh",
-      "step5Desc": "Tác giả của các bài được chấp nhận nộp phiên bản camera-ready sau khi đã chỉnh sửa theo nhận xét của phản biện."
+      "step5Desc": "Tác giả của các bài được chấp nhận nộp phiên bản camera-ready sau khi đã chỉnh sửa theo nhận xét của phản biện.",
+      "footer": "Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải"
     },
     "authorGuide": {
       "title": "Hướng dẫn Tác giả",
@@ -1845,7 +1855,8 @@
       "checklist4": "Đã loại bỏ thông tin nhận dạng tác giả.",
       "policyTitle": "Chính sách Đạo văn & Đạo đức",
       "policyText1": "Tất cả các bài nộp sẽ được kiểm tra đạo văn bằng phần mềm chuyên dụng. Bất kỳ bài báo nào có tỷ lệ trùng lặp cao không có trích dẫn hợp lệ sẽ bị từ chối ngay lập tức.",
-      "policyText2": "Các tác giả phải tuân thủ các tiêu chuẩn đạo đức nghiêm ngặt trong nghiên cứu. Việc giả mạo dữ liệu hoặc các hành vi sai trái khác sẽ dẫn đến việc bị cấm nộp bài trong tương lai."
+      "policyText2": "Các tác giả phải tuân thủ các tiêu chuẩn đạo đức nghiêm ngặt trong nghiên cứu. Việc giả mạo dữ liệu hoặc các hành vi sai trái khác sẽ dẫn đến việc bị cấm nộp bài trong tương lai.",
+      "footer": "Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải"
     },
     "privacy": {
       "title": "Chính sách Bảo mật",
@@ -1857,7 +1868,8 @@
       "section3Title": "3. Bảo mật Dữ liệu",
       "section3Text": "Chúng tôi cam kết bảo vệ dữ liệu của bạn và thực hiện các biện pháp an ninh thích hợp để ngăn chặn truy cập trái phép, tiết lộ hoặc sửa đổi thông tin cá nhân.",
       "contactTitle": "Liên hệ",
-      "contactText": "Nếu bạn có bất kỳ câu hỏi nào về chính sách bảo mật của chúng tôi, vui lòng liên hệ với ban tổ chức hội nghị."
+      "contactText": "Nếu bạn có bất kỳ câu hỏi nào về chính sách bảo mật của chúng tôi, vui lòng liên hệ với ban tổ chức hội nghị.",
+      "footer": "Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải"
     },
     "terms": {
       "title": "Điều khoản Sử dụng",
@@ -1869,7 +1881,8 @@
       "section3Title": "3. Quyền Sở hữu Trí tuệ",
       "section3Text": "Tất cả nội dung trên cổng thông tin này, bao gồm văn bản, hình ảnh và phần mềm, đều thuộc quyền sở hữu trí tuệ của Đại học Giao thông Vận tải hoặc các bên cấp phép.",
       "contactTitle": "Liên hệ",
-      "contactText": "Mọi thắc mắc về điều khoản sử dụng xin vui lòng gửi về địa chỉ email của ban tổ chức."
+      "contactText": "Mọi thắc mắc về điều khoản sử dụng xin vui lòng gửi về địa chỉ email của ban tổ chức.",
+      "footer": "Hệ thống quản lý hội nghị khoa học - Trường Đại học Giao thông Vận tải"
     }
   },
   "settings": {

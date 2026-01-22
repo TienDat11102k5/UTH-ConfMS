@@ -8,6 +8,7 @@ import LanguageSwitcher from "../LanguageSwitcher";
 import logoUTH from "../../assets/logoUTH.jpg";
 import { getCurrentUser } from "../../auth";
 import "../../styles/PortalHeader.css";
+import "../../styles/PublicProceedings.css";
 
 const DashboardLayout = ({
   roleLabel,
@@ -104,6 +105,13 @@ const DashboardLayout = ({
             {children}
           </section>
         </main>
+
+        {/* FOOTER */}
+        <footer className="proceedings-footer">
+          <span>
+            © {new Date().getFullYear()} {t('public.proceedingsPage.footer')}
+          </span>
+        </footer>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import apiClient from "../../apiClient";
 import { formatDateTime } from "../../utils/dateUtils";
+import "../../styles/PublicProceedings.css";
 import {
   FiCalendar,
   FiFileText,
@@ -491,6 +492,13 @@ const PublicCfp = () => {
           </Link>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="proceedings-footer">
+        <span>
+          © {new Date().getFullYear()} {t('public.cfpPage.footer')}
+        </span>
+      </footer>
     </div>
   );
 };

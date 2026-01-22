@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import PortalHeader from "../../components/PortalHeader";
 import { FiArrowLeft, FiShield } from "react-icons/fi";
+import "../../styles/PublicProceedings.css";
 
 const PublicPrivacy = () => {
     const { t } = useTranslation();
@@ -89,6 +90,13 @@ const PublicPrivacy = () => {
                     </div>
                 </div>
             </main>
+
+            {/* Footer */}
+            <footer className="proceedings-footer">
+                <span>
+                    © {new Date().getFullYear()} {t('public.privacy.footer')}
+                </span>
+            </footer>
         </div>
     );
 };

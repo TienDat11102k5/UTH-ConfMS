@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import EmptyState from "../../components/EmptyState";
 import "../../styles/PublicAcceptedPapers.css";
+import "../../styles/PublicProceedings.css";
 
 const PublicAcceptedPapers = () => {
   const { t } = useTranslation();
@@ -30,6 +31,13 @@ const PublicAcceptedPapers = () => {
           </Link>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="proceedings-footer">
+        <span>
+          © {new Date().getFullYear()} {t('public.acceptedPapers.footer')}
+        </span>
+      </footer>
     </div>
   );
 };
