@@ -413,7 +413,13 @@ Chi tiết: [📖 Detail Design](docs/detail-design.md)
 **Trường:** Đại học Giao thông Vận tải TP.HCM (UTH)  
 **Năm:** 2024-2025
 
-| Thành viên |\r\n| ------------------------ |\r\n| **Đỗ Tiến Đạt** |\r\n| **Lưu Nhất Huy** |\r\n| **Phạm Đình Khánh Duy** |\r\n| **Phạm Võ Thành Đạt** |\r\n| **Trần Huỳnh Đức Ninh** |
+| Thành viên              |
+| ----------------------- |
+| **Đỗ Tiến Đạt**         |
+| **Lưu Nhất Huy**        |
+| **Phạm Đình Khánh Duy** |
+| **Phạm Võ Thành Đạt**   |
+| **Trần Huỳnh Đức Ninh** |
 
 ---
 
