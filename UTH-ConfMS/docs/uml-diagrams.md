@@ -1407,7 +1407,7 @@ stateDiagram-v2
 erDiagram
     USERS {
         bigint id PK
-        varchar email UK
+        varchar email "UK"
         varchar password_hash
         varchar provider
         varchar firebase_uid
@@ -1427,7 +1427,7 @@ erDiagram
 
     ROLES {
         bigint id PK
-        varchar name UK
+        varchar name "UK"
     }
 
     USER_ROLES {
@@ -1499,7 +1499,7 @@ erDiagram
 
     REVIEWS {
         bigint id PK
-        bigint assignment_id FK UK
+        bigint assignment_id FK "UK"
         integer score
         integer confidence_level
         text comment_for_author
@@ -1628,7 +1628,7 @@ erDiagram
     PASSWORD_RESET_TOKENS {
         bigint id PK
         bigint user_id FK
-        varchar token UK
+        varchar token "UK"
         timestamp expires_at
         boolean used
         timestamp created_at

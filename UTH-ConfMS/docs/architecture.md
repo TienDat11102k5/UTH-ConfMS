@@ -449,7 +449,7 @@ flowchart TB
 
 | Thành phần | Công nghệ                   | Phiên bản |
 | ---------- | --------------------------- | --------- |
-| Runtime    | Java                        | 17        |
+| Runtime    | Java                        | 21        |
 | Framework  | Spring Boot                 | 3.5.9     |
 | Security   | Spring Security             | 6.x       |
 | ORM        | Spring Data JPA + Hibernate | 6.x       |
@@ -461,22 +461,22 @@ flowchart TB
 
 | Thành phần  | Công nghệ     | Phiên bản |
 | ----------- | ------------- | --------- |
-| Library     | React         | 18        |
-| Build Tool  | Vite          | 5.x       |
+| Library     | React         | 19.x      |
+| Build Tool  | Vite          | 7.x       |
 | HTTP Client | Axios         | 1.x       |
-| Routing     | React Router  | 6.x       |
-| i18n        | i18next       | 23.x      |
-| Auth        | Firebase Auth | 10.x      |
+| Routing     | React Router  | 7.x       |
+| i18n        | i18next       | 25.x      |
+| Auth        | Firebase Auth | 12.x      |
 
 ### 6.3 AI Service Stack
 
-| Thành phần  | Công nghệ     | Phiên bản |
-| ----------- | ------------- | --------- |
-| Runtime     | Python        | 3.11      |
-| Framework   | FastAPI       | 0.100+    |
-| AI Provider | Google Gemini | 1.5       |
-| NLP         | spaCy         | 3.x       |
-| DB Driver   | asyncpg       | 0.29+     |
+| Thành phần  | Công nghệ             | Phiên bản |
+| ----------- | --------------------- | --------- |
+| Runtime     | Python                | 3.11+     |
+| Framework   | FastAPI               | latest    |
+| AI Provider | Google Gemini         | 1.5+      |
+| Embeddings  | sentence-transformers | latest    |
+| DB Driver   | asyncpg + psycopg2    | latest    |
 
 ### 6.4 DevOps Stack
 

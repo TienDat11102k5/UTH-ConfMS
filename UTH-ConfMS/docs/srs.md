@@ -119,7 +119,7 @@ mindmap
 **Server:**
 
 - OS: Linux/Windows Server
-- Java 17+
+- Java 21+
 - PostgreSQL 16+
 - Redis 7+
 - Docker (optional)
@@ -128,8 +128,8 @@ mindmap
 
 | Ràng buộc          | Mô tả                            |
 | ------------------ | -------------------------------- |
-| Công nghệ Backend  | Java 17, Spring Boot 3.x         |
-| Công nghệ Frontend | React 18, Vite                   |
+| Công nghệ Backend  | Java 21, Spring Boot 3.5.9       |
+| Công nghệ Frontend | React 19, Vite 7.x               |
 | Database           | PostgreSQL với Redis caching     |
 | Authentication     | JWT + Firebase Auth (Google SSO) |
 | API Style          | RESTful với OpenAPI/Swagger      |

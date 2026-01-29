@@ -25,8 +25,8 @@
 
 | Phần mềm   | Phiên bản | Ghi chú             |
 | ---------- | --------- | ------------------- |
-| Java JDK   | 17+       | OpenJDK hoặc Oracle |
-| Node.js    | 18+       | Bao gồm npm         |
+| Java JDK   | 21+       | OpenJDK hoặc Oracle |
+| Node.js    | 20+       | Bao gồm npm         |
 | Python     | 3.11+     | Cho AI Service      |
 | PostgreSQL | 16+       | Database            |
 | Redis      | 7+        | Cache (optional)    |

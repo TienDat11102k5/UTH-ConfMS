@@ -2,12 +2,12 @@
 
 ## Thông Tin Tài Liệu
 
-| Trường | Giá trị |
-|--------|---------|
-| **Dự án** | Hệ thống Quản lý Hội nghị Khoa học UTH (UTH-ConfMS) |
-| **Phiên bản** | 1.0 |
-| **Ngày tạo** | Tháng 01/2026 |
-| **Đối tượng** | DevOps, System Administrator |
+| Trường        | Giá trị                                             |
+| ------------- | --------------------------------------------------- |
+| **Dự án**     | Hệ thống Quản lý Hội nghị Khoa học UTH (UTH-ConfMS) |
+| **Phiên bản** | 1.0                                                 |
+| **Ngày tạo**  | Tháng 01/2026                                       |
+| **Đối tượng** | DevOps, System Administrator                        |
 
 ---
 
@@ -52,14 +52,14 @@
 
 ### 1.2 Các Thành Phần
 
-| Thành phần | Công nghệ | Port | Mô tả |
-|------------|-----------|------|-------|
-| **Frontend** | React 18 + Vite | 3000 | Giao diện người dùng |
-| **Backend** | Spring Boot 3.2 | 8080 | REST API, Business Logic |
-| **AI Service** | Python FastAPI | 8000 | AI features (Gemini) |
-| **Database** | PostgreSQL 16 | 5432 | Lưu trữ dữ liệu |
-| **Cache** | Redis 7 | 6379 | Session, Cache |
-| **Reverse Proxy** | Nginx | 80/443 | Load balancer, SSL |
+| Thành phần        | Công nghệ         | Port   | Mô tả                    |
+| ----------------- | ----------------- | ------ | ------------------------ |
+| **Frontend**      | React 19 + Vite 7 | 3000   | Giao diện người dùng     |
+| **Backend**       | Spring Boot 3.5.9 | 8080   | REST API, Business Logic |
+| **AI Service**    | Python FastAPI    | 8000   | AI features (Gemini)     |
+| **Database**      | PostgreSQL 16     | 5432   | Lưu trữ dữ liệu          |
+| **Cache**         | Redis 7           | 6379   | Session, Cache           |
+| **Reverse Proxy** | Nginx             | 80/443 | Load balancer, SSL       |
 
 ---
 
@@ -70,12 +70,14 @@
 **Mục đích**: Phát triển và test trên máy local
 
 **Cấu hình:**
+
 - Docker Compose với hot-reload
 - H2 database (in-memory) cho tests
 - Mock external services
 - Debug logging enabled
 
 **Khởi động:**
+
 ```bash
 cd docker
 docker-compose -f docker-compose.dev.yml up -d
@@ -86,11 +88,13 @@ docker-compose -f docker-compose.dev.yml up -d
 **Mục đích**: Test trước khi lên production
 
 **Cấu hình:**
+
 - Giống production nhưng dữ liệu test
 - Có thể reset database
 - Logging level: DEBUG
 
 **Khởi động:**
+
 ```bash
 cd docker
 docker-compose -f docker-compose.staging.yml up -d
@@ -101,6 +105,7 @@ docker-compose -f docker-compose.staging.yml up -d
 **Mục đích**: Phục vụ người dùng thực
 
 **Cấu hình:**
+
 - SSL/TLS bắt buộc
 - Database backup tự động
 - Monitoring & alerting
@@ -108,6 +113,7 @@ docker-compose -f docker-compose.staging.yml up -d
 - Rate limiting enabled
 
 **Khởi động:**
+
 ```bash
 cd docker
 docker-compose -f docker-compose.prod.yml up -d
@@ -120,6 +126,7 @@ docker-compose -f docker-compose.prod.yml up -d
 ### 3.1 Yêu Cầu Server
 
 **Minimum:**
+
 - CPU: 4 cores @ 2.5 GHz
 - RAM: 8 GB
 - Disk: 100 GB SSD
@@ -127,6 +134,7 @@ docker-compose -f docker-compose.prod.yml up -d
 - OS: Ubuntu 20.04 LTS
 
 **Recommended:**
+
 - CPU: 8 cores @ 3.0 GHz
 - RAM: 16 GB
 - Disk: 200 GB SSD (RAID 1)
@@ -182,6 +190,7 @@ nano .env
 ```
 
 **File .env Production:**
+
 ```properties
 # ============================================
 # BẢO MẬT (QUAN TRỌNG!)
@@ -253,6 +262,7 @@ sudo certbot --nginx -d confms.yourdomain.com
 ### 3.5 Cấu Hình Nginx
 
 **File: `/etc/nginx/sites-available/uth-confms`**
+
 ```nginx
 # Redirect HTTP to HTTPS
 server {
@@ -295,10 +305,10 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        
+
         # File upload size
         client_max_body_size 100M;
-        
+
         # Timeouts
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
@@ -328,6 +338,7 @@ server {
 ```
 
 **Kích hoạt cấu hình:**
+
 ```bash
 sudo ln -s /etc/nginx/sites-available/uth-confms /etc/nginx/sites-enabled/
 sudo nginx -t
@@ -372,6 +383,7 @@ INSERT INTO roles (name) VALUES ('ROLE_ADMIN') ON CONFLICT DO NOTHING;
 ### 4.1 Backup Database
 
 **Script tự động** (`/opt/uth-confms/scripts/backup-db.sh`):
+
 ```bash
 #!/bin/bash
 BACKUP_DIR="/opt/uth-confms/backups"
@@ -394,6 +406,7 @@ echo "Backup completed: $FILENAME.gz"
 ```
 
 **Lên lịch backup hàng ngày:**
+
 ```bash
 # Thêm vào crontab
 crontab -e
@@ -453,8 +466,9 @@ docker-compose logs -f
 ### 5.2 Monitoring với Prometheus + Grafana
 
 **File: `docker-compose.monitoring.yml`**
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   prometheus:
@@ -482,20 +496,22 @@ volumes:
 ```
 
 **Prometheus config** (`prometheus.yml`):
+
 ```yaml
 global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'uth-backend'
+  - job_name: "uth-backend"
     static_configs:
-      - targets: ['localhost:8080']
-    metrics_path: '/actuator/prometheus'
+      - targets: ["localhost:8080"]
+    metrics_path: "/actuator/prometheus"
 ```
 
 ### 5.3 Health Checks
 
 **Script kiểm tra** (`/opt/uth-confms/scripts/health-check.sh`):
+
 ```bash
 #!/bin/bash
 
@@ -530,6 +546,7 @@ fi
 ```
 
 **Chạy mỗi 5 phút:**
+
 ```bash
 crontab -e
 
@@ -578,15 +595,17 @@ find /var/log/uth-confms -name "*.log" -mtime +30 -delete
 ### 6.3 Scale Services
 
 **Tăng số workers cho Backend:**
+
 ```yaml
 # docker-compose.prod.yml
 services:
   backend:
     deploy:
-      replicas: 3  # Chạy 3 instances
+      replicas: 3 # Chạy 3 instances
 ```
 
 **Load balancing với Nginx:**
+
 ```nginx
 upstream backend {
     server localhost:8080;
@@ -619,6 +638,7 @@ location /api {
 ### 7.2 Rate Limiting
 
 **Nginx rate limiting:**
+
 ```nginx
 # Giới hạn 10 requests/second
 limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;

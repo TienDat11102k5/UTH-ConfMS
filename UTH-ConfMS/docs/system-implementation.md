@@ -16,8 +16,8 @@
 
 | Thành phần | Phiên bản tối thiểu | Ghi chú                      |
 | ---------- | ------------------- | ---------------------------- |
-| Java JDK   | 17+                 | OpenJDK hoặc Oracle JDK      |
-| Node.js    | 18+                 | Bao gồm npm                  |
+| Java JDK   | 21+                 | OpenJDK hoặc Oracle JDK      |
+| Node.js    | 20+                 | Bao gồm npm                  |
 | Python     | 3.11+               | Cho AI Service               |
 | PostgreSQL | 16+                 | Database chính               |
 | Redis      | 7+                  | Caching (optional)           |
